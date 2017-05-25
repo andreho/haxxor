@@ -1,0 +1,174 @@
+package net.andreho.haxxor.spec.impl;
+
+import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.spec.HxAnnotated;
+import net.andreho.haxxor.spec.HxAnnotation;
+import net.andreho.haxxor.spec.HxCode;
+import net.andreho.haxxor.spec.HxConstructor;
+import net.andreho.haxxor.spec.HxMember;
+import net.andreho.haxxor.spec.HxModifier;
+import net.andreho.haxxor.spec.HxParameter;
+import net.andreho.haxxor.spec.HxParameterizable;
+import net.andreho.haxxor.spec.HxType;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Predicate;
+
+/**
+ * Created by a.hofmann on 30.05.2015.
+ */
+public class HxConstructorReferenceImpl implements HxConstructor {
+   private final HxType declaringType;
+   private HxType[] parameterTypes;
+
+   public HxConstructorReferenceImpl(HxType declaringType,
+                                     HxType... parameterTypes) {
+      this.declaringType = declaringType;
+      this.parameterTypes = parameterTypes;
+   }
+
+   public HxConstructor get() {
+      return declaringType.getConstructor(parameterTypes);
+   }
+
+   @Override
+   public Haxxor getHaxxor() {
+      return declaringType.getHaxxor();
+   }
+
+   @Override
+   public boolean hasCode() {
+      return get().hasCode();
+   }
+
+   @Override
+   public HxCode getCode() {
+      return get().getCode();
+   }
+
+   @Override
+   public HxConstructor setModifiers(HxModifier... modifiers) {
+      get().setModifiers(modifiers);
+      return this;
+   }
+
+   @Override
+   public HxConstructor setModifiers(int modifiers) {
+      get().setModifiers(modifiers);
+      return this;
+   }
+
+   @Override
+   public int getModifiers() {
+      return get().getModifiers();
+   }
+
+   @Override
+   public List<HxParameter> getParameters() {
+      return get().getParameters();
+   }
+
+   @Override
+   public HxConstructor setParameters(final List<HxParameter> parameters) {
+      get().setParameters(parameters);
+      return this;
+   }
+
+   @Override
+   public List<HxType> getExceptionTypes() {
+      return get().getExceptionTypes();
+   }
+
+   @Override
+   public HxConstructor setExceptionTypes(final List<HxType> exceptionTypes) {
+      get().setExceptionTypes(exceptionTypes);
+      return this;
+   }
+
+   @Override
+   public HxConstructor setParameterAt(final int index, final HxParameter parameter) {
+      get().setParameterAt(index, parameter);
+      return this;
+   }
+
+   @Override
+   public HxConstructor setExceptionTypes(HxType... exceptionTypes) {
+      get().setExceptionTypes(exceptionTypes);
+      return this;
+   }
+
+   @Override
+   public HxParameter getParameterAt(final int index) {
+      return get().getParameterAt(index);
+   }
+
+   @Override
+   public Collection<HxParameterizable> getOverriddenMembers() {
+      return get().getOverriddenMembers();
+   }
+
+   @Override
+   public HxConstructor addAnnotation(HxAnnotation annotation) {
+      get().addAnnotation(annotation);
+      return this;
+   }
+
+   @Override
+   public HxConstructor setAnnotations(Collection<HxAnnotation> annotations) {
+      get().setAnnotations(annotations);
+      return this;
+   }
+
+   @Override
+   public Collection<HxAnnotated> getSuperAnnotated() {
+      return get().getSuperAnnotated();
+   }
+
+   @Override
+   public Collection<HxAnnotation> getAnnotations() {
+      return get().getAnnotations();
+   }
+
+   @Override
+   public boolean isAnnotationPresent(String type) {
+      return get().isAnnotationPresent(type);
+   }
+
+   @Override
+   public HxAnnotation getAnnotation(String type) {
+      return get().getAnnotation(type);
+   }
+
+   @Override
+   public Collection<HxAnnotation> getAnnotationsByType(String type) {
+      return get().getAnnotationsByType(type);
+   }
+
+   @Override
+   public Collection<HxAnnotation> annotations(Predicate<HxAnnotation> predicate, boolean recursive) {
+      return get().annotations(predicate, recursive);
+   }
+
+   @Override
+   public String getGenericSignature() {
+      return get().getGenericSignature();
+   }
+
+   @Override
+   public HxConstructor setGenericSignature(String genericSignature) {
+      get().setGenericSignature(genericSignature);
+      return this;
+   }
+
+   @Override
+   public <M extends HxMember> M getDeclaringMember() {
+      return get().getDeclaringMember();
+   }
+
+   @Override
+   public HxConstructor setDeclaringMember(HxMember declaringMember) {
+      get().setDeclaringMember(declaringMember);
+      return this;
+   }
+}

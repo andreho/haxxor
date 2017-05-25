@@ -1,0 +1,46 @@
+group 'net.andreho'
+version projectVersion
+
+allprojects {
+
+   apply plugin: 'java'
+   apply plugin: 'maven'
+   apply plugin: 'maven-publish'
+
+   sourceCompatibility = org.gradle.api.JavaVersion.VERSION_1_8
+   targetCompatibility = org.gradle.api.JavaVersion.VERSION_1_8
+   [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+   repositories {
+      mavenLocal()
+      mavenCentral()
+   }
+
+   dependencies {
+      compile 'org.slf4j:slf4j-api:1.7.13'
+      compile 'org.slf4j:slf4j-simple:1.7.13'
+
+      testCompile "org.junit.jupiter:junit-jupiter-api:5.0.0-M3"
+      testCompile "org.junit.jupiter:junit-jupiter-engine:5.0.0-M3"
+      testCompile "org.junit.vintage:junit-vintage-engine:4.12.0-M3"
+      testCompile 'org.assertj:assertj-core:3.6.1'
+   }
+
+   task sourceJar(type: Jar) {
+      from sourceSets.main.allJava
+   }
+
+   publishing {
+      publications {
+         mavenJava(MavenPublication) {
+            from components.java
+
+            artifact sourceJar {
+               classifier "sources"
+            }
+         }
+      }
+   }
+}
+
+
