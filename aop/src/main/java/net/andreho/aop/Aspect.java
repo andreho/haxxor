@@ -44,7 +44,7 @@ public @interface Aspect {
     *
     * @return a prefix value for the new name of the original intercepted method
     */
-   String prefix() default "__";
+   String prefix() default "__$";
 
    /**
     * Suffix for new name of the intercepted method, that is going to receive actual code of intercepted method.
@@ -53,7 +53,7 @@ public @interface Aspect {
     *
     * @return a suffix value for the new name of the original intercepted method
     */
-   String suffix() default "__";
+   String suffix() default "$__";
 
    /**
     * Where should be the aspect annotation placed to activate this aspect
@@ -63,7 +63,7 @@ public @interface Aspect {
    Scope[] scope() default {Scope.TYPE, Scope.CONSTRUCTOR, Scope.METHOD, Scope.FIELD};
 
    /**
-    * Where to apply this aspect at <b>caller</b> or <b>callee</b> site
+    * Where to apply this aspect at <b>caller</b> or <b>callee</b> execution site
     *
     * @return
     */
@@ -75,14 +75,5 @@ public @interface Aspect {
     * @return
     */
    ClassRef[] types() default {};
-
-   /**
-    * Allows to instantiate the matching aspect and use its member methods as interceptors.
-    * This annotation must be used on exactly one static method of the matching aspect and
-    * this method must return an instance of the matching aspect.
-    */
-   @Retention(RetentionPolicy.RUNTIME)
-   @Target({ElementType.TYPE, ElementType.METHOD})
-   @interface Factory {}
 }
 

@@ -1,9 +1,16 @@
 package net.andreho.aop;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
- * This annotation allows to mark a static method that is used to
- * create a new instance of the represented aspect, in cases when this aspect needs to be executed as .
- * <br/>Created by a.hofmann on 25.05.2017 at 14:39.
+ * Allows to instantiate the matching aspect and use its member methods as further interceptors.
+ * This annotation must be used on exactly one <b>public static</b> method of the matching aspect and
+ * this method must return a valid instance of the matching aspect.
  */
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
 public @interface Factory {
 }
