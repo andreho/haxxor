@@ -23,8 +23,6 @@ public interface HxField extends HxAnnotated<HxField>, HxMember<HxField>, HxOwne
     */
    Haxxor getHaxxor();
 
-   //----------------------------------------------------------------------------------------------------------------
-
    /**
     * @return name of this field
     */

@@ -18,13 +18,9 @@ import java.util.function.Predicate;
  * Created by a.hofmann on 30.05.2015.
  */
 public class HxTypeReferenceImpl extends HxAbstractType {
-   private int modifiers = -1;
-
    public HxTypeReferenceImpl(Haxxor haxxor, String name) {
-      super(haxxor, name);
+      this(haxxor, name, -1);
    }
-
-   //----------------------------------------------------------------------------------------------------------------
 
    public HxTypeReferenceImpl(Haxxor haxxor, String name, int modifiers) {
       super(haxxor, name);
@@ -322,8 +318,8 @@ public class HxTypeReferenceImpl extends HxAbstractType {
 
    @Override
    public HxType setModifiers(int modifiers) {
-      this.modifiers = modifiers;
       get().setModifiers(modifiers);
+      this.modifiers = -1;
       return this;
    }
 
@@ -332,7 +328,7 @@ public class HxTypeReferenceImpl extends HxAbstractType {
       if (modifiers != -1) {
          return modifiers;
       }
-      return get().getModifiers();
+      return this.modifiers = get().getModifiers();
    }
 
    @Override

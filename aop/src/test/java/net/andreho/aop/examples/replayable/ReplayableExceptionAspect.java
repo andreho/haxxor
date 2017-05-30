@@ -2,6 +2,7 @@ package net.andreho.aop.examples.replayable;
 
 import net.andreho.aop.Aspect;
 import net.andreho.aop.Catch;
+import net.andreho.aop.Factory;
 import net.andreho.aop.Redefine;
 import net.andreho.aop.injectable.Args;
 import net.andreho.aop.injectable.Caught;
@@ -23,15 +24,22 @@ import java.lang.reflect.Executable;
    scope = {Scope.TYPE, Scope.CONSTRUCTOR, Scope.METHOD}
 )
 public class ReplayableExceptionAspect {
+   @Factory
+   public ReplayableExceptionAspect() {
+
+   }
 
    @Catch(
-      value = Throwable.class,
       methods = {
-         @MethodRef(annotated = @Annotated(Replayable.class)),
-         @MethodRef(declaredBy = @ClassRef(annotated = @Annotated(Replayable.class)))
+         @MethodRef(
+            annotated = @Annotated(Replayable.class)
+         ),
+         @MethodRef(
+            declaredBy = @ClassRef(annotated = @Annotated(Replayable.class))
+         )
       }
    )
-   public static @Redefine(Caught.class) ReplayableException interceptException(
+   public @Redefine(Caught.class) ReplayableException interceptException(
       @Caught Throwable error,
       @Intercepted Executable executable,
       @This Object host,

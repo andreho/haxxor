@@ -10,12 +10,9 @@ import java.util.Objects;
  * <br/>Created by a.hofmann on 14.03.2016.<br/>
  */
 public class Locals implements Iterable<Object> {
-   //----------------------------------------------------------------------------------------------------------------
 
    private int length;
    private int maxLength;
-
-   //----------------------------------------------------------------------------------------------------------------
    private Object[] slots;
 
    public Locals() {

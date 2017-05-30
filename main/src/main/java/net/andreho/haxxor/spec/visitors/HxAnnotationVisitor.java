@@ -3,8 +3,8 @@ package net.andreho.haxxor.spec.visitors;
 import net.andreho.asm.org.objectweb.asm.AnnotationVisitor;
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.asm.org.objectweb.asm.Type;
+import net.andreho.haxxor.Constants;
 import net.andreho.haxxor.spec.HxAnnotation;
-import net.andreho.haxxor.spec.HxConstants;
 import net.andreho.haxxor.spec.HxEnum;
 import net.andreho.haxxor.spec.HxType;
 import net.andreho.haxxor.spec.impl.HxAnnotationImpl;
@@ -194,11 +194,11 @@ public class HxAnnotationVisitor extends AnnotationVisitor {
             }
 
             if(first instanceof HxType) {
-               annotation.attribute(name, list.toArray(HxConstants.EMPTY_HX_TYPE_ARRAY));
+               annotation.attribute(name, list.toArray(Constants.EMPTY_HX_TYPE_ARRAY));
             } else if(first instanceof HxEnum) {
-               annotation.attribute(name, list.toArray(HxConstants.EMPTY_HX_ENUM_ARRAY));
+               annotation.attribute(name, list.toArray(Constants.EMPTY_HX_ENUM_ARRAY));
             } else if(first instanceof HxAnnotation) {
-               annotation.attribute(name, list.toArray(HxConstants.EMPTY_HX_ANNOTATION_ARRAY));
+               annotation.attribute(name, list.toArray(Constants.EMPTY_HX_ANNOTATION_ARRAY));
             }
          }
       };

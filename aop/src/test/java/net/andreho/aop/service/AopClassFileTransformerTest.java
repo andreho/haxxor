@@ -13,13 +13,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * <br/>Created by a.hofmann on 23.03.2017 at 18:31.
  */
-@DisplayName("Test functionality of DelegatingClassFileTransformer")
-class DelegatingClassFileTransformerTest {
+@DisplayName("Test functionality of AopClassFileTransformer")
+class AopClassFileTransformerTest {
 
    @Test
    @DisplayName("Find all three class-transformers and check their order")
    void findTestClassTransformers() {
-      final DelegatingClassFileTransformer delegate = new DelegatingClassFileTransformer();
+      final AopClassFileTransformer delegate = new AopClassFileTransformer();
       final ClassTransformer[] transformers = delegate.locateClassfileTransformers(getClass().getClassLoader());
 
       assertThat(transformers)
@@ -37,6 +37,6 @@ class DelegatingClassFileTransformerTest {
 
       assertThat(loader)
          .hasSize(1)
-         .hasOnlyElementsOfType(DelegatingClassFileTransformer.class);
+         .hasOnlyElementsOfType(AopClassFileTransformer.class);
    }
 }

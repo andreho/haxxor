@@ -33,6 +33,7 @@ public class HxAbstractType extends HxAnnotatedImpl<HxType> implements HxType {
    public HxAbstractType(Haxxor haxxor, String name) {
       this.haxxor = Objects.requireNonNull(haxxor, "Haxxor is null.");
       this.name = Objects.requireNonNull(name, "Type name is null.");
+
       if (name.isEmpty()) {
          throw new IllegalArgumentException("Type name is empty.");
       }
@@ -531,7 +532,7 @@ public class HxAbstractType extends HxAnnotatedImpl<HxType> implements HxType {
 
    @Override
    public boolean is(String className) {
-      className = getHaxxor().typeName(className);
+      className = getHaxxor().getTypeNamingStrategy().toTypeName(className);
       return getName().equals(className);
    }
 

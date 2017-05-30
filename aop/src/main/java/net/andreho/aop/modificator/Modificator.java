@@ -1,6 +1,5 @@
-package net.andreho.aop.mutation;
+package net.andreho.aop.modificator;
 
-import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.HxType;
 
 /**
@@ -15,18 +14,16 @@ import net.andreho.haxxor.spec.HxType;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 */
-public interface Mutator {
+public interface Modificator {
    /**
-    * @param haxxor
     * @param reference
     * @return
     */
-   boolean isApplicableFor(final Haxxor haxxor, final HxType reference);
+   boolean applicable(final HxType reference);
 
    /**
-    * @param haxxor
     * @param type
     * @return
     */
-   HxType apply(final Haxxor haxxor, final HxType type);
+   HxType modify(final HxType type);
 }

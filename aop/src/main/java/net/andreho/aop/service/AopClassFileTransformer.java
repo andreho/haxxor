@@ -39,8 +39,8 @@ import java.util.logging.Logger;
 /**
  * <br/>Created by a.hofmann on 18.09.2015.<br/>
  */
-public class DelegatingClassFileTransformer implements ClassFileTransformer {
-   private static final Logger LOG = Logger.getLogger(DelegatingClassFileTransformer.class.getName());
+public class AopClassFileTransformer implements ClassFileTransformer, Comparable<ClassFileTransformer> {
+   private static final Logger LOG = Logger.getLogger(AopClassFileTransformer.class.getName());
 
    private static final int DEFAULT_VISITOR_FLAGS = ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG;
    private static final ClassTransformer[] EMPTY_CLASS_TRANSFORMERS = {};
@@ -130,6 +130,7 @@ public class DelegatingClassFileTransformer implements ClassFileTransformer {
              className.startsWith("com/sun/") ||
              className.startsWith("com/intellij/") ||
              className.startsWith("net/andreho/aop/") ||
+             className.startsWith("net/andreho/agent/") ||
              className.startsWith("net/andreho/haxxor/");
    }
 
@@ -140,26 +141,30 @@ public class DelegatingClassFileTransformer implements ClassFileTransformer {
                            final byte[] classfileBuffer,
                            final ClassTransformer[] transformers) {
 
-      byte[] transformedClassfileBuffer = classfileBuffer;
+      byte[] currentByteCode = classfileBuffer;
 
       for (ClassTransformer transformer : transformers) {
          try {
-            transformedClassfileBuffer = transformer.transform(
+            byte[] transformedByteCode = transformer.transform(
                loader,
                className,
                classBeingRedefined,
                protectionDomain,
-               transformedClassfileBuffer
+               currentByteCode
             );
+
+            if(transformedByteCode != null && transformedByteCode != currentByteCode) {
+               currentByteCode = transformedByteCode;
+            }
          } catch (Throwable t) {
-            t.printStackTrace();
-            LOG.severe("DelegatingClassFileTransformer failed at: " +
+            LOG.severe("Failed at: " +
                        transformer.getName() + ", because of: " + t.getMessage());
-            return classfileBuffer;
+            t.printStackTrace();
+            return null;
          }
       }
 
-      return transformedClassfileBuffer;
+      return currentByteCode;
    }
 
    private ClassTransformer[] instantiateTransformers(ClassLoader loader, Set<String> foundTransformers) {
@@ -178,7 +183,6 @@ public class DelegatingClassFileTransformer implements ClassFileTransformer {
                   LOG.fine("Added transformer: " + transformerClass.getName());
                }
             } catch (Exception e) {
-               e.printStackTrace();
                LOG.severe("Unable to instantiate new class transformer: " + e.getMessage());
             }
          }
@@ -218,7 +222,7 @@ public class DelegatingClassFileTransformer implements ClassFileTransformer {
             LOG.severe(e.getMessage());
          }
       } catch (IOException e) {
-         e.printStackTrace();
+         LOG.severe(e.getMessage());
       }
 
       return foundTransformers;
@@ -265,8 +269,13 @@ public class DelegatingClassFileTransformer implements ClassFileTransformer {
       return name.toLowerCase(Locale.getDefault()).endsWith(".class");
    }
 
+   @Override
+   public int compareTo(final ClassFileTransformer o) {
+      return getClass().getName().compareTo(o.getClass().getName());
+   }
+
    static class SearchForTransformers extends ClassVisitor {
-      private static final int UNSUPPORTED_ACCESS =
+      private static final int UNSUPPORTED_MODIFIERS =
          Opcodes.ACC_ABSTRACT
          | Opcodes.ACC_INTERFACE
          | Opcodes.ACC_ANNOTATION
@@ -285,7 +294,7 @@ public class DelegatingClassFileTransformer implements ClassFileTransformer {
       public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
          super.visit(version, access, name, signature, superName, interfaces);
 
-         if ((access & UNSUPPORTED_ACCESS) == 0 &&
+         if ((access & UNSUPPORTED_MODIFIERS) == 0 &&
              (access & Opcodes.ACC_PUBLIC) != 0) {
             this.className = name;
          }

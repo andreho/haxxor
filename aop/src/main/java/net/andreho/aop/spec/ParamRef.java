@@ -4,6 +4,12 @@ package net.andreho.aop.spec;
  * <br/>Created by a.hofmann on 18.09.2015.<br/>
  */
 public @interface ParamRef {
+
+   /**
+    * @return
+    */
+   Position[] positioned() default {};
+
    /**
     * @return
     */

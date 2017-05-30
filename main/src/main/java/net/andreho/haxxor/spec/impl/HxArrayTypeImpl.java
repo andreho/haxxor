@@ -16,11 +16,12 @@ import java.util.Collections;
 public class HxArrayTypeImpl extends HxAbstractType implements HxType {
    private final Collection<HxType> interfaces;
 
-   public HxArrayTypeImpl(Haxxor haxxor, String arrayTypeName) {
+   public HxArrayTypeImpl(final Haxxor haxxor, final String arrayTypeName) {
       super(haxxor, arrayTypeName);
       if (!arrayTypeName.startsWith("[")) {
          throw new IllegalArgumentException("Invalid array type name: " + arrayTypeName);
       }
+
       this.interfaces = Collections.singleton(haxxor.createReference(Serializable.class.getName()));
    }
 

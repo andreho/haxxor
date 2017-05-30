@@ -11,7 +11,7 @@ public @interface Annotated {
    /**
     * @return
     */
-   String name() default "";
+   Named[] name() default @Named();
 
    /**
     * @return

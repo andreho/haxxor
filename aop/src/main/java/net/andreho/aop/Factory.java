@@ -11,6 +11,6 @@ import java.lang.annotation.Target;
  * this method must return a valid instance of the matching aspect.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface Factory {
 }

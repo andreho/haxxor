@@ -21,11 +21,7 @@ import java.util.function.Predicate;
  * Created by a.hofmann on 31.05.2015.
  */
 public class HxTypeImpl extends HxAbstractType implements HxType {
-   //----------------------------------------------------------------------------------------------------------------
-
    protected Version version = Version.V1_8;
-
-   //----------------------------------------------------------------------------------------------------------------
    protected HxType superType;
    protected String genericSignature = "";
    protected Collection<HxType> interfaces = Collections.emptySet();

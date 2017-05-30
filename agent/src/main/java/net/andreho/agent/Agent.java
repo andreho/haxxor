@@ -1,9 +1,7 @@
 package net.andreho.agent;
 
-import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
 import java.util.Objects;
-import java.util.ServiceLoader;
 import java.util.logging.Logger;
 
 /**
@@ -11,13 +9,11 @@ import java.util.logging.Logger;
  */
 public class Agent {
    private static final Logger LOG = Logger.getLogger(Agent.class.getName());
-   private static final ServiceLoader<ClassFileTransformer> TRANSFORMERS =
-      ServiceLoader.load(ClassFileTransformer.class);
-
    private static volatile Instrumentation INSTRUMENTATION;
    private static volatile String ARGS;
 
-   private Agent() {}
+   private Agent() {
+   }
 
    /**
     * Main entry point for a premain javaagent implementation
@@ -47,17 +43,8 @@ public class Agent {
       Agent.ARGS = Objects.requireNonNull(args, "Arguments are null.");
       Agent.INSTRUMENTATION = Objects.requireNonNull(inst, "Instrumentation is null.");
 
-      LOG.fine("Agent was successfully installed.");
-      installClassFileTransformers(args, inst);
-   }
-
-   private static void installClassFileTransformers(final String args, final Instrumentation inst) {
-
-      for(final ClassFileTransformer transformer : TRANSFORMERS) {
-         Objects.requireNonNull(transformer,"ClassFileTransformer can't be null.");
-         LOG.fine("ClassFileTransformer located and added: "+transformer.getClass().getName());
-         inst.addTransformer(transformer, true);
-      }
+      inst.addTransformer(new DelegatingClassFileTransformer(), true);
+      LOG.config("Agent was successfully installed.");
    }
 
    /**

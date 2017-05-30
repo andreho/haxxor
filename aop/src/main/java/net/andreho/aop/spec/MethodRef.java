@@ -5,7 +5,7 @@ package net.andreho.aop.spec;
  */
 public @interface MethodRef {
    /**
-    * @return a selector for possible declaring classes
+    * @return a selector for possible declaring classes or interfaces
     */
    ClassRef[] declaredBy() default {};
 

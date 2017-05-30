@@ -37,11 +37,11 @@ import java.lang.annotation.Target;
 public @interface Before {
    /**
     * Should we include the call of before-advice inside of a try-(catch)/finally block or not.
-    * Applies only if your aspect supports @Catch and/or @Finally
+    * Applies only if your aspect defines @Catch and/or @Finally interceptors
     *
     * @return
     */
-   boolean finalized() default false;
+   boolean safely() default false;
 
    /**
     * Which methods should be processed

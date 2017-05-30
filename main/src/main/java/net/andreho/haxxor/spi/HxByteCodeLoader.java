@@ -1,4 +1,4 @@
-package net.andreho.haxxor.loading;
+package net.andreho.haxxor.spi;
 
 import net.andreho.haxxor.Haxxor;
 
@@ -7,13 +7,9 @@ import net.andreho.haxxor.Haxxor;
  */
 public interface HxByteCodeLoader {
    /**
-    * @return the associated haxxor instance
-    */
-   Haxxor getHaxxor();
-
-   /**
+    * @param haxxor is the requesting haxxor instance
     * @param className of a class being loaded
     * @return content of the requested class as a bytearray
     */
-   byte[] load(String className);
+   byte[] load(Haxxor haxxor, String className);
 }

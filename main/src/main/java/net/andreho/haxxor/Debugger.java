@@ -7,8 +7,6 @@ import net.andreho.asm.org.objectweb.asm.util.ASMifier;
 import net.andreho.asm.org.objectweb.asm.util.Printer;
 import net.andreho.asm.org.objectweb.asm.util.TraceClassVisitor;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 
@@ -48,23 +46,6 @@ public class Debugger {
     * ClassWriter which degrades performances quite a lot).
     */
    public static final int EXPAND_FRAMES = 8;
-
-   /**
-    * Reads the content of given stream into a byte array
-    * <b>ATTENTION:</b> input still must be closed by caller.
-    *
-    * @param inputStream
-    * @return
-    */
-   public static byte[] toByteArray(InputStream inputStream) throws IOException {
-      final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-      int count;
-      byte[] buffer = new byte[4096];
-      while ((count = inputStream.read(buffer)) > -1) {
-         outputStream.write(buffer, 0, count);
-      }
-      return outputStream.toByteArray();
-   }
 
    /**
     * Prints byte code of the given class
@@ -155,7 +136,7 @@ public class Debugger {
             throw new NullPointerException("Unable to reference: " + className);
          }
 
-         trace(toByteArray(stream), printer, printWriter, flags);
+         trace(Utils.toByteArray(stream), printer, printWriter, flags);
       } catch (Exception e) {
          throw new IllegalStateException("Unable to process stream or given class: " + className);
       }

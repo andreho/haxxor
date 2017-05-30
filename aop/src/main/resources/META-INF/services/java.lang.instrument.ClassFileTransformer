@@ -1,1 +1,1 @@
-net.andreho.aop.service.DelegatingClassFileTransformer
+net.andreho.aop.service.AopClassFileTransformer
