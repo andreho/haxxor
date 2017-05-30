@@ -48,7 +48,7 @@ public interface HxType extends HxAnnotated<HxType>, HxMember<HxType>, HxOwned<H
    HxType setVersion(Version version);
 
    /**
-    * @return an internal name of this type (e.g.: I, [Z, java/lang/String, [java/lang/Object or java/util/Map$Entry
+    * @return the internal name of this type (e.g.: I, [Z, java/lang/String, [java/lang/Object or java/util/Map$Entry
     * etc.)
     */
    String getName();
@@ -286,6 +286,8 @@ public interface HxType extends HxAnnotated<HxType>, HxMember<HxType>, HxOwned<H
     */
    boolean hasConstructor(HxType... signature);
 
+   //----------------------------------------------------------------------------------------------------------------
+
    /**
     * @return whether this type has a generic specification or not
     */
@@ -302,8 +304,6 @@ public interface HxType extends HxAnnotated<HxType>, HxMember<HxType>, HxOwned<H
     */
    HxType setGenericSignature(String genericSignature);
 
-   //----------------------------------------------------------------------------------------------------------------
-
    /**
     * @return
     */
@@ -313,6 +313,8 @@ public interface HxType extends HxAnnotated<HxType>, HxMember<HxType>, HxOwned<H
     * @return
     */
    List<HxGeneric> getGenericInterfaces();
+
+   //----------------------------------------------------------------------------------------------------------------
 
    /**
     * Shortcut for: <code>getName().equals(className)</code>

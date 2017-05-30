@@ -16,9 +16,7 @@ public class HxCodeImpl extends Code implements HxCode {
    private static final InstructionFactory DEFAULT_INSTRUCTION_FACTORY = new InstructionFactory() {
    };
 
-   //----------------------------------------------------------------------------------------------------------------
    private final HxParameterizable owner;
-   //----------------------------------------------------------------------------------------------------------------
 
    public HxCodeImpl(final HxParameterizable owner) {
       super();

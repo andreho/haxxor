@@ -3,7 +3,7 @@ package net.andreho.haxxor.spec;
 /**
  * <br/>Created by a.hofmann on 08.04.2017 at 08:50.
  */
-interface HxFactory {
+public interface HxFactory {
    /**
     * @param type
     * @return

@@ -32,10 +32,8 @@ import java.util.Objects;
  */
 public class HxParameterizableVisitor extends MethodVisitor {
    protected final HxCode code;
-   protected final HxParameterizable target;
-
-   //----------------------------------------------------------------------------------------------------------------
    protected final CodeStream codeStream;
+   protected final HxParameterizable target;
    protected final Map<Label, LABEL> remapping;
    protected int parameterIndex = 0;
 
@@ -45,7 +43,7 @@ public class HxParameterizableVisitor extends MethodVisitor {
 
    public HxParameterizableVisitor(HxParameterizable target, MethodVisitor mv) {
       super(Opcodes.ASM5, mv);
-      Objects.requireNonNull(target, "Target is null.");
+      Objects.requireNonNull(target, "Target can't be null.");
 
       this.target = target;
       this.code = target.getCode();
@@ -83,11 +81,9 @@ public class HxParameterizableVisitor extends MethodVisitor {
     */
    protected LABEL remap(Label label) {
       LABEL remapped = this.remapping.get(label);
-
       if (remapped == null) {
          this.remapping.put(label, remapped = new LABEL(label));
       }
-
       return remapped;
    }
 
@@ -96,7 +92,7 @@ public class HxParameterizableVisitor extends MethodVisitor {
    @Override
    public void visitParameter(final String name, final int access) {
       super.visitParameter(name, access);
-      this.target.getParameterAt(this.parameterIndex++).setName(name).setModifiers(access);
+      this.target.getParameterAt(this.parameterIndex++).setModifiers(access).setName(name);
    }
 
    @Override
@@ -105,14 +101,14 @@ public class HxParameterizableVisitor extends MethodVisitor {
       final HxMethod hxMethod = (HxMethod) this.target;
       final HxAnnotation annotation = hxMethod.getHaxxor().createAnnotation(hxMethod.getReturnType().getName(), true);
       return new HxAnnotationVisitor(annotation, super.visitAnnotationDefault())
-            .consumer((anno) -> hxMethod.setDefaultValue(anno));
+         .consumer((anno) -> hxMethod.setDefaultValue(anno));
    }
 
    @Override
    public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
       final HxAnnotation annotation = this.target.getHaxxor().createAnnotation(desc, visible);
       return new HxAnnotationVisitor(annotation, super.visitAnnotation(desc, visible))
-            .consumer((anno) -> this.target.addAnnotation(anno));
+         .consumer((anno) -> this.target.addAnnotation(anno));
    }
 
    @Override
@@ -125,7 +121,7 @@ public class HxParameterizableVisitor extends MethodVisitor {
    public AnnotationVisitor visitParameterAnnotation(final int parameter, final String desc, final boolean visible) {
       final HxAnnotation annotation = this.target.getHaxxor().createAnnotation(desc, visible);
       return new HxAnnotationVisitor(annotation, super.visitAnnotation(desc, visible))
-            .consumer((a) -> this.target.getParameterAt(parameter).addAnnotation(annotation));
+         .consumer((anno) -> this.target.getParameterAt(parameter).addAnnotation(annotation));
    }
 
    //----------------------------------------------------------------------------------------------------------------
@@ -904,7 +900,7 @@ public class HxParameterizableVisitor extends MethodVisitor {
                                                 final boolean visible) {
       final HxAnnotation annotation = this.target.getHaxxor().createAnnotation(desc, visible);
       return new HxAnnotationVisitor(annotation, super.visitInsnAnnotation(typeRef, typePath, desc, visible))
-            .consumer((anno) -> this.code.getCurrent().addAnnotation(anno));
+         .consumer((anno) -> this.code.getCurrent().addAnnotation(anno));
    }
 
    @Override
@@ -912,7 +908,7 @@ public class HxParameterizableVisitor extends MethodVisitor {
       super.visitTryCatchBlock(start, end, handler, type);
       this.codeStream.TRY_CATCH(remap(start), remap(end), remap(handler), type);
       this.code.addTryCatch(
-            new TryCatch(remap(start), remap(end), remap(handler), type));
+         new TryCatch(remap(start), remap(end), remap(handler), type));
    }
 
    @Override
@@ -920,7 +916,7 @@ public class HxParameterizableVisitor extends MethodVisitor {
                                                     final boolean visible) {
       final HxAnnotation annotation = this.target.getHaxxor().createAnnotation(desc, visible);
       return new HxAnnotationVisitor(annotation, super.visitTryCatchAnnotation(typeRef, typePath, desc, visible))
-            .consumer((anno) -> this.code.getLastTryCatch().addAnnotation(anno));
+         .consumer((anno) -> this.code.getLastTryCatch().addAnnotation(anno));
    }
 
    @Override
@@ -929,19 +925,32 @@ public class HxParameterizableVisitor extends MethodVisitor {
       super.visitLocalVariable(name, desc, signature, start, end, index);
       this.codeStream.LOCAL_VARIABLE(name, desc, signature, remap(start), remap(end), index);
       this.code.addLocalVariable(
-            new LocalVariable(index, name, desc, signature, remap(start), remap(end)));
+         new LocalVariable(index, name, desc, signature, remap(start), remap(end)));
    }
 
    @Override
-   public AnnotationVisitor visitLocalVariableAnnotation(final int typeRef, final TypePath typePath,
-                                                         final Label[] start, final Label[] end,
-                                                         final int[] index, final String desc, final boolean visible) {
+   public AnnotationVisitor visitLocalVariableAnnotation(final int typeRef,
+                                                         final TypePath typePath,
+                                                         final Label[] start,
+                                                         final Label[] end,
+                                                         final int[] index,
+                                                         final String desc,
+                                                         final boolean visible) {
+
       if (typeRef == TypeReference.LOCAL_VARIABLE && typePath == null) {
          final HxAnnotation annotation = this.target.getHaxxor().createAnnotation(desc, visible);
-         return new HxAnnotationVisitor(annotation,
-                                        super.visitLocalVariableAnnotation(typeRef, typePath, start, end, index, desc,
-                                                                           visible))
-               .consumer((anno) -> this.code.getLastLocalVariable().addAnnotation(anno));
+         return new HxAnnotationVisitor (
+            annotation,
+            super.visitLocalVariableAnnotation (
+               typeRef,
+               typePath,
+               start,
+               end,
+               index,
+               desc,
+               visible
+            )
+         ).consumer((anno) -> this.code.getLastLocalVariable().addAnnotation(anno));
       }
 
       return super.visitLocalVariableAnnotation(typeRef, typePath, start, end, index, desc, visible);
@@ -954,7 +963,6 @@ public class HxParameterizableVisitor extends MethodVisitor {
       super.visitEnd();
 
       final HxType owner = (HxType) this.target.getDeclaringMember();
-
       if (this.target instanceof HxMethod) {
          owner.initialize(Part.METHODS).addMethod((HxMethod) this.target);
       } else {

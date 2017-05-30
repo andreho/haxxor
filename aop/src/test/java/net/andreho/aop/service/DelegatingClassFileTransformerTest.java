@@ -1,7 +1,7 @@
 package net.andreho.aop.service;
 
 import net.andreho.aop.transform.ClassTransformer;
-import net.andreho.common.utils.OrderUtils;
+import net.andreho.aop.transform.ordering.OrderUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +26,7 @@ class DelegatingClassFileTransformerTest {
          .hasSize(3)
          .doesNotContainNull()
          .hasOnlyElementsOfType(ClassTransformer.class)
-         .isSortedAccordingTo(OrderUtils.COMPARATOR);
+         .isSortedAccordingTo(OrderUtils.comparator());
    }
 
    @Test

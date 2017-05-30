@@ -4,11 +4,14 @@ import net.andreho.asm.org.objectweb.asm.AnnotationVisitor;
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.asm.org.objectweb.asm.Type;
 import net.andreho.haxxor.spec.HxAnnotation;
+import net.andreho.haxxor.spec.HxConstants;
 import net.andreho.haxxor.spec.HxEnum;
 import net.andreho.haxxor.spec.HxType;
 import net.andreho.haxxor.spec.impl.HxAnnotationImpl;
 
-import java.util.Arrays;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -98,11 +101,9 @@ public class HxAnnotationVisitor extends AnnotationVisitor {
             //if(value instanceof Type)
             Type type = (Type) value;
             if (type.getSort() != Type.OBJECT && type.getSort() != Type.ARRAY) {
-               switch (type.getSort()) {
-                  case Type.BOOLEAN:
-               }
+
             } else {
-               annotation.attribute(name, type.getInternalName());
+               annotation.attribute(name, annotation.getHaxxor().reference(type.getClassName()));
             }
          }
       }
@@ -113,9 +114,9 @@ public class HxAnnotationVisitor extends AnnotationVisitor {
       super.visitEnum(name, desc, value);
 
       if (name != null) {
-         final HxType attributeType = this.annotation.getType()
-                                                     .getHaxxor()
-                                                     .reference(desc);
+         final HxType attributeType =
+            this.annotation.getHaxxor()
+                           .reference(desc);
 
          this.annotation.attribute(name, new HxEnum(attributeType, value));
       }
@@ -124,54 +125,81 @@ public class HxAnnotationVisitor extends AnnotationVisitor {
    @Override
    public AnnotationVisitor visitArray(final String name) {
       final HxAnnotation annotation = this.annotation;
-
       return new AnnotationVisitor(Opcodes.ASM5, super.visitArray(name)) {
-         Object[] array = new Object[0];
-         int length;
+         final List<Object> list = new ArrayList<>();
 
-         void push(Class elementType, Object value) {
-            if (!elementType.isInstance(array.getClass())) {
-               array = Arrays.copyOf(array,
-                                     Math.max(2,
-                                              (length >= array.length) ? length + (int) (length * 0.75) : array.length),
-                                     elementType);
-            } else if (length >= array.length) {
-               array = Arrays.copyOf(array, Math.max(2, length + (int) (length * 0.75)));
-            }
-            array[length++] = value;
+         void push(Object value) {
+            this.list.add(value);
          }
 
          @Override
          public void visit(String name, Object value) {
             super.visit(name, value);
-            if (value instanceof Type) {
-               push(HxType[].class, annotation.getType()
-                                              .getHaxxor()
-                                              .reference(((Type) value).getInternalName()));
+            if(value instanceof Type) {
+               push(annotation.getHaxxor().reference(((Type) value).getInternalName()));
             } else {
-               push(Object.class, value);
+               push(value);
             }
          }
 
          @Override
          public void visitEnum(String name, String desc, String value) {
             super.visitEnum(name, desc, value);
-            push(HxEnum[].class, new HxEnum(annotation.getType()
-                                                      .getHaxxor()
-                                                      .reference(desc), value));
+            push(new HxEnum(annotation.getHaxxor().reference(desc), value));
          }
 
          @Override
          public AnnotationVisitor visitAnnotation(String name, String desc) {
             return createVisitor(super.visitAnnotation(name, desc), desc, true)
-                  .consumer((anno) -> push(HxAnnotation[].class, anno));
+               .consumer((anno) -> push(anno));
          }
 
          @Override
          public void visitEnd() {
             super.visitEnd();
-            throw new UnsupportedOperationException("TODO");
-//            annotation.set(name, (array.length != length) ? Arrays.copyOf(array, length) : array);
+            if(list.isEmpty()) {
+               return;
+            }
+            Object first = list.get(0);
+            Object array = null;
+
+            if (first instanceof Number) {
+               if (first instanceof Byte) {
+                  array = new byte[list.size()];
+               } else if (first instanceof Short) {
+                  array = new short[list.size()];
+               } else if (first instanceof Integer) {
+                  array = new int[list.size()];
+               } else if (first instanceof Float) {
+                  array = new float[list.size()];
+               } else if (first instanceof Long) {
+                  array = new long[list.size()];
+               } else {
+                  array = new double[list.size()];
+               }
+            } else if (first instanceof Boolean) {
+               array = new boolean[list.size()];
+            } else if (first instanceof Character) {
+               array = new char[list.size()];
+            } else if (first instanceof String) {
+               array = new String[list.size()];
+               annotation.attribute(name, (String) first);
+            }
+
+            if(array != null) {
+               for (int i = 0; i < list.size(); i++) {
+                  Object o = list.get(i);
+                  Array.set(array, i, o);
+               }
+            }
+
+            if(first instanceof HxType) {
+               annotation.attribute(name, list.toArray(HxConstants.EMPTY_HX_TYPE_ARRAY));
+            } else if(first instanceof HxEnum) {
+               annotation.attribute(name, list.toArray(HxConstants.EMPTY_HX_ENUM_ARRAY));
+            } else if(first instanceof HxAnnotation) {
+               annotation.attribute(name, list.toArray(HxConstants.EMPTY_HX_ANNOTATION_ARRAY));
+            }
          }
       };
    }

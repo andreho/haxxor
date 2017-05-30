@@ -1,0 +1,15 @@
+group 'net.andreho'
+version '1.0.0'
+
+jar {
+  manifest {
+    attributes(
+      "Implementation-Title": "net.andreho.agent",
+      "Implementation-Version": version,
+      "Premain-Class": "net.andreho.agent.Agent",
+      "Agent-Class": "net.andreho.agent.Agent",
+      "Can-Redefine-Classes": true,
+      "Can-Retransform-Classes": true
+    )
+  }
+}

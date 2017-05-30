@@ -11,6 +11,7 @@ public enum Op {
    GE,
    LIKE,
    IN,
+   BETWEEN,
    CONTAINS,
    NOT_EMPTY,
    NOT_DEFAULT

@@ -8,7 +8,6 @@ import java.lang.reflect.Array;
  * <br/>Created by a.hofmann on 04.06.2015.<br/>
  */
 public class HxEnum {
-
    private final HxType type;
    private final String name;
    private volatile Enum<?> fetchedEnum;
@@ -43,14 +42,11 @@ public class HxEnum {
     * @param array    of enum-refs
     * @return array with requested enum instances
     */
-   public static Enum[] toEnumArray(HxType enumType, HxEnum... array) {
-      final Class<Enum> enumClass = (Class<Enum>) enumType.loadClass();
-      Enum[] result = (Enum[]) Array.newInstance(enumClass, array.length);
-
+   public static <E extends Enum<E>> E[] toEnumArray(Class<E> enumType, HxEnum... array) {
+      final E[] result = (E[]) Array.newInstance(enumType, array.length);
       for (int i = 0; i < array.length; i++) {
-         result[i] = array[i].get();
+         result[i] = (E) array[i].loadEnum();
       }
-
       return result;
    }
 
@@ -60,13 +56,11 @@ public class HxEnum {
     * @param enums to transform
     * @return a hx-enum array that is equal in meaning to the given one
     */
-   public static HxEnum[] toHxEnumArray(Haxxor haxxor, Enum... enums) {
-      HxEnum[] result = new HxEnum[enums.length];
-
+   public static <E extends Enum<E>> HxEnum[] toHxEnumArray(Haxxor haxxor, E... enums) {
+      final HxEnum[] result = new HxEnum[enums.length];
       for (int i = 0; i < enums.length; i++) {
          result[i] = new HxEnum(haxxor, enums[i]);
       }
-
       return result;
    }
 
@@ -80,7 +74,7 @@ public class HxEnum {
       return name;
    }
 
-   public Enum get() {
+   public Enum loadEnum() {
       Enum<?> e = this.fetchedEnum;
       if (e != null) {
          return e;

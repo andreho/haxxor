@@ -48,10 +48,10 @@ public class HxTypeVisitor extends ClassVisitor {
       this.type = this.haxxor.createType(name);
 
       this.type
-            .setVersion(HxType.Version.of(version))
-            .setModifiers(access)
-            .setSuperType(superName)
-            .setGenericSignature(signature);
+         .setVersion(HxType.Version.of(version))
+         .setModifiers(access)
+         .setSuperType(superName)
+         .setGenericSignature(signature);
 
       if (interfaces != null) {
          this.type.setInterfaces(this.haxxor.reference(interfaces));
@@ -71,19 +71,19 @@ public class HxTypeVisitor extends ClassVisitor {
 
          if ("<init>".equals(name)) {
             HxConstructor constructorReference =
-                  haxxor.createConstructorReference(
-                        this.haxxor.reference(owner),
-                        AsmUtils.normalizeSignature(desc)
-                  );
+               haxxor.createConstructorReference(
+                  this.haxxor.reference(owner),
+                  AsmUtils.normalizeSignature(desc)
+               );
             this.type.setDeclaringMember(constructorReference);
          } else {
             HxMethod methodReference =
-                  haxxor.createMethodReference(
-                        this.haxxor.reference(owner),
-                        name,
-                        desc.substring(desc.lastIndexOf(')') + 1),
-                        AsmUtils.normalizeSignature(desc)
-                  );
+               haxxor.createMethodReference(
+                  this.haxxor.reference(owner),
+                  name,
+                  desc.substring(desc.lastIndexOf(')') + 1),
+                  AsmUtils.normalizeSignature(desc)
+               );
             this.type.setDeclaringMember(methodReference);
          }
       } else {
@@ -94,10 +94,10 @@ public class HxTypeVisitor extends ClassVisitor {
    @Override
    public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
       final HxAnnotation hxAnnotation =
-            this.haxxor.createAnnotation(desc, visible);
+         this.haxxor.createAnnotation(desc, visible);
       this.type.initialize(Part.ANNOTATIONS);
       return new HxAnnotationVisitor(hxAnnotation, super.visitAnnotation(desc, visible))
-            .consumer(this.type::addAnnotation);
+         .consumer(this.type::addAnnotation);
    }
 
    @Override
@@ -122,10 +122,10 @@ public class HxTypeVisitor extends ClassVisitor {
    public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
       this.type.initialize(Part.FIELDS);
       HxField hxField = this.haxxor
-            .createField(this.type, name, AsmUtils.normalizeClassname(desc))
-            .setModifiers(access)
-            .setGenericSignature(signature)
-            .setDefaultValue(value);
+         .createField(this.type, name, AsmUtils.normalizeClassname(desc))
+         .setModifiers(access)
+         .setGenericSignature(signature)
+         .setDefaultValue(value);
 
       return new HxFieldVisitor(this.type, hxField, super.visitField(access, name, desc, signature, value));
    }
@@ -148,8 +148,10 @@ public class HxTypeVisitor extends ClassVisitor {
          parameterizable.setExceptionTypes(this.haxxor.referenceArray(exceptions));
       }
 
-      return new HxParameterizableVisitor(parameterizable,
-                                          super.visitMethod(access, name, desc, signature, exceptions));
+      return new HxParameterizableVisitor(
+         parameterizable,
+         super.visitMethod(access, name, desc, signature, exceptions)
+      );
    }
 
    @Override

@@ -6,6 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.function.Function;
@@ -156,14 +157,8 @@ public class ArrayUtils {
     * @return a <b>new</b> array containing all previous elements and given value at last position
     */
    public static final <T> T[] concat(final T[] array, final T value) {
-      final T[] result = (T[]) Array.newInstance(array.getClass().getComponentType(), array.length + 1);
-
-      for (int i = 0; i < array.length; i++) {
-         result[i] = array[i];
-      }
-
+      final T[] result = Arrays.copyOf(array, array.length + 1);
       result[array.length] = value;
-
       return result;
    }
 

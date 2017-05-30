@@ -58,14 +58,11 @@ public class Debugger {
     */
    public static byte[] toByteArray(InputStream inputStream) throws IOException {
       final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
       int count;
-      byte[] buffer = new byte[8192];
-
+      byte[] buffer = new byte[4096];
       while ((count = inputStream.read(buffer)) > -1) {
          outputStream.write(buffer, 0, count);
       }
-
       return outputStream.toByteArray();
    }
 

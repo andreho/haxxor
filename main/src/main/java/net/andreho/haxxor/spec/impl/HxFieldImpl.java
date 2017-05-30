@@ -16,13 +16,9 @@ public class HxFieldImpl extends HxAnnotatedImpl<HxField> implements HxField {
    protected Object defaultValue;
    protected String genericSignature;
 
-   public HxFieldImpl(HxType declaringType, HxType type, String name) {
+   public HxFieldImpl(HxType type, String name) {
       super();
       this.setModifiers(HxMethod.Modifiers.PUBLIC.toBit());
-
-      if (declaringType == null) {
-         throw new IllegalArgumentException("Declaring owner is null.");
-      }
 
       if (type == null) {
          throw new IllegalArgumentException("Type is null.");
@@ -32,9 +28,16 @@ public class HxFieldImpl extends HxAnnotatedImpl<HxField> implements HxField {
          throw new IllegalArgumentException("Name is either null or empty.");
       }
 
-      this.declaringMember = declaringType;
       this.type = type;
       this.name = name;
+   }
+
+   public HxFieldImpl(HxType declaringType, HxType type, String name) {
+      this(type, name);
+      if (declaringType == null) {
+         throw new IllegalArgumentException("Declaring owner is null.");
+      }
+      this.declaringMember = declaringType;
    }
 
    @Override

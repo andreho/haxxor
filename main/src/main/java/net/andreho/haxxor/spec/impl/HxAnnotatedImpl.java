@@ -19,8 +19,10 @@ import java.util.function.Predicate;
  * Created by a.hofmann on 30.05.2015.
  */
 public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>> extends HxMemberImpl<A> implements HxAnnotated<A> {
+   private static final Class<Repeatable> REPEATABLE_ANNOTATION_CLASS = Repeatable.class;
    private static final Collection<HxAnnotation> DEFAULT_ANNOTATION_COLL = Collections.emptySet();
    private static final Collection<HxAnnotated> DEFAULT_SUPER_ANNOTATED_COLL = Collections.emptySet();
+
    protected Collection<HxAnnotation> annotations = DEFAULT_ANNOTATION_COLL;
 
    public HxAnnotatedImpl() {
@@ -34,7 +36,6 @@ public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>
       }
 
       this.annotations.clear();
-
       this.annotations.addAll(annotations);
 
       return (A) this;
@@ -65,7 +66,6 @@ public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>
 
          for (HxAnnotated annotated : superAnnotated) {
             Collection<HxAnnotation> annotations = annotated.annotations(predicate, recursive);
-
             annotationList.addAll(annotations);
          }
       }
@@ -85,7 +85,7 @@ public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>
                                               .getHaxxor()
                                               .resolve(type);
 
-         HxAnnotation hxAnnotation = repeatableAnnotationType.getAnnotation(Repeatable.class);
+         HxAnnotation hxAnnotation = repeatableAnnotationType.getAnnotation(REPEATABLE_ANNOTATION_CLASS);
 
          if (hxAnnotation != null) {
             repeatableType = hxAnnotation.attribute("value");

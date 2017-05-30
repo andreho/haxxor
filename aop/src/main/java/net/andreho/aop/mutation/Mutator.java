@@ -16,20 +16,17 @@ import net.andreho.haxxor.spec.HxType;
 @Retention(RetentionPolicy.RUNTIME)
 */
 public interface Mutator {
-
    /**
     * @param haxxor
     * @param reference
     * @return
     */
-   boolean isApplicableFor(final Haxxor haxxor,
-                           final HxType reference);
-
+   boolean isApplicableFor(final Haxxor haxxor, final HxType reference);
 
    /**
     * @param haxxor
     * @param type
     * @return
     */
-   byte[] apply(final Haxxor haxxor, final HxType type);
+   HxType apply(final Haxxor haxxor, final HxType type);
 }

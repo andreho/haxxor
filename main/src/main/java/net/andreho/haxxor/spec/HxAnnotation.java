@@ -1,6 +1,7 @@
 package net.andreho.haxxor.spec;
 
-import net.andreho.haxxor.spec.entries.AnnotationEntry;
+import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.spec.annotation.AnnotationEntry;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
@@ -13,6 +14,13 @@ import java.util.Map;
  * Created by a.hofmann on 31.05.2015.
  */
 public interface HxAnnotation extends HxOwned {
+   /**
+    * @return
+    */
+   default Haxxor getHaxxor() {
+      return getType().getHaxxor();
+   }
+
    /**
     * Creates and stores internally a proxy view of this annotation. Before usage,
     * ensure that all associated classes are present and
@@ -102,7 +110,7 @@ public interface HxAnnotation extends HxOwned {
 
    HxAnnotation attribute(final String name, String[] value);
 
-   HxAnnotation attribute(String name, HxType enumType, HxEnum[] value);
+   HxAnnotation attribute(final String name, HxEnum[] value);
 
    <E extends Enum<E>> HxAnnotation attribute(final String name, E[] value);
 

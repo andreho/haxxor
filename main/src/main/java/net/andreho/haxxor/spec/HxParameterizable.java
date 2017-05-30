@@ -47,19 +47,19 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
    }
 
    /**
-    * @param index of a parameter type that must be replaced with given type
-    * @param type  to set at the given parameter index
-    * @return this
-    */
-   default P setParameterTypeAt(int index, HxType type) {
-      getParameters().get(index).setType(type);
-      return (P) this;
-   }
-
-   /**
     * @return the list with all parameters
     */
    List<HxParameter> getParameters();
+
+   /**
+    * @param type
+    * @return
+    */
+   default P addParameter(HxType type) {
+      final int idx = getParameters().size();
+      getParameters().add(new HxParameterImpl(this, idx, type));
+      return (P) this;
+   }
 
    /**
     * @param parameters
@@ -83,7 +83,7 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
       final List<HxParameter> parameters = new ArrayList<>(types.length);
       for (int i = 0; i < types.length; i++) {
          final HxType type = types[i];
-         parameters.add(new HxParameterImpl(this, i).setType(type));
+         parameters.add(new HxParameterImpl(this, i, type));
       }
       return setParameters(parameters);
    }

@@ -2,7 +2,7 @@ package transformers;
 
 import net.andreho.aop.transform.ClassTransformer;
 import net.andreho.aop.transform.Transformer;
-import net.andreho.common.anno.Order;
+import net.andreho.aop.transform.ordering.Order;
 
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;

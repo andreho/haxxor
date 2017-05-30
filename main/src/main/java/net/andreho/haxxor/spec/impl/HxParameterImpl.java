@@ -10,14 +10,24 @@ import net.andreho.haxxor.spec.HxType;
 public class HxParameterImpl extends HxAnnotatedImpl<HxParameter> implements HxParameter {
    private final int index;
    private String name;
+   private HxType type;
+
+   public HxParameterImpl(int index) {
+      if(index < 0) {
+         throw new IllegalArgumentException("Invalid parameter's index: "+index);
+      }
+      this.index = index;
+   }
 
    public HxParameterImpl(HxParameterizable owner, int index) {
-      super();
+      this(index);
       this.setDeclaringMember(owner);
-      this.index = index;
-      if(index < 0) {
-         throw new IllegalArgumentException("Invalid index: "+index);
-      }
+   }
+
+   public HxParameterImpl(HxParameterizable owner, int index, HxType type) {
+      this(index);
+      this.setDeclaringMember(owner);
+      this.setType(type);
    }
 
    @Override
@@ -44,7 +54,7 @@ public class HxParameterImpl extends HxAnnotatedImpl<HxParameter> implements HxP
 
    @Override
    public HxParameter setType(final HxType type) {
-      getDeclaringMember().setParameterTypeAt(getIndex(), type);
+      this.type = type;
       return this;
    }
 

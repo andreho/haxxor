@@ -7,7 +7,13 @@ public interface HxParameter extends HxAnnotated<HxParameter>, HxMember<HxParame
    /**
     * @return index of this parameter in the parameter list of the owning method/constructor
     */
-   int getIndex();
+   default int getIndex() {
+      HxParameterizable declaringMember = getDeclaringMember();
+      if(declaringMember == null) {
+         return -1;
+      }
+      return declaringMember.getParameters().indexOf(this);
+   }
 
    /**
     * @return name of this parameter

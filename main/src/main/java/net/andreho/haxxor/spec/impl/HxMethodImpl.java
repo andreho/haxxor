@@ -13,20 +13,32 @@ public class HxMethodImpl extends HxParameterizableImpl<HxMethod> implements HxM
    protected Object defaultValue;
    protected HxType returnType;
 
+   public HxMethodImpl(final String name,
+                       final HxType returnType,
+                       final HxType... parameters) {
+      this(name);
+      setReturnType(returnType);
+
+      for (HxType type : parameters) {
+         addParameter(type);
+      }
+   }
+
    public HxMethodImpl(final HxType owner,
                        final String name,
                        final HxType returnType,
                        final HxType... parameters) {
-      this(name);
-      setDeclaringMember(owner);
-      setReturnType(returnType);
 
+      this(name, returnType, parameters);
+      setDeclaringMember(owner);
    }
 
    protected HxMethodImpl(final String name) {
+      setModifiers(HxMethod.Modifiers.PUBLIC.toBit());
       this.name = name;
+
       if (name == null || name.isEmpty()) {
-         throw new IllegalArgumentException("Given method name is either null or empty.");
+         throw new IllegalArgumentException("Method-name can't be neither null nor empty.");
       }
    }
 
@@ -77,7 +89,7 @@ public class HxMethodImpl extends HxParameterizableImpl<HxMethod> implements HxM
 
    @Override
    public int hashCode() {
-      return Objects.hashCode(getName()) * 31 + super.hashCode();
+      return 31 * Objects.hashCode(getName()) + super.hashCode();
    }
 
    //----------------------------------------------------------------------------------------------------------------

@@ -22,6 +22,7 @@ import java.lang.annotation.Target;
  * <li>net/andreho/haxxor</li>
  * </ul>
  * <br/>Created by a.hofmann on 18.09.2015.<br/>
+ * @see net.andreho.aop.transform.ordering.Order
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

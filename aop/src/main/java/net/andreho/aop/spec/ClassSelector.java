@@ -27,10 +27,10 @@ public @interface ClassSelector {
    Class<?>[] classes() default {};
 
    /**
-    * Selects classes by their fully qualified canonical classnames
+    * Selects classes by their fully qualified classnames
     *
     * @return a list with name selectors to filter classes by their fully qualified type names
-    * @implNote a fully qualified canonical classname can be for example: <code>java.lang.String</code> or <code>int[]</code>
+    * @implNote a fully qualified binary classname can be for example: <code>java.lang.String</code> or <code>int[]</code>
     * @implSpec defaults to an empty array and so disables the selection by classname
     * @see Named
     */

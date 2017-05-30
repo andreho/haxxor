@@ -11,7 +11,7 @@ public @interface Condition {
    String name();
 
    /**
-    * @return value for selected operator
+    * @return value(s) used to evaluate the right side of the selected operator (if appropriate)
     */
    String[] value() default {};
 

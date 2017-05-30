@@ -4,31 +4,31 @@ import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.HxAnnotation;
 import net.andreho.haxxor.spec.HxEnum;
 import net.andreho.haxxor.spec.HxType;
-import net.andreho.haxxor.spec.entries.AnnotationEntry;
-import net.andreho.haxxor.spec.entries.BooleanAnnotationEntry;
-import net.andreho.haxxor.spec.entries.ByteAnnotationEntry;
-import net.andreho.haxxor.spec.entries.CharacterAnnotationEntry;
-import net.andreho.haxxor.spec.entries.ClassAnnotationEntry;
-import net.andreho.haxxor.spec.entries.DoubleAnnotationEntry;
-import net.andreho.haxxor.spec.entries.EnumAnnotationEntry;
-import net.andreho.haxxor.spec.entries.FloatAnnotationEntry;
-import net.andreho.haxxor.spec.entries.IntegerAnnotationEntry;
-import net.andreho.haxxor.spec.entries.LongAnnotationEntry;
-import net.andreho.haxxor.spec.entries.ShortAnnotationEntry;
-import net.andreho.haxxor.spec.entries.StringAnnotationEntry;
-import net.andreho.haxxor.spec.entries.SubAnnotationEntry;
-import net.andreho.haxxor.spec.entries.arrays.BooleanArrayAnnotationEntry;
-import net.andreho.haxxor.spec.entries.arrays.ByteArrayAnnotationEntry;
-import net.andreho.haxxor.spec.entries.arrays.CharacterArrayAnnotationEntry;
-import net.andreho.haxxor.spec.entries.arrays.ClassArrayAnnotationEntry;
-import net.andreho.haxxor.spec.entries.arrays.DoubleArrayAnnotationEntry;
-import net.andreho.haxxor.spec.entries.arrays.EnumArrayAnnotationEntry;
-import net.andreho.haxxor.spec.entries.arrays.FloatArrayAnnotationEntry;
-import net.andreho.haxxor.spec.entries.arrays.IntegerArrayAnnotationEntry;
-import net.andreho.haxxor.spec.entries.arrays.LongArrayAnnotationEntry;
-import net.andreho.haxxor.spec.entries.arrays.ShortArrayAnnotationEntry;
-import net.andreho.haxxor.spec.entries.arrays.StringArrayAnnotationEntry;
-import net.andreho.haxxor.spec.entries.arrays.SubAnnotationArrayEntry;
+import net.andreho.haxxor.spec.annotation.AnnotationEntry;
+import net.andreho.haxxor.spec.annotation.BooleanAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.ByteAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.CharacterAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.ClassAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.DoubleAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.EnumAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.FloatAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.IntegerAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.LongAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.ShortAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.StringAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.SubAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.arrays.BooleanArrayAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.arrays.ByteArrayAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.arrays.CharacterArrayAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.arrays.ClassArrayAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.arrays.DoubleArrayAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.arrays.EnumArrayAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.arrays.FloatArrayAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.arrays.IntegerArrayAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.arrays.LongArrayAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.arrays.ShortArrayAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.arrays.StringArrayAnnotationEntry;
+import net.andreho.haxxor.spec.annotation.arrays.SubAnnotationArrayEntry;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
@@ -209,15 +209,14 @@ public class HxAnnotationImpl extends HxOwnedImpl implements HxAnnotation {
    }
 
    @Override
-   public HxAnnotation attribute(String name, HxType enumType, HxEnum[] values) {
-      return set(name, new EnumArrayAnnotationEntry(name, enumType, values));
+   public HxAnnotation attribute(String name, HxEnum[] values) {
+      return set(name, new EnumArrayAnnotationEntry(name, values));
    }
 
    @Override
    public <E extends Enum<E>> HxAnnotation attribute(String name, E[] values) {
-      HxType enumType = getType().getHaxxor().reference(values.getClass().getComponentType().getName());
       return set(name,
-                 new EnumArrayAnnotationEntry(name, enumType, HxEnum.toHxEnumArray(getType().getHaxxor(), values)));
+                 new EnumArrayAnnotationEntry(name, HxEnum.toHxEnumArray(getType().getHaxxor(), values)));
    }
 
    @Override

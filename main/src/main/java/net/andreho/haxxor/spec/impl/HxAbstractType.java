@@ -445,7 +445,6 @@ public class HxAbstractType extends HxAnnotatedImpl<HxType> implements HxType {
                continue loop;
             }
          }
-
          return constructor;
       }
       return null;
@@ -466,7 +465,6 @@ public class HxAbstractType extends HxAnnotatedImpl<HxType> implements HxType {
                continue loop;
             }
          }
-
          return constructor;
       }
       return null;
@@ -487,7 +485,6 @@ public class HxAbstractType extends HxAnnotatedImpl<HxType> implements HxType {
                continue loop;
             }
          }
-
          return constructor;
       }
       return null;

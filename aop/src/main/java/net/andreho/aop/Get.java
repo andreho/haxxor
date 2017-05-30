@@ -45,7 +45,7 @@ public @interface Get {
    MethodRef[] methods() default {};
 
    /**
-    * Which fields should be processed
+    * Which fields read-access should be intercepted
     *
     * @return
     */

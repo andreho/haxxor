@@ -1,6 +1,7 @@
 package net.andreho.aop.transform;
 
-import net.andreho.common.utils.OrderUtils;
+
+import net.andreho.aop.transform.ordering.OrderUtils;
 
 import java.lang.instrument.ClassFileTransformer;
 

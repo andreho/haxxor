@@ -25,6 +25,7 @@ import net.andreho.haxxor.spec.visitors.HxTypeVisitor;
 
 import java.lang.ref.WeakReference;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,6 +35,8 @@ import java.util.Map.Entry;
  * <br/>Created by a.hofmann on 21.03.2015 at 01:17<br/>
  */
 public class Haxxor {
+   private static final HxType[] EMPTY_HX_TYPE_ARRAY = {};
+
    //-----------------------------------------------------------------------------------------------------------------
 
    /**
@@ -329,12 +332,14 @@ public class Haxxor {
     * @return a collection with possibly not-resolved references
     */
    public Collection<HxType> reference(String... typeNames) {
-      Collection<HxType> output = new LinkedHashSet<>(typeNames.length);
+      if(typeNames.length == 0) {
+         return Collections.emptySet();
+      }
 
+      Collection<HxType> output = new LinkedHashSet<>(typeNames.length);
       for (String typeName : typeNames) {
          output.add(reference(typeName));
       }
-
       return output;
    }
 
@@ -343,6 +348,9 @@ public class Haxxor {
     * @return
     */
    public HxType[] referenceArray(String... typeNames) {
+      if(typeNames.length == 0) {
+         return EMPTY_HX_TYPE_ARRAY;
+      }
       HxType[] output = new HxType[typeNames.length];
 
       for (int i = 0; i < typeNames.length; i++) {
