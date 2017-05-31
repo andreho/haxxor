@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class IAND extends AbstractZeroOperandInstruction {
-   public IAND() {
-      super(Opcodes.IAND);
-   }
+public class IAND
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.IAND();
-   }
+  public IAND() {
+    super(Opcodes.IAND);
+  }
 
-   @Override
-   public List<Object> apply(final Context context) {
-      return PUSH_INT;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.IAND();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 1 + 1;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    return PUSH_INT;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 1 + 1;
+  }
 }

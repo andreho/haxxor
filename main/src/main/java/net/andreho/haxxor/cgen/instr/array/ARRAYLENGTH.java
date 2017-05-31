@@ -10,29 +10,33 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
-public class ARRAYLENGTH extends AbstractZeroOperandInstruction {
-   public ARRAYLENGTH() {
-      super(Opcodes.ARRAYLENGTH);
-   }
+public class ARRAYLENGTH
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.ARRAYLENGTH();
-   }
+  public ARRAYLENGTH() {
+    super(Opcodes.ARRAYLENGTH);
+  }
 
-   @Override
-   public List<Object> apply(Context context) {
-      Object arrayType = context.getStack().peek();
-      if (arrayType.getClass() != String.class ||
-          arrayType.toString().charAt(0) != '[') {
-         throw new IllegalStateException("An array type is expected at stack[stack.length - 1]: " + arrayType);
-      }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.ARRAYLENGTH();
+  }
 
-      return PUSH_INT;
-   }
+  @Override
+  public List<Object> apply(Context context) {
+    Object arrayType = context.getStack()
+                              .peek();
+    if (arrayType.getClass() != String.class ||
+        arrayType.toString()
+                 .charAt(0) != '[') {
+      throw new IllegalStateException("An array type is expected at stack[stack.length - 1]: " + arrayType);
+    }
 
-   @Override
-   public int getStackPopCount() {
-      return 1;
-   }
+    return PUSH_INT;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 1;
+  }
 }

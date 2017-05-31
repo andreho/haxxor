@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class IREM extends AbstractZeroOperandInstruction {
-   public IREM() {
-      super(Opcodes.IREM);
-   }
+public class IREM
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.IREM();
-   }
+  public IREM() {
+    super(Opcodes.IREM);
+  }
 
-   @Override
-   public List<Object> apply(Context context) {
-      return PUSH_INT;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.IREM();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 1 + 1;
-   }
+  @Override
+  public List<Object> apply(Context context) {
+    return PUSH_INT;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 1 + 1;
+  }
 }

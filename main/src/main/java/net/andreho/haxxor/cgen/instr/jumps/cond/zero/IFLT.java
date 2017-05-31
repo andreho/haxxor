@@ -10,18 +10,20 @@ import net.andreho.haxxor.cgen.instr.abstr.AbstractJumpInstruction;
  * IFLT succeeds if and only if value < 0<br/>
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class IFLT extends AbstractJumpInstruction {
-   public IFLT(LABEL label) {
-      super(Opcodes.IFLT, label);
-   }
+public class IFLT
+    extends AbstractJumpInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.IFLT(this.label);
-   }
+  public IFLT(LABEL label) {
+    super(Opcodes.IFLT, label);
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 1;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.IFLT(this.label);
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 1;
+  }
 }

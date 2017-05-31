@@ -2,8 +2,8 @@ package net.andreho.haxxor.cgen;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.instr.LABEL;
-import net.andreho.haxxor.spec.HxAnnotated;
-import net.andreho.haxxor.spec.HxAnnotation;
+import net.andreho.haxxor.spec.api.HxAnnotated;
+import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.impl.HxAnnotatedImpl;
 
 import java.util.Collection;
@@ -12,126 +12,129 @@ import java.util.function.Predicate;
 /**
  * <br/>Created by a.hofmann on 21.06.2015.<br/>
  */
-public class LocalVariable implements HxAnnotated<LocalVariable> {
-   private final int index;
-   private final String type;
-   private final String name;
-   private final String signature;
+public class LocalVariable
+    implements HxAnnotated<LocalVariable> {
 
-   private final LABEL start;
-   private final LABEL end;
+  private final int index;
+  private final String type;
+  private final String name;
+  private final String signature;
 
-   private HxAnnotated annotated; //lazy init
+  private final LABEL start;
+  private final LABEL end;
 
-   public LocalVariable(final int index, final String type, final String name,
-                        final String signature, final LABEL start, final LABEL end) {
-      this.index = index;
-      this.type = type;
-      this.name = name;
-      this.signature = signature;
-      this.start = start;
-      this.end = end;
-   }
+  private HxAnnotated annotated; //lazy init
 
-   /**
-    * @return index of this local variable
-    */
-   public int getIndex() {
-      return this.index;
-   }
+  public LocalVariable(final int index, final String type, final String name,
+                       final String signature, final LABEL start, final LABEL end) {
+    this.index = index;
+    this.type = type;
+    this.name = name;
+    this.signature = signature;
+    this.start = start;
+    this.end = end;
+  }
 
-   /**
-    * @return type of this local variable
-    */
-   public String getType() {
-      return this.type;
-   }
+  /**
+   * @return index of this local variable
+   */
+  public int getIndex() {
+    return this.index;
+  }
 
-   /**
-    * @return name of this local variable
-    */
-   public String getName() {
-      return this.name;
-   }
+  /**
+   * @return type of this local variable
+   */
+  public String getType() {
+    return this.type;
+  }
 
-   /**
-    * @return full signature of this local variable
-    */
-   public String getSignature() {
-      return this.signature;
-   }
+  /**
+   * @return name of this local variable
+   */
+  public String getName() {
+    return this.name;
+  }
 
-   /**
-    * @return start label of this local variable
-    */
-   public LABEL getStart() {
-      return this.start;
-   }
+  /**
+   * @return full signature of this local variable
+   */
+  public String getSignature() {
+    return this.signature;
+  }
 
-   /**
-    * @return end label of this local variable
-    */
-   public LABEL getEnd() {
-      return this.end;
-   }
+  /**
+   * @return start label of this local variable
+   */
+  public LABEL getStart() {
+    return this.start;
+  }
 
-   /**
-    * Checks whether this local variable is visible for given label or not.
-    *
-    * @return <b>true</b> if it's visible and accessible, <bfalse></b> otherwise.
-    */
-   public boolean isVisible(Instruction instruction) {
-      return getStart().getIndex() < instruction.getIndex() && instruction.getIndex() < getEnd().getIndex();
-   }
+  /**
+   * @return end label of this local variable
+   */
+  public LABEL getEnd() {
+    return this.end;
+  }
 
-   /**
-    * @return count of slots that reserved by this local variable (2 for long and double, otherwise 1 always)
-    */
-   public int size() {
-      final Object type = getType();
+  /**
+   * Checks whether this local variable is visible for given label or not.
+   *
+   * @return <b>true</b> if it's visible and accessible, <bfalse></b> otherwise.
+   */
+  public boolean isVisible(Instruction instruction) {
+    return getStart().getIndex() < instruction.getIndex() && instruction.getIndex() < getEnd().getIndex();
+  }
 
-      if (type == Opcodes.LONG || type == Opcodes.DOUBLE) {
-         return 2;
-      }
+  /**
+   * @return count of slots that reserved by this local variable (2 for long and double, otherwise 1 always)
+   */
+  public int size() {
+    final Object type = getType();
 
-      return 1;
-   }
+    if (type == Opcodes.LONG || type == Opcodes.DOUBLE) {
+      return 2;
+    }
 
-   private HxAnnotated initAnnotated() {
-      if (this.annotated == null) {
-         this.annotated = new HxAnnotatedImpl();
-      }
-      return this.annotated;
-   }
+    return 1;
+  }
 
-   public boolean hasAnnotations() {
-      return this.annotated != null &&
-             !this.annotated.getAnnotations().isEmpty();
-   }
+  private HxAnnotated initAnnotated() {
+    if (this.annotated == null) {
+      this.annotated = new HxAnnotatedImpl();
+    }
+    return this.annotated;
+  }
 
-   @Override
-   public LocalVariable setAnnotations(final Collection<HxAnnotation> annotations) {
-      initAnnotated().setAnnotations(annotations);
-      return this;
-   }
+  public boolean hasAnnotations() {
+    return this.annotated != null &&
+           !this.annotated.getAnnotations()
+                          .isEmpty();
+  }
 
-   @Override
-   public Collection<HxAnnotation> getAnnotations() {
-      return initAnnotated().getAnnotations();
-   }
+  @Override
+  public LocalVariable setAnnotations(final Collection<HxAnnotation> annotations) {
+    initAnnotated().setAnnotations(annotations);
+    return this;
+  }
 
-   @Override
-   public Collection<HxAnnotated> getSuperAnnotated() {
-      return initAnnotated().getSuperAnnotated();
-   }
+  @Override
+  public Collection<HxAnnotation> getAnnotations() {
+    return initAnnotated().getAnnotations();
+  }
 
-   @Override
-   public Collection<HxAnnotation> getAnnotationsByType(final String type) {
-      return initAnnotated().getAnnotationsByType(type);
-   }
+  @Override
+  public Collection<HxAnnotated> getSuperAnnotated() {
+    return initAnnotated().getSuperAnnotated();
+  }
 
-   @Override
-   public Collection<HxAnnotation> annotations(final Predicate<HxAnnotation> predicate, final boolean recursive) {
-      return initAnnotated().annotations(predicate, recursive);
-   }
+  @Override
+  public Collection<HxAnnotation> getAnnotationsByType(final String type) {
+    return initAnnotated().getAnnotationsByType(type);
+  }
+
+  @Override
+  public Collection<HxAnnotation> annotations(final Predicate<HxAnnotation> predicate, final boolean recursive) {
+    return initAnnotated().annotations(predicate, recursive);
+  }
 }

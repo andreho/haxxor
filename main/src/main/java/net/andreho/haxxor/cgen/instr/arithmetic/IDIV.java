@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class IDIV extends AbstractZeroOperandInstruction {
-   public IDIV() {
-      super(Opcodes.IDIV);
-   }
+public class IDIV
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.IDIV();
-   }
+  public IDIV() {
+    super(Opcodes.IDIV);
+  }
 
-   @Override
-   public List<Object> apply(Context context) {
-      return PUSH_INT;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.IDIV();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 1 + 1;
-   }
+  @Override
+  public List<Object> apply(Context context) {
+    return PUSH_INT;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 1 + 1;
+  }
 }

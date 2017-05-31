@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
-public class MONITOREXIT extends AbstractZeroOperandInstruction {
-   public MONITOREXIT() {
-      super(Opcodes.MONITOREXIT);
-   }
+public class MONITOREXIT
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public List<Object> apply(final Context context) {
-      return NO_STACK_PUSH;
-   }
+  public MONITOREXIT() {
+    super(Opcodes.MONITOREXIT);
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 1;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    return NO_STACK_PUSH;
+  }
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.MONITOREXIT();
-   }
+  @Override
+  public int getStackPopCount() {
+    return 1;
+  }
+
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.MONITOREXIT();
+  }
 }

@@ -7,19 +7,20 @@ import net.andreho.haxxor.cgen.CodeStream;
  * <br/>Created by a.hofmann on 28.03.2017 at 22:42.
  */
 public class Editor {
-   private final Haxxor haxxor;
-   private final CodeStream stream;
 
-   public Editor(final Haxxor haxxor, final CodeStream stream) {
-      this.haxxor = haxxor;
-      this.stream = stream;
-   }
+  private final Haxxor haxxor;
+  private final CodeStream stream;
 
-   public Haxxor getHaxxor() {
-      return haxxor;
-   }
+  public Editor(final Haxxor haxxor, final CodeStream stream) {
+    this.haxxor = haxxor;
+    this.stream = stream;
+  }
 
-   public CodeStream getStream() {
-      return stream;
-   }
+  public Haxxor getHaxxor() {
+    return haxxor;
+  }
+
+  public CodeStream getStream() {
+    return stream;
+  }
 }

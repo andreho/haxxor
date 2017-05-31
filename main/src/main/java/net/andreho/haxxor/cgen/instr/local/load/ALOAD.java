@@ -10,28 +10,34 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
-public class ALOAD extends AbstractLocalAccessInstruction {
-   public ALOAD(int var) {
-      super(Opcodes.ALOAD, var);
-   }
+public class ALOAD
+    extends AbstractLocalAccessInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.ALOAD(getLocalIndex());
-   }
+  public ALOAD(int var) {
+    super(Opcodes.ALOAD, var);
+  }
 
-   @Override
-   public List<Object> apply(final Context context) {
-      Object type = context.getLocals().get(getLocalIndex());
-      if (type instanceof Integer) {
-         throw new IllegalArgumentException(
-               "An object reference is expected at slot index [" + getLocalIndex() + "], but got: " + type);
-      }
-      return context.getPush().prepare().push(type).get();
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.ALOAD(getLocalIndex());
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 0;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    Object type = context.getLocals()
+                         .get(getLocalIndex());
+    if (type instanceof Integer) {
+      throw new IllegalArgumentException(
+          "An object reference is expected at slot index [" + getLocalIndex() + "], but got: " + type);
+    }
+    return context.getStackPush()
+                  .prepare()
+                  .push(type)
+                  .get();
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 0;
+  }
 }

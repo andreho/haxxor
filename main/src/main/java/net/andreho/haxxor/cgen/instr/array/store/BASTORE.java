@@ -8,23 +8,25 @@ import net.andreho.haxxor.cgen.instr.abstr.AbstractArrayStoreInstruction;
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
-public class BASTORE extends AbstractArrayStoreInstruction {
-   public BASTORE() {
-      super(Opcodes.BASTORE);
-   }
+public class BASTORE
+    extends AbstractArrayStoreInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.BASTORE();
-   }
+  public BASTORE() {
+    super(Opcodes.BASTORE);
+  }
 
-   @Override
-   protected void checkArrayType(final Object arrayType, final int depth) {
-      super.checkArrayType(arrayType, depth);
-      String array = arrayType.toString();
-      if (!"[Z".equals(array) && !"[B".equals(array)) {
-         throw new IllegalArgumentException("Expected an boolean[] or byte[] array type, but got: " + arrayType);
-      }
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.BASTORE();
+  }
+
+  @Override
+  protected void checkArrayType(final Object arrayType, final int depth) {
+    super.checkArrayType(arrayType, depth);
+    String array = arrayType.toString();
+    if (!"[Z".equals(array) && !"[B".equals(array)) {
+      throw new IllegalArgumentException("Expected an boolean[] or byte[] array type, but got: " + arrayType);
+    }
+  }
 
 }

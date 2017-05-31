@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class FMUL extends AbstractZeroOperandInstruction {
-   public FMUL() {
-      super(Opcodes.FMUL);
-   }
+public class FMUL
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.FMUL();
-   }
+  public FMUL() {
+    super(Opcodes.FMUL);
+  }
 
-   @Override
-   public List<Object> apply(Context context) {
-      return PUSH_FLOAT;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.FMUL();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 1 + 1;
-   }
+  @Override
+  public List<Object> apply(Context context) {
+    return PUSH_FLOAT;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 1 + 1;
+  }
 }

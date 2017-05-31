@@ -10,32 +10,34 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
-public class SIPUSH extends AbstractSingleOperandInstruction {
-   public SIPUSH(int value) {
-      this((short) (0xFFFF & value));
-   }
+public class SIPUSH
+    extends AbstractSingleOperandInstruction {
 
-   public SIPUSH(short value) {
-      super(Opcodes.SIPUSH, value);
-   }
+  public SIPUSH(int value) {
+    this((short) (0xFFFF & value));
+  }
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.SIPUSH((short) this.operand);
-   }
+  public SIPUSH(short value) {
+    super(Opcodes.SIPUSH, value);
+  }
 
-   @Override
-   public List<Object> apply(final Context context) {
-      return PUSH_INT;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.SIPUSH((short) this.operand);
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 0;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    return PUSH_INT;
+  }
 
-   @Override
-   public String toString() {
-      return super.toString() + " " + this.operand;
-   }
+  @Override
+  public int getStackPopCount() {
+    return 0;
+  }
+
+  @Override
+  public String toString() {
+    return super.toString() + " " + this.operand;
+  }
 }

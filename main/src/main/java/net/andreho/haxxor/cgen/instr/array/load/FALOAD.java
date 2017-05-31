@@ -8,21 +8,23 @@ import net.andreho.haxxor.cgen.instr.abstr.AbstractArrayLoadInstruction;
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
-public class FALOAD extends AbstractArrayLoadInstruction {
-   public FALOAD() {
-      super(Opcodes.FALOAD);
-   }
+public class FALOAD
+    extends AbstractArrayLoadInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.FALOAD();
-   }
+  public FALOAD() {
+    super(Opcodes.FALOAD);
+  }
 
-   @Override
-   protected void checkArrayType(final Object arrayType) {
-      super.checkArrayType(arrayType);
-      if (!"[F".equals(arrayType)) {
-         throw new IllegalArgumentException("Expected an array of current type: float[]");
-      }
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.FALOAD();
+  }
+
+  @Override
+  protected void checkArrayType(final Object arrayType) {
+    super.checkArrayType(arrayType);
+    if (!"[F".equals(arrayType)) {
+      throw new IllegalArgumentException("Expected an array of current type: float[]");
+    }
+  }
 }

@@ -10,29 +10,33 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
-public class LSTORE extends AbstractLocalAccessInstruction {
-   public LSTORE(int var) {
-      super(Opcodes.LSTORE, var);
-   }
+public class LSTORE
+    extends AbstractLocalAccessInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.LSTORE(getLocalIndex());
-   }
+  public LSTORE(int var) {
+    super(Opcodes.LSTORE, var);
+  }
 
-   @Override
-   public List<Object> apply(final Context context) {
-      Object operand = context.getStack().peek();
-      if (operand != Opcodes.LONG) {
-         throw new IllegalArgumentException(
-               "A long operand is expected at slot index [" + getLocalIndex() + "], but got: " + operand);
-      }
-      context.getLocals().set(getLocalIndex(), operand);
-      return NO_STACK_PUSH;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.LSTORE(getLocalIndex());
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 2;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    Object operand = context.getStack()
+                            .peek();
+    if (operand != Opcodes.LONG) {
+      throw new IllegalArgumentException(
+          "A long operand is expected at slot index [" + getLocalIndex() + "], but got: " + operand);
+    }
+    context.getLocals()
+           .set(getLocalIndex(), operand);
+    return NO_STACK_PUSH;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 2;
+  }
 }

@@ -9,18 +9,20 @@ import net.andreho.haxxor.cgen.instr.abstr.AbstractJumpInstruction;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class IFNONNULL extends AbstractJumpInstruction {
-   public IFNONNULL(LABEL label) {
-      super(Opcodes.IFNONNULL, label);
-   }
+public class IFNONNULL
+    extends AbstractJumpInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.IFNONNULL(this.label);
-   }
+  public IFNONNULL(LABEL label) {
+    super(Opcodes.IFNONNULL, label);
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 1;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.IFNONNULL(this.label);
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 1;
+  }
 }

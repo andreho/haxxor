@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class FNEG extends AbstractZeroOperandInstruction {
-   public FNEG() {
-      super(Opcodes.FNEG);
-   }
+public class FNEG
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.FNEG();
-   }
+  public FNEG() {
+    super(Opcodes.FNEG);
+  }
 
-   @Override
-   public List<Object> apply(Context context) {
-      return PUSH_FLOAT;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.FNEG();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 1;
-   }
+  @Override
+  public List<Object> apply(Context context) {
+    return PUSH_FLOAT;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 1;
+  }
 }

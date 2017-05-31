@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
-public class ICONST_0 extends AbstractZeroOperandInstruction {
-   public ICONST_0() {
-      super(Opcodes.ICONST_0);
-   }
+public class ICONST_0
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.ICONST_0();
-   }
+  public ICONST_0() {
+    super(Opcodes.ICONST_0);
+  }
 
-   @Override
-   public List<Object> apply(final Context context) {
-      return PUSH_INT;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.ICONST_0();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 0;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    return PUSH_INT;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 0;
+  }
 }

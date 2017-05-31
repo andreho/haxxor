@@ -9,18 +9,20 @@ import net.andreho.haxxor.cgen.instr.abstr.AbstractJumpInstruction;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class IF_ACMPEQ extends AbstractJumpInstruction {
-   public IF_ACMPEQ(LABEL label) {
-      super(Opcodes.IF_ACMPEQ, label);
-   }
+public class IF_ACMPEQ
+    extends AbstractJumpInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.IF_ACMPEQ(this.label);
-   }
+  public IF_ACMPEQ(LABEL label) {
+    super(Opcodes.IF_ACMPEQ, label);
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 1 + 1;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.IF_ACMPEQ(this.label);
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 1 + 1;
+  }
 }

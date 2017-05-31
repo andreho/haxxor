@@ -10,18 +10,20 @@ import net.andreho.haxxor.cgen.instr.abstr.AbstractJumpInstruction;
  * IFEQ succeeds if and only if value = 0<br/>
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class IFEQ extends AbstractJumpInstruction {
-   public IFEQ(LABEL label) {
-      super(Opcodes.IFEQ, label);
-   }
+public class IFEQ
+    extends AbstractJumpInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.IFEQ(this.label);
-   }
+  public IFEQ(LABEL label) {
+    super(Opcodes.IFEQ, label);
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 1;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.IFEQ(this.label);
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 1;
+  }
 }

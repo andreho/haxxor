@@ -8,16 +8,18 @@ import net.andreho.haxxor.cgen.instr.abstr.AbstractInvokeInstruction;
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
-public class INVOKESTATIC extends AbstractInvokeInstruction {
-   public INVOKESTATIC(String owner, String name, String desc, boolean isInterface) {
-      super(Opcodes.INVOKESTATIC, owner, name, desc, isInterface);
-      Utils.checkMethodName(getOpcode(), name);
-   }
+public class INVOKESTATIC
+    extends AbstractInvokeInstruction {
 
-   //----------------------------------------------------------------------------------------------------------------
+  public INVOKESTATIC(String owner, String name, String desc, boolean isInterface) {
+    super(Opcodes.INVOKESTATIC, owner, name, desc, isInterface);
+    Utils.checkMethodName(getOpcode(), name);
+  }
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.INVOKESTATIC(this.owner, this.name, this.desc, this.isInterface);
-   }
+  //----------------------------------------------------------------------------------------------------------------
+
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.INVOKESTATIC(this.owner, this.name, this.desc, this.isInterface);
+  }
 }

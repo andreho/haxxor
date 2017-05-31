@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class FADD extends AbstractZeroOperandInstruction {
-   public FADD() {
-      super(Opcodes.FADD);
-   }
+public class FADD
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.FADD();
-   }
+  public FADD() {
+    super(Opcodes.FADD);
+  }
 
-   @Override
-   public List<Object> apply(Context context) {
-      return PUSH_FLOAT;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.FADD();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 1 + 1;
-   }
+  @Override
+  public List<Object> apply(Context context) {
+    return PUSH_FLOAT;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 1 + 1;
+  }
 }

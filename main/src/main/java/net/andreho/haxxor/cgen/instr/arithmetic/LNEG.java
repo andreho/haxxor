@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class LNEG extends AbstractZeroOperandInstruction {
-   public LNEG() {
-      super(Opcodes.LNEG);
-   }
+public class LNEG
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.LNEG();
-   }
+  public LNEG() {
+    super(Opcodes.LNEG);
+  }
 
-   @Override
-   public List<Object> apply(Context context) {
-      return PUSH_LONG;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.LNEG();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 2;
-   }
+  @Override
+  public List<Object> apply(Context context) {
+    return PUSH_LONG;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 2;
+  }
 }

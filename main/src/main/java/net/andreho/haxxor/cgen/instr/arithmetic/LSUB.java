@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class LSUB extends AbstractZeroOperandInstruction {
-   public LSUB() {
-      super(Opcodes.LSUB);
-   }
+public class LSUB
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.LSUB();
-   }
+  public LSUB() {
+    super(Opcodes.LSUB);
+  }
 
-   @Override
-   public List<Object> apply(Context context) {
-      return PUSH_LONG;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.LSUB();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 2 + 2;
-   }
+  @Override
+  public List<Object> apply(Context context) {
+    return PUSH_LONG;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 2 + 2;
+  }
 }

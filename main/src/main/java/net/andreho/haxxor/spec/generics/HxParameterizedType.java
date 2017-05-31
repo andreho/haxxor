@@ -1,32 +1,34 @@
 package net.andreho.haxxor.spec.generics;
 
-import net.andreho.haxxor.spec.HxGeneric;
-import net.andreho.haxxor.spec.HxType;
+import net.andreho.haxxor.spec.api.HxGeneric;
+import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.List;
 
 /**
  * <br/>Created by a.hofmann on 11.03.2016.<br/>
  */
-public interface HxParameterizedType extends HxGeneric {
-   /**
-    * @return
-    */
-   HxType getRawType();
+public interface HxParameterizedType
+    extends HxGeneric {
 
-   HxParameterizedType setRawType(HxType rawType);
+  /**
+   * @return
+   */
+  HxType getRawType();
 
-   /**
-    * @return
-    */
-   HxGeneric getOwnerType();
+  HxParameterizedType setRawType(HxType rawType);
 
-   HxParameterizedType setOwnerType(HxGeneric ownerType);
+  /**
+   * @return
+   */
+  HxGeneric getOwnerType();
 
-   /**
-    * @return
-    */
-   List<HxGeneric> getActualTypeArguments();
+  HxParameterizedType setOwnerType(HxGeneric ownerType);
 
-   HxParameterizedType setActualTypeArguments(List<HxGeneric> generics);
+  /**
+   * @return
+   */
+  List<HxGeneric> getActualTypeArguments();
+
+  HxParameterizedType setActualTypeArguments(List<HxGeneric> generics);
 }

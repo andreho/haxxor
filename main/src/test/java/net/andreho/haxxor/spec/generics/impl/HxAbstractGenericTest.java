@@ -4,7 +4,7 @@ import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.asm.org.objectweb.asm.signature.SignatureReader;
 import net.andreho.asm.org.objectweb.asm.signature.SignatureVisitor;
 import net.andreho.haxxor.Debugger;
-import net.andreho.haxxor.spec.HxGeneric;
+import net.andreho.haxxor.spec.api.HxGeneric;
 import net.andreho.haxxor.spec.generics.HxTypeVariable;
 import org.junit.Test;
 

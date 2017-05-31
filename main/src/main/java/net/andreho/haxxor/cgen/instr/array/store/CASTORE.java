@@ -8,22 +8,24 @@ import net.andreho.haxxor.cgen.instr.abstr.AbstractArrayStoreInstruction;
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
-public class CASTORE extends AbstractArrayStoreInstruction {
-   public CASTORE() {
-      super(Opcodes.CASTORE);
-   }
+public class CASTORE
+    extends AbstractArrayStoreInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.CASTORE();
-   }
+  public CASTORE() {
+    super(Opcodes.CASTORE);
+  }
 
-   @Override
-   protected void checkArrayType(final Object arrayType, final int depth) {
-      super.checkArrayType(arrayType, depth);
-      String array = arrayType.toString();
-      if (!"[C".equals(array)) {
-         throw new IllegalArgumentException("Expected an char[] array type, but got: " + arrayType);
-      }
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.CASTORE();
+  }
+
+  @Override
+  protected void checkArrayType(final Object arrayType, final int depth) {
+    super.checkArrayType(arrayType, depth);
+    String array = arrayType.toString();
+    if (!"[C".equals(array)) {
+      throw new IllegalArgumentException("Expected an char[] array type, but got: " + arrayType);
+    }
+  }
 }

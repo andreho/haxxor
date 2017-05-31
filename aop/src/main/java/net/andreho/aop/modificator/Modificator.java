@@ -1,6 +1,6 @@
 package net.andreho.aop.modificator;
 
-import net.andreho.haxxor.spec.HxType;
+import net.andreho.haxxor.spec.api.HxType;
 
 /**
  * <br/>Created by a.hofmann on 24.03.2017 at 00:26.

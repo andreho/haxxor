@@ -1,31 +1,33 @@
 package net.andreho.haxxor.spec.generics;
 
-import net.andreho.haxxor.spec.HxGeneric;
-import net.andreho.haxxor.spec.HxMember;
+import net.andreho.haxxor.spec.api.HxGeneric;
+import net.andreho.haxxor.spec.api.HxMember;
 
 import java.util.List;
 
 /**
  * <br/>Created by a.hofmann on 11.03.2016.<br/>
  */
-public interface HxTypeVariable extends HxGeneric {
-   /**
-    * @return a formal name of this type variable
-    */
-   String getName();
+public interface HxTypeVariable
+    extends HxGeneric {
 
-   /**
-    * @param name is the formal name of this type variable
-    * @return this
-    */
-   HxTypeVariable setName(String name);
+  /**
+   * @return a formal name of this type variable
+   */
+  String getName();
 
-   List<HxGeneric> getBounds();
+  /**
+   * @param name is the formal name of this type variable
+   * @return this
+   */
+  HxTypeVariable setName(String name);
 
-   HxTypeVariable setBounds(List<HxGeneric> bounds);
+  List<HxGeneric> getBounds();
 
-   //Either a Type or one of Parameterizable
-   HxMember getGenericDeclaration();
+  HxTypeVariable setBounds(List<HxGeneric> bounds);
 
-   HxTypeVariable setGenericDeclaration(HxMember member);
+  //Either a Type or one of Parameterizable
+  HxMember getGenericDeclaration();
+
+  HxTypeVariable setGenericDeclaration(HxMember member);
 }

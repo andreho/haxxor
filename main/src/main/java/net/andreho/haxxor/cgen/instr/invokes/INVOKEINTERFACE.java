@@ -8,16 +8,18 @@ import net.andreho.haxxor.cgen.instr.abstr.AbstractInvokeInstruction;
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
-public class INVOKEINTERFACE extends AbstractInvokeInstruction {
-   public INVOKEINTERFACE(String owner, String name, String desc) {
-      super(Opcodes.INVOKEINTERFACE, owner, name, desc);
-      Utils.checkMethodName(getOpcode(), name);
-   }
+public class INVOKEINTERFACE
+    extends AbstractInvokeInstruction {
 
-   //----------------------------------------------------------------------------------------------------------------
+  public INVOKEINTERFACE(String owner, String name, String desc) {
+    super(Opcodes.INVOKEINTERFACE, owner, name, desc);
+    Utils.checkMethodName(getOpcode(), name);
+  }
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.INVOKEINTERFACE(this.owner, this.name, this.desc);
-   }
+  //----------------------------------------------------------------------------------------------------------------
+
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.INVOKEINTERFACE(this.owner, this.name, this.desc);
+  }
 }

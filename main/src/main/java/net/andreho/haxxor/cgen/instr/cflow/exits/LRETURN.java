@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
-public class LRETURN extends AbstractInstruction {
-   public LRETURN() {
-      super(Opcodes.LRETURN);
-   }
+public class LRETURN
+    extends AbstractInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.LRETURN();
-   }
+  public LRETURN() {
+    super(Opcodes.LRETURN);
+  }
 
-   @Override
-   public List<Object> apply(final Context context) {
-      return NO_STACK_PUSH;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.LRETURN();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 2;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    return NO_STACK_PUSH;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 2;
+  }
 }

@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
-public class FRETURN extends AbstractInstruction {
-   public FRETURN() {
-      super(Opcodes.FRETURN);
-   }
+public class FRETURN
+    extends AbstractInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.FRETURN();
-   }
+  public FRETURN() {
+    super(Opcodes.FRETURN);
+  }
 
-   @Override
-   public List<Object> apply(final Context context) {
-      return NO_STACK_PUSH;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.FRETURN();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 1;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    return NO_STACK_PUSH;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 1;
+  }
 }

@@ -10,18 +10,20 @@ import net.andreho.haxxor.cgen.instr.abstr.AbstractJumpInstruction;
  * IFLE succeeds if and only if value <= 0<br/>
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class IFLE extends AbstractJumpInstruction {
-   public IFLE(LABEL label) {
-      super(Opcodes.IFLE, label);
-   }
+public class IFLE
+    extends AbstractJumpInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.IFLE(this.label);
-   }
+  public IFLE(LABEL label) {
+    super(Opcodes.IFLE, label);
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 1;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.IFLE(this.label);
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 1;
+  }
 }

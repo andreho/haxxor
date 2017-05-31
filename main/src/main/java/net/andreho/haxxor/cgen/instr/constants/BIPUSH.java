@@ -10,32 +10,34 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
-public class BIPUSH extends AbstractSingleOperandInstruction {
-   public BIPUSH(int value) {
-      this((byte) (0xFF & value));
-   }
+public class BIPUSH
+    extends AbstractSingleOperandInstruction {
 
-   public BIPUSH(byte value) {
-      super(Opcodes.BIPUSH, value);
-   }
+  public BIPUSH(int value) {
+    this((byte) (0xFF & value));
+  }
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.BIPUSH((byte) this.operand);
-   }
+  public BIPUSH(byte value) {
+    super(Opcodes.BIPUSH, value);
+  }
 
-   @Override
-   public List<Object> apply(final Context context) {
-      return PUSH_INT;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.BIPUSH((byte) this.operand);
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 0;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    return PUSH_INT;
+  }
 
-   @Override
-   public String toString() {
-      return super.toString() + " " + this.operand;
-   }
+  @Override
+  public int getStackPopCount() {
+    return 0;
+  }
+
+  @Override
+  public String toString() {
+    return super.toString() + " " + this.operand;
+  }
 }

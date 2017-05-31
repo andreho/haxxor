@@ -11,24 +11,26 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class IF_ICMPGT extends AbstractJumpInstruction {
-   public IF_ICMPGT(LABEL label) {
-      super(Opcodes.IF_ICMPGT, label);
-   }
+public class IF_ICMPGT
+    extends AbstractJumpInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.IF_ICMPGT(this.label);
-   }
+  public IF_ICMPGT(LABEL label) {
+    super(Opcodes.IF_ICMPGT, label);
+  }
 
-   @Override
-   public List<Object> apply(final Context context) {
-      super.apply(context);
-      return PUSH_INT;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.IF_ICMPGT(this.label);
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 1 + 1;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    super.apply(context);
+    return PUSH_INT;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 1 + 1;
+  }
 }

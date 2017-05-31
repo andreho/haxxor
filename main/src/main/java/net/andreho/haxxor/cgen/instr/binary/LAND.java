@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class LAND extends AbstractZeroOperandInstruction {
-   public LAND() {
-      super(Opcodes.LAND);
-   }
+public class LAND
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.LAND();
-   }
+  public LAND() {
+    super(Opcodes.LAND);
+  }
 
-   @Override
-   public List<Object> apply(final Context context) {
-      return PUSH_LONG;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.LAND();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 2 + 2;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    return PUSH_LONG;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 2 + 2;
+  }
 }

@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class FREM extends AbstractZeroOperandInstruction {
-   public FREM() {
-      super(Opcodes.FREM);
-   }
+public class FREM
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.FREM();
-   }
+  public FREM() {
+    super(Opcodes.FREM);
+  }
 
-   @Override
-   public List<Object> apply(Context context) {
-      return PUSH_FLOAT;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.FREM();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 1 + 1;
-   }
+  @Override
+  public List<Object> apply(Context context) {
+    return PUSH_FLOAT;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 1 + 1;
+  }
 }

@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class INEG extends AbstractZeroOperandInstruction {
-   public INEG() {
-      super(Opcodes.INEG);
-   }
+public class INEG
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.INEG();
-   }
+  public INEG() {
+    super(Opcodes.INEG);
+  }
 
-   @Override
-   public List<Object> apply(Context context) {
-      return PUSH_INT;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.INEG();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 1;
-   }
+  @Override
+  public List<Object> apply(Context context) {
+    return PUSH_INT;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 1;
+  }
 }

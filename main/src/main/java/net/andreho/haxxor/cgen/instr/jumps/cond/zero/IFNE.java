@@ -10,18 +10,20 @@ import net.andreho.haxxor.cgen.instr.abstr.AbstractJumpInstruction;
  * IFNE succeeds if and only if value != 0<br/>
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class IFNE extends AbstractJumpInstruction {
-   public IFNE(LABEL label) {
-      super(Opcodes.IFNE, label);
-   }
+public class IFNE
+    extends AbstractJumpInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.IFNE(this.label);
-   }
+  public IFNE(LABEL label) {
+    super(Opcodes.IFNE, label);
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 1;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.IFNE(this.label);
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 1;
+  }
 }

@@ -10,24 +10,26 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class ISUB extends AbstractZeroOperandInstruction {
-   public ISUB() {
-      super(Opcodes.ISUB);
-   }
+public class ISUB
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.ISUB();
-   }
+  public ISUB() {
+    super(Opcodes.ISUB);
+  }
 
-   @Override
-   public List<Object> apply(Context context) {
-      return PUSH_INT;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.ISUB();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 1 + 1;
-   }
+  @Override
+  public List<Object> apply(Context context) {
+    return PUSH_INT;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 1 + 1;
+  }
 
 }

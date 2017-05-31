@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class L2D extends AbstractZeroOperandInstruction {
-   public L2D() {
-      super(Opcodes.L2D);
-   }
+public class L2D
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.L2D();
-   }
+  public L2D() {
+    super(Opcodes.L2D);
+  }
 
-   @Override
-   public List<Object> apply(final Context context) {
-      return PUSH_DOUBLE;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.L2D();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 2;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    return PUSH_DOUBLE;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 2;
+  }
 }

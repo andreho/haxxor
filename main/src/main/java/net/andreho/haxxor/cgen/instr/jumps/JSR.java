@@ -11,24 +11,26 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class JSR extends AbstractJumpInstruction {
-   public JSR(LABEL label) {
-      super(Opcodes.JSR, label);
-   }
+public class JSR
+    extends AbstractJumpInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.JSR(this.label);
-   }
+  public JSR(LABEL label) {
+    super(Opcodes.JSR, label);
+  }
 
-   @Override
-   public List<Object> apply(final Context context) {
-      super.apply(context);
-      return PUSH_INT;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.JSR(this.label);
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 0;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    super.apply(context);
+    return PUSH_INT;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 0;
+  }
 }

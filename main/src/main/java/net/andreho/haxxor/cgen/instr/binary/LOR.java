@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class LOR extends AbstractZeroOperandInstruction {
-   public LOR() {
-      super(Opcodes.LOR);
-   }
+public class LOR
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.LOR();
-   }
+  public LOR() {
+    super(Opcodes.LOR);
+  }
 
-   @Override
-   public List<Object> apply(final Context context) {
-      return PUSH_LONG;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.LOR();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 2 + 2;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    return PUSH_LONG;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 2 + 2;
+  }
 }

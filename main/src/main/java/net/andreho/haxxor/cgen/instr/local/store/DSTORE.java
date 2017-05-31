@@ -10,29 +10,33 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
-public class DSTORE extends AbstractLocalAccessInstruction {
-   public DSTORE(int var) {
-      super(Opcodes.DSTORE, var);
-   }
+public class DSTORE
+    extends AbstractLocalAccessInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.DSTORE(getLocalIndex());
-   }
+  public DSTORE(int var) {
+    super(Opcodes.DSTORE, var);
+  }
 
-   @Override
-   public List<Object> apply(final Context context) {
-      Object operand = context.getStack().peek();
-      if (operand != Opcodes.DOUBLE) {
-         throw new IllegalArgumentException(
-               "A double operand is expected at slot index [" + getLocalIndex() + "], but got: " + operand);
-      }
-      context.getLocals().set(getLocalIndex(), operand);
-      return NO_STACK_PUSH;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.DSTORE(getLocalIndex());
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 2;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    Object operand = context.getStack()
+                            .peek();
+    if (operand != Opcodes.DOUBLE) {
+      throw new IllegalArgumentException(
+          "A double operand is expected at slot index [" + getLocalIndex() + "], but got: " + operand);
+    }
+    context.getLocals()
+           .set(getLocalIndex(), operand);
+    return NO_STACK_PUSH;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 2;
+  }
 }

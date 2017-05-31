@@ -13,42 +13,44 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
-public class INVOKEDYNAMIC extends AbstractInstruction {
-   private final String name;
-   private final String desc;
-   private final Handle bootstrapMethod;
-   private final Object[] bootstrapMethodArguments;
+public class INVOKEDYNAMIC
+    extends AbstractInstruction {
 
-   public INVOKEDYNAMIC(String name, String desc, Handle bsm, Object... bsmArgs) {
-      super(Opcodes.INVOKEDYNAMIC);
-      Utils.checkMethodName(getOpcode(), name);
-      this.name = name;
-      this.desc = desc;
-      this.bootstrapMethod = bsm;
-      this.bootstrapMethodArguments = bsmArgs;
-   }
+  private final String name;
+  private final String desc;
+  private final Handle bootstrapMethod;
+  private final Object[] bootstrapMethodArguments;
 
-   //----------------------------------------------------------------------------------------------------------------
+  public INVOKEDYNAMIC(String name, String desc, Handle bsm, Object... bsmArgs) {
+    super(Opcodes.INVOKEDYNAMIC);
+    Utils.checkMethodName(getOpcode(), name);
+    this.name = name;
+    this.desc = desc;
+    this.bootstrapMethod = bsm;
+    this.bootstrapMethodArguments = bsmArgs;
+  }
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.INVOKEDYNAMIC(this.name, this.desc, this.bootstrapMethod, this.bootstrapMethodArguments);
-   }
+  //----------------------------------------------------------------------------------------------------------------
 
-   @Override
-   public List<Object> apply(final Context context) {
-      return Utils.retrieveType(context, this.desc);
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.INVOKEDYNAMIC(this.name, this.desc, this.bootstrapMethod, this.bootstrapMethodArguments);
+  }
 
-   @Override
-   public int getStackPopCount() {
-      int argumentSizes = (Type.getArgumentsAndReturnSizes(this.desc) >> 2) - 1;
-      return argumentSizes;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    return Utils.retrieveType(context, this.desc);
+  }
 
-   @Override
-   public String toString() {
-      return super.toString() + " " + this.name + " " + this.desc + " - > " + this.bootstrapMethod + Arrays.toString(
-            bootstrapMethodArguments);
-   }
+  @Override
+  public int getStackPopCount() {
+    int argumentSizes = (Type.getArgumentsAndReturnSizes(this.desc) >> 2) - 1;
+    return argumentSizes;
+  }
+
+  @Override
+  public String toString() {
+    return super.toString() + " " + this.name + " " + this.desc + " - > " + this.bootstrapMethod + Arrays.toString(
+        bootstrapMethodArguments);
+  }
 }

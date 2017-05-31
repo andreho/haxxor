@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class LREM extends AbstractZeroOperandInstruction {
-   public LREM() {
-      super(Opcodes.LREM);
-   }
+public class LREM
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.LREM();
-   }
+  public LREM() {
+    super(Opcodes.LREM);
+  }
 
-   @Override
-   public List<Object> apply(Context context) {
-      return PUSH_LONG;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.LREM();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 2 + 2;
-   }
+  @Override
+  public List<Object> apply(Context context) {
+    return PUSH_LONG;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 2 + 2;
+  }
 }

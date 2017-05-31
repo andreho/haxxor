@@ -8,22 +8,24 @@ import net.andreho.haxxor.cgen.instr.abstr.AbstractArrayStoreInstruction;
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
-public class IASTORE extends AbstractArrayStoreInstruction {
-   public IASTORE() {
-      super(Opcodes.IASTORE);
-   }
+public class IASTORE
+    extends AbstractArrayStoreInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.IASTORE();
-   }
+  public IASTORE() {
+    super(Opcodes.IASTORE);
+  }
 
-   @Override
-   protected void checkArrayType(final Object arrayType, final int depth) {
-      super.checkArrayType(arrayType, depth);
-      String array = arrayType.toString();
-      if (!"[I".equals(array)) {
-         throw new IllegalArgumentException("Expected an int[] array type, but got: " + arrayType);
-      }
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.IASTORE();
+  }
+
+  @Override
+  protected void checkArrayType(final Object arrayType, final int depth) {
+    super.checkArrayType(arrayType, depth);
+    String array = arrayType.toString();
+    if (!"[I".equals(array)) {
+      throw new IllegalArgumentException("Expected an int[] array type, but got: " + arrayType);
+    }
+  }
 }

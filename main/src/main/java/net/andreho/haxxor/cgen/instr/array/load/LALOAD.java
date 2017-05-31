@@ -8,21 +8,23 @@ import net.andreho.haxxor.cgen.instr.abstr.AbstractArrayLoadInstruction;
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
-public class LALOAD extends AbstractArrayLoadInstruction {
-   public LALOAD() {
-      super(Opcodes.LALOAD);
-   }
+public class LALOAD
+    extends AbstractArrayLoadInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.LALOAD();
-   }
+  public LALOAD() {
+    super(Opcodes.LALOAD);
+  }
 
-   @Override
-   protected void checkArrayType(final Object arrayType) {
-      super.checkArrayType(arrayType);
-      if (!"[J".equals(arrayType)) {
-         throw new IllegalArgumentException("Expected an array of current type: long[]");
-      }
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.LALOAD();
+  }
+
+  @Override
+  protected void checkArrayType(final Object arrayType) {
+    super.checkArrayType(arrayType);
+    if (!"[J".equals(arrayType)) {
+      throw new IllegalArgumentException("Expected an array of current type: long[]");
+    }
+  }
 }

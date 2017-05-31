@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class LXOR extends AbstractZeroOperandInstruction {
-   public LXOR() {
-      super(Opcodes.LXOR);
-   }
+public class LXOR
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.LXOR();
-   }
+  public LXOR() {
+    super(Opcodes.LXOR);
+  }
 
-   @Override
-   public List<Object> apply(final Context context) {
-      return PUSH_LONG;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.LXOR();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 2 + 2;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    return PUSH_LONG;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 2 + 2;
+  }
 }

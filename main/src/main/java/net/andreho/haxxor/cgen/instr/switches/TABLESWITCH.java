@@ -11,62 +11,65 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
-public class TABLESWITCH extends AbstractJumpInstruction {
-   protected final int min;
+public class TABLESWITCH
+    extends AbstractJumpInstruction {
 
-   //----------------------------------------------------------------------------------------------------------------
-   protected final int max;
-   protected final LABEL[] labels;
+  protected final int min;
 
-   public TABLESWITCH(int min, int max, LABEL defaultLabel, LABEL... labels) {
-      super(Opcodes.TABLESWITCH, defaultLabel);
-      this.min = min;
-      this.max = max;
-      this.labels = labels;
-   }
+  //----------------------------------------------------------------------------------------------------------------
+  protected final int max;
+  protected final LABEL[] labels;
 
-   //----------------------------------------------------------------------------------------------------------------
+  public TABLESWITCH(int min, int max, LABEL defaultLabel, LABEL... labels) {
+    super(Opcodes.TABLESWITCH, defaultLabel);
+    this.min = min;
+    this.max = max;
+    this.labels = labels;
+  }
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.TABLESWITCH(this.min, this.max, this.label, this.labels);
-   }
+  //----------------------------------------------------------------------------------------------------------------
 
-   @Override
-   public List<Object> apply(final Context context) {
-      for (LABEL label : getLabels()) {
-         label.addReference(this);
-      }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.TABLESWITCH(this.min, this.max, this.label, this.labels);
+  }
 
-      this.getDefaultLabel().addReference(this);
-      return NO_STACK_PUSH;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    for (LABEL label : getLabels()) {
+      label.addReference(this);
+    }
 
-   @Override
-   public int getStackPopCount() {
-      return 1;
-   }
+    this.getDefaultLabel()
+        .addReference(this);
+    return NO_STACK_PUSH;
+  }
 
-   //----------------------------------------------------------------------------------------------------------------
+  @Override
+  public int getStackPopCount() {
+    return 1;
+  }
 
-   public int getMin() {
-      return this.min;
-   }
+  //----------------------------------------------------------------------------------------------------------------
 
-   public int getMax() {
-      return this.max;
-   }
+  public int getMin() {
+    return this.min;
+  }
 
-   public LABEL[] getLabels() {
-      return this.labels;
-   }
+  public int getMax() {
+    return this.max;
+  }
 
-   public LABEL getDefaultLabel() {
-      return this.label;
-   }
+  public LABEL[] getLabels() {
+    return this.labels;
+  }
 
-   @Override
-   public String toString() {
-      return super.toString() + " (" + this.min + ", " + this.max + ", " + this.labels + ", " + this.label + ")";
-   }
+  public LABEL getDefaultLabel() {
+    return this.label;
+  }
+
+  @Override
+  public String toString() {
+    return super.toString() + " (" + this.min + ", " + this.max + ", " + this.labels + ", " + this.label + ")";
+  }
 }

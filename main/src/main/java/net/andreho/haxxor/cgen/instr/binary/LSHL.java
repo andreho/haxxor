@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class LSHL extends AbstractZeroOperandInstruction {
-   public LSHL() {
-      super(Opcodes.LSHL);
-   }
+public class LSHL
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.LSHL();
-   }
+  public LSHL() {
+    super(Opcodes.LSHL);
+  }
 
-   @Override
-   public List<Object> apply(final Context context) {
-      return PUSH_LONG;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.LSHL();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 2 + 1;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    return PUSH_LONG;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 2 + 1;
+  }
 }

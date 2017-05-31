@@ -1,37 +1,40 @@
 package net.andreho.haxxor.spec.impl;
 
-import net.andreho.haxxor.spec.HxMember;
-import net.andreho.haxxor.spec.HxModifier;
-import net.andreho.haxxor.spec.HxOwned;
+import net.andreho.haxxor.spec.api.HxMember;
+import net.andreho.haxxor.spec.api.HxModifier;
+import net.andreho.haxxor.spec.api.HxOwned;
 
 /**
  * Created by a.hofmann on 30.05.2015.
  */
-public class HxMemberImpl<M extends HxMember<M> & HxOwned<M>> extends HxOwnedImpl<M> implements HxMember<M> {
-   protected int modifiers;
+public class HxMemberImpl<M extends HxMember<M> & HxOwned<M>>
+    extends HxOwnedImpl<M>
+    implements HxMember<M> {
 
-   public HxMemberImpl() {
-   }
+  protected int modifiers;
 
-   @Override
-   public int getModifiers() {
-      return modifiers;
-   }
+  public HxMemberImpl() {
+  }
 
-   @Override
-   public M setModifiers(int modifiers) {
-      this.modifiers = modifiers;
-      return (M) this;
-   }
+  @Override
+  public int getModifiers() {
+    return modifiers;
+  }
 
-   @Override
-   public M setModifiers(HxModifier... modifiers) {
-      int bits = 0;
+  @Override
+  public M setModifiers(int modifiers) {
+    this.modifiers = modifiers;
+    return (M) this;
+  }
 
-      for (HxModifier modifier : modifiers) {
-         bits |= modifier.toBit();
-      }
+  @Override
+  public M setModifiers(HxModifier... modifiers) {
+    int bits = 0;
 
-      return setModifiers(bits);
-   }
+    for (HxModifier modifier : modifiers) {
+      bits |= modifier.toBit();
+    }
+
+    return setModifiers(bits);
+  }
 }

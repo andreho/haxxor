@@ -11,23 +11,25 @@ import java.util.List;
  * Pop the top operand stack value.<br/>
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class POP extends AbstractZeroOperandInstruction {
-   public POP() {
-      super(Opcodes.POP);
-   }
+public class POP
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.POP();
-   }
+  public POP() {
+    super(Opcodes.POP);
+  }
 
-   @Override
-   public List<Object> apply(final Context context) {
-      return NO_STACK_PUSH;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.POP();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 1;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    return NO_STACK_PUSH;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 1;
+  }
 }

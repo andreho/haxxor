@@ -8,24 +8,25 @@ import net.andreho.haxxor.cgen.instr.abstr.AbstractFieldInstruction;
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
-public class GETFIELD extends AbstractFieldInstruction {
-   //----------------------------------------------------------------------------------------------------------------
+public class GETFIELD
+    extends AbstractFieldInstruction {
+  //----------------------------------------------------------------------------------------------------------------
 
-   public GETFIELD(String owner, String name, String desc) {
-      super(Opcodes.GETFIELD, owner, name, desc);
-   }
+  public GETFIELD(String owner, String name, String desc) {
+    super(Opcodes.GETFIELD, owner, name, desc);
+  }
 
-   //----------------------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------------------
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.GETFIELD(this.owner, this.name, this.desc);
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.GETFIELD(this.owner, this.name, this.desc);
+  }
 
-   //----------------------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------------------
 
-   @Override
-   public int getStackPopCount() {
-      return 1;
-   }
+  @Override
+  public int getStackPopCount() {
+    return 1;
+  }
 }

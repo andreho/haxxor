@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
-public class NOP extends AbstractZeroOperandInstruction {
-   public NOP() {
-      super(Opcodes.NOP);
-   }
+public class NOP
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.NOP();
-   }
+  public NOP() {
+    super(Opcodes.NOP);
+  }
 
-   @Override
-   public List<Object> apply(final Context context) {
-      return NO_STACK_PUSH;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.NOP();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 0;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    return NO_STACK_PUSH;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 0;
+  }
 }

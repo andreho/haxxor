@@ -1,15 +1,17 @@
 package net.andreho.haxxor.spec.generics;
 
-import net.andreho.haxxor.spec.HxGeneric;
+import net.andreho.haxxor.spec.api.HxGeneric;
 
 /**
  * <br/>Created by a.hofmann on 11.03.2016.<br/>
  */
-public interface HxGenericArrayType extends HxGeneric {
-   /**
-    * @return either an instance of HxType, HxParameteriziedType, HxTypeVariable
-    */
-   HxGeneric getGenericComponentType();
+public interface HxGenericArrayType
+    extends HxGeneric {
 
-   HxGenericArrayType setGenericComponentType(final HxGeneric genericComponentType);
+  /**
+   * @return either an instance of HxType, HxParameteriziedType, HxTypeVariable
+   */
+  HxGeneric getGenericComponentType();
+
+  HxGenericArrayType setGenericComponentType(final HxGeneric genericComponentType);
 }

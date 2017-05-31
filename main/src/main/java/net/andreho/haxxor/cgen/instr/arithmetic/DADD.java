@@ -10,24 +10,26 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class DADD extends AbstractZeroOperandInstruction {
-   public DADD() {
-      super(Opcodes.DADD);
-   }
+public class DADD
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.DADD();
-   }
+  public DADD() {
+    super(Opcodes.DADD);
+  }
 
-   @Override
-   public List<Object> apply(Context context) {
-      return PUSH_DOUBLE;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.DADD();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 2 + 2;
-   }
+  @Override
+  public List<Object> apply(Context context) {
+    return PUSH_DOUBLE;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 2 + 2;
+  }
 
 }

@@ -1,101 +1,104 @@
 package net.andreho.haxxor.spec.impl;
 
-import net.andreho.haxxor.spec.HxMethod;
-import net.andreho.haxxor.spec.HxType;
+import net.andreho.haxxor.spec.api.HxMethod;
+import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Objects;
 
 /**
  * Created by a.hofmann on 30.05.2015.
  */
-public class HxMethodImpl extends HxParameterizableImpl<HxMethod> implements HxMethod {
-   protected final String name;
-   protected Object defaultValue;
-   protected HxType returnType;
+public class HxMethodImpl
+    extends HxParameterizableImpl<HxMethod>
+    implements HxMethod {
 
-   public HxMethodImpl(final String name,
-                       final HxType returnType,
-                       final HxType... parameters) {
-      this(name);
-      setReturnType(returnType);
+  protected final String name;
+  protected Object defaultValue;
+  protected HxType returnType;
 
-      for (HxType type : parameters) {
-         addParameter(type);
-      }
-   }
+  public HxMethodImpl(final String name,
+                      final HxType returnType,
+                      final HxType... parameters) {
+    this(name);
+    setReturnType(returnType);
 
-   public HxMethodImpl(final HxType owner,
-                       final String name,
-                       final HxType returnType,
-                       final HxType... parameters) {
+    for (HxType type : parameters) {
+      addParameter(type);
+    }
+  }
 
-      this(name, returnType, parameters);
-      setDeclaringMember(owner);
-   }
+  public HxMethodImpl(final HxType owner,
+                      final String name,
+                      final HxType returnType,
+                      final HxType... parameters) {
 
-   protected HxMethodImpl(final String name) {
-      setModifiers(HxMethod.Modifiers.PUBLIC.toBit());
-      this.name = name;
+    this(name, returnType, parameters);
+    setDeclaringMember(owner);
+  }
 
-      if (name == null || name.isEmpty()) {
-         throw new IllegalArgumentException("Method-name can't be neither null nor empty.");
-      }
-   }
+  protected HxMethodImpl(final String name) {
+    setModifiers(HxMethod.Modifiers.PUBLIC.toBit());
+    this.name = name;
 
-   @Override
-   public String getName() {
-      return name;
-   }
+    if (name == null || name.isEmpty()) {
+      throw new IllegalArgumentException("Method-name can't be neither null nor empty.");
+    }
+  }
 
-   @Override
-   public HxType getReturnType() {
-      return returnType;
-   }
+  @Override
+  public String getName() {
+    return name;
+  }
 
-   @Override
-   public Object getDefaultValue() {
-      return defaultValue;
-   }
+  @Override
+  public HxType getReturnType() {
+    return returnType;
+  }
 
-   @Override
-   public HxMethod setReturnType(HxType returnType) {
-      this.returnType = returnType;
-      return this;
-   }
+  @Override
+  public Object getDefaultValue() {
+    return defaultValue;
+  }
 
-   @Override
-   public HxMethod setDefaultValue(Object value) {
-      this.defaultValue = value;
-      return this;
-   }
+  @Override
+  public HxMethod setReturnType(HxType returnType) {
+    this.returnType = returnType;
+    return this;
+  }
 
-   @Override
-   public boolean equals(final Object o) {
-      if (this == o) {
-         return true;
-      }
-      if (!(o instanceof HxMethod)) {
-         return false;
-      }
+  @Override
+  public HxMethod setDefaultValue(Object value) {
+    this.defaultValue = value;
+    return this;
+  }
 
-      final HxMethod other = (HxMethod) o;
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof HxMethod)) {
+      return false;
+    }
 
-      if (!Objects.equals(this.getName(), other.getName())) {
-         return false;
-      }
+    final HxMethod other = (HxMethod) o;
 
-      return super.equals(o);
-   }
+    if (!Objects.equals(this.getName(), other.getName())) {
+      return false;
+    }
 
-   @Override
-   public int hashCode() {
-      return 31 * Objects.hashCode(getName()) + super.hashCode();
-   }
+    return super.equals(o);
+  }
 
-   //----------------------------------------------------------------------------------------------------------------
+  @Override
+  public int hashCode() {
+    return 31 * Objects.hashCode(getName()) + super.hashCode();
+  }
 
-   @Override
-   public String toString() {
-      return getDeclaringMember() + "." + getName() + super.toString() + getReturnType().getJavaName();
-   }
+  //----------------------------------------------------------------------------------------------------------------
+
+  @Override
+  public String toString() {
+    return getDeclaringMember() + "." + getName() + super.toString() + getReturnType().getJavaName();
+  }
 }

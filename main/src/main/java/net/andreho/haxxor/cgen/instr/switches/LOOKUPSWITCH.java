@@ -12,57 +12,59 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
-public class LOOKUPSWITCH extends AbstractJumpInstruction {
-   private final int[] keys;
+public class LOOKUPSWITCH
+    extends AbstractJumpInstruction {
 
-   //----------------------------------------------------------------------------------------------------------------
-   private final LABEL[] labels;
+  private final int[] keys;
 
-   public LOOKUPSWITCH(LABEL defaultLabel, int[] keys, LABEL[] labels) {
-      super(Opcodes.LOOKUPSWITCH, defaultLabel);
-      this.keys = keys;
-      this.labels = labels;
-   }
+  //----------------------------------------------------------------------------------------------------------------
+  private final LABEL[] labels;
 
-   //----------------------------------------------------------------------------------------------------------------
+  public LOOKUPSWITCH(LABEL defaultLabel, int[] keys, LABEL[] labels) {
+    super(Opcodes.LOOKUPSWITCH, defaultLabel);
+    this.keys = keys;
+    this.labels = labels;
+  }
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.LOOKUPSWITCH(this.label, this.keys, this.labels);
-   }
+  //----------------------------------------------------------------------------------------------------------------
 
-   @Override
-   public List<Object> apply(final Context context) {
-      for (LABEL label : getLabels()) {
-         label.addReference(this);
-      }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.LOOKUPSWITCH(this.label, this.keys, this.labels);
+  }
 
-      getDefaultLabel().addReference(this);
-      return NO_STACK_PUSH;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    for (LABEL label : getLabels()) {
+      label.addReference(this);
+    }
 
-   @Override
-   public int getStackPopCount() {
-      return 1;
-   }
+    getDefaultLabel().addReference(this);
+    return NO_STACK_PUSH;
+  }
 
-   //----------------------------------------------------------------------------------------------------------------
+  @Override
+  public int getStackPopCount() {
+    return 1;
+  }
 
-   public int[] getKeys() {
-      return this.keys;
-   }
+  //----------------------------------------------------------------------------------------------------------------
 
-   public LABEL[] getLabels() {
-      return this.labels;
-   }
+  public int[] getKeys() {
+    return this.keys;
+  }
 
-   public LABEL getDefaultLabel() {
-      return this.label;
-   }
+  public LABEL[] getLabels() {
+    return this.labels;
+  }
 
-   @Override
-   public String toString() {
-      return super.toString() + " (" + Arrays.toString(this.keys) + ", " + Arrays.toString(this.labels) + ", " +
-             this.label + ")";
-   }
+  public LABEL getDefaultLabel() {
+    return this.label;
+  }
+
+  @Override
+  public String toString() {
+    return super.toString() + " (" + Arrays.toString(this.keys) + ", " + Arrays.toString(this.labels) + ", " +
+           this.label + ")";
+  }
 }

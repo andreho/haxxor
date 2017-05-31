@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class DSUB extends AbstractZeroOperandInstruction {
-   public DSUB() {
-      super(Opcodes.DSUB);
-   }
+public class DSUB
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.DSUB();
-   }
+  public DSUB() {
+    super(Opcodes.DSUB);
+  }
 
-   @Override
-   public List<Object> apply(Context context) {
-      return PUSH_DOUBLE;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.DSUB();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 2 + 2;
-   }
+  @Override
+  public List<Object> apply(Context context) {
+    return PUSH_DOUBLE;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 2 + 2;
+  }
 }

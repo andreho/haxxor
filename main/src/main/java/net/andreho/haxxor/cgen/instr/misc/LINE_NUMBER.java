@@ -10,34 +10,36 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 18.03.2016.<br/>
  */
-public class LINE_NUMBER extends AbstractInstruction {
-   private final int line;
-   private final LABEL start;
+public class LINE_NUMBER
+    extends AbstractInstruction {
 
-   public LINE_NUMBER(int line, LABEL start) {
-      super(-1);
-      this.line = line;
-      this.start = start;
-   }
+  private final int line;
+  private final LABEL start;
 
-   @Override
-   public void dumpTo(final Context context, final CodeStream codeStream) {
-      codeStream.LINE_NUMBER(line, start);
-   }
+  public LINE_NUMBER(int line, LABEL start) {
+    super(-1);
+    this.line = line;
+    this.start = start;
+  }
 
-   @Override
-   public List<Object> apply(final Context context) {
-      return NO_STACK_PUSH;
-   }
+  @Override
+  public void dumpTo(final Context context, final CodeStream codeStream) {
+    codeStream.LINE_NUMBER(line, start);
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 0;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    return NO_STACK_PUSH;
+  }
 
-   @Override
-   public String toString() {
-      return super.toString() + " (" + this.line + ", " + this.start + ")";
-   }
+  @Override
+  public int getStackPopCount() {
+    return 0;
+  }
+
+  @Override
+  public String toString() {
+    return super.toString() + " (" + this.line + ", " + this.start + ")";
+  }
 
 }

@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class DMUL extends AbstractZeroOperandInstruction {
-   public DMUL() {
-      super(Opcodes.DMUL);
-   }
+public class DMUL
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.DMUL();
-   }
+  public DMUL() {
+    super(Opcodes.DMUL);
+  }
 
-   @Override
-   public List<Object> apply(Context context) {
-      return PUSH_DOUBLE;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.DMUL();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 2 + 2;
-   }
+  @Override
+  public List<Object> apply(Context context) {
+    return PUSH_DOUBLE;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 2 + 2;
+  }
 }

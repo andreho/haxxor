@@ -10,23 +10,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class DNEG extends AbstractZeroOperandInstruction {
-   public DNEG() {
-      super(Opcodes.DNEG);
-   }
+public class DNEG
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.DNEG();
-   }
+  public DNEG() {
+    super(Opcodes.DNEG);
+  }
 
-   @Override
-   public List<Object> apply(Context context) {
-      return PUSH_DOUBLE;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.DNEG();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 2;
-   }
+  @Override
+  public List<Object> apply(Context context) {
+    return PUSH_DOUBLE;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 2;
+  }
 }

@@ -8,37 +8,41 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 13.03.2016.<br/>
  */
-public abstract class AbstractArrayStoreInstruction extends AbstractZeroOperandInstruction {
-   public AbstractArrayStoreInstruction(int opcode) {
-      super(opcode);
-   }
+public abstract class AbstractArrayStoreInstruction
+    extends AbstractZeroOperandInstruction {
 
-   protected void checkArrayType(Object arrayType, int depth) {
-      if (arrayType.getClass() != String.class ||
-          arrayType.toString().charAt(0) != '[') {
-         throw new IllegalStateException(
-               "An array type is expected at stack[stack.length-" + (depth + 1) + "]: " + arrayType);
-      }
-   }
+  public AbstractArrayStoreInstruction(int opcode) {
+    super(opcode);
+  }
 
-   @Override
-   public List<Object> apply(Context context) {
-      int depth = isTwoOperands() ? 3 : 2;
+  protected void checkArrayType(Object arrayType, int depth) {
+    if (arrayType.getClass() != String.class ||
+        arrayType.toString()
+                 .charAt(0) != '[') {
+      throw new IllegalStateException(
+          "An array type is expected at stack[stack.length-" + (depth + 1) + "]: " + arrayType);
+    }
+  }
 
-      Object arrayType = context.getStack().peek(depth);
+  @Override
+  public List<Object> apply(Context context) {
+    int depth = isTwoOperands() ? 3 : 2;
 
-      checkArrayType(arrayType, depth);
+    Object arrayType = context.getStack()
+                              .peek(depth);
 
-      return NO_STACK_PUSH;
-   }
+    checkArrayType(arrayType, depth);
 
-   @Override
-   public int getStackPopCount() {
-      return 1 + 1 + (isTwoOperands() ? 2 : 1);
-   }
+    return NO_STACK_PUSH;
+  }
 
-   private boolean isTwoOperands() {
-      return this.opcode == Opcodes.LASTORE ||
-             this.opcode == Opcodes.DASTORE;
-   }
+  @Override
+  public int getStackPopCount() {
+    return 1 + 1 + (isTwoOperands() ? 2 : 1);
+  }
+
+  private boolean isTwoOperands() {
+    return this.opcode == Opcodes.LASTORE ||
+           this.opcode == Opcodes.DASTORE;
+  }
 }

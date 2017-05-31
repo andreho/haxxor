@@ -8,21 +8,23 @@ import net.andreho.haxxor.cgen.instr.abstr.AbstractArrayLoadInstruction;
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
-public class SALOAD extends AbstractArrayLoadInstruction {
-   public SALOAD() {
-      super(Opcodes.SALOAD);
-   }
+public class SALOAD
+    extends AbstractArrayLoadInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.SALOAD();
-   }
+  public SALOAD() {
+    super(Opcodes.SALOAD);
+  }
 
-   @Override
-   protected void checkArrayType(final Object arrayType) {
-      super.checkArrayType(arrayType);
-      if (!"[S".equals(arrayType)) {
-         throw new IllegalArgumentException("Expected an array of current type: short[]");
-      }
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.SALOAD();
+  }
+
+  @Override
+  protected void checkArrayType(final Object arrayType) {
+    super.checkArrayType(arrayType);
+    if (!"[S".equals(arrayType)) {
+      throw new IllegalArgumentException("Expected an array of current type: short[]");
+    }
+  }
 }

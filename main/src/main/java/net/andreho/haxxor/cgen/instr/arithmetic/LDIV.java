@@ -10,24 +10,26 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class LDIV extends AbstractZeroOperandInstruction {
-   public LDIV() {
-      super(Opcodes.LDIV);
-   }
+public class LDIV
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.LDIV();
-   }
+  public LDIV() {
+    super(Opcodes.LDIV);
+  }
 
-   @Override
-   public List<Object> apply(Context context) {
-      return PUSH_LONG;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.LDIV();
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 2 + 2;
-   }
+  @Override
+  public List<Object> apply(Context context) {
+    return PUSH_LONG;
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 2 + 2;
+  }
 }
 

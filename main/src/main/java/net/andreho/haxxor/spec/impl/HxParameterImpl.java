@@ -1,65 +1,81 @@
 package net.andreho.haxxor.spec.impl;
 
-import net.andreho.haxxor.spec.HxParameter;
-import net.andreho.haxxor.spec.HxParameterizable;
-import net.andreho.haxxor.spec.HxType;
+import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.spec.api.HxParameter;
+import net.andreho.haxxor.spec.api.HxParameterizable;
+import net.andreho.haxxor.spec.api.HxType;
 
 /**
  * Created by a.hofmann on 30.05.2015.
  */
-public class HxParameterImpl extends HxAnnotatedImpl<HxParameter> implements HxParameter {
-   private final int index;
-   private String name;
-   private HxType type;
+public class HxParameterImpl<P extends HxParameterizable<P>>
+    extends HxAnnotatedImpl<HxParameter<P>>
+    implements
+    HxParameter<P> {
 
-   public HxParameterImpl(int index) {
-      if(index < 0) {
-         throw new IllegalArgumentException("Invalid parameter's index: "+index);
-      }
-      this.index = index;
-   }
+  private String name;
+  private HxType type;
 
-   public HxParameterImpl(HxParameterizable owner, int index) {
-      this(index);
-      this.setDeclaringMember(owner);
-   }
+  public HxParameterImpl() {
+  }
 
-   public HxParameterImpl(HxParameterizable owner, int index, HxType type) {
-      this(index);
-      this.setDeclaringMember(owner);
-      this.setType(type);
-   }
+  public HxParameterImpl(HxParameterizable owner) {
+    this.setDeclaringMember(owner);
+  }
 
-   @Override
-   public int getIndex() {
-      return index;
-   }
+  public HxParameterImpl(HxParameterizable owner, HxType type) {
+    this.setDeclaringMember(owner);
+    this.setType(type);
+  }
 
-   @Override
-   public String getName() {
-      final String name = this.name;
-      return name != null ?  name : "arg" + index;
-   }
+  @Override
+  public Haxxor getHaxxor() {
+    HxType type = getType();
+    if (type != null) {
+      return type.getHaxxor();
+    }
+    return null;
+  }
 
-   @Override
-   public HxParameter setName(final String name) {
-      this.name = name;
-      return this;
-   }
+  @Override
+  public int getIndex() {
+    P declaringMember = getDeclaringMember();
+    if (declaringMember == null) {
+      return -1;
+    }
+    return declaringMember.getParameters()
+                          .indexOf(this);
+  }
 
-   @Override
-   public HxType getType() {
-      return getDeclaringMember().getParameterTypeAt(getIndex());
-   }
+  @Override
+  public String getName() {
+    final String name = this.name;
+    if (name != null) {
+      return name;
+    }
+    int index = getIndex();
+    return "arg" + (index > -1 ? index : "X");
+  }
 
-   @Override
-   public HxParameter setType(final HxType type) {
-      this.type = type;
-      return this;
-   }
+  @Override
+  public HxParameter setName(final String name) {
+    this.name = name;
+    return this;
+  }
 
-   @Override
-   public HxParameterizable getDeclaringMember() {
-      return (HxParameterizable) super.getDeclaringMember();
-   }
+  @Override
+  public HxType getType() {
+    return type;
+  }
+
+  @Override
+  public HxParameter setType(final HxType type) {
+    this.type = type;
+    return this;
+  }
+
+  @Override
+  public P getDeclaringMember() {
+    return super.getDeclaringMember();
+  }
 }

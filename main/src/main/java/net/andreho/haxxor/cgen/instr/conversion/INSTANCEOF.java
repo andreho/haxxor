@@ -10,28 +10,30 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
-public class INSTANCEOF extends AbstractStringOperandInstruction {
-   public INSTANCEOF(String operand) {
-      super(Opcodes.INSTANCEOF, operand);
-   }
+public class INSTANCEOF
+    extends AbstractStringOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.INSTANCEOF(getOperand());
-   }
+  public INSTANCEOF(String operand) {
+    super(Opcodes.INSTANCEOF, operand);
+  }
 
-   @Override
-   public List<Object> apply(final Context context) {
-      return PUSH_INT;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.INSTANCEOF(getOperand());
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 1;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    return PUSH_INT;
+  }
 
-   @Override
-   public String toString() {
-      return super.toString() + " " + getOperand();
-   }
+  @Override
+  public int getStackPopCount() {
+    return 1;
+  }
+
+  @Override
+  public String toString() {
+    return super.toString() + " " + getOperand();
+  }
 }

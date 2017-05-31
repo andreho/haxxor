@@ -10,28 +10,30 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
-public class NEW extends AbstractStringOperandInstruction {
-   public NEW(String className) {
-      super(Opcodes.NEW, className);
-   }
+public class NEW
+    extends AbstractStringOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.NEW(getOperand());
-   }
+  public NEW(String className) {
+    super(Opcodes.NEW, className);
+  }
 
-   @Override
-   public List<Object> apply(final Context context) {
-      return PUSH_UNINITIALIZED_THIS;
-   }
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.NEW(getOperand());
+  }
 
-   @Override
-   public int getStackPopCount() {
-      return 0;
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    return PUSH_UNINITIALIZED_THIS;
+  }
 
-   @Override
-   public String toString() {
-      return super.toString() + " " + getOperand();
-   }
+  @Override
+  public int getStackPopCount() {
+    return 0;
+  }
+
+  @Override
+  public String toString() {
+    return super.toString() + " " + getOperand();
+  }
 }

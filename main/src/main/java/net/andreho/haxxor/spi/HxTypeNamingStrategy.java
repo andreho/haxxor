@@ -5,10 +5,12 @@ package net.andreho.haxxor.spi;
  */
 @FunctionalInterface
 public interface HxTypeNamingStrategy {
-   /**
-    * Transforms given typename if needed to an internal classname form
-    * @param typeName to transform
-    * @return corresponding typename in internal form
-    */
-   String toTypeName(String typeName);
+
+  /**
+   * Transforms given typename if needed to an internal classname form
+   *
+   * @param typeName to transform
+   * @return corresponding typename in internal form
+   */
+  String toTypeName(String typeName);
 }

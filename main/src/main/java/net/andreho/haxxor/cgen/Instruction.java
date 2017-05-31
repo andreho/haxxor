@@ -1,6 +1,6 @@
 package net.andreho.haxxor.cgen;
 
-import net.andreho.haxxor.spec.HxAnnotated;
+import net.andreho.haxxor.spec.api.HxAnnotated;
 
 import java.util.Iterator;
 import java.util.List;
@@ -10,175 +10,178 @@ import java.util.Objects;
 /**
  * <br/>Created by a.hofmann on 17.11.2015.<br/>
  */
-public interface Instruction extends Iterable<Instruction>, HxAnnotated<Instruction> {
-   /**
-    * @return
-    */
-   boolean hasAnnotations();
+public interface Instruction
+    extends Iterable<Instruction>,
+            HxAnnotated<Instruction> {
 
-   /**
-    * @return index of this instruction
-    */
-   int getIndex();
+  /**
+   * @return
+   */
+  boolean hasAnnotations();
 
-   /**
-    * @param index of this instruction
-    */
-   void setIndex(int index);
+  /**
+   * @return index of this instruction
+   */
+  int getIndex();
 
-   /**
-    * @return opcode of this instruction
-    */
-   int getOpcode();
+  /**
+   * @param index of this instruction
+   */
+  void setIndex(int index);
 
-   /**
-    * @return
-    */
-   default InstructionType getInstructionType() {
-      return Instructions.of(getOpcode());
-   }
+  /**
+   * @return opcode of this instruction
+   */
+  int getOpcode();
 
-   /**
-    * @return
-    */
-   List<Object> apply(Context context);
+  /**
+   * @return
+   */
+  default InstructionType getInstructionType() {
+    return Instructions.of(getOpcode());
+  }
 
-   /**
-    * @return
-    */
-   int getStackPopCount();
+  /**
+   * @return
+   */
+  List<Object> apply(Context context);
 
-   /**
-    * @return
-    */
-   default boolean hasPrevious() {
-      return getPrevious() != null;
-   }
+  /**
+   * @return
+   */
+  int getStackPopCount();
 
-   /**
-    * @return
-    */
-   default boolean hasNext() {
-      return getNext() != null;
-   }
+  /**
+   * @return
+   */
+  default boolean hasPrevious() {
+    return getPrevious() != null;
+  }
 
-   /**
-    * @return
-    */
-   Instruction getPrevious();
+  /**
+   * @return
+   */
+  default boolean hasNext() {
+    return getNext() != null;
+  }
 
-   /**
-    * @param previous
-    */
-   void setPrevious(Instruction previous);
+  /**
+   * @return
+   */
+  Instruction getPrevious();
 
-   /**
-    * @return
-    */
-   Instruction getNext();
+  /**
+   * @param previous
+   */
+  void setPrevious(Instruction previous);
 
-   /**
-    * @param next
-    */
-   void setNext(Instruction next);
+  /**
+   * @return
+   */
+  Instruction getNext();
 
-   /**
-    * Shortcut for: <code>this.getPrevious().link(inst);</code>
-    *
-    * @param inst to prepend
-    * @return given instruction
-    */
-   default Instruction prepend(Instruction inst) {
-      Objects.requireNonNull(inst);
+  /**
+   * @param next
+   */
+  void setNext(Instruction next);
 
-      if (hasPrevious()) {
-         return getPrevious().append(inst);
-      }
+  /**
+   * Shortcut for: <code>this.getPrevious().link(inst);</code>
+   *
+   * @param inst to prepend
+   * @return given instruction
+   */
+  default Instruction prepend(Instruction inst) {
+    Objects.requireNonNull(inst);
+
+    if (hasPrevious()) {
+      return getPrevious().append(inst);
+    }
+    throw new IllegalStateException("There isn't any previous operation.");
+  }
+
+  /**
+   * @param inst to append
+   * @return given instruction
+   */
+  default Instruction append(Instruction inst) {
+    Objects.requireNonNull(inst);
+
+    if (hasNext()) {
+      Instruction oldNext = getNext();
+      inst.setNext(oldNext);
+      oldNext.setPrevious(inst);
+    }
+
+    this.setNext(inst);
+    inst.setPrevious(this);
+
+    return inst;
+  }
+
+  /**
+   * Removes this instruction and returns the previous one
+   *
+   * @return previous instruction
+   */
+  default Instruction remove() {
+    if (!hasPrevious()) {
       throw new IllegalStateException("There isn't any previous operation.");
-   }
+    }
 
-   /**
-    * @param inst to append
-    * @return given instruction
-    */
-   default Instruction append(Instruction inst) {
-      Objects.requireNonNull(inst);
+    Instruction previous = getPrevious();
+    Instruction next = getNext();
 
-      if (hasNext()) {
-         Instruction oldNext = getNext();
-         inst.setNext(oldNext);
-         oldNext.setPrevious(inst);
+    previous.setNext(next);
+
+    if (next != null) {
+      next.setPrevious(previous);
+    }
+
+    return previous;
+  }
+
+  @Override
+  default Iterator<Instruction> iterator() {
+    return new Iterator<Instruction>() {
+      Instruction visited;
+      Instruction current = Instruction.this;
+
+      @Override
+      public boolean hasNext() {
+        return this.current != null;
       }
 
-      this.setNext(inst);
-      inst.setPrevious(this);
-
-      return inst;
-   }
-
-   /**
-    * Removes this instruction and returns the previous one
-    *
-    * @return previous instruction
-    */
-   default Instruction remove() {
-      if (!hasPrevious()) {
-         throw new IllegalStateException("There isn't any previous operation.");
+      @Override
+      public void remove() {
+        if (this.visited == null) {
+          throw new IllegalStateException();
+        }
+        this.visited.remove();
+        this.visited = null;
       }
 
-      Instruction previous = getPrevious();
-      Instruction next = getNext();
+      @Override
+      public Instruction next() {
+        Instruction instruction = this.visited = this.current;
 
-      previous.setNext(next);
+        if (instruction == null) {
+          throw new NoSuchElementException();
+        }
 
-      if (next != null) {
-         next.setPrevious(previous);
+        this.current = instruction.getNext();
+        return instruction;
       }
+    };
+  }
 
-      return previous;
-   }
+  /**
+   * Dumps this instruction to the given {@link CodeStream code stream} using the provided {@link Context context}
+   *
+   * @param context    to use
+   * @param codeStream to dump this instruction to
+   */
+  void dumpTo(Context context, CodeStream codeStream);
 
-   @Override
-   default Iterator<Instruction> iterator() {
-      return new Iterator<Instruction>() {
-         Instruction visited;
-         Instruction current = Instruction.this;
-
-         @Override
-         public boolean hasNext() {
-            return this.current != null;
-         }
-
-         @Override
-         public void remove() {
-            if (this.visited == null) {
-               throw new IllegalStateException();
-            }
-            this.visited.remove();
-            this.visited = null;
-         }
-
-         @Override
-         public Instruction next() {
-            Instruction instruction = this.visited = this.current;
-
-            if (instruction == null) {
-               throw new NoSuchElementException();
-            }
-
-            this.current = instruction.getNext();
-            return instruction;
-         }
-      };
-   }
-
-   /**
-    * Dumps this instruction to the given {@link CodeStream code stream} using the provided {@link Context context}
-    *
-    * @param context    to use
-    * @param codeStream to dump this instruction to
-    */
-   void dumpTo(Context context, CodeStream codeStream);
-
-   //----------------------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------------------
 }

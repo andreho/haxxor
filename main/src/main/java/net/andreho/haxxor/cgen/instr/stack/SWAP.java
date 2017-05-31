@@ -11,26 +11,33 @@ import java.util.List;
  * Swap the top two operand stack values.<br/>
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class SWAP extends AbstractZeroOperandInstruction {
-   public SWAP() {
-      super(Opcodes.SWAP);
-   }
+public class SWAP
+    extends AbstractZeroOperandInstruction {
 
-   @Override
-   public void dumpTo(Context context, CodeStream codeStream) {
-      codeStream.SWAP();
-   }
+  public SWAP() {
+    super(Opcodes.SWAP);
+  }
 
-   @Override
-   public List<Object> apply(final Context context) {
-      Object value1 = context.getStack().peek();
-      Object value2 = context.getStack().peek(1);
+  @Override
+  public void dumpTo(Context context, CodeStream codeStream) {
+    codeStream.SWAP();
+  }
 
-      return context.getPush().prepare().push(value1, value2).get();
-   }
+  @Override
+  public List<Object> apply(final Context context) {
+    Object value1 = context.getStack()
+                           .peek();
+    Object value2 = context.getStack()
+                           .peek(1);
 
-   @Override
-   public int getStackPopCount() {
-      return 0;
-   }
+    return context.getStackPush()
+                  .prepare()
+                  .push(value1, value2)
+                  .get();
+  }
+
+  @Override
+  public int getStackPopCount() {
+    return 0;
+  }
 }
