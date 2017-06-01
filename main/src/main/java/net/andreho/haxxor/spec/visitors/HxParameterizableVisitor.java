@@ -97,7 +97,7 @@ public class HxParameterizableVisitor
     final HxMethod hxMethod = (HxMethod) this.target;
     final HxAnnotation annotation = hxMethod.getHaxxor()
                                             .createAnnotation(hxMethod.getReturnType()
-                                                                      .getName(), true);
+                                                                      .getInternalName(), true);
     return new HxAnnotationVisitor(annotation, super.visitAnnotationDefault())
         .consumer((anno) -> hxMethod.setDefaultValue(anno));
   }
@@ -124,8 +124,6 @@ public class HxParameterizableVisitor
         .consumer((anno) -> this.target.getParameterAt(parameter)
                                        .addAnnotation(annotation));
   }
-
-  //----------------------------------------------------------------------------------------------------------------
 
   @Override
   public void visitFrame(int type, int nLocal, Object[] local, int nStack, Object[] stack) {

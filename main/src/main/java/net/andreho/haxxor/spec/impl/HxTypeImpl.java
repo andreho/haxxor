@@ -424,9 +424,9 @@ public class HxTypeImpl
 
     writer.visit(getVersion().getCode(),
                  getModifiers(),
-                 getName(),
+                 getInternalName(),
                  getGenericSignature(),
-                 getSuperType().getName(),
+                 getSuperType().getInternalName(),
                  getInterfaces().toArray(new String[0]));
 
     for (HxAnnotation annotation : getAnnotations()) {
@@ -436,15 +436,15 @@ public class HxTypeImpl
     //Outer type
     if (getDeclaringMember() instanceof HxType) {
       HxType owner = getDeclaringMember();
-      writer.visitOuterClass(owner.getName(), null, null);
+      writer.visitOuterClass(owner.getInternalName(), null, null);
     } else {
       if (getDeclaringMember() instanceof HxMethod) {
         HxMethod owner = getDeclaringMember();
-        writer.visitOuterClass(((HxType) owner.getDeclaringMember()).getName(), owner.getName(),
+        writer.visitOuterClass(((HxType) owner.getDeclaringMember()).getInternalName(), owner.getName(),
                                owner.toDescriptor());
       } else {
         HxConstructor owner = getDeclaringMember();
-        writer.visitOuterClass(((HxType) owner.getDeclaringMember()).getName(), "<init>", owner.toDescriptor());
+        writer.visitOuterClass(((HxType) owner.getDeclaringMember()).getInternalName(), "<init>", owner.toDescriptor());
       }
     }
 
@@ -452,10 +452,10 @@ public class HxTypeImpl
     for (HxType innerType : getDeclaredTypes()) {
       HxType owner = innerType.getDeclaringMember();
       if (isMemberType() && owner != null) {
-        writer.visitInnerClass(innerType.getName(), owner.getName(), innerType.getSimpleName(),
+        writer.visitInnerClass(innerType.getInternalName(), owner.getInternalName(), innerType.getSimpleName(),
                                innerType.getModifiers());
       }
-      writer.visitInnerClass(innerType.getName(), null, innerType.getSimpleName(), innerType.getModifiers());
+      writer.visitInnerClass(innerType.getInternalName(), null, innerType.getSimpleName(), innerType.getModifiers());
     }
 
     return writer.toByteArray();

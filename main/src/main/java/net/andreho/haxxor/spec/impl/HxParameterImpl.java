@@ -5,6 +5,8 @@ import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxParameterizable;
 import net.andreho.haxxor.spec.api.HxType;
 
+import java.util.Objects;
+
 /**
  * Created by a.hofmann on 30.05.2015.
  */
@@ -33,11 +35,15 @@ public class HxParameterImpl<P extends HxParameterizable<P>>
   }
 
   public HxParameterImpl(HxParameterImpl prototype) {
+    this(prototype.name, prototype);
+  }
+
+  public HxParameterImpl(String name, HxParameterImpl prototype) {
     this.declaringMember = null;
 
     this.modifiers = prototype.modifiers;
-    this.name = prototype.name;
     this.type = prototype.type;
+    this.name = name != null? name : prototype.name;
 
     prototype.cloneAnnotationsTo(this);
   }
@@ -89,7 +95,7 @@ public class HxParameterImpl<P extends HxParameterizable<P>>
 
   @Override
   public HxParameter setType(final HxType type) {
-    this.type = type;
+    this.type = Objects.requireNonNull(type, "Parameter-type can't be null.");
     return this;
   }
 

@@ -22,21 +22,26 @@ public class HxMethodReferenceImpl
     implements HxMethod {
 
   protected HxType declaringType;
-  protected HxType[] parameterTypes;
-  protected HxType returnType;
   protected String name;
+  protected String returnType;
+  protected String[] parameterTypes;
   protected HxMethod target;
 
-  public HxMethodReferenceImpl(HxType declaringType, String name, HxType returnType, HxType... parameterTypes) {
-    this.declaringType = declaringType;
-    this.name = name;
+  public HxMethodReferenceImpl(Haxxor haxxor,
+                               String declaringType,
+                               String methodName,
+                               String returnType,
+                               String...parameterTypes) {
+
+    this.declaringType = haxxor.reference(declaringType);
+    this.name = methodName;
     this.returnType = returnType;
     this.parameterTypes = parameterTypes;
   }
 
   public HxMethod get() {
-    if(target == null) {
-      target = declaringType.getMethod(name, parameterTypes);
+    if (target == null) {
+      target = declaringType.getMethod(name, returnType, parameterTypes);
     }
     return target;
   }
@@ -105,7 +110,6 @@ public class HxMethodReferenceImpl
   public List<HxParameter<HxMethod>> getParameters() {
     return get().getParameters();
   }
-
 
   @Override
   public HxMethod setParameters(final List<HxParameter<HxMethod>> parameters) {

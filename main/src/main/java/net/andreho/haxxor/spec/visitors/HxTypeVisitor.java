@@ -70,20 +70,11 @@ public class HxTypeVisitor
 
     if (name != null && desc != null) {
       if ("<init>".equals(name)) {
-        HxConstructor constructorReference =
-            haxxor.createConstructorReference(
-                this.haxxor.reference(owner),
-                normalizeSignature(desc)
-            );
+        HxConstructor constructorReference = haxxor.createConstructorReference(owner, normalizeSignature(desc));
         this.type.setDeclaringMember(constructorReference);
       } else {
-        HxMethod methodReference =
-            haxxor.createMethodReference(
-                this.haxxor.reference(owner),
-                name,
-                desc.substring(desc.lastIndexOf(')') + 1),
-                normalizeSignature(desc)
-            );
+        final String returnType = desc.substring(desc.lastIndexOf(')') + 1);
+        HxMethod methodReference = haxxor.createMethodReference(owner, name, returnType, normalizeSignature(desc));
         this.type.setDeclaringMember(methodReference);
       }
     } else {
@@ -139,9 +130,9 @@ public class HxTypeVisitor
     HxParameterizable parameterizable;
 
     if ("<init>".equals(name)) {
-      parameterizable = this.haxxor.createConstructor(this.type, parameterTypes);
+      parameterizable = this.haxxor.createConstructor(parameterTypes);
     } else {
-      parameterizable = this.haxxor.createMethod(this.type, name, normalizeReturnType(desc), parameterTypes);
+      parameterizable = this.haxxor.createMethod(name, normalizeReturnType(desc), parameterTypes);
     }
 
     parameterizable.setGenericSignature(signature);

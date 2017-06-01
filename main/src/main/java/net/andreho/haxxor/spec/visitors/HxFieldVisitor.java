@@ -20,13 +20,9 @@ public class HxFieldVisitor
   private final HxType type;
   private final HxField field;
 
-  public HxFieldVisitor(HxType type, HxField field) {
-    this(type, field, null);
-  }
-
   public HxFieldVisitor(HxType type, HxField field, final FieldVisitor fv) {
     super(Opcodes.ASM5, fv);
-    this.type = Objects.requireNonNull(type, "Type is null");
+    this.type = Objects.requireNonNull(type, "Field's type can't be null.");
     this.field = Objects.requireNonNull(field, "Field is null");
   }
 

@@ -1,6 +1,6 @@
 package net.andreho.haxxor.spi.impl;
 
-import net.andreho.haxxor.spi.HxTypeNamingStrategy;
+import net.andreho.haxxor.spi.HxInternalClassNameProvider;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,8 +9,8 @@ import java.util.Map;
 /**
  * <br/>Created by a.hofmann on 30.05.2017 at 12:52.
  */
-public class DefaultHxTypeNamingStrategy
-    implements HxTypeNamingStrategy {
+public class DefaultHxInternalClassNameProvider
+    implements HxInternalClassNameProvider {
 
   private static final Map<String, String> PRIMITIVES;
 
@@ -29,7 +29,7 @@ public class DefaultHxTypeNamingStrategy
   }
 
   @Override
-  public String toTypeName(final String typeName) {
+  public String toInternalClassName(final String typeName) {
     boolean desc = false;
     int dim = 0;
     int off = 0;

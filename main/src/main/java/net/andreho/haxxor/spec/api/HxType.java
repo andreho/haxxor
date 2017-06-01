@@ -1,7 +1,6 @@
 package net.andreho.haxxor.spec.api;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.Haxxor;
 
 import java.util.Collection;
 import java.util.EnumSet;
@@ -16,12 +15,8 @@ public interface HxType
     extends HxAnnotated<HxType>,
             HxMember<HxType>,
             HxOwned<HxType>,
-            HxGeneric<HxType> {
-
-  /**
-   * @return owning Haxxor instance
-   */
-  Haxxor getHaxxor();
+            HxGeneric<HxType>,
+            HxProvider {
 
   /**
    * Initializes given type parts
@@ -56,7 +51,7 @@ public interface HxType
    * @return the internal name of this type (e.g.: I, [Z, java/lang/String, [java/lang/Object or java/util/Map$Entry
    * etc.)
    */
-  String getName();
+  String getInternalName();
 
   /**
    * @return a Java like type name
@@ -334,7 +329,7 @@ public interface HxType
   //----------------------------------------------------------------------------------------------------------------
 
   /**
-   * Shortcut for: <code>getName().equals(className)</code>
+   * Shortcut for: <code>getInternalName().equals(className)</code>
    *
    * @param className to check against
    * @return <b>true</b> if name of this type is equal to the given one, <b>false</b> otherwise.
@@ -549,7 +544,7 @@ public interface HxType
   boolean isPrivate();
 
   /**
-   * @return <b>true</b> if this is an internal type, <b>false</b> otherwise.
+   * @return <b>true</b> if this is an internal (package-private) type, <b>false</b> otherwise.
    */
   boolean isInternal();
 
@@ -579,18 +574,6 @@ public interface HxType
   boolean isAnonymous();
 
   /**
-   * @return a reference to this type
-   */
-  HxTypeReference toReference();
-
-  /**
-   * Creates bytecode representation of the actual type's state.
-   *
-   * @return
-   */
-  byte[] toByteArray();
-
-  /**
    * @return
    */
   Class<?> loadClass();
@@ -611,6 +594,17 @@ public interface HxType
    * @return parameter descriptor of this type
    */
   String toDescriptor();
+
+  /**
+   * @return a reference to this type
+   */
+  HxTypeReference toReference();
+
+  /**
+   * Creates bytecode representation of the actual type's state.
+   * @return
+   */
+  byte[] toByteArray();
 
   /**
    */

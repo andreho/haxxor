@@ -86,7 +86,7 @@ public class LDC
   }
 
   public LDC(HxType value) {
-    this(value.getName(), TYPE);
+    this(value.getInternalName(), TYPE);
   }
 
   //----------------------------------------------------------------------------------------------------------------

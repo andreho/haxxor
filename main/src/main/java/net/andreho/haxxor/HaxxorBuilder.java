@@ -3,26 +3,52 @@ package net.andreho.haxxor;
 import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxTypeReference;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
-import net.andreho.haxxor.spi.HxTypeNamingStrategy;
+import net.andreho.haxxor.spi.HxElementFactory;
+import net.andreho.haxxor.spi.HxInternalClassNameProvider;
 import net.andreho.haxxor.spi.impl.DefaultHxByteCodeLoader;
-import net.andreho.haxxor.spi.impl.DefaultHxTypeNamingStrategy;
+import net.andreho.haxxor.spi.impl.DefaultHxElementFactory;
+import net.andreho.haxxor.spi.impl.DefaultHxInternalClassNameProvider;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 /**
  * <br/>Created by a.hofmann on 19.03.2016.<br/>
  */
 public class HaxxorBuilder {
+  private final ClassLoader classLoader;
+
+  public HaxxorBuilder(final ClassLoader classLoader) {
+    this.classLoader = Objects.requireNonNull(classLoader);
+  }
 
   /**
-   * Creates content loader instance that must be used for given
+   * @param haxxor instance that will use provided classloader
+   * @return the classloader to use for byte-code loading and resource location
+   */
+  public ClassLoader provideClassLoader(Haxxor haxxor) {
+    return classLoader;
+  }
+
+  /**
+   * Creates element factory instance that must be used with given haxxor instance
+   *
+   * @param haxxor instance that receives created element factory
+   * @return new element factory associated with given haxxor instance
+   */
+  public HxElementFactory createElementFactory(Haxxor haxxor) {
+    return new DefaultHxElementFactory(haxxor);
+  }
+
+  /**
+   * Creates byte-code loader instance that must be used with given haxxor instance
    *
    * @param haxxor instance that receives created content loader
-   * @return new content loader
+   * @return new byte-code loader associated with given haxxor instance
    */
   public HxByteCodeLoader createCodeLoader(Haxxor haxxor) {
-    return new DefaultHxByteCodeLoader();
+    return new DefaultHxByteCodeLoader(haxxor);
   }
 
   /**
@@ -51,7 +77,7 @@ public class HaxxorBuilder {
    * @param haxxor is the requesting instance
    * @return
    */
-  public HxTypeNamingStrategy createTypeNamingStrategy(Haxxor haxxor) {
-    return new DefaultHxTypeNamingStrategy();
+  public HxInternalClassNameProvider createInternalClassNameProvider(Haxxor haxxor) {
+    return new DefaultHxInternalClassNameProvider();
   }
 }

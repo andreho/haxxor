@@ -10,6 +10,7 @@ import net.andreho.haxxor.spec.api.HxModifier;
 import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxParameterizable;
 import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.spec.api.HxTypeReference;
 
 import java.util.Collection;
 import java.util.List;
@@ -21,19 +22,20 @@ import java.util.function.Predicate;
 public class HxConstructorReferenceImpl
     implements HxConstructor {
 
-  private final HxType declaringType;
+  private final HxTypeReference reference;
   private HxConstructor target;
-  private HxType[] parameterTypes;
+  private String[] parameterTypes;
 
-  public HxConstructorReferenceImpl(HxType declaringType,
-                                    HxType... parameterTypes) {
-    this.declaringType = declaringType;
+  public HxConstructorReferenceImpl(Haxxor haxxor,
+                                    String declaringType,
+                                    String... parameterTypes) {
+    this.reference = haxxor.reference(declaringType);
     this.parameterTypes = parameterTypes;
   }
 
   public HxConstructor get() {
     if(target == null) {
-      target = declaringType.getConstructor(parameterTypes);
+      target = reference.getConstructor(parameterTypes);
     }
     return target;
   }
@@ -45,7 +47,7 @@ public class HxConstructorReferenceImpl
 
   @Override
   public Haxxor getHaxxor() {
-    return declaringType.getHaxxor();
+    return reference.getHaxxor();
   }
 
   @Override

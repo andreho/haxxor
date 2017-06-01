@@ -29,19 +29,12 @@ public class HxMethodImpl
                       final HxType returnType,
                       final HxType... parameters) {
     this(name);
+
     setReturnType(returnType);
+
     for (HxType type : parameters) {
       addParameterType(type);
     }
-  }
-
-  public HxMethodImpl(final HxType owner,
-                      final String name,
-                      final HxType returnType,
-                      final HxType... parameters) {
-
-    this(name, returnType, parameters);
-    setDeclaringMember(owner);
   }
 
   public HxMethodImpl(HxMethodImpl prototype) {
@@ -78,7 +71,7 @@ public class HxMethodImpl
 
   @Override
   public HxMethod setReturnType(HxType returnType) {
-    this.returnType = returnType;
+    this.returnType = Objects.requireNonNull(returnType, "Return-type can't be null.");
     return this;
   }
 
@@ -102,7 +95,9 @@ public class HxMethodImpl
     if (!Objects.equals(this.getName(), other.getName())) {
       return false;
     }
-
+    if (!Objects.equals(this.getReturnType(), other.getReturnType())) {
+      return false;
+    }
     return super.equals(o);
   }
 
@@ -113,6 +108,9 @@ public class HxMethodImpl
 
   @Override
   public String toString() {
+    if(getDeclaringMember() == null) {
+      return getName() + super.toString() + getReturnType().getJavaName();
+    }
     return getDeclaringMember() + "." + getName() + super.toString() + getReturnType().getJavaName();
   }
 }

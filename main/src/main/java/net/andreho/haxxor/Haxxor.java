@@ -6,23 +6,14 @@ import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxParameter;
-import net.andreho.haxxor.spec.api.HxParameterizable;
 import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxTypeReference;
-import net.andreho.haxxor.spec.impl.HxAnnotationImpl;
 import net.andreho.haxxor.spec.impl.HxArrayTypeImpl;
-import net.andreho.haxxor.spec.impl.HxConstructorImpl;
-import net.andreho.haxxor.spec.impl.HxConstructorReferenceImpl;
-import net.andreho.haxxor.spec.impl.HxFieldImpl;
-import net.andreho.haxxor.spec.impl.HxMethodImpl;
-import net.andreho.haxxor.spec.impl.HxMethodReferenceImpl;
-import net.andreho.haxxor.spec.impl.HxParameterImpl;
 import net.andreho.haxxor.spec.impl.HxPrimitiveTypeImpl;
-import net.andreho.haxxor.spec.impl.HxTypeImpl;
-import net.andreho.haxxor.spec.impl.HxTypeReferenceImpl;
 import net.andreho.haxxor.spec.visitors.HxTypeVisitor;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
-import net.andreho.haxxor.spi.HxTypeNamingStrategy;
+import net.andreho.haxxor.spi.HxElementFactory;
+import net.andreho.haxxor.spi.HxInternalClassNameProvider;
 
 import java.lang.ref.WeakReference;
 import java.util.Collection;
@@ -37,7 +28,8 @@ import java.util.logging.Logger;
  * This class is <b>NOT THREAD-SAFE.</b>
  * <br/>Created by a.hofmann on 21.03.2015 at 01:17<br/>
  */
-public class Haxxor {
+public class Haxxor implements HxElementFactory, HxByteCodeLoader,
+                               HxInternalClassNameProvider {
 
   private static final Logger LOG = Logger.getLogger(Haxxor.class.getName());
 
@@ -46,54 +38,49 @@ public class Haxxor {
   private final Map<String, HxType> resolvedCache;
   private final Map<String, HxTypeReference> referenceCache;
   private final WeakReference<ClassLoader> classLoaderWeakReference;
-  private final HxTypeNamingStrategy typeNamingStrategy;
+  private final HxInternalClassNameProvider internalClassNameProvider;
+  private final HxElementFactory elementFactory;
   private final Object lock = new Object();
 
   public Haxxor() {
-    this(Flags.SKIP_DEBUG, Haxxor.class.getClassLoader(), new HaxxorBuilder());
+    this(Flags.SKIP_DEBUG, new HaxxorBuilder(Haxxor.class.getClassLoader()));
   }
 
   public Haxxor(int opts) {
-    this(opts, Haxxor.class.getClassLoader(), new HaxxorBuilder());
+    this(opts, new HaxxorBuilder(Haxxor.class.getClassLoader()));
   }
 
   public Haxxor(int opts, ClassLoader classLoader) {
-    this(opts, classLoader, new HaxxorBuilder());
+    this(opts, new HaxxorBuilder(classLoader));
   }
 
   public Haxxor(int opts, HaxxorBuilder builder) {
-    this(opts, Haxxor.class.getClassLoader(), builder);
-  }
-
-  public Haxxor(
-      int opts,
-      ClassLoader classLoader,
-      HaxxorBuilder builder) {
 
     this.opts = opts;
-    this.classLoaderWeakReference = new WeakReference<>(classLoader);
+    this.classLoaderWeakReference = new WeakReference<>(builder.provideClassLoader(this));
 
-    this.typeNamingStrategy = builder.createTypeNamingStrategy(this);
     this.byteCodeLoader = builder.createCodeLoader(this);
     this.resolvedCache = builder.createResolvedCache(this);
     this.referenceCache = builder.createReferenceCache(this);
+    this.elementFactory = builder.createElementFactory(this);
+    this.internalClassNameProvider = builder.createInternalClassNameProvider(this);
 
     initialize();
   }
 
   protected void initialize() {
     String type;
-    getResolvedCache().put(type = typeName("V"), new HxPrimitiveTypeImpl(this, type));
-    getResolvedCache().put(type = typeName("Z"), new HxPrimitiveTypeImpl(this, type));
-    getResolvedCache().put(type = typeName("B"), new HxPrimitiveTypeImpl(this, type));
-    getResolvedCache().put(type = typeName("C"), new HxPrimitiveTypeImpl(this, type));
-    getResolvedCache().put(type = typeName("S"), new HxPrimitiveTypeImpl(this, type));
-    getResolvedCache().put(type = typeName("I"), new HxPrimitiveTypeImpl(this, type));
-    getResolvedCache().put(type = typeName("F"), new HxPrimitiveTypeImpl(this, type));
-    getResolvedCache().put(type = typeName("J"), new HxPrimitiveTypeImpl(this, type));
-    getResolvedCache().put(type = typeName("D"), new HxPrimitiveTypeImpl(this, type));
+    getResolvedCache().put(type = toInternalClassName("V"), new HxPrimitiveTypeImpl(this, type));
+    getResolvedCache().put(type = toInternalClassName("Z"), new HxPrimitiveTypeImpl(this, type));
+    getResolvedCache().put(type = toInternalClassName("B"), new HxPrimitiveTypeImpl(this, type));
+    getResolvedCache().put(type = toInternalClassName("C"), new HxPrimitiveTypeImpl(this, type));
+    getResolvedCache().put(type = toInternalClassName("S"), new HxPrimitiveTypeImpl(this, type));
+    getResolvedCache().put(type = toInternalClassName("I"), new HxPrimitiveTypeImpl(this, type));
+    getResolvedCache().put(type = toInternalClassName("F"), new HxPrimitiveTypeImpl(this, type));
+    getResolvedCache().put(type = toInternalClassName("J"), new HxPrimitiveTypeImpl(this, type));
+    getResolvedCache().put(type = toInternalClassName("D"), new HxPrimitiveTypeImpl(this, type));
 
-    getReferenceCache().put(type = typeName("java/lang/Object"), createReference(type));
+    getReferenceCache().put(type = toInternalClassName("java/lang/Object"), createReference(type));
   }
 
   /**
@@ -108,49 +95,11 @@ public class Haxxor {
    * @return
    */
   protected HxType readClass(String className, int opts) {
-    final byte[] content = getByteCodeLoader().load(this, className);
+    final byte[] content = load(className);
     final HxTypeVisitor visitor = createTypeVisitor();
     final ClassReader classReader = new ClassReader(content);
     classReader.accept(visitor, opts);
     return visitor.getType();
-  }
-
-  /**
-   * Transforms given typename if needed to an internal name form
-   *
-   * @param typeName to transform
-   * @return an internal name of the given typename
-   */
-  protected String typeName(final String typeName) {
-    return getTypeNamingStrategy().toTypeName(typeName);
-  }
-
-  /**
-   * Transforms given array of typenames if needed to an internal name form
-   *
-   * @param typeNames to transform
-   * @return an array with typenames in the internal typename form
-   */
-  protected String[] typeNames(final String... typeNames) {
-    String[] result = new String[typeNames.length];
-    for (int i = 0; i < typeNames.length; i++) {
-      result[i] = typeName(typeNames[i]);
-    }
-    return result;
-  }
-
-  /**
-   * @return loader used to resolve and to load requested class as a byte-array
-   */
-  public HxByteCodeLoader getByteCodeLoader() {
-    return this.byteCodeLoader;
-  }
-
-  /**
-   * @return associated type-naming strategy
-   */
-  public HxTypeNamingStrategy getTypeNamingStrategy() {
-    return this.typeNamingStrategy;
   }
 
   /**
@@ -191,7 +140,7 @@ public class Haxxor {
    * @return <b>true</b> if there is a reference with given typename in this instance, <b>false</b> otherwise
    */
   public boolean hasReference(String typeName) {
-    typeName = typeName(typeName);
+    typeName = toInternalClassName(typeName);
     return this.referenceCache.containsKey(typeName);
   }
 
@@ -202,7 +151,7 @@ public class Haxxor {
    * @return <b>true</b> if there is a resolved type with given typename in this instance, <b>false</b> otherwise
    */
   public boolean hasResolved(String typeName) {
-    typeName = typeName(typeName);
+    typeName = toInternalClassName(typeName);
     return this.resolvedCache.containsKey(typeName);
   }
 
@@ -213,7 +162,8 @@ public class Haxxor {
    * @return
    */
   public HxTypeReference reference(String typeName) {
-    typeName = typeName(typeName);
+    checkClassLoaderAvailability();
+    typeName = toInternalClassName(typeName);
 
     HxTypeReference reference = this.referenceCache.get(typeName);
 
@@ -226,7 +176,7 @@ public class Haxxor {
       this.referenceCache.put(typeName, reference);
 
       if (LOG.isLoggable(Level.CONFIG)) {
-        LOG.config("Reference: " + typeName);
+        LOG.config("New reference: " + typeName);
       }
     }
 
@@ -269,7 +219,6 @@ public class Haxxor {
     return output;
   }
 
-
   /**
    * Resolves corresponding type by its name to a {@link HxType haxxor type}
    *
@@ -289,7 +238,8 @@ public class Haxxor {
    */
   public HxType resolve(String typeName, int opts) {
     checkClassLoaderAvailability();
-    typeName = typeName(typeName);
+
+    typeName = toInternalClassName(typeName);
     HxType type = this.resolvedCache.get(typeName);
 
     if (type == null) {
@@ -300,6 +250,10 @@ public class Haxxor {
       }
 
       this.resolvedCache.put(typeName, type);
+
+      if (LOG.isLoggable(Level.CONFIG)) {
+        LOG.config("New type: " + typeName);
+      }
     }
     return type;
   }
@@ -310,45 +264,62 @@ public class Haxxor {
     }
   }
 
+  @Override
+  public byte[] load(final String className) {
+    return byteCodeLoader.load(className);
+  }
+
+  @Override
+  public String toInternalClassName(final String typeName) {
+    return internalClassNameProvider.toInternalClassName(typeName);
+  }
+
+  @Override
   public HxType createType(final String internalTypeName) {
-    return new HxTypeImpl(this, typeName(internalTypeName));
+    return elementFactory.createType(internalTypeName);
   }
 
+  @Override
   public HxTypeReference createReference(final String internalTypeName) {
-    return new HxTypeReferenceImpl(this, typeName(internalTypeName));
+    return elementFactory.createReference(internalTypeName);
   }
 
-  public HxField createField(final String name, final String internalType) {
-    final HxType fieldType = createReference(internalType);
-    return new HxFieldImpl(fieldType, name);
+  @Override
+  public HxField createField(final String internalTypeName, final String fieldName) {
+    return elementFactory.createField(internalTypeName, fieldName);
   }
 
-  public HxConstructor createConstructor(final HxType owner, final String... parametersAsInternalTypes) {
-    return new HxConstructorImpl(owner, this.referencesAsArray(parametersAsInternalTypes));
+  @Override
+  public HxConstructor createConstructor(final String... parameterTypes) {
+    return elementFactory.createConstructor(parameterTypes);
   }
 
-  public HxConstructor createConstructorReference(final HxType owner, final String... parametersAsInternalTypes) {
-    return new HxConstructorReferenceImpl(owner, this.referencesAsArray(parametersAsInternalTypes));
+  @Override
+  public HxConstructor createConstructorReference(final String declaringType, final String... parameterTypes) {
+    return elementFactory.createConstructorReference(declaringType, parameterTypes);
   }
 
-  public HxMethod createMethod(final HxType owner, final String name, final String internalReturnType,
-                               final String... parametersAsInternalTypes) {
-    return new HxMethodImpl(owner, name, this.reference(internalReturnType),
-                            this.referencesAsArray(parametersAsInternalTypes));
+  @Override
+  public HxMethod createMethod(final String methodName, final String returnType, final String... parameterTypes) {
+    return elementFactory.createMethod(methodName, returnType, parameterTypes);
   }
 
-  public HxMethod createMethodReference(final HxType owner, final String name, final String internalReturnType,
-                                        final String... parametersAsInternalTypes) {
-    return new HxMethodReferenceImpl(owner, name, this.reference(internalReturnType),
-                                     this.referencesAsArray(parametersAsInternalTypes));
+  @Override
+  public HxMethod createMethodReference(final String declaringType,
+                                        final String methodName,
+                                        final String returnType,
+                                        final String... parameterTypes) {
+    return elementFactory.createMethodReference(declaringType, methodName, returnType, parameterTypes);
   }
 
-  public HxParameter createParameter(final HxParameterizable owner) {
-    return new HxParameterImpl(owner);
+  @Override
+  public HxParameter createParameter(final String internalTypeName) {
+    return elementFactory.createParameter(internalTypeName);
   }
 
+  @Override
   public HxAnnotation createAnnotation(final String internalTypeName, final boolean visible) {
-    return new HxAnnotationImpl(createReference(internalTypeName), visible);
+    return elementFactory.createAnnotation(internalTypeName, visible);
   }
 
   @Override

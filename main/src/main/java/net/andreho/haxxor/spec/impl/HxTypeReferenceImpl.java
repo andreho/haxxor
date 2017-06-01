@@ -22,6 +22,8 @@ public class HxTypeReferenceImpl
     extends HxAbstractType
     implements HxTypeReference {
 
+  private volatile HxType type;
+
   public HxTypeReferenceImpl(Haxxor haxxor, String name) {
     this(haxxor, name, -1);
   }
@@ -31,9 +33,16 @@ public class HxTypeReferenceImpl
     this.modifiers = modifiers;
   }
 
+  private boolean isAvailable() {
+    return type != null || getHaxxor().hasResolved(getInternalName());
+  }
+
   @Override
   public HxType toType() {
-    return getHaxxor().resolve(getName());
+    if(this.type == null) {
+      this.type = getHaxxor().resolve(getInternalName());
+    }
+    return type;
   }
 
   @Override
@@ -313,23 +322,32 @@ public class HxTypeReferenceImpl
 
   @Override
   public HxType setModifiers(HxModifier... modifiers) {
-    toType().setModifiers(modifiers);
+    if(isAvailable()) {
+      toType().setModifiers(modifiers);
+      this.modifiers = -1;
+    } else {
+      super.setModifiers(modifiers);
+    }
     return this;
   }
 
   @Override
   public HxType setModifiers(int modifiers) {
-    toType().setModifiers(modifiers);
-    this.modifiers = -1;
+    if(isAvailable()) {
+      toType().setModifiers(modifiers);
+      this.modifiers = -1;
+    } else {
+      super.setModifiers(modifiers);
+    }
     return this;
   }
 
   @Override
   public int getModifiers() {
-    if (modifiers != -1) {
-      return modifiers;
+    if (isAvailable()) {
+      return this.modifiers = toType().getModifiers();
     }
-    return this.modifiers = toType().getModifiers();
+    return this.modifiers;
   }
 
   @Override

@@ -1,6 +1,5 @@
 package net.andreho.haxxor.spi;
 
-import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxField;
@@ -15,39 +14,80 @@ import net.andreho.haxxor.spec.api.HxTypeReference;
 public interface HxElementFactory {
 
   /**
-   * @param typeName
-   * @return
+   * Creates a new modifiable instance with given name
+   * @param internalTypeName of new type instance
+   * @return a new and empty instance of <code>HxType</code>
    */
-  HxType createType(final Haxxor haxxor,
-                    final String typeName);
+  HxType createType(final String internalTypeName);
 
-  HxTypeReference createReference(final Haxxor haxxor,
-                                  final String typeName);
+  /**
+   * Creates a new reference to an existing type with given name
+   * @param internalTypeName of an existing type
+   * @return a new and empty instance of <code>HxType</code>
+   */
+  HxTypeReference createReference(final String internalTypeName);
 
-  HxField createField(final Haxxor haxxor,
-                      final String typeName,
-                      final String name);
+  /**
+   * Creates a new unbound field with given type and name
+   * @param internalTypeName of new field
+   * @param fieldName of new field
+   * @return a new unbound field instance
+   */
+  HxField createField(final String internalTypeName,
+                      final String fieldName);
 
-  HxConstructor createConstructor(final Haxxor haxxor,
-                                  final String... parameterTypes);
+  /**
+   * Creates a new unbound constructor with given parameters
+   * @param parameterTypes of new constructor
+   * @return a new unbound constructor instance
+   */
+  HxConstructor createConstructor(final String... parameterTypes);
 
-  HxConstructor createConstructorReference(final Haxxor haxxor,
-                                           final String... parameterTypes);
+  /**
+   * Creates a new unbound constructor-reference with given declaring-type and parameters
+   * @param declaringType of new constructor-reference
+   * @param parameterTypes of new constructor-reference
+   * @return a new constructor-reference instance
+   */
+  HxConstructor createConstructorReference(final String declaringType, final String... parameterTypes);
 
-  HxMethod createMethod(final Haxxor haxxor,
-                        final String name,
+  /**
+   * Creates a new unbound method with given name, return-type and parameters
+   * @param methodName of new method
+   * @param returnType of new method
+   * @param parameterTypes of new method
+   * @return a new unbound method instance
+   */
+  HxMethod createMethod(final String methodName,
                         final String returnType,
                         final String... parameterTypes);
 
-  HxMethod createMethodReference(final Haxxor haxxor,
-                                 final String name,
+  /**
+   * Creates a new unbound method-reference with given name, return-type and parameters
+   * @param declaringType of new method-reference
+   * @param methodName of new method-reference
+   * @param returnType of new method-reference
+   * @param parameterTypes of new method-reference
+   * @return a new method-reference instance
+   */
+  HxMethod createMethodReference(final String declaringType,
+                                 final String methodName,
                                  final String returnType,
                                  final String... parameterTypes);
 
-  HxParameter createParameter(final Haxxor haxxor,
-                              final String typeName);
+  /**
+   * Creates a new unbound parameter with given type
+   * @param internalTypeName of new parameter
+   * @return a new unbound parameter instance
+   */
+  HxParameter createParameter(final String internalTypeName);
 
-  HxAnnotation createAnnotation(final Haxxor haxxor,
-                                final String typeName,
+  /**
+   * Creates a new unbound annotation with given type and visibility
+   * @param internalTypeName of new annotation
+   * @param visible is the visibility of new annotation
+   * @return a new unbound parameter instance
+   */
+  HxAnnotation createAnnotation(final String internalTypeName,
                                 final boolean visible);
 }

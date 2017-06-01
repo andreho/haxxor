@@ -31,19 +31,14 @@ public class HxAbstractType
     implements HxType {
 
   private final Haxxor haxxor;
-  private final String name;
+  private final String internalName;
 
-  protected HxAbstractType(String name) {
-    this.haxxor = null;
-    this.name = name;
-  }
+  public HxAbstractType(Haxxor haxxor, String internalName) {
+    this.haxxor = Objects.requireNonNull(haxxor, "Associated haxxor instance can't be null.");
+    this.internalName = Objects.requireNonNull(internalName, "Given internal classname can't be null.");
 
-  public HxAbstractType(Haxxor haxxor, String name) {
-    this.haxxor = Objects.requireNonNull(haxxor, "Haxxor is null.");
-    this.name = Objects.requireNonNull(name, "Type name is null.");
-
-    if (name.isEmpty()) {
-      throw new IllegalArgumentException("Type name is empty.");
+    if (internalName.isEmpty()) {
+      throw new IllegalArgumentException("Given internal classname can't be empty.");
     }
   }
 
@@ -53,13 +48,13 @@ public class HxAbstractType
   }
 
   @Override
-  public String getName() {
-    return name;
+  public Version getVersion() {
+    return Version.V1_8;
   }
 
   @Override
-  public Version getVersion() {
-    return Version.V1_8;
+  public String getInternalName() {
+    return internalName;
   }
 
   @Override
@@ -170,7 +165,7 @@ public class HxAbstractType
 
       return builder.toString();
     } else if (isPrimitive()) {
-      switch (getName()) {
+      switch (getInternalName()) {
         case "Z":
           return "boolean";
         case "B":
@@ -190,17 +185,16 @@ public class HxAbstractType
         case "V":
           return "void";
         default:
-          throw new IllegalStateException("Type: " + getName());
+          throw new IllegalStateException("Type: " + getInternalName());
       }
     }
 
-    return getName().replace('/', '.');
+    return getInternalName().replace('/', '.');
   }
 
   @Override
   public int getSlotsCount() {
-    if (isPrimitive() &&
-        ("J".equals(getName()) || "D".equals(getName()))) {
+    if (isPrimitive() && ("J".equals(getInternalName()) || "D".equals(getInternalName()))) {
       return 2;
     }
     return 1;
@@ -333,7 +327,7 @@ public class HxAbstractType
       for (int i = 0, arity = method.getArity(); i < arity; i++) {
         HxType type = method.getParameterTypeAt(i);
 
-        if (!type.getName().equals(parameters[i])) {
+        if (!type.getInternalName().equals(parameters[i])) {
           continue loop;
         }
       }
@@ -511,7 +505,7 @@ public class HxAbstractType
       for (int i = 0, arity = constructor.getArity(); i < arity; i++) {
         HxType type = constructor.getParameterTypeAt(i);
 
-        if (!type.getName()
+        if (!type.getInternalName()
                  .equals(signature[i])) {
           continue loop;
         }
@@ -558,9 +552,7 @@ public class HxAbstractType
 
   @Override
   public boolean is(String className) {
-    className = getHaxxor().getTypeNamingStrategy()
-                           .toTypeName(className);
-    return getName().equals(className);
+    return getInternalName().equals(getHaxxor().toInternalClassName(className));
   }
 
   @Override
@@ -732,10 +724,10 @@ public class HxAbstractType
 
     // Otherwise, strip the enclosing class' name
     try {
-      return getName().substring(enclosingType.getName()
-                                              .length());
+      return getInternalName().substring(enclosingType.getInternalName()
+                                                      .length());
     } catch (IndexOutOfBoundsException ex) {
-      throw new InternalError("Malformed class name: " + getName(), ex);
+      throw new InternalError("Malformed class name: " + getInternalName(), ex);
     }
   }
 
@@ -757,7 +749,7 @@ public class HxAbstractType
 
     if (simpleName == null) {
       // top level class
-      simpleName = getName();
+      simpleName = getInternalName();
 
       int idx = simpleName.lastIndexOf('/');
 
@@ -795,8 +787,8 @@ public class HxAbstractType
 
   @Override
   public String getPackage() {
-    int index = getName().lastIndexOf('/');
-    return index > -1 ? getName().substring(0, index) : "";
+    int index = getInternalName().lastIndexOf('/');
+    return index > -1 ? getInternalName().substring(0, index) : "";
   }
 
   @Override
@@ -807,7 +799,7 @@ public class HxAbstractType
   @Override
   public HxType getComponentType() {
     if (isArray()) {
-      return getHaxxor().reference(getName().substring(1));
+      return getHaxxor().reference(getInternalName().substring(1));
     }
     return null;
   }
@@ -817,7 +809,7 @@ public class HxAbstractType
     int idx = 0;
     int dims = 0;
 
-    while (getName().charAt(idx++) == '[') {
+    while (getInternalName().charAt(idx++) == '[') {
       dims++;
     }
 
@@ -895,7 +887,7 @@ public class HxAbstractType
 
   @Override
   public HxTypeReference toReference() {
-    return getHaxxor().reference(getName());
+    return getHaxxor().reference(getInternalName());
   }
 
   @Override
@@ -913,7 +905,7 @@ public class HxAbstractType
         return type.toDescriptor(builder);
       }
       builder.append('L')
-             .append(type.getName()
+             .append(type.getInternalName()
                          .replace('.', '/'))
              .append(';');
     } catch (IOException e) {
@@ -986,7 +978,7 @@ public class HxAbstractType
 
   @Override
   public int hashCode() {
-    return this.name.hashCode();
+    return this.internalName.hashCode();
   }
 
   @Override
@@ -997,11 +989,11 @@ public class HxAbstractType
     if (!(obj instanceof HxType)) {
       return false;
     }
-    return Objects.equals(getName(), ((HxType) obj).getName());
+    return Objects.equals(getInternalName(), ((HxType) obj).getInternalName());
   }
 
   @Override
   public String toString() {
-    return getName();
+    return getInternalName();
   }
 }

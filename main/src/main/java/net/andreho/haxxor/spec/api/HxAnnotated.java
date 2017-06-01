@@ -87,6 +87,10 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
       setAnnotations(new LinkedHashSet<>());
     }
 
+    if(annotation.getDeclaringMember() != null) {
+      throw new IllegalArgumentException("Given annotation was already bound to another host.");
+    }
+
     getAnnotations().add(annotation);
     annotation.setDeclaringMember((HxMember) this);
 
@@ -135,7 +139,7 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
    * @return
    */
   default HxAnnotation getAnnotation(HxType type) {
-    return getAnnotation(type.getName());
+    return getAnnotation(type.getInternalName());
   }
 
   /**
@@ -159,7 +163,7 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
    * @return
    */
   default Collection<HxAnnotation> getAnnotationsByType(HxType type) {
-    return getAnnotationsByType(type.getName());
+    return getAnnotationsByType(type.getInternalName());
   }
 
   /**
@@ -167,7 +171,7 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
    * @return
    */
   default boolean isAnnotationPresent(HxType type) {
-    return isAnnotationPresent(type.getName());
+    return isAnnotationPresent(type.getInternalName());
   }
 
   /**
