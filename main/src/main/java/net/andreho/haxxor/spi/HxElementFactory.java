@@ -7,6 +7,7 @@ import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.spec.api.HxTypeReference;
 
 /**
  * <br/>Created by a.hofmann on 08.04.2017 at 08:50.
@@ -20,8 +21,8 @@ public interface HxElementFactory {
   HxType createType(final Haxxor haxxor,
                     final String typeName);
 
-  HxType createReference(final Haxxor haxxor,
-                         final String typeName);
+  HxTypeReference createReference(final Haxxor haxxor,
+                                  final String typeName);
 
   HxField createField(final Haxxor haxxor,
                       final String typeName,

@@ -23,13 +23,20 @@ public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>
     implements HxAnnotated<A> {
 
   private static final Class<Repeatable> REPEATABLE_ANNOTATION_CLASS = Repeatable.class;
-  private static final Collection<HxAnnotation> DEFAULT_ANNOTATION_COLLECTION = Collections.emptySet();
-  private static final Collection<HxAnnotated> DEFAULT_SUPER_ANNOTATED_COLLECTION = Collections.emptySet();
-
   protected Collection<HxAnnotation> annotations = DEFAULT_ANNOTATION_COLLECTION;
 
   public HxAnnotatedImpl() {
     super();
+  }
+
+  protected void cloneAnnotationsTo(HxAnnotatedImpl<A> other) {
+    if(!getAnnotations().isEmpty()) {
+      for(HxAnnotation annotation : other.getAnnotations()) {
+        other.addAnnotation(annotation.clone());
+      }
+    } else {
+      other.annotations = DEFAULT_ANNOTATION_COLLECTION;
+    }
   }
 
   @Override

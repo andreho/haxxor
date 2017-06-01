@@ -7,7 +7,8 @@ public interface HxParameter<P extends HxParameterizable<P>>
     extends HxAnnotated<HxParameter<P>>,
             HxMember<HxParameter<P>>,
             HxOwned<HxParameter<P>>,
-            HxProvider {
+            HxProvider,
+            Cloneable {
 
   /**
    * @return index of this parameter in the parameter list of the owning method/constructor
@@ -46,6 +47,11 @@ public interface HxParameter<P extends HxParameterizable<P>>
 
   @Override
   HxParameter<P> setModifiers(int modifiers);
+
+  /**
+   * @return a new copy of this parameter
+   */
+  HxParameter<P> clone();
 
   /**
    *

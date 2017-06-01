@@ -17,8 +17,6 @@ public class BEGIN
     super(-1);
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   @Override
   public void dumpTo(final Context context, final CodeStream codeStream) {
     codeStream.BEGIN();
@@ -33,8 +31,6 @@ public class BEGIN
   public int getStackPopCount() {
     return 0;
   }
-
-  //----------------------------------------------------------------------------------------------------------------
 
   @Override
   public Instruction prepend(final Instruction inst) {

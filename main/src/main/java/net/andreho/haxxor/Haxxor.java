@@ -8,7 +8,9 @@ import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxParameterizable;
 import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.spec.api.HxTypeReference;
 import net.andreho.haxxor.spec.impl.HxAnnotationImpl;
+import net.andreho.haxxor.spec.impl.HxArrayTypeImpl;
 import net.andreho.haxxor.spec.impl.HxConstructorImpl;
 import net.andreho.haxxor.spec.impl.HxConstructorReferenceImpl;
 import net.andreho.haxxor.spec.impl.HxFieldImpl;
@@ -39,14 +41,17 @@ public class Haxxor {
 
   private static final Logger LOG = Logger.getLogger(Haxxor.class.getName());
 
-
   private final int opts;
   private final HxByteCodeLoader byteCodeLoader;
   private final Map<String, HxType> resolvedCache;
-  private final Map<String, HxType> referenceCache;
+  private final Map<String, HxTypeReference> referenceCache;
   private final WeakReference<ClassLoader> classLoaderWeakReference;
   private final HxTypeNamingStrategy typeNamingStrategy;
   private final Object lock = new Object();
+
+  public Haxxor() {
+    this(Flags.SKIP_DEBUG, Haxxor.class.getClassLoader(), new HaxxorBuilder());
+  }
 
   public Haxxor(int opts) {
     this(opts, Haxxor.class.getClassLoader(), new HaxxorBuilder());
@@ -75,8 +80,6 @@ public class Haxxor {
 
     initialize();
   }
-
-  //----------------------------------------------------------------------------------------------------------------
 
   protected void initialize() {
     String type;
@@ -170,7 +173,7 @@ public class Haxxor {
   /**
    * @return a cache with references to a type
    */
-  public Map<String, HxType> getReferenceCache() {
+  public Map<String, HxTypeReference> getReferenceCache() {
     return this.referenceCache;
   }
 
@@ -209,14 +212,14 @@ public class Haxxor {
    * @param typeName
    * @return
    */
-  public HxType reference(String typeName) {
+  public HxTypeReference reference(String typeName) {
     typeName = typeName(typeName);
 
-    HxType reference = this.referenceCache.get(typeName);
+    HxTypeReference reference = this.referenceCache.get(typeName);
 
     if (reference == null) {
       if (hasResolved(typeName)) {
-        return resolve(typeName);
+        return resolve(typeName).toReference();
       }
 
       reference = createReference(typeName);
@@ -236,7 +239,7 @@ public class Haxxor {
    * @param typeNames to reference
    * @return a collection with possibly not-resolved references
    */
-  public Collection<HxType> reference(String... typeNames) {
+  public Collection<HxType> referencesAsCollection(String... typeNames) {
     if (typeNames.length == 0) {
       return Collections.emptySet();
     }
@@ -252,7 +255,7 @@ public class Haxxor {
    * @param typeNames
    * @return
    */
-  public HxType[] referenceArray(String... typeNames) {
+  public HxType[] referencesAsArray(String... typeNames) {
     if (typeNames.length == 0) {
       return Constants.EMPTY_HX_TYPE_ARRAY;
     }
@@ -286,17 +289,16 @@ public class Haxxor {
    */
   public HxType resolve(String typeName, int opts) {
     checkClassLoaderAvailability();
-
     typeName = typeName(typeName);
-
     HxType type = this.resolvedCache.get(typeName);
 
     if (type == null) {
-      if (!typeName.startsWith("[")) {
-        this.resolvedCache.put(typeName, createType(typeName));
+      if (typeName.charAt(0) == '[') {
+        type = new HxArrayTypeImpl(this, typeName);
       } else {
         type = readClass(typeName, opts);
       }
+
       this.resolvedCache.put(typeName, type);
     }
     return type;
@@ -308,39 +310,37 @@ public class Haxxor {
     }
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   public HxType createType(final String internalTypeName) {
     return new HxTypeImpl(this, typeName(internalTypeName));
   }
 
-  public HxType createReference(final String internalTypeName) {
+  public HxTypeReference createReference(final String internalTypeName) {
     return new HxTypeReferenceImpl(this, typeName(internalTypeName));
   }
 
-  public HxField createField(final HxType owner, final String name, final String internalType) {
+  public HxField createField(final String name, final String internalType) {
     final HxType fieldType = createReference(internalType);
-    return new HxFieldImpl(owner, fieldType, name);
+    return new HxFieldImpl(fieldType, name);
   }
 
   public HxConstructor createConstructor(final HxType owner, final String... parametersAsInternalTypes) {
-    return new HxConstructorImpl(owner, this.referenceArray(parametersAsInternalTypes));
+    return new HxConstructorImpl(owner, this.referencesAsArray(parametersAsInternalTypes));
   }
 
   public HxConstructor createConstructorReference(final HxType owner, final String... parametersAsInternalTypes) {
-    return new HxConstructorReferenceImpl(owner, this.referenceArray(parametersAsInternalTypes));
+    return new HxConstructorReferenceImpl(owner, this.referencesAsArray(parametersAsInternalTypes));
   }
 
   public HxMethod createMethod(final HxType owner, final String name, final String internalReturnType,
                                final String... parametersAsInternalTypes) {
     return new HxMethodImpl(owner, name, this.reference(internalReturnType),
-                            this.referenceArray(parametersAsInternalTypes));
+                            this.referencesAsArray(parametersAsInternalTypes));
   }
 
   public HxMethod createMethodReference(final HxType owner, final String name, final String internalReturnType,
                                         final String... parametersAsInternalTypes) {
     return new HxMethodReferenceImpl(owner, name, this.reference(internalReturnType),
-                                     this.referenceArray(parametersAsInternalTypes));
+                                     this.referencesAsArray(parametersAsInternalTypes));
   }
 
   public HxParameter createParameter(final HxParameterizable owner) {

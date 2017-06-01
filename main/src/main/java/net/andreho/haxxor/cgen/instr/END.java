@@ -34,8 +34,6 @@ public class END
     return 0;
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   @Override
   public void setNext(final Instruction next) {
     throw new IllegalStateException("END must be the last instruction.");

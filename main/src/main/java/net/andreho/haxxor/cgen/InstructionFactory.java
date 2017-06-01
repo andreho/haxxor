@@ -171,6 +171,9 @@ import net.andreho.haxxor.cgen.instr.sync.MONITOREXIT;
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
 public interface InstructionFactory {
+  int FLOAT_ONE = Float.floatToIntBits(1f);
+  int FLOAT_TWO = Float.floatToIntBits(2f);
+  long DOUBLE_ONE = Double.doubleToLongBits(1d);
 
   default Instruction BEGIN() {
     return new BEGIN();
@@ -222,9 +225,9 @@ public interface InstructionFactory {
   default Instruction FCONST(float value) {
     if (value == 0f) {
       return new FCONST_0();
-    } else if (value == 1f) {
+    } else if (Float.floatToIntBits(value) == FLOAT_ONE) {
       return new FCONST_1();
-    } else if (value == 2f) {
+    } else if (Float.floatToIntBits(value) == FLOAT_TWO) {
       return new FCONST_2();
     }
     throw new IllegalArgumentException("Unsupported parameter: " + value);
@@ -233,7 +236,7 @@ public interface InstructionFactory {
   default Instruction DCONST(double value) {
     if (value == 0d) {
       return new DCONST_0();
-    } else if (value == 1d) {
+    } else if (Double.doubleToLongBits(value) == DOUBLE_ONE) {
       return new DCONST_1();
     }
     throw new IllegalArgumentException("Unsupported parameter: " + value);

@@ -1,0 +1,34 @@
+package net.andreho.haxxor.spec.impl.annotation.arrays;
+
+import net.andreho.haxxor.spec.api.HxAnnotationAttribute;
+import net.andreho.haxxor.spec.api.HxEnum;
+import net.andreho.haxxor.spec.impl.annotation.AbstractAnnotationAttribute;
+
+/**
+ * Created by a.hofmann on 25.05.2016.
+ */
+public class EnumArrayAnnotationAttribute<E extends Enum<E>>
+    extends AbstractAnnotationAttribute<HxEnum[], E[]> {
+
+  private volatile E[] enumArray;
+
+  public EnumArrayAnnotationAttribute(final String name, final HxEnum[] values) {
+    super(name, values);
+  }
+
+  @Override
+  public E[] original(Class<?> type) {
+    return HxEnum.toEnumArray((Class<E>) type, getValue());
+  }
+
+  @Override
+  public void setValue(final HxEnum[] value) {
+    super.setValue(value);
+    this.enumArray = null;
+  }
+
+  @Override
+  public HxAnnotationAttribute<HxEnum[], E[]> clone() {
+    return new EnumArrayAnnotationAttribute<>(getName(), getValue());
+  }
+}

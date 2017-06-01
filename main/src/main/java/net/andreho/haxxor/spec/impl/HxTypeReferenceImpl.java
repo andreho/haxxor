@@ -9,6 +9,7 @@ import net.andreho.haxxor.spec.api.HxMember;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxModifier;
 import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.spec.api.HxTypeReference;
 
 import java.util.Collection;
 import java.util.List;
@@ -18,7 +19,8 @@ import java.util.function.Predicate;
  * Created by a.hofmann on 30.05.2015.
  */
 public class HxTypeReferenceImpl
-    extends HxAbstractType {
+    extends HxAbstractType
+    implements HxTypeReference {
 
   public HxTypeReferenceImpl(Haxxor haxxor, String name) {
     this(haxxor, name, -1);
@@ -29,298 +31,295 @@ public class HxTypeReferenceImpl
     this.modifiers = modifiers;
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
-  public HxType get() {
+  @Override
+  public HxType toType() {
     return getHaxxor().resolve(getName());
   }
 
   @Override
   public Version getVersion() {
-    return get().getVersion();
+    return toType().getVersion();
   }
 
   @Override
   public HxType setVersion(Version version) {
-    get().setVersion(version);
+    toType().setVersion(version);
     return this;
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   @Override
   public boolean isPrimitive() {
-    return get().isPrimitive();
+    return toType().isPrimitive();
   }
 
   @Override
   public boolean isArray() {
-    return get().isArray();
+    return toType().isArray();
   }
 
   @Override
   public boolean isGeneric() {
-    return get().isGeneric();
+    return toType().isGeneric();
   }
 
   @Override
   public int getDimension() {
-    return get().getDimension();
+    return toType().getDimension();
   }
 
   @Override
   public boolean isLocalType() {
-    return get().isLocalType();
+    return toType().isLocalType();
   }
 
   @Override
   public boolean isMemberType() {
-    return get().isMemberType();
+    return toType().isMemberType();
   }
 
   @Override
   public boolean isFinal() {
-    return get().isFinal();
+    return toType().isFinal();
   }
 
   @Override
   public boolean isPublic() {
-    return get().isPublic();
+    return toType().isPublic();
   }
 
   @Override
   public boolean isProtected() {
-    return get().isProtected();
+    return toType().isProtected();
   }
 
   @Override
   public boolean isPrivate() {
-    return get().isPrivate();
+    return toType().isPrivate();
   }
 
   @Override
   public boolean isInternal() {
-    return get().isInternal();
+    return toType().isInternal();
   }
 
   @Override
   public boolean isAbstract() {
-    return get().isAbstract();
+    return toType().isAbstract();
   }
 
   @Override
   public boolean isInterface() {
-    return get().isInterface();
+    return toType().isInterface();
   }
 
   @Override
   public boolean isEnum() {
-    return get().isEnum();
+    return toType().isEnum();
   }
 
   @Override
   public boolean isAnnotation() {
-    return get().isAnnotation();
+    return toType().isAnnotation();
   }
 
   @Override
   public boolean isAnonymous() {
-    return get().isAnonymous();
+    return toType().isAnonymous();
   }
 
   @Override
   public HxType initialize(final Part... parts) {
-    return get().initialize(parts);
+    return toType().initialize(parts);
   }
 
   @Override
   public HxType initialize(final Part part) {
-    return get().initialize(part);
+    return toType().initialize(part);
   }
 
   @Override
   public HxType getSuperType() {
-    return get().getSuperType();
+    return toType().getSuperType();
   }
 
   @Override
   public HxType setSuperType(HxType superType) {
-    get().setSuperType(superType);
+    toType().setSuperType(superType);
     return this;
   }
 
   @Override
   public Collection<HxType> getInterfaces() {
-    return get().getInterfaces();
+    return toType().getInterfaces();
   }
 
   @Override
   public HxType setInterfaces(Collection<HxType> interfaces) {
-    get().setInterfaces(interfaces);
+    toType().setInterfaces(interfaces);
     return this;
   }
 
   @Override
   public HxType getComponentType() {
-    return get().getComponentType();
+    return toType().getComponentType();
   }
 
   @Override
   public Collection<HxType> getDeclaredTypes() {
-    return get().getDeclaredTypes();
+    return toType().getDeclaredTypes();
   }
 
   @Override
   public HxType setDeclaredTypes(Collection<HxType> declaredTypes) {
-    get().setDeclaredTypes(declaredTypes);
+    toType().setDeclaredTypes(declaredTypes);
     return this;
   }
 
   @Override
   public HxType addField(HxField field) {
-    get().addField(field);
+    toType().addField(field);
     return this;
   }
 
   @Override
   public HxType updateField(HxField field) {
-    get().updateField(field);
+    toType().updateField(field);
     return this;
   }
 
   @Override
   public HxType removeField(HxField field) {
-    get().removeField(field);
+    toType().removeField(field);
     return this;
   }
 
   @Override
   public List<HxField> getFields() {
-    return get().getFields();
+    return toType().getFields();
   }
 
   @Override
   public HxType setFields(List<HxField> fields) {
-    get().setFields(fields);
+    toType().setFields(fields);
     return this;
   }
 
   @Override
   public List<HxMethod> getMethods() {
-    return get().getMethods();
+    return toType().getMethods();
   }
 
   @Override
   public HxType setMethods(List<HxMethod> methods) {
-    get().setMethods(methods);
+    toType().setMethods(methods);
     return this;
   }
 
   @Override
   public List<HxConstructor> getConstructors() {
-    return get().getConstructors();
+    return toType().getConstructors();
   }
 
   @Override
   public HxType setConstructors(List<HxConstructor> constructors) {
-    get().setConstructors(constructors);
+    toType().setConstructors(constructors);
     return this;
   }
 
   @Override
   public Collection<HxField> fields(Predicate<HxField> predicate, boolean recursive) {
-    return get().fields(predicate, recursive);
+    return toType().fields(predicate, recursive);
   }
 
   @Override
   public Collection<HxMethod> methods(Predicate<HxMethod> predicate, boolean recursive) {
-    return get().methods(predicate, recursive);
+    return toType().methods(predicate, recursive);
   }
 
   @Override
   public Collection<HxConstructor> constructors(Predicate<HxConstructor> predicate, boolean recursive) {
-    return get().constructors(predicate, recursive);
+    return toType().constructors(predicate, recursive);
   }
 
   @Override
   public Collection<HxType> types(Predicate<HxType> predicate, boolean recursive) {
-    return get().types(predicate, recursive);
+    return toType().types(predicate, recursive);
   }
 
   @Override
   public Collection<HxType> interfaces(Predicate<HxType> predicate, boolean recursive) {
-    return get().interfaces(predicate, recursive);
+    return toType().interfaces(predicate, recursive);
   }
 
   @Override
   public HxType addAnnotation(HxAnnotation annotation) {
-    get().addAnnotation(annotation);
+    toType().addAnnotation(annotation);
     return this;
   }
 
   @Override
   public HxType setAnnotations(Collection<HxAnnotation> annotations) {
-    get().setAnnotations(annotations);
+    toType().setAnnotations(annotations);
     return this;
   }
 
   @Override
   public Collection<HxAnnotated> getSuperAnnotated() {
-    return get().getSuperAnnotated();
+    return toType().getSuperAnnotated();
   }
 
   @Override
   public Collection<HxAnnotation> getAnnotations() {
-    return get().getAnnotations();
+    return toType().getAnnotations();
   }
 
   @Override
   public boolean isAnnotationPresent(String type) {
-    return get().isAnnotationPresent(type);
+    return toType().isAnnotationPresent(type);
   }
 
   @Override
   public HxAnnotation getAnnotation(String type) {
-    return get().getAnnotation(type);
+    return toType().getAnnotation(type);
   }
 
   @Override
   public HxType replaceAnnotation(HxAnnotation annotation) {
-    get().replaceAnnotation(annotation);
+    toType().replaceAnnotation(annotation);
     return this;
   }
 
   @Override
   public HxType setAnnotations(HxAnnotation... annotations) {
-    get().setAnnotations(annotations);
+    toType().setAnnotations(annotations);
     return this;
   }
 
   @Override
   public HxType removeAnnotation(HxAnnotation annotation) {
-    get().removeAnnotation(annotation);
+    toType().removeAnnotation(annotation);
     return this;
   }
 
   @Override
   public Collection<HxAnnotation> getAnnotationsByType(String type) {
-    return get().getAnnotationsByType(type);
+    return toType().getAnnotationsByType(type);
   }
 
   @Override
   public Collection<HxAnnotation> annotations(Predicate<HxAnnotation> predicate, boolean recursive) {
-    return get().annotations(predicate, recursive);
+    return toType().annotations(predicate, recursive);
   }
 
   @Override
   public HxType setModifiers(HxModifier... modifiers) {
-    get().setModifiers(modifiers);
+    toType().setModifiers(modifiers);
     return this;
   }
 
   @Override
   public HxType setModifiers(int modifiers) {
-    get().setModifiers(modifiers);
+    toType().setModifiers(modifiers);
     this.modifiers = -1;
     return this;
   }
@@ -330,38 +329,36 @@ public class HxTypeReferenceImpl
     if (modifiers != -1) {
       return modifiers;
     }
-    return this.modifiers = get().getModifiers();
+    return this.modifiers = toType().getModifiers();
   }
 
   @Override
   public <M extends HxMember> M getDeclaringMember() {
-    return get().getDeclaringMember();
+    return toType().getDeclaringMember();
   }
 
   @Override
   public HxType setDeclaringMember(HxMember declaringMember) {
-    return get().getDeclaringMember();
+    return toType().getDeclaringMember();
   }
 
   @Override
   public HxField getField(String name) {
-    return get().getField(name);
+    return toType().getField(name);
   }
 
   @Override
   public HxMethod getMethod(String name) {
-    return get().getMethod(name);
+    return toType().getMethod(name);
   }
 
   @Override
   public Collection<HxMethod> getMethods(String name) {
-    return get().getMethods(name);
+    return toType().getMethods(name);
   }
 
   @Override
-  public HxType toReference() {
+  public HxTypeReference toReference() {
     return this;
   }
-
-  //----------------------------------------------------------------------------------------------------------------
 }

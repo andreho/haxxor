@@ -64,21 +64,21 @@ public class LocalVariable
   }
 
   /**
-   * @return start label of this local variable
+   * @return start asmLabel of this local variable
    */
   public LABEL getStart() {
     return this.start;
   }
 
   /**
-   * @return end label of this local variable
+   * @return end asmLabel of this local variable
    */
   public LABEL getEnd() {
     return this.end;
   }
 
   /**
-   * Checks whether this local variable is visible for given label or not.
+   * Checks whether this local variable is visible for given asmLabel or not.
    *
    * @return <b>true</b> if it's visible and accessible, <bfalse></b> otherwise.
    */

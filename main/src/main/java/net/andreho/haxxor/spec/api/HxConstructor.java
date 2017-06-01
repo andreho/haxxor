@@ -9,7 +9,13 @@ import java.util.Set;
  * Created by a.hofmann on 31.05.2015.
  */
 public interface HxConstructor
-    extends HxParameterizable<HxConstructor> {
+    extends HxParameterizable<HxConstructor>,
+            Cloneable {
+
+  /**
+   * @return a new copy of this constructor
+   */
+  HxConstructor clone();
 
   enum Modifiers
       implements HxModifier {

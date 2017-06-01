@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import static net.andreho.haxxor.Utils.isUninitialized;
+
 /**
  * Created by a.hofmann on 31.05.2015.
  */
@@ -41,8 +43,6 @@ public class HxTypeImpl
     super(haxxor, name);
     this.superType = haxxor.reference("java/lang/Object");
   }
-
-  //----------------------------------------------------------------------------------------------------------------
 
   @Override
   public Version getVersion() {
@@ -88,12 +88,11 @@ public class HxTypeImpl
 
   @Override
   public HxType setInterfaces(Collection<HxType> interfaces) {
-    if (interfaces == null) {
+    if (isUninitialized(interfaces)) {
       interfaces = Collections.emptySet();
     }
 
     this.interfaces = interfaces;
-
     return this;
   }
 
@@ -104,12 +103,11 @@ public class HxTypeImpl
 
   @Override
   public HxType setDeclaredTypes(Collection<HxType> declaredTypes) {
-    if (declaredTypes == null) {
+    if (isUninitialized(declaredTypes)) {
       declaredTypes = Collections.emptySet();
     }
 
     this.declaredTypes = declaredTypes;
-
     return this;
   }
 
@@ -123,14 +121,17 @@ public class HxTypeImpl
     return fields;
   }
 
-
   @Override
   public HxType addField(HxField field) {
+    if (field.getDeclaringMember() != null && !equals(field.getDeclaringMember())) {
+      field = field.clone();
+    }
+
     if (field.getDeclaringMember() != null ||
         initialize(Part.FIELDS).hasField(field.getName()) ||
         fieldMap.put(field.getName(), field) != null) {
 
-      throw new IllegalArgumentException("Field already exists: " + field);
+      throw new IllegalArgumentException("Given field was already associated with this type: " + field);
     }
 
     field.setDeclaringMember(this);
@@ -151,13 +152,15 @@ public class HxTypeImpl
   @Override
   public HxType updateField(HxField field) {
     if (!equals(field.getDeclaringMember())) {
-      throw new IllegalArgumentException("Invalid field argument: " + field);
+      throw new IllegalArgumentException("Given field must exist within this type: " + field);
     }
+
     HxField current = this.fieldMap.get(field.getName());
+
     if (current == null) {
       int index = indexOf(field);
       if (index < 0) {
-        throw new IllegalArgumentException("Invalid field argument: " + field);
+        throw new IllegalArgumentException("Given field must exist within this type: " + field);
       }
       this.fieldMap.put(field.getName(), fields.get(index));
     }
@@ -167,13 +170,20 @@ public class HxTypeImpl
 
   @Override
   public HxType removeField(HxField field) {
-    if (!initialize(Part.FIELDS).hasField(field.getName()) ||
-        fieldMap.remove(field.getName()) != field) {
-
-      throw new IllegalArgumentException("Invalid field argument: " + field);
+    if (!equals(field.getDeclaringMember())) {
+      throw new IllegalArgumentException("Given field must exist within this type: " + field);
     }
 
-    fields.remove(field);
+    if (!initialize(Part.FIELDS).hasField(field.getName()) || fieldMap.remove(field.getName()) != field) {
+      throw new IllegalArgumentException("Given field must exist within this type: " + field);
+    }
+
+    int index = indexOf(field);
+    if(index > -1) {
+      fields.remove(index);
+    } else {
+      throw new IllegalStateException("Removal of given field led to an inconsistent state: " + field);
+    }
     field.setDeclaringMember(null);
 
     return this;

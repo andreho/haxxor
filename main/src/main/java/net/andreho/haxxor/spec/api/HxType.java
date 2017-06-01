@@ -204,45 +204,51 @@ public interface HxType
 
   /**
    * @param name
-   * @param signature
+   * @param returnType
+   * @param parameters
    * @return
    */
-  HxMethod getMethod(String name, String... signature);
+  HxMethod getMethod(String name, String returnType, String... parameters);
 
   /**
    * @param name
-   * @param signature
+   * @param returnType
+   * @param parameters
    * @return
    */
-  HxMethod getMethod(String name, HxType... signature);
+  HxMethod getMethod(String name, HxType returnType, HxType... parameters);
 
   /**
    * @param name
-   * @param signature
+   * @param returnType
+   * @param parameters
    * @return
    */
-  HxMethod getMethod(String name, List<HxType> signature);
+  HxMethod getMethod(String name, HxType returnType, List<HxType> parameters);
 
   /**
    * @param name
-   * @param signature
+   * @param returnType
+   * @param parameters
    * @return
    */
-  boolean hasMethod(String name, String... signature);
+  boolean hasMethod(String name, String returnType, String... parameters);
 
   /**
    * @param name
-   * @param signature
+   * @param returnType
+   * @param parameters
    * @return
    */
-  boolean hasMethod(String name, HxType... signature);
+  boolean hasMethod(String name, HxType returnType, HxType... parameters);
 
   /**
    * @param name
+   * @param returnType
    * @param signature
    * @return
    */
-  boolean hasMethod(String name, List<HxType> signature);
+  boolean hasMethod(String name, HxType returnType, List<HxType> signature);
 
   /**
    * @return
@@ -260,6 +266,12 @@ public interface HxType
    * @return
    */
   HxType addConstructor(HxConstructor constructor);
+
+  /**
+   * @param signature of wanted constructor as list
+   * @return
+   */
+  HxConstructor getConstructorWithParameters(List<HxParameter<HxConstructor>> signature);
 
   /**
    * @param signature of wanted constructor as list
@@ -569,7 +581,7 @@ public interface HxType
   /**
    * @return a reference to this type
    */
-  HxType toReference();
+  HxTypeReference toReference();
 
   /**
    * Creates bytecode representation of the actual type's state.
@@ -603,7 +615,6 @@ public interface HxType
   /**
    */
   enum Version {
-    //      V1_7(Opcodes.V1_7),
     V1_8(Opcodes.V1_8);
 
     final int code;
@@ -613,9 +624,6 @@ public interface HxType
     }
 
     public static Version of(int ver) {
-//         if (ver == Opcodes.V1_7) {
-//            return V1_7;
-//         }
       if (ver == Opcodes.V1_8) {
         return V1_8;
       }

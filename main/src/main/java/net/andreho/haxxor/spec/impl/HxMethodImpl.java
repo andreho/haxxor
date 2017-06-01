@@ -13,17 +13,25 @@ public class HxMethodImpl
     implements HxMethod {
 
   protected final String name;
-  protected Object defaultValue;
   protected HxType returnType;
+  protected Object defaultValue;
+
+  public HxMethodImpl(final String name) {
+    if (name == null || name.isEmpty()) {
+      throw new IllegalArgumentException("Method-name can't be neither null nor empty.");
+    }
+
+    this.name = name;
+    setModifiers(HxMethod.Modifiers.PUBLIC.toBit());
+  }
 
   public HxMethodImpl(final String name,
                       final HxType returnType,
                       final HxType... parameters) {
     this(name);
     setReturnType(returnType);
-
     for (HxType type : parameters) {
-      addParameter(type);
+      addParameterType(type);
     }
   }
 
@@ -36,13 +44,21 @@ public class HxMethodImpl
     setDeclaringMember(owner);
   }
 
-  protected HxMethodImpl(final String name) {
-    setModifiers(HxMethod.Modifiers.PUBLIC.toBit());
-    this.name = name;
+  public HxMethodImpl(HxMethodImpl prototype) {
+    this(prototype.name, prototype);
+  }
 
-    if (name == null || name.isEmpty()) {
-      throw new IllegalArgumentException("Method-name can't be neither null nor empty.");
-    }
+  public HxMethodImpl(String name, HxMethodImpl prototype) {
+    this.declaringMember = null;
+
+    this.name = name != null? name : prototype.name;
+    this.modifiers = prototype.modifiers;
+    this.defaultValue = prototype.defaultValue;
+    this.returnType = prototype.returnType;
+    this.genericSignature = prototype.genericSignature;
+
+    prototype.cloneParametersTo(this);
+    prototype.cloneAnnotationsTo(this);
   }
 
   @Override
@@ -94,8 +110,6 @@ public class HxMethodImpl
   public int hashCode() {
     return 31 * Objects.hashCode(getName()) + super.hashCode();
   }
-
-  //----------------------------------------------------------------------------------------------------------------
 
   @Override
   public String toString() {

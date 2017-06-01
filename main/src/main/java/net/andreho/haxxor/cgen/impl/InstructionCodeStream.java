@@ -18,7 +18,6 @@ public class InstructionCodeStream
   private final HxCode code;
   private final InstructionFactory factory;
 
-  //----------------------------------------------------------------------------------------------------------------
 
   public InstructionCodeStream(final HxCode code) {
     this(code, code.getInstructionFactory());
@@ -29,13 +28,9 @@ public class InstructionCodeStream
     this.factory = factory;
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   private Instruction current() {
     return code.getCurrent();
   }
-
-  //----------------------------------------------------------------------------------------------------------------
 
   @Override
   public CodeStream BEGIN() {

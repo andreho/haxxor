@@ -15,7 +15,6 @@ import java.util.Collections;
 public class HxPrimitiveTypeImpl
     extends HxAbstractType
     implements HxType {
-  //----------------------------------------------------------------------------------------------------------------
 
   public HxPrimitiveTypeImpl(final Haxxor haxxor, final String name) {
     super(haxxor, name);
@@ -24,8 +23,6 @@ public class HxPrimitiveTypeImpl
                      Modifiers.FINAL.toBit() |
                      Modifiers.SUPER.toBit();
   }
-
-  //----------------------------------------------------------------------------------------------------------------
 
   @Override
   public boolean isPrimitive() {

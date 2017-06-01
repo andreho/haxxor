@@ -4,7 +4,8 @@ package net.andreho.haxxor.spec.api;
  * Created by a.hofmann on 31.05.2015.
  */
 public interface HxMethod
-    extends HxParameterizable<HxMethod> {
+    extends HxParameterizable<HxMethod>,
+            Cloneable {
 
   /**
    * @return name of this method

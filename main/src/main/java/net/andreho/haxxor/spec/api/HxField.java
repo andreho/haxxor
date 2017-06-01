@@ -20,7 +20,8 @@ public interface HxField
     extends HxAnnotated<HxField>,
             HxMember<HxField>,
             HxOwned<HxField>,
-            HxProvider {
+            HxProvider,
+            Cloneable {
 
   /**
    * @return name of this field
@@ -104,6 +105,11 @@ public interface HxField
   default HxField setGenericSignature(String genericSignature) {
     return this;
   }
+
+  /**
+   * @return a new cloned version of this field
+   */
+  HxField clone();
 
   /**
    * @return generic type of this field

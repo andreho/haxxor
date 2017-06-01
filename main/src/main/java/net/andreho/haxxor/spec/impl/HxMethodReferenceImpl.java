@@ -22,9 +22,10 @@ public class HxMethodReferenceImpl
     implements HxMethod {
 
   protected HxType declaringType;
-  protected String name;
   protected HxType[] parameterTypes;
   protected HxType returnType;
+  protected String name;
+  protected HxMethod target;
 
   public HxMethodReferenceImpl(HxType declaringType, String name, HxType returnType, HxType... parameterTypes) {
     this.declaringType = declaringType;
@@ -34,7 +35,10 @@ public class HxMethodReferenceImpl
   }
 
   public HxMethod get() {
-    return declaringType.getMethod(name, parameterTypes);
+    if(target == null) {
+      target = declaringType.getMethod(name, parameterTypes);
+    }
+    return target;
   }
 
   @Override
@@ -123,6 +127,12 @@ public class HxMethodReferenceImpl
   @Override
   public HxMethod setParameterAt(final int index, final HxParameter parameter) {
     get().setParameterAt(index, parameter);
+    return this;
+  }
+
+  @Override
+  public HxMethod addParameter(final HxParameter<HxMethod> parameter) {
+    get().addParameter(parameter);
     return this;
   }
 

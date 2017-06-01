@@ -52,12 +52,17 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
   List<HxParameter<P>> getParameters();
 
   /**
+   * @param parameter
+   * @return
+   */
+  P addParameter(HxParameter<P> parameter);
+
+  /**
    * @param type
    * @return
    */
-  default P addParameter(HxType type) {
-    getParameters().add(new HxParameterImpl<>(this, type));
-    return (P) this;
+  default P addParameterType(HxType type) {
+    return addParameter(new HxParameterImpl<>(this, type));
   }
 
   /**

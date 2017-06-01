@@ -11,6 +11,8 @@ import java.util.function.Predicate;
  * Created by a.hofmann on 31.05.2015.
  */
 public interface HxAnnotated<A extends HxAnnotated<A>> {
+  Collection<HxAnnotation> DEFAULT_ANNOTATION_COLLECTION = Collections.emptySet();
+  Collection<HxAnnotated> DEFAULT_SUPER_ANNOTATED_COLLECTION = Collections.emptySet();
 
   /**
    * Replaces all annotations with given annotation list
@@ -69,8 +71,7 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
    */
   default HxAnnotation getAnnotation(String type) {
     for (HxAnnotation annotation : getAnnotations()) {
-      if (type.equals(annotation.getType()
-                                .getName())) {
+      if (annotation.getType().is(type)) {
         return annotation;
       }
     }
@@ -82,7 +83,7 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
    * @return
    */
   default A addAnnotation(HxAnnotation annotation) {
-    if (getAnnotations() == Collections.EMPTY_SET) {
+    if (getAnnotations() == DEFAULT_ANNOTATION_COLLECTION) {
       setAnnotations(new LinkedHashSet<>());
     }
 
@@ -105,7 +106,7 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
    * @return
    */
   default A replaceAnnotation(HxAnnotation annotation) {
-    if (getAnnotations() != Collections.EMPTY_SET) {
+    if (getAnnotations() != DEFAULT_ANNOTATION_COLLECTION) {
       final HxAnnotation currentAnnotation = getAnnotation(annotation.getType());
       if (currentAnnotation != null &&
           getAnnotations().remove(currentAnnotation)) {
@@ -120,7 +121,7 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
    * @return
    */
   default A removeAnnotation(HxAnnotation annotation) {
-    if (getAnnotations() != Collections.EMPTY_SET) {
+    if (getAnnotations() != DEFAULT_ANNOTATION_COLLECTION) {
       if (getAnnotations().remove(annotation)) {
         annotation.setDeclaringMember(null);
       }

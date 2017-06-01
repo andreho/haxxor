@@ -7,8 +7,10 @@ import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxGeneric;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxModifier;
+import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxParameterizable;
 import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.spec.api.HxTypeReference;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,6 +20,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+
+import static net.andreho.haxxor.Utils.isUninitialized;
 
 /**
  * <br/>Created by andreho on 3/26/16 at 7:21 PM.<br/>
@@ -96,22 +100,11 @@ public class HxAbstractType
     return this;
   }
 
-  protected boolean isUninitialized(Collection<?> collection) {
-    return
-        collection == null ||
-        collection == Collections.EMPTY_LIST ||
-        collection == Collections.EMPTY_SET ||
-        collection == Collections.EMPTY_MAP;
-  }
-
   @Override
   public HxType initialize(Part part) {
     switch (part) {
       case DEFAULTS: {
         initialize(Part.CONSTRUCTORS);
-        HxConstructor constructor =
-            getHaxxor().createConstructor(this, "()V");
-        addConstructor(constructor);
       }
       break;
       case ANNOTATIONS: {
@@ -328,86 +321,92 @@ public class HxAbstractType
   }
 
   @Override
-  public HxMethod getMethod(String name, String... signature) {
+  public HxMethod getMethod(String name, String returnType, String... parameters) {
     final Iterable<HxMethod> methods = getMethods(name);
 
     loop:
     for (HxMethod method : methods) {
-      if (signature.length != method.getArity()) {
+      if (parameters.length != method.getArity()) {
         continue;
       }
 
-      for (int i = 0, len = method.getArity(); i < len; i++) {
+      for (int i = 0, arity = method.getArity(); i < arity; i++) {
         HxType type = method.getParameterTypeAt(i);
 
-        if (!type.getName()
-                 .equals(signature[i])) {
+        if (!type.getName().equals(parameters[i])) {
           continue loop;
         }
       }
 
-      return method;
+      if (returnType == null || method.getReturnType().is(returnType)) {
+        return method;
+      }
     }
     return null;
   }
 
   @Override
-  public HxMethod getMethod(String name, HxType... signature) {
+  public HxMethod getMethod(final String name, final HxType returnType, final HxType... parameters) {
     final Iterable<HxMethod> methods = getMethods(name);
 
     loop:
     for (HxMethod method : methods) {
-      if (signature.length != method.getArity()) {
+      if (parameters.length != method.getArity()) {
         continue;
       }
 
-      for (int i = 0, len = method.getArity(); i < len; i++) {
+      for (int i = 0, arity = method.getArity(); i < arity; i++) {
         HxType type = method.getParameterTypeAt(i);
 
-        if (!type.equals(signature[i])) {
+        if (!type.equals(parameters[i])) {
           continue loop;
         }
       }
-      return method;
+      if (returnType == null || returnType.equals(method.getReturnType())) {
+        return method;
+      }
     }
     return null;
   }
 
   @Override
-  public HxMethod getMethod(final String name, final List<HxType> signature) {
+  public HxMethod getMethod(final String name, final HxType returnType, final List<HxType> parameters) {
     final Iterable<HxMethod> methods = getMethods(name);
 
     loop:
     for (HxMethod method : methods) {
-      if (signature.size() != method.getArity()) {
+      if (parameters.size() != method.getArity()) {
         continue;
       }
 
-      for (int i = 0, len = method.getArity(); i < len; i++) {
+      for (int i = 0, arity = method.getArity(); i < arity; i++) {
         HxType type = method.getParameterTypeAt(i);
 
-        if (!type.equals(signature.get(i))) {
+        if (!type.equals(parameters.get(i))) {
           continue loop;
         }
       }
-      return method;
+
+      if (returnType == null || returnType.equals(method.getReturnType())) {
+        return method;
+      }
     }
     return null;
   }
 
   @Override
-  public boolean hasMethod(final String name, final String... signature) {
-    return getMethod(name, signature) != null;
+  public boolean hasMethod(final String name, final String returnType, final String... parameters) {
+    return getMethod(name, returnType, parameters) != null;
   }
 
   @Override
-  public boolean hasMethod(final String name, final HxType... signature) {
-    return getMethod(name, signature) != null;
+  public boolean hasMethod(final String name, final HxType returnType, final HxType... parameters) {
+    return getMethod(name, returnType, parameters) != null;
   }
 
   @Override
-  public boolean hasMethod(final String name, final List<HxType> signature) {
-    return getMethod(name, signature) != null;
+  public boolean hasMethod(final String name, final HxType returnType, final List<HxType> signature) {
+    return getMethod(name, returnType, signature) != null;
   }
 
   @Override
@@ -425,15 +424,40 @@ public class HxAbstractType
   public HxType addConstructor(HxConstructor constructor) {
     initialize(Part.CONSTRUCTORS);
 
-    if (!isUninitialized(getConstructors())) {
-
-      if (constructor.getDeclaringMember() != null ||
-          !getConstructors().add(constructor)) {
-        throw new IllegalStateException("Ambiguous constructor: " + constructor);
-      }
-      constructor.setDeclaringMember(this);
+    if (equals(constructor.getDeclaringMember())) {
+      throw new IllegalStateException("Ambiguous constructor: " + constructor);
+    } else if (constructor.getDeclaringMember() != null) {
+      constructor = constructor.clone();
     }
+
+    if (constructor.getDeclaringMember() != null ||
+        getConstructorWithParameters(constructor.getParameters()) != null ||
+        !getConstructors().add(constructor)) {
+      throw new IllegalStateException("Ambiguous constructor: " + constructor);
+    }
+
+    constructor.setDeclaringMember(this);
     return this;
+  }
+
+  @Override
+  public HxConstructor getConstructorWithParameters(final List<HxParameter<HxConstructor>> signature) {
+    loop:
+    for (HxConstructor constructor : getConstructors()) {
+      if (signature.size() != constructor.getArity()) {
+        continue;
+      }
+      for (int i = 0, arity = constructor.getArity(); i < arity; i++) {
+        HxType type = constructor.getParameterTypeAt(i);
+
+        if (!type.equals(signature.get(i)
+                                  .getType())) {
+          continue loop;
+        }
+      }
+      return constructor;
+    }
+    return null;
   }
 
   @Override
@@ -444,7 +468,7 @@ public class HxAbstractType
         continue;
       }
 
-      for (int i = 0, len = constructor.getArity(); i < len; i++) {
+      for (int i = 0, arity = constructor.getArity(); i < arity; i++) {
         HxType type = constructor.getParameterTypeAt(i);
 
         if (!type.equals(signature.get(i))) {
@@ -464,7 +488,7 @@ public class HxAbstractType
         continue;
       }
 
-      for (int i = 0, len = constructor.getArity(); i < len; i++) {
+      for (int i = 0, arity = constructor.getArity(); i < arity; i++) {
         HxType type = constructor.getParameterTypeAt(i);
 
         if (!type.equals(signature[i])) {
@@ -484,7 +508,7 @@ public class HxAbstractType
         continue;
       }
 
-      for (int i = 0, len = constructor.getArity(); i < len; i++) {
+      for (int i = 0, arity = constructor.getArity(); i < arity; i++) {
         HxType type = constructor.getParameterTypeAt(i);
 
         if (!type.getName()
@@ -507,11 +531,9 @@ public class HxAbstractType
     return getConstructor(signature) != null;
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   @Override
   public boolean isGeneric() {
-    return false;
+    return getGenericSignature() == null || !getGenericSignature().isEmpty();
   }
 
   @Override
@@ -534,8 +556,6 @@ public class HxAbstractType
     return Collections.emptyList();
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   @Override
   public boolean is(String className) {
     className = getHaxxor().getTypeNamingStrategy()
@@ -549,8 +569,10 @@ public class HxAbstractType
   }
 
   @Override
-  public boolean isAssignableFrom(HxType otherType) {
-    if (this.equals(otherType)) {
+  public boolean isAssignableFrom(final HxType otherType) {
+    if(otherType == null) {
+      return false;
+    } else if (this.equals(otherType)) {
       return true;
     } else if (this.isPrimitive()) {
       return false;
@@ -574,8 +596,14 @@ public class HxAbstractType
       }
 
       if (otherType.isInterface()) {
-        for (HxType ifc : current.getInterfaces()) {
-          if (this.equals(ifc)) {
+        final Collection<HxType> interfaces = current.getInterfaces();
+
+        if (interfaces.contains(this)) {
+          return true;
+        }
+
+        for (HxType ifc : interfaces) {
+          if (this.isAssignableFrom(ifc)) {
             return true;
           }
         }
@@ -586,8 +614,6 @@ public class HxAbstractType
 
     return false;
   }
-
-  //----------------------------------------------------------------------------------------------------------------
 
   @Override
   public Collection<HxField> fields() {
@@ -605,8 +631,6 @@ public class HxAbstractType
     return Collections.emptySet();
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   @Override
   public Collection<HxMethod> methods() {
     return methods((m) -> true);
@@ -622,8 +646,6 @@ public class HxAbstractType
     //NO OP
     return Collections.emptySet();
   }
-
-  //----------------------------------------------------------------------------------------------------------------
 
   @Override
   public Collection<HxConstructor> constructors() {
@@ -641,8 +663,6 @@ public class HxAbstractType
     return Collections.emptySet();
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   @Override
   public Collection<HxType> types() {
     return types((t) -> true);
@@ -658,8 +678,6 @@ public class HxAbstractType
     //NO OP
     return Collections.emptySet();
   }
-
-  //----------------------------------------------------------------------------------------------------------------
 
   @Override
   public Collection<HxType> interfaces() {
@@ -677,8 +695,6 @@ public class HxAbstractType
     return Collections.emptySet();
   }
 
-  //-----------------------------------------------------------------------------------------------------------------
-
   @Override
   public HxType getEnclosingType() {
     if (getEnclosingMethod() != null) {
@@ -686,7 +702,6 @@ public class HxAbstractType
     } else if (getEnclosingConstructor() != null) {
       return getEnclosingConstructor().getDeclaringMember();
     }
-
     return getDeclaringMember();
   }
 
@@ -706,8 +721,6 @@ public class HxAbstractType
     return null;
   }
 
-  //-----------------------------------------------------------------------------------------------------------------
-
   @Override
   public String getSimpleBinaryName() {
     HxType enclosingType = getEnclosingType();
@@ -722,7 +735,7 @@ public class HxAbstractType
       return getName().substring(enclosingType.getName()
                                               .length());
     } catch (IndexOutOfBoundsException ex) {
-      throw new InternalError("Malformed class name", ex);
+      throw new InternalError("Malformed class name: " + getName(), ex);
     }
   }
 
@@ -786,8 +799,6 @@ public class HxAbstractType
     return index > -1 ? getName().substring(0, index) : "";
   }
 
-  //-----------------------------------------------------------------------------------------------------------------
-
   @Override
   public boolean isArray() {
     return getDimension() > 0;
@@ -812,8 +823,6 @@ public class HxAbstractType
 
     return dims;
   }
-
-  //-----------------------------------------------------------------------------------------------------------------
 
   @Override
   public boolean isPrimitive() {
@@ -885,7 +894,7 @@ public class HxAbstractType
   }
 
   @Override
-  public HxType toReference() {
+  public HxTypeReference toReference() {
     return getHaxxor().reference(getName());
   }
 
@@ -934,29 +943,6 @@ public class HxAbstractType
   }
 
   @Override
-  public int hashCode() {
-    return this.name.hashCode();
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (!(obj instanceof HxType)) {
-      return false;
-    }
-    return Objects.equals(getName(), ((HxType) obj).getName());
-  }
-
-  @Override
-  public String toString() {
-    return getName();
-  }
-
-  //-----------------------------------------------------------------------------------------------------------------
-
-  @Override
   public HxType setModifiers(HxModifier... modifiers) {
     super.setModifiers(modifiers);
     return this;
@@ -996,5 +982,26 @@ public class HxAbstractType
   public HxType removeAnnotation(HxAnnotation annotation) {
     super.removeAnnotation(annotation);
     return this;
+  }
+
+  @Override
+  public int hashCode() {
+    return this.name.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (!(obj instanceof HxType)) {
+      return false;
+    }
+    return Objects.equals(getName(), ((HxType) obj).getName());
+  }
+
+  @Override
+  public String toString() {
+    return getName();
   }
 }

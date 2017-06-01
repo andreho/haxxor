@@ -37,10 +37,23 @@ public class HxFieldImpl
 
   public HxFieldImpl(HxType declaringType, HxType type, String name) {
     this(type, name);
+
     if (declaringType == null) {
       throw new IllegalArgumentException("Declaring owner is null.");
     }
     this.declaringMember = declaringType;
+  }
+
+  protected HxFieldImpl(HxFieldImpl prototype) {
+    this.declaringMember = null;
+
+    this.type = prototype.type;
+    this.name = prototype.name;
+    this.modifiers = prototype.modifiers;
+    this.defaultValue = prototype.defaultValue;
+    this.genericSignature = prototype.genericSignature;
+
+    prototype.cloneAnnotationsTo(this);
   }
 
   @Override
@@ -59,12 +72,13 @@ public class HxFieldImpl
       throw new IllegalArgumentException("Field name can't be neither null nor empty.");
     }
 
+    this.name = name;
+
     if (getDeclaringMember() != null) {
       HxType type = getDeclaringMember();
-      type.removeField(this);
+      type.updateField(this);
     }
 
-    this.name = name;
     return this;
   }
 
@@ -117,6 +131,11 @@ public class HxFieldImpl
     HxField other = (HxField) o;
 
     return Objects.equals(getName(), other.getName());
+  }
+
+  @Override
+  public HxField clone() {
+    return new HxFieldImpl(this);
   }
 
   @Override

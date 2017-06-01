@@ -1,36 +1,35 @@
 package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.Haxxor;
-import net.andreho.haxxor.spec.annotation.AnnotationEntry;
-import net.andreho.haxxor.spec.annotation.BooleanAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.ByteAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.CharacterAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.ClassAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.DoubleAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.EnumAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.FloatAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.IntegerAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.LongAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.ShortAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.StringAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.SubAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.arrays.BooleanArrayAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.arrays.ByteArrayAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.arrays.CharacterArrayAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.arrays.ClassArrayAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.arrays.DoubleArrayAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.arrays.EnumArrayAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.arrays.FloatArrayAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.arrays.IntegerArrayAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.arrays.LongArrayAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.arrays.ShortArrayAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.arrays.StringArrayAnnotationEntry;
-import net.andreho.haxxor.spec.annotation.arrays.SubAnnotationArrayEntry;
 import net.andreho.haxxor.spec.api.HxAnnotation;
+import net.andreho.haxxor.spec.api.HxAnnotationAttribute;
 import net.andreho.haxxor.spec.api.HxEnum;
 import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.spec.impl.annotation.BooleanAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.ByteAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.CharacterAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.ClassAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.DoubleAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.EnumAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.FloatAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.IntegerAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.LongAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.ShortAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.StringAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.SubAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.arrays.BooleanArrayAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.arrays.ByteArrayAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.arrays.CharacterArrayAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.arrays.ClassArrayAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.arrays.DoubleArrayAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.arrays.EnumArrayAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.arrays.FloatArrayAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.arrays.IntegerArrayAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.arrays.LongArrayAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.arrays.ShortArrayAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.arrays.StringArrayAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.arrays.SubAnnotationArrayAttribute;
 
-import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,35 +39,43 @@ import java.util.Map;
  * Created by a.hofmann on 30.05.2015.
  */
 public class HxAnnotationImpl
-    extends HxOwnedImpl
+    extends HxOwnedImpl<HxAnnotation>
     implements HxAnnotation {
 
-  protected final HxType type;
-  protected final Map<String, AnnotationEntry<?, ?>> values;
-  protected volatile Annotation view;
   protected boolean visible;
-
-  //-----------------------------------------------------------------------------------------------------------------
+  protected final HxType type;
+  protected final Map<String, HxAnnotationAttribute<?, ?>> values;
+//  protected volatile Annotation view;
 
   public HxAnnotationImpl(HxType type, boolean visible) {
     this(type, visible, new HashMap<>());
   }
 
-  public HxAnnotationImpl(HxType type, boolean visible, Map<String, AnnotationEntry<?, ?>> values) {
+  public HxAnnotationImpl(HxType type, boolean visible, Map<String, HxAnnotationAttribute<?, ?>> values) {
     this.type = type;
     this.values = values;
     this.visible = visible;
   }
 
-  //----------------------------------------------------------------------------------------------------------------
+  public HxAnnotationImpl(HxAnnotationImpl prototype) {
+    this.declaringMember = null;
 
-  @Override
-  public <A extends Annotation> A getView(final ClassLoader classLoader) {
-    if (this.view == null) {
-      //TODO
+    this.type = prototype.type;
+    this.visible = prototype.visible;
+    this.values = new HashMap<>(prototype.values.size());
+
+    for(HxAnnotationAttribute<?,?> entry : prototype.values.values()) {
+      set(entry.getName(), entry.clone());
     }
-    return (A) view;
   }
+
+//  @Override
+//  public <A extends Annotation> A getView(final ClassLoader classLoader) {
+//    if (this.view == null) {
+//      //TODO
+//    }
+//    return (A) view;
+//  }
 
   @Override
   public HxType getType() {
@@ -76,73 +83,74 @@ public class HxAnnotationImpl
   }
 
   @Override
-  public Map<String, AnnotationEntry<?, ?>> getValues() {
+  public Map<String, HxAnnotationAttribute<?, ?>> getValues() {
     return values;
   }
 
   @Override
-  public <V> V attribute(String name) {
-    final AnnotationEntry<?, ?> value = values.get(name);
-    return (V) value.get();
+  public HxAnnotation clone() {
+    return new HxAnnotationImpl(this);
   }
 
-  //----------------------------------------------------------------------------------------------------------------
+  @Override
+  public <V> V attribute(String name) {
+    final HxAnnotationAttribute<?, ?> value = values.get(name);
+    return (V) value.getValue();
+  }
 
-  private HxAnnotation set(String name, AnnotationEntry<?, ?> entry) {
+  private HxAnnotation set(String name, HxAnnotationAttribute<?, ?> entry) {
     values.put(name, entry);
     return this;
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   @Override
   public HxAnnotation attribute(String name, boolean value) {
-    return set(name, new BooleanAnnotationEntry(name, value));
+    return set(name, new BooleanAnnotationAttribute(name, value));
   }
 
   @Override
   public HxAnnotation attribute(String name, byte value) {
-    return set(name, new ByteAnnotationEntry(name, value));
+    return set(name, new ByteAnnotationAttribute(name, value));
   }
 
   @Override
   public HxAnnotation attribute(String name, char value) {
-    return set(name, new CharacterAnnotationEntry(name, value));
+    return set(name, new CharacterAnnotationAttribute(name, value));
   }
 
   @Override
   public HxAnnotation attribute(String name, short value) {
-    return set(name, new ShortAnnotationEntry(name, value));
+    return set(name, new ShortAnnotationAttribute(name, value));
   }
 
   @Override
   public HxAnnotation attribute(String name, int value) {
-    return set(name, new IntegerAnnotationEntry(name, value));
+    return set(name, new IntegerAnnotationAttribute(name, value));
   }
 
   @Override
   public HxAnnotation attribute(String name, float value) {
-    return set(name, new FloatAnnotationEntry(name, value));
+    return set(name, new FloatAnnotationAttribute(name, value));
   }
 
   @Override
   public HxAnnotation attribute(String name, long value) {
-    return set(name, new LongAnnotationEntry(name, value));
+    return set(name, new LongAnnotationAttribute(name, value));
   }
 
   @Override
   public HxAnnotation attribute(String name, double value) {
-    return set(name, new DoubleAnnotationEntry(name, value));
+    return set(name, new DoubleAnnotationAttribute(name, value));
   }
 
   @Override
   public HxAnnotation attribute(String name, String value) {
-    return set(name, new StringAnnotationEntry(name, value));
+    return set(name, new StringAnnotationAttribute(name, value));
   }
 
   @Override
   public HxAnnotation attribute(String name, HxEnum value) {
-    return set(name, new EnumAnnotationEntry(name, value));
+    return set(name, new EnumAnnotationAttribute(name, value));
   }
 
   @Override
@@ -151,76 +159,75 @@ public class HxAnnotationImpl
                                     .resolve(value.getName()));
   }
 
-
   @Override
-  public HxAnnotation attribute(String name, Enum value) {
-    return set(name, new EnumAnnotationEntry(name, HxEnum.toHxEnum(getType().getHaxxor(), value)));
+  public <E extends Enum<E>> HxAnnotation attribute(String name, E value) {
+    return set(name, new EnumAnnotationAttribute(name, HxEnum.toHxEnum(getType().getHaxxor(), value)));
   }
 
   @Override
   public HxAnnotation attribute(String name, HxType value) {
-    return set(name, new ClassAnnotationEntry(name, value));
+    return set(name, new ClassAnnotationAttribute(name, value));
   }
 
   @Override
   public HxAnnotation attribute(String name, HxAnnotation value) {
-    return set(name, new SubAnnotationEntry(name, value));
+    return set(name, new SubAnnotationAttribute(name, value));
   }
 
   @Override
   public HxAnnotation attribute(String name, boolean[] values) {
-    return set(name, new BooleanArrayAnnotationEntry(name, values));
+    return set(name, new BooleanArrayAnnotationAttribute(name, values));
   }
 
   @Override
   public HxAnnotation attribute(String name, byte[] values) {
-    return set(name, new ByteArrayAnnotationEntry(name, values));
+    return set(name, new ByteArrayAnnotationAttribute(name, values));
   }
 
   @Override
   public HxAnnotation attribute(String name, char[] values) {
-    return set(name, new CharacterArrayAnnotationEntry(name, values));
+    return set(name, new CharacterArrayAnnotationAttribute(name, values));
   }
 
   @Override
   public HxAnnotation attribute(String name, short[] values) {
-    return set(name, new ShortArrayAnnotationEntry(name, values));
+    return set(name, new ShortArrayAnnotationAttribute(name, values));
   }
 
   @Override
   public HxAnnotation attribute(String name, int[] values) {
-    return set(name, new IntegerArrayAnnotationEntry(name, values));
+    return set(name, new IntegerArrayAnnotationAttribute(name, values));
   }
 
   @Override
   public HxAnnotation attribute(String name, float[] values) {
-    return set(name, new FloatArrayAnnotationEntry(name, values));
+    return set(name, new FloatArrayAnnotationAttribute(name, values));
   }
 
   @Override
   public HxAnnotation attribute(String name, long[] values) {
-    return set(name, new LongArrayAnnotationEntry(name, values));
+    return set(name, new LongArrayAnnotationAttribute(name, values));
   }
 
   @Override
   public HxAnnotation attribute(String name, double[] values) {
-    return set(name, new DoubleArrayAnnotationEntry(name, values));
+    return set(name, new DoubleArrayAnnotationAttribute(name, values));
   }
 
   @Override
   public HxAnnotation attribute(String name, String[] values) {
-    return set(name, new StringArrayAnnotationEntry(name, values));
+    return set(name, new StringArrayAnnotationAttribute(name, values));
   }
 
   @Override
   public HxAnnotation attribute(String name, HxEnum[] values) {
-    return set(name, new EnumArrayAnnotationEntry(name, values));
+    return set(name, new EnumArrayAnnotationAttribute(name, values));
   }
 
   @Override
   public <E extends Enum<E>> HxAnnotation attribute(String name, E[] values) {
     return set(name,
-               new EnumArrayAnnotationEntry(name, HxEnum.toHxEnumArray(getType().getHaxxor(), values)));
+               new EnumArrayAnnotationAttribute(name, HxEnum.toHxEnumArray(getType().getHaxxor(), values)));
   }
 
   @Override
@@ -235,15 +242,13 @@ public class HxAnnotationImpl
 
   @Override
   public HxAnnotation attribute(String name, HxType[] values) {
-    return set(name, new ClassArrayAnnotationEntry(name, values));
+    return set(name, new ClassArrayAnnotationAttribute(name, values));
   }
 
   @Override
   public HxAnnotation attribute(String name, HxAnnotation[] values) {
-    return set(name, new SubAnnotationArrayEntry(name, values));
+    return set(name, new SubAnnotationArrayAttribute(name, values));
   }
-
-  //----------------------------------------------------------------------------------------------------------------
 
   @Override
   public boolean equals(Object o) {
@@ -255,7 +260,6 @@ public class HxAnnotationImpl
     }
 
     HxAnnotation that = (HxAnnotation) o;
-
     return type.equals(that.getType());
   }
 
@@ -264,24 +268,22 @@ public class HxAnnotationImpl
     return type.hashCode();
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   @Override
   public String toString() {
     final StringBuilder builder = new StringBuilder(type.getName()).append(" {\n");
 
-    for (Iterator<Map.Entry<String, AnnotationEntry<?, ?>>> iterator =
+    for (Iterator<Map.Entry<String, HxAnnotationAttribute<?, ?>>> iterator =
          getValues().entrySet()
                     .iterator(); iterator.hasNext(); ) {
 
-      final Map.Entry<String, AnnotationEntry<?, ?>> entry = iterator.next();
+      final Map.Entry<String, HxAnnotationAttribute<?, ?>> entry = iterator.next();
       final String key = entry.getKey();
-      final AnnotationEntry<?, ?> value = entry.getValue();
+      final HxAnnotationAttribute<?, ?> value = entry.getValue();
 
       builder.append('"')
              .append(key)
              .append("\": ")
-             .append(value.get());
+             .append(value.getValue());
       if (iterator.hasNext()) {
         builder.append('\n');
       }

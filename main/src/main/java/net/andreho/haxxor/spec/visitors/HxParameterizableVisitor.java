@@ -53,21 +53,15 @@ public class HxParameterizableVisitor
     this.remapping = new IdentityHashMap<>(32);
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   @Override
   public void visitAttribute(final Attribute attr) {
     super.visitAttribute(attr);
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   @Override
   public void visitCode() {
     super.visitCode();
   }
-
-  //----------------------------------------------------------------------------------------------------------------
 
   private LABEL[] remap(Label... labels) {
     LABEL[] array = new LABEL[labels.length];
@@ -88,8 +82,6 @@ public class HxParameterizableVisitor
     }
     return remapped;
   }
-
-  //----------------------------------------------------------------------------------------------------------------
 
   @Override
   public void visitParameter(final String name, final int access) {
@@ -902,8 +894,6 @@ public class HxParameterizableVisitor
     this.codeStream.LINE_NUMBER(line, remap(start));
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   @Override
   public AnnotationVisitor visitInsnAnnotation(final int typeRef, final TypePath typePath, final String desc,
                                                final boolean visible) {
@@ -971,13 +961,11 @@ public class HxParameterizableVisitor
     return super.visitLocalVariableAnnotation(typeRef, typePath, start, end, index, desc, visible);
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   @Override
   public void visitEnd() {
     super.visitEnd();
-
     final HxType owner = (HxType) this.target.getDeclaringMember();
+
     if (this.target instanceof HxMethod) {
       owner.initialize(Part.METHODS)
            .addMethod((HxMethod) this.target);

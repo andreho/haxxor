@@ -25,6 +25,7 @@ public class HxArrayTypeImpl
 
   public HxArrayTypeImpl(final Haxxor haxxor, final String arrayTypeName) {
     super(haxxor, arrayTypeName);
+
     if (!arrayTypeName.startsWith("[")) {
       throw new IllegalArgumentException("Invalid array type name: " + arrayTypeName);
     }

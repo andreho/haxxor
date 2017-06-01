@@ -7,6 +7,7 @@ import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.spec.api.HxTypeReference;
 import net.andreho.haxxor.spi.HxElementFactory;
 
 /**
@@ -21,7 +22,7 @@ public class DefaultHxElementFactory
   }
 
   @Override
-  public HxType createReference(final Haxxor haxxor, final String typeName) {
+  public HxTypeReference createReference(final Haxxor haxxor, final String typeName) {
     return null;
   }
 

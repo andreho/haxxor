@@ -19,6 +19,10 @@ public class HxParameterImpl<P extends HxParameterizable<P>>
   public HxParameterImpl() {
   }
 
+  public HxParameterImpl(HxType type) {
+    this.setType(type);
+  }
+
   public HxParameterImpl(HxParameterizable owner) {
     this.setDeclaringMember(owner);
   }
@@ -26,6 +30,21 @@ public class HxParameterImpl<P extends HxParameterizable<P>>
   public HxParameterImpl(HxParameterizable owner, HxType type) {
     this.setDeclaringMember(owner);
     this.setType(type);
+  }
+
+  public HxParameterImpl(HxParameterImpl prototype) {
+    this.declaringMember = null;
+
+    this.modifiers = prototype.modifiers;
+    this.name = prototype.name;
+    this.type = prototype.type;
+
+    prototype.cloneAnnotationsTo(this);
+  }
+
+  @Override
+  public HxParameter<P> clone() {
+    return new HxParameterImpl<>(this);
   }
 
   @Override

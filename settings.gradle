@@ -1,7 +1,6 @@
 rootProject.name = 'haxxor'
 include 'asm'
-include 'aop'
 include 'main'
-include 'utils'
+include 'aop'
 include 'agent'
 

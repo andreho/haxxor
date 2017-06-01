@@ -15,7 +15,10 @@ import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxParameterizable;
 import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxType.Part;
-import net.andreho.utils.AsmUtils;
+
+import static net.andreho.haxxor.Utils.normalizeClassname;
+import static net.andreho.haxxor.Utils.normalizeReturnType;
+import static net.andreho.haxxor.Utils.normalizeSignature;
 
 /**
  * <br/>Created by a.hofmann on 10.11.2015.<br/>
@@ -25,8 +28,6 @@ public class HxTypeVisitor
 
   private final Haxxor haxxor;
   private HxType type;
-
-  //----------------------------------------------------------------------------------------------------------------
 
   public HxTypeVisitor(Haxxor haxxor) {
     this(haxxor, null);
@@ -41,8 +42,6 @@ public class HxTypeVisitor
     return type;
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   @Override
   public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
     super.visit(version, access, name, signature, superName, interfaces);
@@ -56,7 +55,7 @@ public class HxTypeVisitor
         .setGenericSignature(signature);
 
     if (interfaces != null) {
-      this.type.setInterfaces(this.haxxor.reference(interfaces));
+      this.type.setInterfaces(this.haxxor.referencesAsCollection(interfaces));
     }
   }
 
@@ -70,12 +69,11 @@ public class HxTypeVisitor
     super.visitOuterClass(owner, name, desc);
 
     if (name != null && desc != null) {
-
       if ("<init>".equals(name)) {
         HxConstructor constructorReference =
             haxxor.createConstructorReference(
                 this.haxxor.reference(owner),
-                AsmUtils.normalizeSignature(desc)
+                normalizeSignature(desc)
             );
         this.type.setDeclaringMember(constructorReference);
       } else {
@@ -84,7 +82,7 @@ public class HxTypeVisitor
                 this.haxxor.reference(owner),
                 name,
                 desc.substring(desc.lastIndexOf(')') + 1),
-                AsmUtils.normalizeSignature(desc)
+                normalizeSignature(desc)
             );
         this.type.setDeclaringMember(methodReference);
       }
@@ -127,7 +125,7 @@ public class HxTypeVisitor
   public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
     this.type.initialize(Part.FIELDS);
     HxField hxField = this.haxxor
-        .createField(this.type, name, AsmUtils.normalizeClassname(desc))
+        .createField(name, normalizeClassname(desc))
         .setModifiers(access)
         .setGenericSignature(signature)
         .setDefaultValue(value);
@@ -137,20 +135,19 @@ public class HxTypeVisitor
 
   @Override
   public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-    final String[] parameterTypes = AsmUtils.normalizeSignature(desc);
+    final String[] parameterTypes = normalizeSignature(desc);
     HxParameterizable parameterizable;
 
     if ("<init>".equals(name)) {
       parameterizable = this.haxxor.createConstructor(this.type, parameterTypes);
     } else {
-      final String returnType = AsmUtils.normalizeReturnType(desc);
-      parameterizable = this.haxxor.createMethod(this.type, name, returnType, parameterTypes);
+      parameterizable = this.haxxor.createMethod(this.type, name, normalizeReturnType(desc), parameterTypes);
     }
 
     parameterizable.setGenericSignature(signature);
 
     if (exceptions != null) {
-      parameterizable.setExceptionTypes(this.haxxor.referenceArray(exceptions));
+      parameterizable.setExceptionTypes(this.haxxor.referencesAsArray(exceptions));
     }
 
     return new HxParameterizableVisitor(

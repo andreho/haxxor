@@ -1,9 +1,7 @@
 package net.andreho.haxxor.spec.api;
 
 import net.andreho.haxxor.Haxxor;
-import net.andreho.haxxor.spec.annotation.AnnotationEntry;
 
-import java.lang.annotation.Annotation;
 import java.util.Map;
 
 /**
@@ -14,8 +12,9 @@ import java.util.Map;
  * Created by a.hofmann on 31.05.2015.
  */
 public interface HxAnnotation
-    extends HxOwned,
-            HxProvider {
+    extends HxOwned<HxAnnotation>,
+            HxProvider,
+            Cloneable {
 
   /**
    * @return
@@ -25,29 +24,29 @@ public interface HxAnnotation
     return getType().getHaxxor();
   }
 
-  /**
-   * Creates and stores internally a proxy view of this annotation. Before usage,
-   * ensure that all associated classes are present and
-   * could be loaded by associated class-loader if necessary.<br/>
-   *
-   * @param <A>
-   * @return
-   */
-  default <A extends Annotation> A getView() {
-    return getView(getType().getHaxxor()
-                            .getClassLoader());
-  }
+//  /**
+//   * Creates and stores internally a proxy view of this annotation. Before usage,
+//   * ensure that all associated classes are present and
+//   * could be loaded by associated class-loader if necessary.<br/>
+//   *
+//   * @param <A>
+//   * @return
+//   */
+//  default <A extends Annotation> A getView() {
+//    return getView(getType().getHaxxor()
+//                            .getClassLoader());
+//  }
 
-  /**
-   * Creates and stores internally a proxy view of this annotation. Before usage,
-   * ensure that all associated classes are present and
-   * could be loaded by given class-loader if necessary.<br/>
-   *
-   * @param classLoader
-   * @param <A>
-   * @return
-   */
-  <A extends Annotation> A getView(ClassLoader classLoader);
+//  /**
+//   * Creates and stores internally a proxy view of this annotation. Before usage,
+//   * ensure that all associated classes are present and
+//   * could be loaded by given class-loader if necessary.<br/>
+//   *
+//   * @param classLoader
+//   * @param <A>
+//   * @return
+//   */
+//  <A extends Annotation> A getView(ClassLoader classLoader);
 
   /**
    * @return type of this annotation
@@ -57,7 +56,12 @@ public interface HxAnnotation
   /**
    * @return map with annotation entries
    */
-  Map<String, AnnotationEntry<?, ?>> getValues();
+  Map<String, HxAnnotationAttribute<?, ?>> getValues();
+
+  /**
+   * @return a new copy instance of this one
+   */
+  HxAnnotation clone();
 
   /**
    * Retrieves annotations value by name
@@ -88,7 +92,7 @@ public interface HxAnnotation
 
   HxAnnotation attribute(final String name, String value);
 
-  HxAnnotation attribute(final String name, Enum value);
+  <E extends Enum<E>> HxAnnotation attribute(final String name, E value);
 
   HxAnnotation attribute(final String name, HxEnum value);
 

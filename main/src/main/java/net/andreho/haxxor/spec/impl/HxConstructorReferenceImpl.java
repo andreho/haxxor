@@ -22,6 +22,7 @@ public class HxConstructorReferenceImpl
     implements HxConstructor {
 
   private final HxType declaringType;
+  private HxConstructor target;
   private HxType[] parameterTypes;
 
   public HxConstructorReferenceImpl(HxType declaringType,
@@ -31,7 +32,15 @@ public class HxConstructorReferenceImpl
   }
 
   public HxConstructor get() {
-    return declaringType.getConstructor(parameterTypes);
+    if(target == null) {
+      target = declaringType.getConstructor(parameterTypes);
+    }
+    return target;
+  }
+
+  @Override
+  public HxConstructor clone() {
+    return get().clone();
   }
 
   @Override
@@ -91,6 +100,12 @@ public class HxConstructorReferenceImpl
   @Override
   public HxConstructor setParameterAt(final int index, final HxParameter parameter) {
     get().setParameterAt(index, parameter);
+    return this;
+  }
+
+  @Override
+  public HxConstructor addParameter(final HxParameter<HxConstructor> parameter) {
+    get().addParameter(parameter);
     return this;
   }
 

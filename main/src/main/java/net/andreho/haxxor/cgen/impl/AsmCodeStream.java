@@ -34,7 +34,7 @@ public class AsmCodeStream
     return type;
   }
 
-  protected Label label(LABEL label) {
+  protected Label asmLabel(LABEL label) {
     return label.getAsmLabel();
   }
 
@@ -42,7 +42,7 @@ public class AsmCodeStream
     Label[] result = new Label[labels.length];
 
     for (int i = 0; i < labels.length; i++) {
-      result[i] = label(labels[i]);
+      result[i] = asmLabel(labels[i]);
     }
     return result;
   }
@@ -829,97 +829,97 @@ public class AsmCodeStream
 
   @Override
   public CodeStream IFEQ(LABEL label) {
-    this.mv.visitJumpInsn(Opcodes.IFEQ, label(label));
+    this.mv.visitJumpInsn(Opcodes.IFEQ, asmLabel(label));
     return this;
   }
 
   @Override
   public CodeStream IFNE(LABEL label) {
-    this.mv.visitJumpInsn(Opcodes.IFNE, label(label));
+    this.mv.visitJumpInsn(Opcodes.IFNE, asmLabel(label));
     return this;
   }
 
   @Override
   public CodeStream IFLT(LABEL label) {
-    this.mv.visitJumpInsn(Opcodes.IFLT, label(label));
+    this.mv.visitJumpInsn(Opcodes.IFLT, asmLabel(label));
     return this;
   }
 
   @Override
   public CodeStream IFGE(LABEL label) {
-    this.mv.visitJumpInsn(Opcodes.IFGE, label(label));
+    this.mv.visitJumpInsn(Opcodes.IFGE, asmLabel(label));
     return this;
   }
 
   @Override
   public CodeStream IFGT(LABEL label) {
-    this.mv.visitJumpInsn(Opcodes.IFGT, label(label));
+    this.mv.visitJumpInsn(Opcodes.IFGT, asmLabel(label));
     return this;
   }
 
   @Override
   public CodeStream IFLE(LABEL label) {
-    this.mv.visitJumpInsn(Opcodes.IFLE, label(label));
+    this.mv.visitJumpInsn(Opcodes.IFLE, asmLabel(label));
     return this;
   }
 
   @Override
   public CodeStream IF_ICMPEQ(LABEL label) {
-    this.mv.visitJumpInsn(Opcodes.IF_ICMPEQ, label(label));
+    this.mv.visitJumpInsn(Opcodes.IF_ICMPEQ, asmLabel(label));
     return this;
   }
 
   @Override
   public CodeStream IF_ICMPNE(LABEL label) {
-    this.mv.visitJumpInsn(Opcodes.IF_ICMPNE, label(label));
+    this.mv.visitJumpInsn(Opcodes.IF_ICMPNE, asmLabel(label));
     return this;
   }
 
   @Override
   public CodeStream IF_ICMPLT(LABEL label) {
-    this.mv.visitJumpInsn(Opcodes.IF_ICMPLT, label(label));
+    this.mv.visitJumpInsn(Opcodes.IF_ICMPLT, asmLabel(label));
     return this;
   }
 
   @Override
   public CodeStream IF_ICMPGE(LABEL label) {
-    this.mv.visitJumpInsn(Opcodes.IF_ICMPGE, label(label));
+    this.mv.visitJumpInsn(Opcodes.IF_ICMPGE, asmLabel(label));
     return this;
   }
 
   @Override
   public CodeStream IF_ICMPGT(LABEL label) {
-    this.mv.visitJumpInsn(Opcodes.IF_ICMPGT, label(label));
+    this.mv.visitJumpInsn(Opcodes.IF_ICMPGT, asmLabel(label));
     return this;
   }
 
   @Override
   public CodeStream IF_ICMPLE(LABEL label) {
-    this.mv.visitJumpInsn(Opcodes.IF_ICMPLE, label(label));
+    this.mv.visitJumpInsn(Opcodes.IF_ICMPLE, asmLabel(label));
     return this;
   }
 
   @Override
   public CodeStream IF_ACMPEQ(LABEL label) {
-    this.mv.visitJumpInsn(Opcodes.IF_ACMPEQ, label(label));
+    this.mv.visitJumpInsn(Opcodes.IF_ACMPEQ, asmLabel(label));
     return this;
   }
 
   @Override
   public CodeStream IF_ACMPNE(LABEL label) {
-    this.mv.visitJumpInsn(Opcodes.IF_ACMPNE, label(label));
+    this.mv.visitJumpInsn(Opcodes.IF_ACMPNE, asmLabel(label));
     return this;
   }
 
   @Override
   public CodeStream GOTO(LABEL label) {
-    this.mv.visitJumpInsn(Opcodes.GOTO, label(label));
+    this.mv.visitJumpInsn(Opcodes.GOTO, asmLabel(label));
     return this;
   }
 
   @Override
   public CodeStream JSR(LABEL label) {
-    this.mv.visitJumpInsn(Opcodes.JSR, label(label));
+    this.mv.visitJumpInsn(Opcodes.JSR, asmLabel(label));
     return this;
   }
 
@@ -931,13 +931,13 @@ public class AsmCodeStream
 
   @Override
   public CodeStream TABLESWITCH(int min, int max, LABEL defaultLabel, LABEL... labels) {
-    this.mv.visitTableSwitchInsn(min, max, label(defaultLabel), labels(labels));
+    this.mv.visitTableSwitchInsn(min, max, asmLabel(defaultLabel), labels(labels));
     return this;
   }
 
   @Override
   public CodeStream LOOKUPSWITCH(LABEL defaultLabel, int[] keys, LABEL[] labels) {
-    this.mv.visitLookupSwitchInsn(label(defaultLabel), keys, labels(labels));
+    this.mv.visitLookupSwitchInsn(asmLabel(defaultLabel), keys, labels(labels));
     return this;
   }
 
@@ -1103,25 +1103,25 @@ public class AsmCodeStream
 
   @Override
   public CodeStream IFNULL(LABEL label) {
-    this.mv.visitJumpInsn(Opcodes.IFNULL, label(label));
+    this.mv.visitJumpInsn(Opcodes.IFNULL, asmLabel(label));
     return this;
   }
 
   @Override
   public CodeStream IFNONNULL(LABEL label) {
-    this.mv.visitJumpInsn(Opcodes.IFNONNULL, label(label));
+    this.mv.visitJumpInsn(Opcodes.IFNONNULL, asmLabel(label));
     return this;
   }
 
   @Override
   public CodeStream LABEL(LABEL label) {
-    this.mv.visitLabel(label(label));
+    this.mv.visitLabel(asmLabel(label));
     return this;
   }
 
   @Override
   public CodeStream TRY_CATCH(LABEL startLabel, LABEL endLabel, LABEL handler, String type) {
-    this.mv.visitTryCatchBlock(label(startLabel), label(endLabel), label(handler), type);
+    this.mv.visitTryCatchBlock(asmLabel(startLabel), asmLabel(endLabel), asmLabel(handler), type);
     return this;
   }
 
@@ -1133,13 +1133,13 @@ public class AsmCodeStream
 
   @Override
   public CodeStream LOCAL_VARIABLE(String name, String desc, String signature, LABEL start, LABEL end, int index) {
-    this.mv.visitLocalVariable(name, desc, signature, label(start), label(end), index);
+    this.mv.visitLocalVariable(name, desc, signature, asmLabel(start), asmLabel(end), index);
     return this;
   }
 
   @Override
   public CodeStream LINE_NUMBER(int line, LABEL start) {
-    this.mv.visitLineNumber(line, label(start));
+    this.mv.visitLineNumber(line, asmLabel(start));
     this.lineNumber = line;
     return this;
   }

@@ -1,6 +1,7 @@
 package net.andreho.haxxor;
 
 import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.spec.api.HxTypeReference;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
 import net.andreho.haxxor.spi.HxTypeNamingStrategy;
 import net.andreho.haxxor.spi.impl.DefaultHxByteCodeLoader;
@@ -30,7 +31,7 @@ public class HaxxorBuilder {
    * @param haxxor is the requesting instance
    * @return
    */
-  public Map<String, HxType> createReferenceCache(Haxxor haxxor) {
+  public Map<String, HxTypeReference> createReferenceCache(Haxxor haxxor) {
     return new TreeMap<>();
   }
 

@@ -7,10 +7,12 @@ import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxParameterizable;
 import net.andreho.haxxor.spec.api.HxType;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+
+import static net.andreho.haxxor.Utils.isUninitialized;
 
 /**
  * Created by a.hofmann on 31.05.2015.
@@ -19,14 +21,23 @@ public abstract class HxParameterizableImpl<P extends HxParameterizable<P>>
     extends HxAnnotatedImpl<P>
     implements HxParameterizable<P> {
 
-  protected List<HxParameter<P>> parameters;
-  protected List<HxType> exceptions;
+  protected static final List DEFAULT_EMPTY_PARAMETERS = Collections.emptyList();
+  protected static final List DEFAULT_EMPTY_EXCEPTIONS = Collections.emptyList();
+
+  protected List<HxParameter<P>> parameters = DEFAULT_EMPTY_PARAMETERS;
+  protected List<HxType> exceptions = DEFAULT_EMPTY_EXCEPTIONS;
   protected String genericSignature;
   protected HxCode code;
 
   public HxParameterizableImpl() {
     super();
     this.setModifiers(Modifiers.PUBLIC.toBit());
+  }
+
+  protected void cloneParametersTo(HxParameterizable<P> other) {
+    for (HxParameter<P> parameter : getParameters()) {
+      other.addParameter(parameter.clone());
+    }
   }
 
   @Override
@@ -48,6 +59,35 @@ public abstract class HxParameterizableImpl<P extends HxParameterizable<P>>
     return this.code;
   }
 
+  private List<HxParameter<P>> initializeParameters() {
+    if(isUninitialized(parameters)) {
+      parameters = new ArrayList<>();
+    }
+    return parameters;
+  }
+
+  private HxParameter<P> applyParameter(HxParameter<P> parameter) {
+    if(parameter.getDeclaringMember() != null) {
+      throw new IllegalArgumentException("Parameter is already used: " + parameter);
+    }
+    parameter.setDeclaringMember(this);
+    return parameter;
+  }
+
+  protected List<HxParameter<P>> applyParameters(List<HxParameter<P>> parameters) {
+    for(HxParameter<P> parameter : parameters) {
+      applyParameter(parameter);
+    }
+    return parameters;
+  }
+
+  private List<HxType> initializeExceptions() {
+    if(isUninitialized(exceptions)) {
+      exceptions = new ArrayList<>();
+    }
+    return exceptions;
+  }
+
   @Override
   public List<HxParameter<P>> getParameters() {
     return this.parameters;
@@ -55,7 +95,7 @@ public abstract class HxParameterizableImpl<P extends HxParameterizable<P>>
 
   @Override
   public P setParameters(final List<HxParameter<P>> parameters) {
-    this.parameters = parameters;
+    this.parameters = applyParameters(parameters);
     return (P) this;
   }
 
@@ -66,21 +106,27 @@ public abstract class HxParameterizableImpl<P extends HxParameterizable<P>>
   }
 
   @Override
+  public P addParameter(final HxParameter<P> parameter) {
+    initializeParameters().add(applyParameter(parameter));
+    return (P) this;
+  }
+
+  @Override
   public HxParameter<P> getParameterAt(final int index) {
     return parameters.get(index);
   }
 
   @Override
   public P setParameterAt(final int index, final HxParameter<P> parameter) {
-    this.parameters.set(index, parameter);
-    parameter.setDeclaringMember(this);
+    HxParameter<P> oldParameter = getParameterAt(index);
+    initializeParameters().set(index, applyParameter(parameter));
+    oldParameter.setDeclaringMember(null);
     return (P) this;
   }
 
   @Override
   public P addParameterAt(final int index, final HxParameter<P> parameter) {
-    this.parameters.add(index, parameter);
-    parameter.setDeclaringMember(this);
+    initializeParameters().add(index, applyParameter(parameter));
     return (P) this;
   }
 
@@ -96,7 +142,7 @@ public abstract class HxParameterizableImpl<P extends HxParameterizable<P>>
 
   @Override
   public P setGenericSignature(String genericSignature) {
-    this.genericSignature = Objects.requireNonNull(genericSignature);
+    this.genericSignature = genericSignature;
     return (P) this;
   }
 
