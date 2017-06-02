@@ -35,19 +35,20 @@ public class HxParameterizableVisitor
 
   protected final HxCode code;
   protected final CodeStream codeStream;
+  protected final HxType declaringType;
   protected final HxParameterizable target;
   protected final Map<Label, LABEL> remapping;
   protected int parameterIndex = 0;
 
-  public HxParameterizableVisitor(HxParameterizable hxParameterizable) {
-    this(hxParameterizable, null);
+  public HxParameterizableVisitor(HxType declaringType, HxParameterizable hxParameterizable) {
+    this(declaringType, hxParameterizable, null);
   }
 
-  public HxParameterizableVisitor(HxParameterizable target, MethodVisitor mv) {
+  public HxParameterizableVisitor(HxType declaringType, HxParameterizable target, MethodVisitor mv) {
     super(Opcodes.ASM5, mv);
-    Objects.requireNonNull(target, "Target can't be null.");
 
-    this.target = target;
+    this.declaringType = Objects.requireNonNull(declaringType, "Declaring type can't be null.");
+    this.target = Objects.requireNonNull(target, "Target can't be null.");
     this.code = target.getCode();
     this.codeStream = this.code.build();
     this.remapping = new IdentityHashMap<>(32);
@@ -97,7 +98,7 @@ public class HxParameterizableVisitor
     final HxMethod hxMethod = (HxMethod) this.target;
     final HxAnnotation annotation = hxMethod.getHaxxor()
                                             .createAnnotation(hxMethod.getReturnType()
-                                                                      .getInternalName(), true);
+                                                                      .getName(), true);
     return new HxAnnotationVisitor(annotation, super.visitAnnotationDefault())
         .consumer((anno) -> hxMethod.setDefaultValue(anno));
   }
@@ -962,7 +963,8 @@ public class HxParameterizableVisitor
   @Override
   public void visitEnd() {
     super.visitEnd();
-    final HxType owner = (HxType) this.target.getDeclaringMember();
+
+    final HxType owner = this.declaringType;
 
     if (this.target instanceof HxMethod) {
       owner.initialize(Part.METHODS)

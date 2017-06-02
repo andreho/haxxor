@@ -12,6 +12,13 @@ import java.util.Map;
 public class DefaultHxInternalClassNameProvider
     implements HxInternalClassNameProvider {
 
+  private static final int LONGEST_PRIMITIVE_NAME = "boolean".length();
+  private static final char ARRAY_PREFIX = '[';
+  private static final char ARRAY_SUFFIX = ']';
+  private static final char DESC_PREFIX = 'L';
+  private static final char DESC_SUFFIX = ';';
+  private static final char JAVA_PACKAGE_DELIMITER = '.';
+  private static final char INTERNAL_PACKAGE_DELIMITER = '/';
   private static final Map<String, String> PRIMITIVES;
 
   static {
@@ -30,50 +37,33 @@ public class DefaultHxInternalClassNameProvider
 
   @Override
   public String toInternalClassName(final String typeName) {
-    boolean desc = false;
-    int dim = 0;
     int off = 0;
     int len = typeName.length();
 
-    if (typeName.charAt(off) == '[') {
-      do {
-        dim++;
-      }
-      while (typeName.charAt(++off) == '[');
-    } else if (typeName.charAt(len - 1) == ']') {
-      do {
-        dim++;
-        len -= 2;
-      }
-      while (typeName.charAt(len - 1) == ']');
+    if (typeName.charAt(off) == ARRAY_PREFIX || typeName.charAt(len - 1) == ARRAY_SUFFIX) {
+      throw new IllegalArgumentException("Classname of an array can't be represented as internal classname: "+typeName);
     }
 
     //Do we have a descriptor form? [Ljava/lang/String;
-    if (typeName.charAt(off) == 'L' &&
-        typeName.charAt(len - 1) == ';') {
-      desc = true;
+    if (typeName.charAt(off) == DESC_PREFIX &&
+        typeName.charAt(len - 1) == DESC_SUFFIX) {
       off++; //skip leading 'L'
       len--; //skip trailing ';'
     }
 
     String type = typeName.substring(off, len);
-    String primitive = PRIMITIVES.get(type);
+    String primitive = null;
+
+    if(type.length() <= LONGEST_PRIMITIVE_NAME) {
+      primitive = PRIMITIVES.get(type);
+    }
 
     if (primitive != null) {
       type = primitive;
-    } else if (type.indexOf('/') == -1 &&
-               type.indexOf('.') > -1) {
-      type = type.replace('.', '/');
+    } else {
+      type = type.replace(JAVA_PACKAGE_DELIMITER, INTERNAL_PACKAGE_DELIMITER);
     }
 
-    if (dim > 0 && !desc) {
-      final StringBuilder builder = new StringBuilder(type.length() + dim);
-      while (dim-- > 0) {
-        builder.append('[');
-      }
-      return builder.append(type)
-                    .toString();
-    }
     return type;
   }
 }

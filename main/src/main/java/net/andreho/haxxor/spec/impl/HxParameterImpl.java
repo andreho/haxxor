@@ -25,15 +25,6 @@ public class HxParameterImpl<P extends HxParameterizable<P>>
     this.setType(type);
   }
 
-  public HxParameterImpl(HxParameterizable owner) {
-    this.setDeclaringMember(owner);
-  }
-
-  public HxParameterImpl(HxParameterizable owner, HxType type) {
-    this.setDeclaringMember(owner);
-    this.setType(type);
-  }
-
   public HxParameterImpl(HxParameterImpl prototype) {
     this(prototype.name, prototype);
   }
@@ -95,6 +86,9 @@ public class HxParameterImpl<P extends HxParameterizable<P>>
 
   @Override
   public HxParameter setType(final HxType type) {
+    if("void".equals(type.getName())) {
+      throw new IllegalArgumentException("Parameter's type can't be void.");
+    }
     this.type = Objects.requireNonNull(type, "Parameter-type can't be null.");
     return this;
   }
@@ -102,5 +96,11 @@ public class HxParameterImpl<P extends HxParameterizable<P>>
   @Override
   public P getDeclaringMember() {
     return super.getDeclaringMember();
+  }
+
+  @Override
+  public String toString() {
+    HxType type = getType();
+    return (type == null? "undefined" : type.getName())+ " " + getName();
   }
 }

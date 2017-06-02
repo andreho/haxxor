@@ -5,9 +5,11 @@ import net.andreho.haxxor.spec.api.HxTypeReference;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
 import net.andreho.haxxor.spi.HxElementFactory;
 import net.andreho.haxxor.spi.HxInternalClassNameProvider;
+import net.andreho.haxxor.spi.HxJavaClassNameProvider;
 import net.andreho.haxxor.spi.impl.DefaultHxByteCodeLoader;
 import net.andreho.haxxor.spi.impl.DefaultHxElementFactory;
 import net.andreho.haxxor.spi.impl.DefaultHxInternalClassNameProvider;
+import net.andreho.haxxor.spi.impl.DefaultHxJavaClassNameProvider;
 
 import java.util.Map;
 import java.util.Objects;
@@ -18,6 +20,10 @@ import java.util.TreeMap;
  */
 public class HaxxorBuilder {
   private final ClassLoader classLoader;
+
+  public HaxxorBuilder() {
+    this(HaxxorBuilder.class.getClassLoader());
+  }
 
   public HaxxorBuilder(final ClassLoader classLoader) {
     this.classLoader = Objects.requireNonNull(classLoader);
@@ -47,7 +53,7 @@ public class HaxxorBuilder {
    * @param haxxor instance that receives created content loader
    * @return new byte-code loader associated with given haxxor instance
    */
-  public HxByteCodeLoader createCodeLoader(Haxxor haxxor) {
+  public HxByteCodeLoader createByteCodeLoader(Haxxor haxxor) {
     return new DefaultHxByteCodeLoader(haxxor);
   }
 
@@ -72,12 +78,22 @@ public class HaxxorBuilder {
   }
 
   /**
-   * Creates a new type-naming strategy for further usage
+   * Creates a new provider of internal classnames
    *
    * @param haxxor is the requesting instance
    * @return
    */
   public HxInternalClassNameProvider createInternalClassNameProvider(Haxxor haxxor) {
     return new DefaultHxInternalClassNameProvider();
+  }
+
+  /**
+   * Creates a new provider of default Java type-classnames
+   *
+   * @param haxxor is the requesting instance
+   * @return
+   */
+  public HxJavaClassNameProvider createJavaClassNameProvider(Haxxor haxxor) {
+    return new DefaultHxJavaClassNameProvider();
   }
 }

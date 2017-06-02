@@ -29,19 +29,19 @@ public class HxTypeImpl
   protected Version version = Version.V1_8;
   protected HxType superType;
   protected String genericSignature = "";
-  protected Collection<HxType> interfaces = Collections.emptySet();
-  protected Collection<HxType> declaredTypes = Collections.emptySet();
+  protected List<HxType> interfaces = Collections.emptyList();
+  protected List<HxType> declaredTypes = Collections.emptyList();
 
   protected List<HxField> fields = Collections.emptyList();
   protected Map<String, HxField> fieldMap = Collections.emptyMap();
 
+  protected List<HxConstructor> constructors = Collections.emptyList();
   protected List<HxMethod> methods = Collections.emptyList();
   protected Map<String, Collection<HxMethod>> methodMap = Collections.emptyMap();
-  protected List<HxConstructor> constructors = Collections.emptyList();
 
   public HxTypeImpl(Haxxor haxxor, String name) {
     super(haxxor, name);
-    this.superType = haxxor.reference("java/lang/Object");
+    this.superType = haxxor.reference("java.lang.Object");
   }
 
   @Override
@@ -82,14 +82,14 @@ public class HxTypeImpl
   }
 
   @Override
-  public Collection<HxType> getInterfaces() {
+  public List<HxType> getInterfaces() {
     return interfaces;
   }
 
   @Override
-  public HxType setInterfaces(Collection<HxType> interfaces) {
+  public HxType setInterfaces(List<HxType> interfaces) {
     if (isUninitialized(interfaces)) {
-      interfaces = Collections.emptySet();
+      interfaces = Collections.emptyList();
     }
 
     this.interfaces = interfaces;
@@ -97,14 +97,14 @@ public class HxTypeImpl
   }
 
   @Override
-  public Collection<HxType> getDeclaredTypes() {
+  public List<HxType> getDeclaredTypes() {
     return declaredTypes;
   }
 
   @Override
-  public HxType setDeclaredTypes(Collection<HxType> declaredTypes) {
+  public HxType setDeclaredTypes(List<HxType> declaredTypes) {
     if (isUninitialized(declaredTypes)) {
-      declaredTypes = Collections.emptySet();
+      declaredTypes = Collections.emptyList();
     }
 
     this.declaredTypes = declaredTypes;
@@ -424,9 +424,9 @@ public class HxTypeImpl
 
     writer.visit(getVersion().getCode(),
                  getModifiers(),
-                 getInternalName(),
+                 getName(),
                  getGenericSignature(),
-                 getSuperType().getInternalName(),
+                 getSuperType().getName(),
                  getInterfaces().toArray(new String[0]));
 
     for (HxAnnotation annotation : getAnnotations()) {
@@ -436,15 +436,15 @@ public class HxTypeImpl
     //Outer type
     if (getDeclaringMember() instanceof HxType) {
       HxType owner = getDeclaringMember();
-      writer.visitOuterClass(owner.getInternalName(), null, null);
+      writer.visitOuterClass(owner.getName(), null, null);
     } else {
       if (getDeclaringMember() instanceof HxMethod) {
         HxMethod owner = getDeclaringMember();
-        writer.visitOuterClass(((HxType) owner.getDeclaringMember()).getInternalName(), owner.getName(),
+        writer.visitOuterClass(((HxType) owner.getDeclaringMember()).getName(), owner.getName(),
                                owner.toDescriptor());
       } else {
         HxConstructor owner = getDeclaringMember();
-        writer.visitOuterClass(((HxType) owner.getDeclaringMember()).getInternalName(), "<init>", owner.toDescriptor());
+        writer.visitOuterClass(((HxType) owner.getDeclaringMember()).getName(), "<init>", owner.toDescriptor());
       }
     }
 
@@ -452,10 +452,10 @@ public class HxTypeImpl
     for (HxType innerType : getDeclaredTypes()) {
       HxType owner = innerType.getDeclaringMember();
       if (isMemberType() && owner != null) {
-        writer.visitInnerClass(innerType.getInternalName(), owner.getInternalName(), innerType.getSimpleName(),
+        writer.visitInnerClass(innerType.getName(), owner.getName(), innerType.getSimpleName(),
                                innerType.getModifiers());
       }
-      writer.visitInnerClass(innerType.getInternalName(), null, innerType.getSimpleName(), innerType.getModifiers());
+      writer.visitInnerClass(innerType.getName(), null, innerType.getSimpleName(), innerType.getModifiers());
     }
 
     return writer.toByteArray();

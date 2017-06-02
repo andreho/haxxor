@@ -13,6 +13,7 @@ import net.andreho.haxxor.spec.api.HxTypeReference;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
@@ -24,25 +25,69 @@ public class HxTypeReferenceImpl
 
   private volatile HxType type;
 
-  public HxTypeReferenceImpl(Haxxor haxxor, String name) {
+  public HxTypeReferenceImpl(final Haxxor haxxor, final HxType type) {
+    super(haxxor, Objects.requireNonNull(type, "Referenced type can't be null.").getName());
+    this.type = type;
+  }
+
+  public HxTypeReferenceImpl(final Haxxor haxxor, final String name) {
     this(haxxor, name, -1);
   }
 
-  public HxTypeReferenceImpl(Haxxor haxxor, String name, int modifiers) {
+  public HxTypeReferenceImpl(final Haxxor haxxor, final String name, final int modifiers) {
     super(haxxor, name);
     this.modifiers = modifiers;
   }
 
   private boolean isAvailable() {
-    return type != null || getHaxxor().hasResolved(getInternalName());
+    return type != null || getHaxxor().hasResolved(getName());
+  }
+
+  private boolean hasModifiers() {
+    return !isAvailable() && this.modifiers != -1;
+  }
+
+  @Override
+  public boolean isReference() {
+    return true;
   }
 
   @Override
   public HxType toType() {
     if(this.type == null) {
-      this.type = getHaxxor().resolve(getInternalName());
+      this.type = getHaxxor().resolve(getName());
     }
     return type;
+  }
+
+  @Override
+  public HxType setModifiers(HxModifier... modifiers) {
+    if(isAvailable()) {
+      toType().setModifiers(modifiers);
+      super.setModifiers(-1);
+    } else {
+      super.setModifiers(modifiers);
+    }
+    return this;
+  }
+
+  @Override
+  public HxType setModifiers(int modifiers) {
+    if(isAvailable()) {
+      toType().setModifiers(modifiers);
+      super.setModifiers(-1);
+    } else {
+      super.setModifiers(modifiers);
+    }
+    return this;
+  }
+
+  @Override
+  public int getModifiers() {
+    if (hasModifiers()) {
+      return super.getModifiers();
+    }
+    return toType().getModifiers();
   }
 
   @Override
@@ -58,22 +103,23 @@ public class HxTypeReferenceImpl
 
   @Override
   public boolean isPrimitive() {
-    return toType().isPrimitive();
-  }
-
-  @Override
-  public boolean isArray() {
-    return toType().isArray();
+    switch (getName()) {
+      case "void":
+      case "boolean":
+      case "byte":
+      case "char":
+      case "short":
+      case "int":
+      case "float":
+      case "long":
+      case "double": return true;
+    }
+    return false;
   }
 
   @Override
   public boolean isGeneric() {
     return toType().isGeneric();
-  }
-
-  @Override
-  public int getDimension() {
-    return toType().getDimension();
   }
 
   @Override
@@ -88,46 +134,73 @@ public class HxTypeReferenceImpl
 
   @Override
   public boolean isFinal() {
+    if (hasModifiers()) {
+      return super.isFinal();
+    }
     return toType().isFinal();
   }
 
   @Override
   public boolean isPublic() {
+    if (hasModifiers()) {
+      return super.isPublic();
+    }
     return toType().isPublic();
   }
 
   @Override
   public boolean isProtected() {
+    if (hasModifiers()) {
+      return super.isProtected();
+    }
     return toType().isProtected();
   }
 
   @Override
   public boolean isPrivate() {
+    if (hasModifiers()) {
+      return super.isPrivate();
+    }
     return toType().isPrivate();
   }
 
   @Override
   public boolean isInternal() {
+    if (hasModifiers()) {
+      return super.isInternal();
+    }
     return toType().isInternal();
   }
 
   @Override
   public boolean isAbstract() {
+    if (hasModifiers()) {
+      return super.isAbstract();
+    }
     return toType().isAbstract();
   }
 
   @Override
   public boolean isInterface() {
+    if (hasModifiers()) {
+      return super.isInterface();
+    }
     return toType().isInterface();
   }
 
   @Override
   public boolean isEnum() {
+    if (hasModifiers()) {
+      return super.isEnum();
+    }
     return toType().isEnum();
   }
 
   @Override
   public boolean isAnnotation() {
+    if (hasModifiers()) {
+      return super.isAnnotation();
+    }
     return toType().isAnnotation();
   }
 
@@ -158,12 +231,12 @@ public class HxTypeReferenceImpl
   }
 
   @Override
-  public Collection<HxType> getInterfaces() {
+  public List<HxType> getInterfaces() {
     return toType().getInterfaces();
   }
 
   @Override
-  public HxType setInterfaces(Collection<HxType> interfaces) {
+  public HxType setInterfaces(List<HxType> interfaces) {
     toType().setInterfaces(interfaces);
     return this;
   }
@@ -174,12 +247,12 @@ public class HxTypeReferenceImpl
   }
 
   @Override
-  public Collection<HxType> getDeclaredTypes() {
+  public List<HxType> getDeclaredTypes() {
     return toType().getDeclaredTypes();
   }
 
   @Override
-  public HxType setDeclaredTypes(Collection<HxType> declaredTypes) {
+  public HxType setDeclaredTypes(List<HxType> declaredTypes) {
     toType().setDeclaredTypes(declaredTypes);
     return this;
   }
@@ -320,35 +393,6 @@ public class HxTypeReferenceImpl
     return toType().annotations(predicate, recursive);
   }
 
-  @Override
-  public HxType setModifiers(HxModifier... modifiers) {
-    if(isAvailable()) {
-      toType().setModifiers(modifiers);
-      this.modifiers = -1;
-    } else {
-      super.setModifiers(modifiers);
-    }
-    return this;
-  }
-
-  @Override
-  public HxType setModifiers(int modifiers) {
-    if(isAvailable()) {
-      toType().setModifiers(modifiers);
-      this.modifiers = -1;
-    } else {
-      super.setModifiers(modifiers);
-    }
-    return this;
-  }
-
-  @Override
-  public int getModifiers() {
-    if (isAvailable()) {
-      return this.modifiers = toType().getModifiers();
-    }
-    return this.modifiers;
-  }
 
   @Override
   public <M extends HxMember> M getDeclaringMember() {

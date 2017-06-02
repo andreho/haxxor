@@ -62,7 +62,7 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
    * @return
    */
   default P addParameterType(HxType type) {
-    return addParameter(new HxParameterImpl<>(this, type));
+    return addParameter(new HxParameterImpl<>(type));
   }
 
   /**
@@ -87,7 +87,7 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
   default P setParameterTypes(HxType... types) {
     final List<HxParameter<P>> parameters = new ArrayList<>(types.length);
     for (HxType type : types) {
-      parameters.add(new HxParameterImpl<>(this, type));
+      parameters.add(new HxParameterImpl<>(type));
     }
     return setParameters(parameters);
   }
@@ -99,7 +99,7 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
   default P setParameterTypes(List<HxType> types) {
     final List<HxParameter<P>> parameters = new ArrayList<>(types.size());
     for (HxType type : types) {
-      parameters.add(new HxParameterImpl<>(this, type));
+      parameters.add(new HxParameterImpl<>(type));
     }
     return setParameters(parameters);
   }

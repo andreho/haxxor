@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 import java.util.concurrent.Callable;
 
 /**
- * This annotation injects the invokable/callable reference of the original intercepted method code.
+ * This annotation injects the invokable/callable reference to the original intercepted method code.
  * <br/>Created by a.hofmann on 24.12.2016.
  * @implSpec The receiving parameter must be one of: {@link Runnable} or {@link Callable}
  */

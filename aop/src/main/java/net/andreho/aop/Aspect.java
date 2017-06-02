@@ -38,7 +38,7 @@ public @interface Aspect {
    Parameter[] parameters() default {};
 
    /**
-    * Prefix for a new name of the intercepted method, that is going to receive actual code of intercepted method.
+    * Prefix for a new name of the intercepted method, that is going to receive actual code of this intercepted method.
     * This means one intercepted method results in creation of a method copy with provided
     * <code>prefix + method_name + suffix</code>.
     *
@@ -47,7 +47,7 @@ public @interface Aspect {
    String prefix() default "__$";
 
    /**
-    * Suffix for new name of the intercepted method, that is going to receive actual code of intercepted method.
+    * Suffix for new name of the intercepted method, that is going to receive actual code of this intercepted method.
     * This means one intercepted method results in creation of a method copy with provided
     * <code>prefix + method_name + suffix</code>.
     *

@@ -1,9 +1,21 @@
 package net.andreho.haxxor;
 
+import net.andreho.haxxor.model.MinimalBean;
+import net.andreho.haxxor.model.SimpleBean;
+import net.andreho.haxxor.spec.api.HxConstructor;
+import net.andreho.haxxor.spec.api.HxField;
+import net.andreho.haxxor.spec.api.HxMethod;
+import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.spec.api.HxTypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -11,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class HaxxorTest {
 
+  public static final String TEST_BEAN_CLASSNAME = MinimalBean.class.getName();
   private Haxxor haxxor;
 
   @BeforeEach
@@ -25,10 +38,12 @@ class HaxxorTest {
 
   @Test
   void getResolvedCache() {
+    assertNotNull(haxxor.getResolvedCache());
   }
 
   @Test
   void getReferenceCache() {
+    assertNotNull(haxxor.getReferenceCache());
   }
 
   @Test
@@ -38,68 +53,163 @@ class HaxxorTest {
 
   @Test
   void hasReference() {
+    assertTrue(haxxor.hasReference("java.lang.Object"));
     assertTrue(haxxor.hasReference("java/lang/Object"));
+    assertTrue(haxxor.hasReference("Ljava/lang/Object;"));
   }
 
   @Test
   void hasResolved() {
-    assertTrue(haxxor.hasResolved("V"));
-    assertTrue(haxxor.hasResolved("Z"));
-    assertTrue(haxxor.hasResolved("B"));
-    assertTrue(haxxor.hasResolved("C"));
-    assertTrue(haxxor.hasResolved("S"));
-    assertTrue(haxxor.hasResolved("I"));
-    assertTrue(haxxor.hasResolved("F"));
-    assertTrue(haxxor.hasResolved("J"));
-    assertTrue(haxxor.hasResolved("D"));
+    assertTrue(haxxor.hasResolved("void"));
+    assertTrue(haxxor.hasResolved("boolean"));
+    assertTrue(haxxor.hasResolved("byte"));
+    assertTrue(haxxor.hasResolved("char"));
+    assertTrue(haxxor.hasResolved("short"));
+    assertTrue(haxxor.hasResolved("int"));
+    assertTrue(haxxor.hasResolved("float"));
+    assertTrue(haxxor.hasResolved("long"));
+    assertTrue(haxxor.hasResolved("double"));
+
+    assertFalse(haxxor.hasResolved("java.lang.Object"));
+
+    HxTypeReference reference = haxxor.reference("java.lang.Object");
+    HxType resolvedType = haxxor.resolve("java.lang.Object");
+
+    assertTrue(haxxor.hasResolved("java.lang.Object"));
+    assertEquals(resolvedType, haxxor.resolve("java.lang.Object"));
   }
 
   @Test
   void reference() {
+    HxTypeReference reference =
+        haxxor.reference(TEST_BEAN_CLASSNAME);
+    assertNotNull(reference);
+    HxType type = reference.toType();
+    assertNotNull(type);
+    assertFalse(type instanceof HxTypeReference);
+    assertTrue(haxxor.hasReference(TEST_BEAN_CLASSNAME));
   }
 
   @Test
-  void referencesAsCollection() {
+  void referenceForArray() {
+    HxTypeReference reference =
+        haxxor.reference(TEST_BEAN_CLASSNAME + "[][]");
+    assertNotNull(reference);
+    HxType type = reference;
+//    HxType type = reference.toType();
+    assertNotNull(type);
+    assertNotNull(type.getComponentType());
+    assertNotNull(type.getComponentType().getComponentType());
+    assertTrue(type.isArray());
+    assertEquals(2, type.getDimension());
+    assertEquals(TEST_BEAN_CLASSNAME + "[][]", type.getName());
+    assertEquals(TEST_BEAN_CLASSNAME + "[]", type.getComponentType().getName());
+    assertEquals(TEST_BEAN_CLASSNAME + "", type.getComponentType().getComponentType().getName());
+    assertTrue(haxxor.hasReference(TEST_BEAN_CLASSNAME + "[][]"));
+    assertTrue(haxxor.hasReference(TEST_BEAN_CLASSNAME + "[]"));
+    assertTrue(haxxor.hasReference(TEST_BEAN_CLASSNAME + ""));
+  }
+
+  @Test
+  void referencesAsList() {
+    String first = "java.lang.Object";
+    String second = TEST_BEAN_CLASSNAME;
+    String third = "L" + SimpleBean.class.getName()
+                                     .replace('.', '/') + ";";
+    List<HxType> list = haxxor.referencesAsList(
+        first,
+        second,
+        third);
+
+     assertTrue(list.size() == 3);
+
+     assertEquals(haxxor.toJavaClassName(first), list.get(0).getName());
+     assertEquals(haxxor.toJavaClassName(second), list.get(1).getName());
+     assertEquals(haxxor.toJavaClassName(third), list.get(2).getName());
   }
 
   @Test
   void referencesAsArray() {
+    String first = "java.lang.Object";
+    String second = TEST_BEAN_CLASSNAME;
+    String third = "L" + SimpleBean.class.getName()
+                                         .replace('.', '/') + ";";
+    HxType[] array = haxxor.referencesAsArray(
+        first,
+        second,
+        third);
+
+    assertTrue(array.length == 3);
+
+    assertEquals(haxxor.toJavaClassName(first), array[0].getName());
+    assertEquals(haxxor.toJavaClassName(second), array[1].getName());
+    assertEquals(haxxor.toJavaClassName(third), array[2].getName());
   }
 
   @Test
   void resolve() {
-  }
-
-  @Test
-  void load() {
-  }
-
-  @Test
-  void toInternalClassName() {
+    final String typeName = TEST_BEAN_CLASSNAME;
+    final HxType type = haxxor.resolve(typeName);
+    assertEquals(haxxor.toJavaClassName(typeName), type.getName());
+    assertTrue(haxxor.hasResolved(typeName));
   }
 
   @Test
   void createType() {
+    String typeName = TEST_BEAN_CLASSNAME;
+    HxType type = haxxor.createType(typeName);
+    assertNotNull(type);
+    assertFalse(type.isReference());
+    assertEquals(typeName, type.getName());
+    assertEquals(typeName.replace('.','/'), type.toInternalName());
+    assertEquals("L"+typeName.replace('.','/')+";", type.toDescriptor());
+    assertFalse(haxxor.hasResolved(typeName));
+    assertFalse(haxxor.hasReference(typeName));
   }
 
   @Test
   void createReference() {
+    String typeName = TEST_BEAN_CLASSNAME;
+    HxTypeReference type = haxxor.createReference(typeName);
+    assertNotNull(type);
+
+    assertTrue(type.isReference());
+    assertEquals(typeName, type.getName());
+    assertEquals(typeName.replace('.','/'), type.toInternalName());
+    assertEquals("L"+typeName.replace('.','/')+";", type.toDescriptor());
+
+    assertFalse(haxxor.hasResolved(typeName));
+    assertFalse(haxxor.hasReference(typeName));
   }
 
   @Test
   void createField() {
+    HxField field = haxxor.createField(TEST_BEAN_CLASSNAME, "aField");
+    assertNotNull(field);
+    assertNull(field.getDeclaringMember());
   }
 
   @Test
   void createConstructor() {
+    HxConstructor constructor = haxxor.createConstructor(TEST_BEAN_CLASSNAME);
+    assertNotNull(constructor);
+    assertNull(constructor.getDeclaringMember());
   }
 
   @Test
   void createConstructorReference() {
+    HxConstructor constructor = haxxor.createConstructorReference(TEST_BEAN_CLASSNAME, TEST_BEAN_CLASSNAME);
+    assertNotNull(constructor);
+    assertEquals(haxxor.reference(TEST_BEAN_CLASSNAME), constructor.getDeclaringMember());
   }
 
   @Test
   void createMethod() {
+    HxMethod method = haxxor.createMethod(TEST_BEAN_CLASSNAME,
+                                          "void",
+                                          TEST_BEAN_CLASSNAME);
+    assertNotNull(method);
+    assertNull(method.getDeclaringMember());
   }
 
   @Test

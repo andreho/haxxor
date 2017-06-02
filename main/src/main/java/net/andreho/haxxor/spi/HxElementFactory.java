@@ -28,6 +28,13 @@ public interface HxElementFactory {
   HxTypeReference createReference(final String internalTypeName);
 
   /**
+   * Creates a new reference to an existing type
+   * @param resolvedType for referencing
+   * @return a new and empty instance of <code>HxType</code>
+   */
+  HxTypeReference createReference(final HxType resolvedType);
+
+  /**
    * Creates a new unbound field with given type and name
    * @param internalTypeName of new field
    * @param fieldName of new field

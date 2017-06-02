@@ -109,8 +109,8 @@ public class HxMethodImpl
   @Override
   public String toString() {
     if(getDeclaringMember() == null) {
-      return getName() + super.toString() + getReturnType().getJavaName();
+      return getName() + super.toString() + getReturnType().getName();
     }
-    return getDeclaringMember() + "." + getName() + super.toString() + getReturnType().getJavaName();
+    return getDeclaringMember() + "." + getName() + super.toString() + getReturnType().getName();
   }
 }

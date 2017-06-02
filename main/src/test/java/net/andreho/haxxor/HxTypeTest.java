@@ -13,9 +13,42 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class HxTypeTest {
   public static final Class<AbstractBean> ABSTRACT_ITEM_CLASS = AbstractBean.class;
 
+  public static class DebugCode {
+    public String[] debugStringArray(Object o) {
+      if(!(o instanceof String[])) {
+        throw new IllegalArgumentException();
+      }
+      return (String[]) o;
+    }
+
+    public int[] debugIntArray(Object o) {
+      if(!(o instanceof int[])) {
+        throw new IllegalArgumentException();
+      }
+      return (int[]) o;
+    }
+
+    public String debugString(Object o) {
+      if(!(o instanceof String)) {
+        throw new IllegalArgumentException();
+      }
+      return (String) o;
+    }
+  }
+
+  @Test
+  void checkSomeConditions() {
+    System.out.println(HxType.Modifiers.toModifiers(int[].class.getModifiers()));
+  }
+
   @Test
   void printByteCodeOfObject() {
     HxType type = new Haxxor().resolve(ABSTRACT_ITEM_CLASS.getName());
-    assertEquals(ABSTRACT_ITEM_CLASS.getName(), type.getJavaName());
+    assertEquals(ABSTRACT_ITEM_CLASS.getName(), type.getName());
+  }
+
+  @Test
+  void printDebugCode() {
+    Debugger.trace(DebugCode.class);
   }
 }

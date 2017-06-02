@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by a.hofmann on 31.05.2015.
@@ -21,31 +22,28 @@ public class HxArrayTypeImpl
   private static final Class<Serializable> SERIALIZABLE_CLASS = Serializable.class;
   private static final Class<Cloneable> CLONEABLE_CLASS = Cloneable.class;
 
-  private final Collection<HxType> interfaces;
+  private final List<HxType> interfaces;
 
   public HxArrayTypeImpl(final Haxxor haxxor, final String arrayTypeName) {
     super(haxxor, arrayTypeName);
 
-    if (!arrayTypeName.startsWith("[")) {
-      throw new IllegalArgumentException("Invalid array type name: " + arrayTypeName);
-    }
-
+    this.modifiers = Modifiers.PUBLIC.toBit() | Modifiers.ABSTRACT.toBit();
     this.interfaces = Collections.unmodifiableList(
         Arrays.asList(
-            haxxor.createReference(SERIALIZABLE_CLASS.getName()),
-            haxxor.createReference(CLONEABLE_CLASS.getName())
+            haxxor.reference(SERIALIZABLE_CLASS.getName()),
+            haxxor.reference(CLONEABLE_CLASS.getName())
         )
     );
   }
 
   @Override
-  public Collection<HxType> getInterfaces() {
+  public List<HxType> getInterfaces() {
     return this.interfaces;
   }
 
   @Override
   public HxType getSuperType() {
-    return getHaxxor().resolve("java/lang/Object");
+    return getHaxxor().reference("java.lang.Object");
   }
 
   @Override
@@ -75,7 +73,7 @@ public class HxArrayTypeImpl
 
   @Override
   public Collection<HxAnnotation> getAnnotations() {
-    return Collections.emptySet();
+    return DEFAULT_ANNOTATION_COLLECTION;
   }
 
   @Override

@@ -22,179 +22,186 @@ import java.util.function.Predicate;
 public class HxConstructorReferenceImpl
     implements HxConstructor {
 
-  private final HxTypeReference reference;
+  private final HxTypeReference declaringReference;
   private HxConstructor target;
   private String[] parameterTypes;
 
   public HxConstructorReferenceImpl(Haxxor haxxor,
                                     String declaringType,
                                     String... parameterTypes) {
-    this.reference = haxxor.reference(declaringType);
+    this.declaringReference = haxxor.reference(declaringType);
     this.parameterTypes = parameterTypes;
   }
 
-  public HxConstructor get() {
+  private boolean isAvailable() {
+    return target != null;
+  }
+
+  public HxConstructor toConstructor() {
     if(target == null) {
-      target = reference.getConstructor(parameterTypes);
+      target = declaringReference.getConstructor(parameterTypes);
     }
     return target;
   }
 
   @Override
   public HxConstructor clone() {
-    return get().clone();
+    return toConstructor().clone();
   }
 
   @Override
   public Haxxor getHaxxor() {
-    return reference.getHaxxor();
+    return declaringReference.getHaxxor();
   }
 
   @Override
   public boolean hasCode() {
-    return get().hasCode();
+    return toConstructor().hasCode();
   }
 
   @Override
   public HxCode getCode() {
-    return get().getCode();
+    return toConstructor().getCode();
   }
 
   @Override
   public HxConstructor setModifiers(HxModifier... modifiers) {
-    get().setModifiers(modifiers);
+    toConstructor().setModifiers(modifiers);
     return this;
   }
 
   @Override
   public HxConstructor setModifiers(int modifiers) {
-    get().setModifiers(modifiers);
+    toConstructor().setModifiers(modifiers);
     return this;
   }
 
   @Override
   public int getModifiers() {
-    return get().getModifiers();
+    return toConstructor().getModifiers();
   }
 
   @Override
   public List<HxParameter<HxConstructor>> getParameters() {
-    return get().getParameters();
+    return toConstructor().getParameters();
   }
 
   @Override
   public HxConstructor setParameters(final List<HxParameter<HxConstructor>> parameters) {
-    get().setParameters(parameters);
+    toConstructor().setParameters(parameters);
     return this;
   }
 
   @Override
   public List<HxType> getExceptionTypes() {
-    return get().getExceptionTypes();
+    return toConstructor().getExceptionTypes();
   }
 
   @Override
   public HxConstructor setExceptionTypes(final List<HxType> exceptionTypes) {
-    get().setExceptionTypes(exceptionTypes);
+    toConstructor().setExceptionTypes(exceptionTypes);
     return this;
   }
 
   @Override
   public HxConstructor setParameterAt(final int index, final HxParameter parameter) {
-    get().setParameterAt(index, parameter);
+    toConstructor().setParameterAt(index, parameter);
     return this;
   }
 
   @Override
   public HxConstructor addParameter(final HxParameter<HxConstructor> parameter) {
-    get().addParameter(parameter);
+    toConstructor().addParameter(parameter);
     return this;
   }
 
   @Override
   public HxConstructor addParameterAt(final int index, final HxParameter<HxConstructor> parameter) {
-    get().addParameterAt(index, parameter);
+    toConstructor().addParameterAt(index, parameter);
     return this;
   }
 
   @Override
   public HxConstructor setExceptionTypes(HxType... exceptionTypes) {
-    get().setExceptionTypes(exceptionTypes);
+    toConstructor().setExceptionTypes(exceptionTypes);
     return this;
   }
 
   @Override
   public HxParameter getParameterAt(final int index) {
-    return get().getParameterAt(index);
+    return toConstructor().getParameterAt(index);
   }
 
 
   @Override
   public Collection<HxParameterizable> getOverriddenMembers() {
-    return get().getOverriddenMembers();
+    return toConstructor().getOverriddenMembers();
   }
 
   @Override
   public HxConstructor addAnnotation(HxAnnotation annotation) {
-    get().addAnnotation(annotation);
+    toConstructor().addAnnotation(annotation);
     return this;
   }
 
   @Override
   public HxConstructor setAnnotations(Collection<HxAnnotation> annotations) {
-    get().setAnnotations(annotations);
+    toConstructor().setAnnotations(annotations);
     return this;
   }
 
   @Override
   public Collection<HxAnnotated> getSuperAnnotated() {
-    return get().getSuperAnnotated();
+    return toConstructor().getSuperAnnotated();
   }
 
   @Override
   public Collection<HxAnnotation> getAnnotations() {
-    return get().getAnnotations();
+    return toConstructor().getAnnotations();
   }
 
   @Override
   public boolean isAnnotationPresent(String type) {
-    return get().isAnnotationPresent(type);
+    return toConstructor().isAnnotationPresent(type);
   }
 
   @Override
   public HxAnnotation getAnnotation(String type) {
-    return get().getAnnotation(type);
+    return toConstructor().getAnnotation(type);
   }
 
   @Override
   public Collection<HxAnnotation> getAnnotationsByType(String type) {
-    return get().getAnnotationsByType(type);
+    return toConstructor().getAnnotationsByType(type);
   }
 
   @Override
   public Collection<HxAnnotation> annotations(Predicate<HxAnnotation> predicate, boolean recursive) {
-    return get().annotations(predicate, recursive);
+    return toConstructor().annotations(predicate, recursive);
   }
 
   @Override
   public String getGenericSignature() {
-    return get().getGenericSignature();
+    return toConstructor().getGenericSignature();
   }
 
   @Override
   public HxConstructor setGenericSignature(String genericSignature) {
-    get().setGenericSignature(genericSignature);
+    toConstructor().setGenericSignature(genericSignature);
     return this;
   }
 
   @Override
   public <M extends HxMember> M getDeclaringMember() {
-    return get().getDeclaringMember();
+    if(!isAvailable()) {
+      return (M) this.declaringReference;
+    }
+    return toConstructor().getDeclaringMember();
   }
 
   @Override
   public HxConstructor setDeclaringMember(HxMember declaringMember) {
-    get().setDeclaringMember(declaringMember);
+    toConstructor().setDeclaringMember(declaringMember);
     return this;
   }
 }

@@ -39,7 +39,7 @@ public class DefaultHxElementFactory
     if(haxxor.hasResolved(internalTypeName)) {
       return haxxor.resolve(internalTypeName);
     }
-    if(internalTypeName.startsWith("[")) {
+    if(internalTypeName.endsWith("[]")) {
       return new HxArrayTypeImpl(haxxor, internalTypeName);
     }
     return new HxTypeImpl(haxxor, internalTypeName);
@@ -51,6 +51,11 @@ public class DefaultHxElementFactory
       return haxxor.reference(internalTypeName);
     }
     return new HxTypeReferenceImpl(haxxor, internalTypeName);
+  }
+
+  @Override
+  public HxTypeReference createReference(final HxType resolvedType) {
+    return new HxTypeReferenceImpl(haxxor, resolvedType);
   }
 
   @Override

@@ -60,29 +60,31 @@ public abstract class HxParameterizableImpl<P extends HxParameterizable<P>>
   }
 
   private List<HxParameter<P>> initializeParameters() {
-    if(isUninitialized(parameters)) {
+    if (isUninitialized(parameters)) {
       parameters = new ArrayList<>();
     }
     return parameters;
   }
 
   private HxParameter<P> applyParameter(HxParameter<P> parameter) {
-    if(parameter.getDeclaringMember() != null) {
-      throw new IllegalArgumentException("Parameter is already used: " + parameter);
+    if (parameter.getDeclaringMember() != null) {
+      throw new IllegalArgumentException(
+          "Parameter is already in use, please clone it before further usage: " +
+          parameter);
     }
     parameter.setDeclaringMember(this);
     return parameter;
   }
 
   protected List<HxParameter<P>> applyParameters(List<HxParameter<P>> parameters) {
-    for(HxParameter<P> parameter : parameters) {
+    for (HxParameter<P> parameter : parameters) {
       applyParameter(parameter);
     }
     return parameters;
   }
 
   private List<HxType> initializeExceptions() {
-    if(isUninitialized(exceptions)) {
+    if (isUninitialized(exceptions)) {
       exceptions = new ArrayList<>();
     }
     return exceptions;
@@ -175,12 +177,12 @@ public abstract class HxParameterizableImpl<P extends HxParameterizable<P>>
 
     if (getArity() > 0) {
       HxType type = getParameterTypeAt(0);
-      builder.append(type.getJavaName());
+      builder.append(type.getName());
 
       for (int i = 1, arity = getArity(); i < arity; i++) {
         builder.append(',');
         type = getParameterTypeAt(i);
-        builder.append(type.getJavaName());
+        builder.append(type.getName());
       }
     }
 

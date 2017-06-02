@@ -139,7 +139,7 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
    * @return
    */
   default HxAnnotation getAnnotation(HxType type) {
-    return getAnnotation(type.getInternalName());
+    return getAnnotation(type.getName());
   }
 
   /**
@@ -163,7 +163,7 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
    * @return
    */
   default Collection<HxAnnotation> getAnnotationsByType(HxType type) {
-    return getAnnotationsByType(type.getInternalName());
+    return getAnnotationsByType(type.getName());
   }
 
   /**
@@ -171,7 +171,7 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
    * @return
    */
   default boolean isAnnotationPresent(HxType type) {
-    return isAnnotationPresent(type.getInternalName());
+    return isAnnotationPresent(type.getName());
   }
 
   /**

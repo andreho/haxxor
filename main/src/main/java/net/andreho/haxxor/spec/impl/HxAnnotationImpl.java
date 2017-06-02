@@ -270,7 +270,7 @@ public class HxAnnotationImpl
 
   @Override
   public String toString() {
-    final StringBuilder builder = new StringBuilder(type.getInternalName()).append(" {\n");
+    final StringBuilder builder = new StringBuilder(type.getName()).append(" {\n");
 
     for (Iterator<Map.Entry<String, HxAnnotationAttribute<?, ?>>> iterator =
          getValues().entrySet()

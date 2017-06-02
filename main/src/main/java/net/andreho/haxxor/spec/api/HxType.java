@@ -48,15 +48,30 @@ public interface HxType
   HxType setVersion(Version version);
 
   /**
-   * @return the internal name of this type (e.g.: I, [Z, java/lang/String, [java/lang/Object or java/util/Map$Entry
-   * etc.)
+   * @return the standard Java classname, like:
+   * <code>int</code>,
+   * <code>byte[]</code>,
+   * <code>java.lang.String</code> or
+   * <code>java.util.Map$Entry</code> etc.)
    */
-  String getInternalName();
+  String getName();
 
   /**
-   * @return a Java like type name
+   * @return
+   * @see Class#getSimpleBinaryName()
    */
-  String getJavaName();
+  String getSimpleBinaryName();
+
+  /**
+   * @return simple type name of this type
+   * @see Class#getSimpleName()
+   */
+  String getSimpleName();
+
+  /**
+   * @return package of this type
+   */
+  String getPackageName();
 
   /**
    * @return the parent-type of this type
@@ -80,13 +95,13 @@ public interface HxType
   /**
    * @return
    */
-  Collection<HxType> getInterfaces();
+  List<HxType> getInterfaces();
 
   /**
    * @param interfaces
    * @return
    */
-  HxType setInterfaces(Collection<HxType> interfaces);
+  HxType setInterfaces(List<HxType> interfaces);
 
   /**
    * @return count of slots that are needed to store a value of this type (e.g.: on stack or as local variable)
@@ -101,13 +116,13 @@ public interface HxType
   /**
    * @return
    */
-  Collection<HxType> getDeclaredTypes();
+  List<HxType> getDeclaredTypes();
 
   /**
    * @param declaredTypes
    * @return
    */
-  HxType setDeclaredTypes(Collection<HxType> declaredTypes);
+  HxType setDeclaredTypes(List<HxType> declaredTypes);
 
   /**
    * Adds given field to this type
@@ -329,7 +344,7 @@ public interface HxType
   //----------------------------------------------------------------------------------------------------------------
 
   /**
-   * Shortcut for: <code>getInternalName().equals(className)</code>
+   * Shortcut for: <code>getName().equals(className)</code>
    *
    * @param className to check against
    * @return <b>true</b> if name of this type is equal to the given one, <b>false</b> otherwise.
@@ -471,25 +486,6 @@ public interface HxType
   //----------------------------------------------------------------------------------------------------------------
 
   /**
-   * @return
-   * @see Class#getSimpleBinaryName()
-   */
-  String getSimpleBinaryName();
-
-  /**
-   * @return simple type name of this type
-   * @see Class#getSimpleName()
-   */
-  String getSimpleName();
-
-  /**
-   * @return package of this type
-   */
-  String getPackage();
-
-  //----------------------------------------------------------------------------------------------------------------
-
-  /**
    * @return component type of this array type or <b>null</b> if it isn't array type
    */
   HxType getComponentType();
@@ -583,6 +579,11 @@ public interface HxType
    * @return
    */
   Class<?> loadClass(ClassLoader classLoader);
+
+  /**
+   * @return internal classname of this type
+   */
+  String toInternalName();
 
   /**
    * @param builder to use

@@ -32,7 +32,7 @@ public class DefaultHxByteCodeLoader
       return Utils.toByteArray(inputStream);
     } catch (IOException e) {
       throw new IllegalArgumentException(
-          "Class '" + className + "' not found by the associated class loader: " + classLoader, e);
+          "Class '" + className + "' was not found by the associated class loader: " + classLoader, e);
     }
   }
 

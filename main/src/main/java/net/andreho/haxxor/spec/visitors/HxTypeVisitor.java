@@ -55,7 +55,7 @@ public class HxTypeVisitor
         .setGenericSignature(signature);
 
     if (interfaces != null) {
-      this.type.setInterfaces(this.haxxor.referencesAsCollection(interfaces));
+      this.type.setInterfaces(this.haxxor.referencesAsList(interfaces));
     }
   }
 
@@ -142,6 +142,7 @@ public class HxTypeVisitor
     }
 
     return new HxParameterizableVisitor(
+        type,
         parameterizable,
         super.visitMethod(access, name, desc, signature, exceptions)
     );

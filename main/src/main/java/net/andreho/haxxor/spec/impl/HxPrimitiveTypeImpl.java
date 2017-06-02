@@ -5,6 +5,7 @@ import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxMember;
 import net.andreho.haxxor.spec.api.HxModifier;
 import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.spec.api.HxTypeReference;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -15,6 +16,8 @@ import java.util.Collections;
 public class HxPrimitiveTypeImpl
     extends HxAbstractType
     implements HxType {
+
+  private volatile HxTypeReference reference;
 
   public HxPrimitiveTypeImpl(final Haxxor haxxor, final String name) {
     super(haxxor, name);
@@ -79,5 +82,11 @@ public class HxPrimitiveTypeImpl
     return this;
   }
 
-  //----------------------------------------------------------------------------------------------------------------
+  @Override
+  public HxTypeReference toReference() {
+    if(reference == null) {
+      reference = super.toReference();
+    }
+    return reference;
+  }
 }
