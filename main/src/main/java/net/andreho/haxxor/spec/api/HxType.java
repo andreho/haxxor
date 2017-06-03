@@ -57,12 +57,6 @@ public interface HxType
   String getName();
 
   /**
-   * @return
-   * @see Class#getSimpleBinaryName()
-   */
-  String getSimpleBinaryName();
-
-  /**
    * @return simple type name of this type
    * @see Class#getSimpleName()
    */
@@ -344,12 +338,12 @@ public interface HxType
   //----------------------------------------------------------------------------------------------------------------
 
   /**
-   * Shortcut for: <code>getName().equals(className)</code>
+   * Shortcut for: <code>getName().equals(haxxor.toJavaClassName(className))</code>
    *
    * @param className to check against
    * @return <b>true</b> if name of this type is equal to the given one, <b>false</b> otherwise.
    */
-  boolean is(String className);
+  boolean hasName(String className);
 
   /**
    * Shortcut for: <code>otherType.isAssignableFrom(this)</code>

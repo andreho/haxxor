@@ -86,10 +86,10 @@ public class HxParameterImpl<P extends HxParameterizable<P>>
 
   @Override
   public HxParameter setType(final HxType type) {
+    this.type = Objects.requireNonNull(type, "Parameter-type can't be null.");
     if("void".equals(type.getName())) {
       throw new IllegalArgumentException("Parameter's type can't be void.");
     }
-    this.type = Objects.requireNonNull(type, "Parameter-type can't be null.");
     return this;
   }
 

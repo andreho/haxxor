@@ -5,11 +5,12 @@ import net.andreho.haxxor.spec.impl.HxParameterImpl;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by a.hofmann on 31.05.2015.
@@ -62,6 +63,7 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
    * @return
    */
   default P addParameterType(HxType type) {
+    Objects.requireNonNull(type, "Parameter's type can't be null.");
     return addParameter(new HxParameterImpl<>(type));
   }
 
@@ -70,8 +72,9 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
    * @return this
    */
   default P setParameters(HxParameter<P>... parameters) {
-    return setParameters(Arrays.stream(parameters)
-                               .collect(Collectors.toList()));
+    List<HxParameter<P>> list = new ArrayList<>(parameters.length);
+    Stream.of(parameters).map(Objects::requireNonNull).forEach(list::add);
+    return setParameters(list);
   }
 
   /**
@@ -114,8 +117,9 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
    * @return this
    */
   default P setExceptionTypes(HxType... exceptionTypes) {
-    return setExceptionTypes(Arrays.stream(exceptionTypes)
-                                   .collect(Collectors.toList()));
+    List<HxType> list = new ArrayList<>(exceptionTypes.length);
+    Stream.of(exceptionTypes).map(Objects::requireNonNull).forEach(list::add);
+    return setExceptionTypes(list);
   }
 
   /**

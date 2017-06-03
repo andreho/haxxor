@@ -13,15 +13,31 @@ public interface HxMethod
   String getName();
 
   /**
-   * @return
+   * @return the return value of this method
    */
   HxType getReturnType();
 
   /**
    * @param returnType
    * @return
+   * @implSpec return value can't be null
    */
   HxMethod setReturnType(HxType returnType);
+
+  /**
+   * @return <b>true</b> if this method was declared by an annotation, represents an annotation's attribute and has a
+   * default value, <b>false</b> otherwise.
+   */
+  default boolean hasDefaultValue() {
+    HxType type = getDeclaringMember();
+    if(type == null || !type.isAnnotation()) {
+      return false;
+    }
+    if(getArity() > 0) {
+      return false;
+    }
+    return getDefaultValue() != null;
+  }
 
   /**
    * @return default value of this annotation attribute

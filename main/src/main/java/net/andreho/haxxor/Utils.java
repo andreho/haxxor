@@ -15,11 +15,13 @@ import java.util.Objects;
  * <br/>Created by a.hofmann on 30.05.2017 at 14:35.
  */
 public abstract class Utils {
+  private static final int DEFAULT_READ_BUFFER_LENGTH = 1028;
 
   /**
-   * Checks the given collection whether it needs to be initialized or not
+   * Checks the given collection whether it needs to be initialized or not. Initialisation is only needed if the
+   * given collection is <b>null</b> or equals to either {@link Collections#EMPTY_LIST} or {@link Collections#EMPTY_SET}
    * @param collection to check
-   * @return <b>true</b> if the given collection can't be used and must be reallocated, <b>false</b> otherwise
+   * @return <b>true</b> if the given collection can't be used and must be initialized, <b>false</b> otherwise
    */
   public static boolean isUninitialized(Collection<?> collection) {
     return
@@ -29,9 +31,10 @@ public abstract class Utils {
   }
 
   /**
-   * Checks the given map whether it needs to be initialized or not
+   * Checks the given map whether it needs to be initialized or not. Initialisation is only needed if the
+   * given collection is <b>null</b> or equals to {@link Collections#EMPTY_MAP}
    * @param map to check
-   * @return <b>true</b> if the given map can't be used and must be reallocated, <b>false</b> otherwise
+   * @return <b>true</b> if the given map can't be used and must be initialized, <b>false</b> otherwise
    */
   public static boolean isUninitialized(Map<?,?> map) {
     return
@@ -44,14 +47,14 @@ public abstract class Utils {
    *
    * @param inputStream to read
    * @return content of given stream as byte-array
-   * @implNote <b>ATTENTION:</b> input still must be closed by method's caller.
+   * @implNote <b>ATTENTION:</b> input still must be closed by method's caller
    */
   public static byte[] toByteArray(InputStream inputStream)
   throws IOException {
     final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
     int count;
-    final byte[] buffer = new byte[1028];
+    final byte[] buffer = new byte[DEFAULT_READ_BUFFER_LENGTH];
     while ((count = inputStream.read(buffer)) > -1) {
       outputStream.write(buffer, 0, count);
     }

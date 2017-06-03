@@ -44,7 +44,7 @@ public class HxMethodImpl
   public HxMethodImpl(String name, HxMethodImpl prototype) {
     this.declaringMember = null;
 
-    this.name = name != null? name : prototype.name;
+    this.name = Objects.requireNonNull(name != null ? name : prototype.name, "Method's name can't be null.");
     this.modifiers = prototype.modifiers;
     this.defaultValue = prototype.defaultValue;
     this.returnType = prototype.returnType;
@@ -77,7 +77,9 @@ public class HxMethodImpl
 
   @Override
   public HxMethod setDefaultValue(Object value) {
-    this.defaultValue = value;
+    this.defaultValue = Objects.requireNonNull(value,
+                                               "Default values are only used together with annotations and " +
+                                               "can't be null.");
     return this;
   }
 
@@ -103,12 +105,14 @@ public class HxMethodImpl
 
   @Override
   public int hashCode() {
-    return 31 * Objects.hashCode(getName()) + super.hashCode();
+    return 31 * Objects.hashCode(getName()) +
+           31 * Objects.hashCode(getReturnType()) +
+           super.hashCode();
   }
 
   @Override
   public String toString() {
-    if(getDeclaringMember() == null) {
+    if (getDeclaringMember() == null) {
       return getName() + super.toString() + getReturnType().getName();
     }
     return getDeclaringMember() + "." + getName() + super.toString() + getReturnType().getName();

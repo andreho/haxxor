@@ -6,10 +6,12 @@ import net.andreho.haxxor.spi.HxByteCodeLoader;
 import net.andreho.haxxor.spi.HxElementFactory;
 import net.andreho.haxxor.spi.HxInternalClassNameProvider;
 import net.andreho.haxxor.spi.HxJavaClassNameProvider;
+import net.andreho.haxxor.spi.HxTypeInitializer;
 import net.andreho.haxxor.spi.impl.DefaultHxByteCodeLoader;
 import net.andreho.haxxor.spi.impl.DefaultHxElementFactory;
 import net.andreho.haxxor.spi.impl.DefaultHxInternalClassNameProvider;
 import net.andreho.haxxor.spi.impl.DefaultHxJavaClassNameProvider;
+import net.andreho.haxxor.spi.impl.DefaultHxTypeInitializer;
 
 import java.util.Map;
 import java.util.Objects;
@@ -35,6 +37,15 @@ public class HaxxorBuilder {
    */
   public ClassLoader provideClassLoader(Haxxor haxxor) {
     return classLoader;
+  }
+
+  /**
+   * Creates a new type-initializer instance that must be involved into creation of new types via
+   * {@link HxElementFactory#createType(String)}
+   * @return new type-initializer instance associated with given haxxor instance
+   */
+  public HxTypeInitializer createTypeInitializer(Haxxor haxxor) {
+    return new DefaultHxTypeInitializer();
   }
 
   /**

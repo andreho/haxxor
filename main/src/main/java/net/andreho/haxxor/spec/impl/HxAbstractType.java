@@ -102,13 +102,12 @@ public class HxAbstractType
   public HxType initialize(Part part) {
     switch (part) {
       case DEFAULTS: {
-        initialize(Part.CONSTRUCTORS);
+        getHaxxor().getTypeInitializer().initialize(this);
       }
       break;
       case ANNOTATIONS: {
         if (isUninitialized(getAnnotations())) {
-          setAnnotations(new LinkedHashSet<>());
-          return this;
+          return setAnnotations(new LinkedHashSet<>());
         }
       }
       break;
@@ -143,7 +142,7 @@ public class HxAbstractType
       }
       break;
       default:
-        throw new IllegalStateException("Not reachable.");
+        throw new IllegalStateException("Invalid state.");
     }
 
     return this;
@@ -289,7 +288,7 @@ public class HxAbstractType
         }
       }
 
-      if (returnType == null || method.getReturnType().is(returnType)) {
+      if (returnType == null || method.getReturnType().hasName(returnType)) {
         return method;
       }
     }
@@ -508,7 +507,7 @@ public class HxAbstractType
   }
 
   @Override
-  public boolean is(String className) {
+  public boolean hasName(String className) {
     return getName().equals(getHaxxor().toJavaClassName(className));
   }
 
@@ -670,8 +669,7 @@ public class HxAbstractType
     return null;
   }
 
-  @Override
-  public String getSimpleBinaryName() {
+  private String getSimpleBinaryName() {
     HxType enclosingType = getEnclosingType();
 
     if (enclosingType == null) {
@@ -745,7 +743,7 @@ public class HxAbstractType
   @Override
   public String getPackageName() {
     int index = getName().lastIndexOf(JAVA_PACKAGE_SEPARATOR_CHAR);
-    return index > -1 ? getName().substring(0, index) : "";
+    return index < 0 ? "" : getName().substring(0, index);
   }
 
   @Override
@@ -765,16 +763,19 @@ public class HxAbstractType
 
   @Override
   public int getDimension() {
-    String name = getName();
-    int dims = 0;
-    int len = name.length() - 1;
+    final String name = getName();
+    final int len = name.length();
 
-    while (name.charAt(len-1) == '[' &&
-           name.charAt(len) == ']') {
-      dims++;
-      len-=2;
+    int dim = 0;
+    int pos = len;
+
+    while (pos >= 2 &&
+           name.charAt(pos - 2) == '[' &&
+           name.charAt(pos - 1) == ']') {
+      dim++;
+      pos-=2;
     }
-    return dims;
+    return dim;
   }
 
   @Override

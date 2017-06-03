@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * <br/>Created by a.hofmann on 31.05.2017 at 00:28.
  */
-class HxTypeTest {
+class SandBoxTest {
   public static final Class<AbstractBean> ABSTRACT_ITEM_CLASS = AbstractBean.class;
 
   public static class DebugCode {

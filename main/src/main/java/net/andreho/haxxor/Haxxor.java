@@ -15,6 +15,7 @@ import net.andreho.haxxor.spi.HxByteCodeLoader;
 import net.andreho.haxxor.spi.HxElementFactory;
 import net.andreho.haxxor.spi.HxInternalClassNameProvider;
 import net.andreho.haxxor.spi.HxJavaClassNameProvider;
+import net.andreho.haxxor.spi.HxTypeInitializer;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class Haxxor
   private final HxInternalClassNameProvider internalClassNameProvider;
   private final HxJavaClassNameProvider javaClassNameProvider;
   private final HxElementFactory elementFactory;
+  private final HxTypeInitializer typeInitializer;
 
   public Haxxor() {
     this(Flags.SKIP_DEBUG, new HaxxorBuilder(Haxxor.class.getClassLoader()));
@@ -64,6 +66,7 @@ public class Haxxor
     this.byteCodeLoader = builder.createByteCodeLoader(this);
     this.resolvedCache = builder.createResolvedCache(this);
     this.referenceCache = builder.createReferenceCache(this);
+    this.typeInitializer = builder.createTypeInitializer(this);
     this.elementFactory = builder.createElementFactory(this);
     this.javaClassNameProvider = builder.createJavaClassNameProvider(this);
     this.internalClassNameProvider = builder.createInternalClassNameProvider(this);
@@ -148,6 +151,27 @@ public class Haxxor
    */
   public HxInternalClassNameProvider getInternalClassNameProvider() {
     return internalClassNameProvider;
+  }
+
+  /**
+   * @return the associated java classname provider
+   */
+  public HxJavaClassNameProvider getJavaClassNameProvider() {
+    return javaClassNameProvider;
+  }
+
+  /**
+   * @return the associated java element factory
+   */
+  public HxElementFactory getElementFactory() {
+    return elementFactory;
+  }
+
+  /**
+   * @return the associated type-initializer
+   */
+  public HxTypeInitializer getTypeInitializer() {
+    return typeInitializer;
   }
 
   /**
@@ -323,7 +347,9 @@ public class Haxxor
 
   @Override
   public HxType createType(final String internalTypeName) {
-    return elementFactory.createType(toJavaClassName(internalTypeName));
+    HxType type = elementFactory.createType(toJavaClassName(internalTypeName));
+    getTypeInitializer().initialize(type);
+    return type;
   }
 
   @Override

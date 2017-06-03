@@ -71,7 +71,7 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
    */
   default HxAnnotation getAnnotation(String type) {
     for (HxAnnotation annotation : getAnnotations()) {
-      if (annotation.getType().is(type)) {
+      if (annotation.getType().hasName(type)) {
         return annotation;
       }
     }

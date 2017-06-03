@@ -74,7 +74,7 @@ public class HxTypeImpl
   @Override
   public HxType setSuperType(HxType superType) {
     if (superType == null) {
-      throw new IllegalArgumentException("Super type is null");
+      throw new IllegalArgumentException("Super type can't be null.");
     }
 
     this.superType = superType;
@@ -275,7 +275,7 @@ public class HxTypeImpl
 
     if (collection != null) {
       if (collection.size() > 1) {
-        throw new IllegalStateException("There are more than one method with name: " + name);
+        throw new IllegalStateException("There are more than one method with given name: " + name);
       }
 
       return collection
@@ -290,8 +290,6 @@ public class HxTypeImpl
   public Collection<HxMethod> getMethods(String name) {
     return methodMap.computeIfAbsent(name, (key) -> new LinkedHashSet<>());
   }
-
-  //----------------------------------------------------------------------------------------------------------------
 
   @Override
   public Collection<HxField> fields(Predicate<HxField> predicate, boolean recursive) {
@@ -415,8 +413,6 @@ public class HxTypeImpl
 
     return result;
   }
-
-  //----------------------------------------------------------------------------------------------------------------
 
   @Override
   public byte[] toByteArray() {

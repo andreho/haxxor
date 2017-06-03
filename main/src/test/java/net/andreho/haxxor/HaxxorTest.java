@@ -1,7 +1,7 @@
 package net.andreho.haxxor;
 
 import net.andreho.haxxor.model.MinimalBean;
-import net.andreho.haxxor.model.SimpleBean;
+import net.andreho.haxxor.model.ValueBean;
 import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
@@ -114,8 +114,8 @@ class HaxxorTest {
   void referencesAsList() {
     String first = "java.lang.Object";
     String second = TEST_BEAN_CLASSNAME;
-    String third = "L" + SimpleBean.class.getName()
-                                     .replace('.', '/') + ";";
+    String third = "L" + ValueBean.class.getName()
+                                        .replace('.', '/') + ";";
     List<HxType> list = haxxor.referencesAsList(
         first,
         second,
@@ -132,8 +132,8 @@ class HaxxorTest {
   void referencesAsArray() {
     String first = "java.lang.Object";
     String second = TEST_BEAN_CLASSNAME;
-    String third = "L" + SimpleBean.class.getName()
-                                         .replace('.', '/') + ";";
+    String third = "L" + ValueBean.class.getName()
+                                        .replace('.', '/') + ";";
     HxType[] array = haxxor.referencesAsArray(
         first,
         second,
