@@ -5,6 +5,7 @@ import net.andreho.haxxor.spec.api.HxCode;
 import net.andreho.haxxor.spec.api.HxMethod.Modifiers;
 import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxParameterizable;
+import net.andreho.haxxor.spec.api.HxProvider;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public abstract class HxParameterizableImpl<P extends HxParameterizable<P>>
 
   @Override
   public Haxxor getHaxxor() {
-    return ((HxType) getDeclaringMember()).getHaxxor();
+    return ((HxProvider) getDeclaringMember()).getHaxxor();
   }
 
   @Override

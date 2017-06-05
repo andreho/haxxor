@@ -73,7 +73,7 @@ public class HxTypeImpl
 
   @Override
   public HxType setSuperType(HxType superType) {
-    if (superType == null) {
+    if (superType == null && !"java.lang.Object".equals(getName())) {
       throw new IllegalArgumentException("Super type can't be null.");
     }
 

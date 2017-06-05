@@ -87,32 +87,12 @@ public abstract class Utils {
    * @param signature
    * @return
    */
-  public static String normalizeReturnType(String signature) {
+  public static String normalizeReturnType(final String signature) {
     return normalizeType(Type.getReturnType(signature));
   }
 
-  private static String normalizeType(Type type) {
-    switch (type.getSort()) {
-      case Type.BOOLEAN:
-        return "Z";
-      case Type.BYTE:
-        return "B";
-      case Type.CHAR:
-        return "C";
-      case Type.SHORT:
-        return "S";
-      case Type.INT:
-        return "I";
-      case Type.FLOAT:
-        return "F";
-      case Type.LONG:
-        return "J";
-      case Type.DOUBLE:
-        return "D";
-      case Type.VOID:
-        return "V";
-    }
-    return type.getInternalName();
+  private static String normalizeType(final Type type) {
+    return type.getClassName();
   }
 
   /**

@@ -92,7 +92,9 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
     }
 
     getAnnotations().add(annotation);
-    annotation.setDeclaringMember((HxMember) this);
+    if(this instanceof HxMember) {
+      annotation.setDeclaringMember((HxMember) this);
+    }
 
     return (A) this;
   }

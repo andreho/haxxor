@@ -28,7 +28,7 @@ public class ClassArrayAnnotationAttribute
       if (types.length != 0) {
         synchronized (this) {
           if ((reference = this.classReference) == null) {
-            reference = loadClasses(types);
+            reference = findClasses(type.getClassLoader(), types);
           }
         }
       } else {
@@ -38,11 +38,17 @@ public class ClassArrayAnnotationAttribute
     return reference.get();
   }
 
-  private Reference<Class<?>[]> loadClasses(final HxType[] types) {
+  private Reference<Class<?>[]> findClasses(final ClassLoader classLoader,
+                                            final HxType[] types) {
     final Reference<Class<?>[]> reference;
     Class<?>[] classes = new Class[types.length];
     for (int i = 0; i < types.length; i++) {
-      classes[i] = types[i].loadClass();
+      try {
+        final String className = types[i].getName();
+        classes[i] = Class.forName(className, false, classLoader);
+      } catch (ClassNotFoundException e) {
+        throw new IllegalStateException(e);
+      }
     }
     this.classReference = reference = new SoftReference<>(classes);
     return reference;

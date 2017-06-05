@@ -5,6 +5,14 @@ import java.util.Objects;
 /**
  * <br/>Created by a.hofmann on 02.06.2017 at 13:45.
  */
+@AnnotationB(
+    boolValue = false,
+    intArray = {1,2,3},
+    floatArray = {1.25f,2.25f,3.25f},
+    stringArray = {"a", "b", "c"},
+    enumArray = {EnumA.YES, EnumA.NO},
+    classArray = {MinimalBean.class}
+)
 @AnnotationC("class")
 public class OverAnnotatedValueBean
     extends @AnnotationC("superClass") MinimalBean

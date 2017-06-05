@@ -10,8 +10,6 @@ import net.andreho.haxxor.spec.impl.annotation.AbstractAnnotationAttribute;
 public class EnumArrayAnnotationAttribute<E extends Enum<E>>
     extends AbstractAnnotationAttribute<HxEnum[], E[]> {
 
-  private volatile E[] enumArray;
-
   public EnumArrayAnnotationAttribute(final String name, final HxEnum[] values) {
     super(name, values);
   }
@@ -24,7 +22,6 @@ public class EnumArrayAnnotationAttribute<E extends Enum<E>>
   @Override
   public void setValue(final HxEnum[] value) {
     super.setValue(value);
-    this.enumArray = null;
   }
 
   @Override

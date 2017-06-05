@@ -13,8 +13,9 @@ public abstract class AbstractAnnotationAttribute<V, T>
   private String name;
   private V value;
 
-  public AbstractAnnotationAttribute(final String name, final V value) {
-    this.name = name;
+  public AbstractAnnotationAttribute(final String name,
+                                     final V value) {
+    this.name = Objects.requireNonNull(name, "Attribute's name can't be null.");
     setValue(value);
   }
 

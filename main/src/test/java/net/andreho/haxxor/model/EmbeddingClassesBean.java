@@ -1,40 +1,56 @@
 package net.andreho.haxxor.model;
 
+import java.io.Serializable;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
 /**
  * <br/>Created by a.hofmann on 31.05.2017 at 17:40.
  */
-public class EmbeddedClassesBean
+public class EmbeddingClassesBean
     extends AbstractBean
     implements InterfaceD {
 
-  public EmbeddedClassesBean(final String name) {
+  final Serializable localClassFromConstructor;
+
+  public EmbeddingClassesBean() {
+    this("");
+  }
+  public EmbeddingClassesBean(final String name) {
     super(name);
 
-    class LocalClassFromConstructor {
+    class LocalClassFromConstructor implements Serializable {
       final String name;
       public LocalClassFromConstructor(final String name) {
         this.name = name;
       }
     }
-
-    System.out.println(new LocalClassFromConstructor(name));
+    this.localClassFromConstructor = new LocalClassFromConstructor(name);
   }
 
-  public void someMethod() {
+  public Class<?> getLocalClassFromConstructor() {
+    return localClassFromConstructor.getClass();
+  }
+
+  public Class<?> getLocalClassFromMethod() {
+    return someMethod().getClass();
+  }
+
+  public Class<?> getAnonymousClass() {
+    return createAnonymousClass().getClass();
+  }
+
+  private Object someMethod() {
     class LocalClassFromMethod {
       final int value;
       public LocalClassFromMethod(final int value) {
         this.value = value;
       }
     }
-
-    System.out.println(new LocalClassFromMethod(new Random().nextInt()));
+    return new LocalClassFromMethod(new Random().nextInt());
   }
 
-  public Callable<String> createAnonymousClass() {
+  private Callable<String> createAnonymousClass() {
     return new Callable<String>() {
       @Override
       public String call()
@@ -49,7 +65,7 @@ public class EmbeddedClassesBean
 
     public InnerClass(final int value) {
       this.value = value;
-      EmbeddedClassesBean.this.someMethod();
+      EmbeddingClassesBean.this.someMethod();
     }
   }
 

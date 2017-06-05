@@ -16,6 +16,8 @@ import net.andreho.haxxor.spec.api.HxParameterizable;
 import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxType.Part;
 
+import java.util.Objects;
+
 import static net.andreho.haxxor.Utils.normalizeClassname;
 import static net.andreho.haxxor.Utils.normalizeReturnType;
 import static net.andreho.haxxor.Utils.normalizeSignature;
@@ -27,6 +29,7 @@ public class HxTypeVisitor
     extends ClassVisitor {
 
   private final Haxxor haxxor;
+  private String name;
   private HxType type;
 
   public HxTypeVisitor(Haxxor haxxor) {
@@ -46,6 +49,7 @@ public class HxTypeVisitor
   public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
     super.visit(version, access, name, signature, superName, interfaces);
 
+    this.name = name;
     this.type = this.haxxor.createType(name);
 
     this.type
@@ -62,6 +66,19 @@ public class HxTypeVisitor
   @Override
   public void visitSource(String source, String debug) {
     super.visitSource(source, debug);
+  }
+
+  @Override
+  public void visitInnerClass(String name, String outerName, String innerName, int access) {
+    super.visitInnerClass(name, outerName, innerName, access);
+
+    if(Objects.equals(this.name, name)) { //isn't it redundant?
+      if(outerName != null) {
+        type.setDeclaringMember(haxxor.reference(outerName));
+      }
+    } else if(Objects.equals(this.name, outerName)) {
+      type.initialize(Part.DECLARED_TYPES).getDeclaredTypes().add(haxxor.reference(name));
+    }
   }
 
   @Override
@@ -102,15 +119,6 @@ public class HxTypeVisitor
     super.visitAttribute(attr);
   }
 
-  @Override
-  public void visitInnerClass(String name, String outerName, String innerName, int access) {
-    super.visitInnerClass(name, outerName, innerName, access);
-
-    HxType innerType = this.haxxor.reference(name);
-    this.type.initialize(Part.DECLARED_TYPES)
-             .getDeclaredTypes()
-             .add(innerType);
-  }
 
   @Override
   public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
@@ -132,7 +140,8 @@ public class HxTypeVisitor
     if ("<init>".equals(name)) {
       parameterizable = this.haxxor.createConstructor(parameterTypes);
     } else {
-      parameterizable = this.haxxor.createMethod(name, normalizeReturnType(desc), parameterTypes);
+      String returnType = normalizeReturnType(desc);
+      parameterizable = this.haxxor.createMethod(name, returnType, parameterTypes);
     }
 
     parameterizable.setGenericSignature(signature);

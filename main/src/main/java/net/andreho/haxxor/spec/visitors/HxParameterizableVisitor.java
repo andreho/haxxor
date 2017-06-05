@@ -9,6 +9,7 @@ import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.asm.org.objectweb.asm.Type;
 import net.andreho.asm.org.objectweb.asm.TypePath;
 import net.andreho.asm.org.objectweb.asm.TypeReference;
+import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.cgen.CodeStream;
 import net.andreho.haxxor.cgen.CodeStream.ArrayType;
 import net.andreho.haxxor.cgen.CodeStream.Frames;
@@ -33,25 +34,30 @@ import java.util.Objects;
 public class HxParameterizableVisitor
     extends MethodVisitor {
 
-  protected final HxCode code;
-  protected final CodeStream codeStream;
   protected final HxType declaringType;
   protected final HxParameterizable target;
+  protected final HxCode code;
+  protected final CodeStream codeStream;
   protected final Map<Label, LABEL> remapping;
+
   protected int parameterIndex = 0;
 
-  public HxParameterizableVisitor(HxType declaringType, HxParameterizable hxParameterizable) {
+  public HxParameterizableVisitor(final HxType declaringType, final HxParameterizable hxParameterizable) {
     this(declaringType, hxParameterizable, null);
   }
 
-  public HxParameterizableVisitor(HxType declaringType, HxParameterizable target, MethodVisitor mv) {
+  public HxParameterizableVisitor(final HxType declaringType, final HxParameterizable target, final MethodVisitor mv) {
     super(Opcodes.ASM5, mv);
 
     this.declaringType = Objects.requireNonNull(declaringType, "Declaring type can't be null.");
     this.target = Objects.requireNonNull(target, "Target can't be null.");
+    this.remapping = new IdentityHashMap<>(32);
     this.code = target.getCode();
     this.codeStream = this.code.build();
-    this.remapping = new IdentityHashMap<>(32);
+  }
+
+  private Haxxor getHaxxor() {
+    return declaringType.getHaxxor();
   }
 
   @Override
@@ -96,17 +102,14 @@ public class HxParameterizableVisitor
   public AnnotationVisitor visitAnnotationDefault() {
     //available for methods only :)
     final HxMethod hxMethod = (HxMethod) this.target;
-    final HxAnnotation annotation = hxMethod.getHaxxor()
-                                            .createAnnotation(hxMethod.getReturnType()
-                                                                      .getName(), true);
+    final HxAnnotation annotation = getHaxxor().createAnnotation(hxMethod.getReturnType().getName(), true);
     return new HxAnnotationVisitor(annotation, super.visitAnnotationDefault())
         .consumer((anno) -> hxMethod.setDefaultValue(anno));
   }
 
   @Override
   public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
-    final HxAnnotation annotation = this.target.getHaxxor()
-                                               .createAnnotation(desc, visible);
+    final HxAnnotation annotation = getHaxxor().createAnnotation(desc, visible);
     return new HxAnnotationVisitor(annotation, super.visitAnnotation(desc, visible))
         .consumer((anno) -> this.target.addAnnotation(anno));
   }
@@ -119,8 +122,7 @@ public class HxParameterizableVisitor
 
   @Override
   public AnnotationVisitor visitParameterAnnotation(final int parameter, final String desc, final boolean visible) {
-    final HxAnnotation annotation = this.target.getHaxxor()
-                                               .createAnnotation(desc, visible);
+    final HxAnnotation annotation = getHaxxor().createAnnotation(desc, visible);
     return new HxAnnotationVisitor(annotation, super.visitAnnotation(desc, visible))
         .consumer((anno) -> this.target.getParameterAt(parameter)
                                        .addAnnotation(annotation));

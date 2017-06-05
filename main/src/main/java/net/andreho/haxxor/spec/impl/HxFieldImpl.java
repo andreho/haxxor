@@ -19,7 +19,8 @@ public class HxFieldImpl
   protected Object defaultValue;
   protected String genericSignature;
 
-  public HxFieldImpl(HxType type, String name) {
+  public HxFieldImpl(String name,
+                     HxType type) {
     super();
     this.setModifiers(HxMethod.Modifiers.PUBLIC.toBit());
 
@@ -35,11 +36,13 @@ public class HxFieldImpl
     this.name = name;
   }
 
-  public HxFieldImpl(HxType declaringType, HxType type, String name) {
-    this(type, name);
+  public HxFieldImpl(HxType declaringType,
+                     String name,
+                     HxType type) {
+    this(name, type);
 
     if (declaringType == null) {
-      throw new IllegalArgumentException("Declaring owner is null.");
+      throw new IllegalArgumentException("Declaring owner can't be null.");
     }
     this.declaringMember = declaringType;
   }

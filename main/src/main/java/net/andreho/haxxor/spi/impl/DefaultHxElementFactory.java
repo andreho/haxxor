@@ -59,8 +59,9 @@ public class DefaultHxElementFactory
   }
 
   @Override
-  public HxField createField(final String internalTypeName, final String fieldName) {
-    return new HxFieldImpl(haxxor.reference(internalTypeName), fieldName);
+  public HxField createField(final String fieldName,
+                             final String internalTypeName) {
+    return new HxFieldImpl(fieldName, haxxor.reference(internalTypeName));
   }
 
   @Override

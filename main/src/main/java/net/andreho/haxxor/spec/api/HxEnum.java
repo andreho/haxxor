@@ -16,8 +16,7 @@ public final class HxEnum {
   //----------------------------------------------------------------------------------------------------------------
 
   public HxEnum(Haxxor haxxor, Enum e) {
-    this(haxxor.reference(e.getClass()
-                           .getName()), e.name());
+    this(haxxor.reference(e.getClass().getName()), e.name());
   }
 
   public HxEnum(HxType type, String name) {

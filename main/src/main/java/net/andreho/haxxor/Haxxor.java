@@ -363,8 +363,9 @@ public class Haxxor
   }
 
   @Override
-  public HxField createField(final String internalTypeName, final String fieldName) {
-    return elementFactory.createField(toJavaClassName(internalTypeName), fieldName);
+  public HxField createField(final String fieldName,
+                             final String internalTypeName) {
+    return elementFactory.createField(fieldName, toJavaClassName(internalTypeName));
   }
 
   @Override

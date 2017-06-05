@@ -13,15 +13,15 @@ public class ClassAnnotationAttribute
 
   private volatile WeakReference<Class<?>> classReference;
 
-  public ClassAnnotationAttribute(final String name, final HxType type) {
-    super(name, type);
+  public ClassAnnotationAttribute(final String name, final HxType value) {
+    super(name, value);
   }
 
   @Override
   public Class<?> original(Class<?> type) {
     WeakReference<Class<?>> reference = this.classReference;
     if (reference == null) {
-      Class<?> cls = getValue().loadClass();
+      Class<?> cls = getValue().loadClass(type.getClassLoader());
       this.classReference = reference = new WeakReference<>(cls);
     }
     return reference.get();

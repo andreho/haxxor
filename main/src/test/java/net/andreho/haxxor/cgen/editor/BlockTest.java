@@ -2,7 +2,7 @@ package net.andreho.haxxor.cgen.editor;
 
 import net.andreho.haxxor.cgen.editor.vars.BooleanVar;
 import net.andreho.haxxor.cgen.editor.vars.StringVar;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 class BlockTest {
 
    @Test
-   @Ignore
+   @Disabled
    void testBooleanApi() {
       final Block µ = new Block(null);
 

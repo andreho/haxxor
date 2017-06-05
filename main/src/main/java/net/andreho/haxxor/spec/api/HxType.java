@@ -98,7 +98,16 @@ public interface HxType
   HxType setInterfaces(List<HxType> interfaces);
 
   /**
-   * @return count of slots that are needed to store a value of this type (e.g.: on stack or as local variable)
+   * @param interfaces
+   * @return
+   */
+  default HxType setInterfaces(String ... interfaces) {
+    return setInterfaces(getHaxxor().referencesAsList(interfaces));
+  }
+
+  /**
+   * @return count of slots that are needed to store a value of this type on stack or as local variable
+   * @implSpec <code>long</code> and <code>double</code> take two slots and all other only one
    */
   int getSlotsCount();
 

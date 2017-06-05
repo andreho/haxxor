@@ -80,7 +80,11 @@ public class HxAbstractType
   @Override
   public HxType setSuperType(String superType) {
     if (superType == null) {
-      return this;
+      if("java.lang.Object".equals(getName())) {
+        setSuperType((HxType) null);
+        return this;
+      }
+      throw new IllegalArgumentException("Super type can't be null.");
     }
     return setSuperType(getHaxxor().reference(superType));
   }
@@ -150,7 +154,7 @@ public class HxAbstractType
 
   @Override
   public int getSlotsCount() {
-    if (isPrimitive() && ("J".equals(getName()) || "D".equals(getName()))) {
+    if (isPrimitive() && ("long".equals(getName()) || "double".equals(getName()))) {
       return 2;
     }
     return 1;
@@ -670,13 +674,12 @@ public class HxAbstractType
   }
 
   private String getSimpleBinaryName() {
+    /* Code was copied from original java.lang.Class */
     HxType enclosingType = getEnclosingType();
-
     if (enclosingType == null) {
       // top level class
       return null;
     }
-
     // Otherwise, strip the enclosing class' name
     try {
       return getName().substring(enclosingType.getName()
@@ -688,54 +691,29 @@ public class HxAbstractType
 
   @Override
   public String getSimpleName() {
+    /* Code was copied from original java.lang.Class */
     if (isArray()) {
-      int dim = getDimension();
-
-      StringBuilder builder = new StringBuilder(getComponentType().getSimpleName());
-
-      while (dim-- > 0) {
-        builder.append("[]");
-      }
-
-      return builder.toString();
+      return getComponentType().getSimpleName() + "[]";
     }
 
     String simpleName = getSimpleBinaryName();
-
     if (simpleName == null) {
       // top level class
       simpleName = getName();
-
-      int idx = simpleName.lastIndexOf(JAVA_PACKAGE_SEPARATOR_CHAR);
-
-      if (idx > -1) {
-        simpleName.substring(idx + 1);
-      }
-
-      idx = simpleName.lastIndexOf('$');
-
-      if (idx > -1) {
-        simpleName = simpleName.substring(idx + 1);
-      }
-
-      return simpleName;
+      return simpleName.substring(simpleName.lastIndexOf(".")+1); // strip the package name
     }
 
     // Remove leading "\$[0-9]*" from the name
     int length = simpleName.length();
-
     if (length < 1 || simpleName.charAt(0) != '$') {
       throw new InternalError("Malformed class name");
     }
-
     int index = 1;
-
     while (index < length &&
            simpleName.charAt(index) >= '0' &&
            simpleName.charAt(index) <= '9') {
       index++;
     }
-
     // Eventually, this is the empty string if this is an anonymous class
     return simpleName.substring(index);
   }

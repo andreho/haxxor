@@ -36,12 +36,12 @@ public interface HxElementFactory {
 
   /**
    * Creates a new unbound field with given type and name
-   * @param internalTypeName of new field
    * @param fieldName of new field
+   * @param internalTypeName of new field
    * @return a new unbound field instance
    */
-  HxField createField(final String internalTypeName,
-                      final String fieldName);
+  HxField createField(final String fieldName,
+                      final String internalTypeName);
 
   /**
    * Creates a new unbound constructor with given parameters

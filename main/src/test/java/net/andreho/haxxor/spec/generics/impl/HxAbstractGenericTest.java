@@ -6,7 +6,8 @@ import net.andreho.asm.org.objectweb.asm.signature.SignatureVisitor;
 import net.andreho.haxxor.Debugger;
 import net.andreho.haxxor.spec.api.HxGeneric;
 import net.andreho.haxxor.spec.generics.HxTypeVariable;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.Serializable;
 import java.lang.reflect.TypeVariable;
@@ -29,11 +30,13 @@ public class HxAbstractGenericTest {
    static final int INTERFACE = 4;
 
    @Test
+   @Disabled
    public void asd() {
       Debugger.trace(Node8 .class);
    }
 
    @Test
+   @Disabled
    public void test() {
       TypeVariable<Class<Node5>>[] typeVariables = Node5.class.getTypeParameters();
       for (TypeVariable t :
@@ -65,6 +68,7 @@ public class HxAbstractGenericTest {
    }
 
    @Test
+   @Disabled
    public void test0() {
       String s =
 //            "<A::Ljava/io/Serializable;>Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<TA;>;";

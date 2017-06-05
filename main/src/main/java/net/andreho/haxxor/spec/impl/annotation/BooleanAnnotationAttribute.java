@@ -8,7 +8,9 @@ import net.andreho.haxxor.spec.api.HxAnnotationAttribute;
 public class BooleanAnnotationAttribute
     extends AbstractAnnotationAttribute<Boolean, Boolean> {
 
-  public BooleanAnnotationAttribute(final String name, final boolean value) {
+  public BooleanAnnotationAttribute(final String name,
+                                    final boolean value) {
+
     super(name, value);
   }
 
