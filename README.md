@@ -1,2 +1,3 @@
 # haxxor
-Under active development
+Project is currently under active development. 
+The documentation comes a bit later.
