@@ -1,6 +1,7 @@
 package net.andreho.haxxor.cgen.instr.create;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
+import net.andreho.haxxor.cgen.ArrayType;
 import net.andreho.haxxor.cgen.CodeStream;
 import net.andreho.haxxor.cgen.Context;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractSingleOperandInstruction;
@@ -13,7 +14,7 @@ import java.util.List;
 public class NEWARRAY
     extends AbstractSingleOperandInstruction {
 
-  public NEWARRAY(CodeStream.ArrayType type) {
+  public NEWARRAY(ArrayType type) {
     super(Opcodes.NEWARRAY, type.getCode());
   }
 
@@ -23,13 +24,13 @@ public class NEWARRAY
 
   @Override
   public void dumpTo(Context context, CodeStream codeStream) {
-    codeStream.NEWARRAY(CodeStream.ArrayType.fromCode(this.operand));
+    codeStream.NEWARRAY(ArrayType.fromCode(this.operand));
   }
 
   @Override
   public List<Object> apply(final Context context) {
-    return CodeStream.ArrayType.fromCode(this.operand)
-                               .getStackOperands();
+    return ArrayType.fromCode(this.operand)
+                    .getStackOperands();
   }
 
   @Override
@@ -39,7 +40,7 @@ public class NEWARRAY
 
   @Override
   public String toString() {
-    return super.toString() + " " + CodeStream.ArrayType.fromCode(this.operand)
-                                                        .getClassName();
+    return super.toString() + " " + ArrayType.fromCode(this.operand)
+                                             .getClassName();
   }
 }

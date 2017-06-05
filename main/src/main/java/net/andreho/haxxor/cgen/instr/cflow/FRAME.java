@@ -1,8 +1,8 @@
 package net.andreho.haxxor.cgen.instr.cflow;
 
 import net.andreho.haxxor.cgen.CodeStream;
-import net.andreho.haxxor.cgen.CodeStream.Frames;
 import net.andreho.haxxor.cgen.Context;
+import net.andreho.haxxor.cgen.Frames;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInstruction;
 
 import java.util.List;

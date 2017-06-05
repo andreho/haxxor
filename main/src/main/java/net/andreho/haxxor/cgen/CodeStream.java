@@ -1,13 +1,8 @@
 package net.andreho.haxxor.cgen;
 
 
-import net.andreho.asm.org.objectweb.asm.ClassReader;
 import net.andreho.asm.org.objectweb.asm.Handle;
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.instr.LABEL;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * <br/>Created by a.hofmann on 16.06.2015.<br/>
@@ -821,127 +816,6 @@ public interface CodeStream {
   CodeStream MAXS(int maxStack, int maxLocals);
 
   void END();
-
-  enum ArrayType {
-    BOOLEAN(Opcodes.T_BOOLEAN, "[Z"),
-    CHAR(Opcodes.T_CHAR, "[C"),
-    FLOAT(Opcodes.T_FLOAT, "[F"),
-    DOUBLE(Opcodes.T_DOUBLE, "[D"),
-    BYTE(Opcodes.T_BYTE, "[B"),
-    SHORT(Opcodes.T_SHORT, "[S"),
-    INT(Opcodes.T_INT, "[I"),
-    LONG(Opcodes.T_LONG, "[J");
-
-    final int code;
-    final String className;
-    final List<Object> stackOperands;
-
-    ArrayType(int code, String className) {
-      this.code = code;
-      this.className = className;
-      this.stackOperands = Collections.singletonList(className);
-    }
-
-    public static ArrayType fromCode(int code) {
-      switch (code) {
-        case Opcodes.T_BOOLEAN:
-          return BOOLEAN;
-        case Opcodes.T_CHAR:
-          return CHAR;
-        case Opcodes.T_FLOAT:
-          return FLOAT;
-        case Opcodes.T_DOUBLE:
-          return DOUBLE;
-        case Opcodes.T_BYTE:
-          return BYTE;
-        case Opcodes.T_SHORT:
-          return SHORT;
-        case Opcodes.T_INT:
-          return INT;
-        case Opcodes.T_LONG:
-          return LONG;
-      }
-      throw new IllegalArgumentException("Invalid array type code: " + code);
-    }
-
-    public int getCode() {
-      return code;
-    }
-
-    public String getClassName() {
-      return className;
-    }
-
-    public List<Object> getStackOperands() {
-      return this.stackOperands;
-    }
-  }
-
-  enum Frames {
-    /**
-     * Represents an expanded frame. See {@link ClassReader#EXPAND_FRAMES}.
-     */
-    NEW(Opcodes.F_NEW),
-
-    /**
-     * Represents a compressed frame with complete frame data.
-     */
-    FULL(Opcodes.F_FULL),
-
-    /**
-     * Represents a compressed frame where locals are the same as the locals in
-     * the previous frame, except that additional 1-3 locals are defined, and
-     * with an empty stack.
-     */
-    APPEND(Opcodes.F_APPEND),
-
-    /**
-     * Represents a compressed frame where locals are the same as the locals in
-     * the previous frame, except that the last 1-3 locals are absent and with
-     * an empty stack.
-     */
-    CHOP(Opcodes.F_CHOP),
-
-    /**
-     * Represents a compressed frame with exactly the same locals as the
-     * previous frame and with an empty stack.
-     */
-    SAME(Opcodes.F_SAME),
-
-    /**
-     * Represents a compressed frame with exactly the same locals as the
-     * previous frame and with a single value on the stack.
-     */
-    SAME1(Opcodes.F_SAME1);
-
-    final int code;
-
-    Frames(int code) {
-      this.code = code;
-    }
-
-    public static Frames fromCode(int code) {
-      switch (code) {
-        case Opcodes.F_NEW:
-          return NEW;
-        case Opcodes.F_FULL:
-          return FULL;
-        case Opcodes.F_APPEND:
-          return APPEND;
-        case Opcodes.F_CHOP:
-          return CHOP;
-        case Opcodes.F_SAME:
-          return SAME;
-        case Opcodes.F_SAME1:
-          return SAME1;
-      }
-      throw new IllegalArgumentException("Invalid frame code: " + code);
-    }
-
-    public int getCode() {
-      return code;
-    }
-  }
 
   //#################################################################################################
 }

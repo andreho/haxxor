@@ -4,1074 +4,1095 @@ import net.andreho.asm.org.objectweb.asm.Handle;
 import net.andreho.haxxor.cgen.ArrayType;
 import net.andreho.haxxor.cgen.CodeStream;
 import net.andreho.haxxor.cgen.Frames;
-import net.andreho.haxxor.cgen.Instruction;
-import net.andreho.haxxor.cgen.InstructionFactory;
-import net.andreho.haxxor.cgen.LocalVariable;
-import net.andreho.haxxor.cgen.TryCatch;
 import net.andreho.haxxor.cgen.instr.LABEL;
-import net.andreho.haxxor.spec.api.HxCode;
 
 /**
- * <br/>Created by a.hofmann on 18.03.2016.<br/>
+ * <br/>Created by a.hofmann on 05.06.2017 at 07:05.
  */
-public class InstructionCodeStream
+public class DelegatingCodeStream
     implements CodeStream {
 
-  private final HxCode code;
-  private final InstructionFactory factory;
+  private final CodeStream codeStream;
 
-
-  public InstructionCodeStream(final HxCode code) {
-    this(code, code.getInstructionFactory());
-  }
-
-  public InstructionCodeStream(final HxCode code, final InstructionFactory factory) {
-    this.code = code;
-    this.factory = factory;
-  }
-
-  private Instruction current() {
-    return code.getCurrent();
+  public DelegatingCodeStream(final CodeStream codeStream) {
+    this.codeStream = codeStream;
   }
 
   @Override
   public CodeStream BEGIN() {
-    //NO OP
+    codeStream.BEGIN();
     return this;
   }
 
   @Override
   public CodeStream NOP() {
-    current().append(factory.NOP());
+    codeStream.NOP();
     return this;
   }
 
   @Override
   public CodeStream ACONST_NULL() {
-    current().append(factory.ACONST_NULL());
+    codeStream.ACONST_NULL();
     return this;
   }
 
   @Override
   public CodeStream ICONST_M1() {
-    current().append(factory.ICONST(-1));
+    codeStream.ICONST_M1();
     return this;
   }
 
   @Override
   public CodeStream ICONST_0() {
-    current().append(factory.ICONST(0));
+    codeStream.ICONST_0();
     return this;
   }
 
   @Override
   public CodeStream ICONST_1() {
-    current().append(factory.ICONST(1));
+    codeStream.ICONST_1();
     return this;
   }
 
   @Override
   public CodeStream ICONST_2() {
-    current().append(factory.ICONST(2));
+    codeStream.ICONST_2();
     return this;
   }
 
   @Override
   public CodeStream ICONST_3() {
-    current().append(factory.ICONST(3));
+    codeStream.ICONST_3();
     return this;
   }
 
   @Override
   public CodeStream ICONST_4() {
-    current().append(factory.ICONST(4));
+    codeStream.ICONST_4();
     return this;
   }
 
   @Override
   public CodeStream ICONST_5() {
-    current().append(factory.ICONST(5));
+    codeStream.ICONST_5();
     return this;
   }
 
   @Override
   public CodeStream LCONST_0() {
-    current().append(factory.LCONST(0L));
+    codeStream.LCONST_0();
     return this;
   }
 
   @Override
   public CodeStream LCONST_1() {
-    current().append(factory.LCONST(1L));
+    codeStream.LCONST_1();
     return this;
   }
 
   @Override
   public CodeStream FCONST_0() {
-    current().append(factory.FCONST(0f));
+    codeStream.FCONST_0();
     return this;
   }
 
   @Override
   public CodeStream FCONST_1() {
-    current().append(factory.FCONST(1f));
+    codeStream.FCONST_1();
     return this;
   }
 
   @Override
   public CodeStream FCONST_2() {
-    current().append(factory.FCONST(2f));
+    codeStream.FCONST_2();
     return this;
   }
 
   @Override
   public CodeStream DCONST_0() {
-    current().append(factory.DCONST(0d));
+    codeStream.DCONST_0();
     return this;
   }
 
   @Override
   public CodeStream DCONST_1() {
-    current().append(factory.DCONST(1d));
+    codeStream.DCONST_1();
     return this;
   }
 
   @Override
   public CodeStream BIPUSH(final byte value) {
-    current().append(factory.BIPUSH(value));
+    codeStream.BIPUSH(value);
     return this;
   }
 
   @Override
   public CodeStream SIPUSH(final short value) {
-    current().append(factory.SIPUSH(value));
+    codeStream.SIPUSH(value);
     return this;
   }
 
   @Override
   public CodeStream LDC(final int value) {
-    current().append(factory.LDC(value));
+    codeStream.LDC(value);
     return this;
   }
 
   @Override
   public CodeStream LDC(final float value) {
-    current().append(factory.LDC(value));
+    codeStream.LDC(value);
     return this;
   }
 
   @Override
   public CodeStream LDC(final long value) {
-    current().append(factory.LDC(value));
+    codeStream.LDC(value);
     return this;
   }
 
   @Override
   public CodeStream LDC(final double value) {
-    current().append(factory.LDC(value));
+    codeStream.LDC(value);
     return this;
   }
 
   @Override
   public CodeStream LDC(final String value) {
-    current().append(factory.LDC(value));
+    codeStream.LDC(value);
     return this;
   }
 
   @Override
   public CodeStream HANDLE(final Handle handle) {
-    current().append(factory.HANDLE(handle));
+    codeStream.HANDLE(handle);
     return this;
   }
 
   @Override
   public CodeStream METHOD(final String methodDescriptor) {
-    current().append(factory.METHOD(methodDescriptor));
+    codeStream.METHOD(methodDescriptor);
     return this;
   }
 
   @Override
   public CodeStream TYPE(final String internalType) {
-    current().append(factory.TYPE(internalType));
+    codeStream.TYPE(internalType);
     return this;
   }
 
   @Override
   public CodeStream ILOAD(final int idx) {
-    current().append(factory.ILOAD(idx));
+    codeStream.ILOAD(idx);
     return this;
   }
 
   @Override
   public CodeStream LLOAD(final int idx) {
-    current().append(factory.LLOAD(idx));
+    codeStream.LLOAD(idx);
     return this;
   }
 
   @Override
   public CodeStream FLOAD(final int idx) {
-    current().append(factory.FLOAD(idx));
+    codeStream.FLOAD(idx);
     return this;
   }
 
   @Override
   public CodeStream DLOAD(final int idx) {
-    current().append(factory.DLOAD(idx));
+    codeStream.DLOAD(idx);
     return this;
   }
 
   @Override
   public CodeStream ALOAD(final int idx) {
-    current().append(factory.ALOAD(idx));
+    codeStream.ALOAD(idx);
     return this;
   }
 
   @Override
   public CodeStream THIS() {
-    current().append(factory.ALOAD(0));
+    codeStream.THIS();
     return this;
   }
 
   @Override
   public CodeStream IALOAD() {
-    current().append(factory.IALOAD());
+    codeStream.IALOAD();
     return this;
   }
 
   @Override
   public CodeStream LALOAD() {
-    current().append(factory.LALOAD());
+    codeStream.LALOAD();
     return this;
   }
 
   @Override
   public CodeStream FALOAD() {
-    current().append(factory.FALOAD());
+    codeStream.FALOAD();
     return this;
   }
 
   @Override
   public CodeStream DALOAD() {
-    current().append(factory.DALOAD());
+    codeStream.DALOAD();
     return this;
   }
 
   @Override
   public CodeStream AALOAD() {
-    current().append(factory.AALOAD());
+    codeStream.AALOAD();
     return this;
   }
 
   @Override
   public CodeStream BALOAD() {
-    current().append(factory.BALOAD());
+    codeStream.BALOAD();
     return this;
   }
 
   @Override
   public CodeStream CALOAD() {
-    current().append(factory.CALOAD());
+    codeStream.CALOAD();
     return this;
   }
 
   @Override
   public CodeStream SALOAD() {
-    current().append(factory.SALOAD());
+    codeStream.SALOAD();
     return this;
   }
 
   @Override
   public CodeStream ISTORE(final int idx) {
-    current().append(factory.ISTORE(idx));
+    codeStream.ISTORE(idx);
     return this;
   }
 
   @Override
   public CodeStream LSTORE(final int idx) {
-    current().append(factory.LSTORE(idx));
+    codeStream.LSTORE(idx);
     return this;
   }
 
   @Override
   public CodeStream FSTORE(final int idx) {
-    current().append(factory.FSTORE(idx));
+    codeStream.FSTORE(idx);
     return this;
   }
 
   @Override
   public CodeStream DSTORE(final int idx) {
-    current().append(factory.DSTORE(idx));
+    codeStream.DSTORE(idx);
     return this;
   }
 
   @Override
   public CodeStream ASTORE(final int idx) {
-    current().append(factory.ASTORE(idx));
+    codeStream.ASTORE(idx);
     return this;
   }
 
   @Override
   public CodeStream IASTORE() {
-    current().append(factory.IASTORE());
+    codeStream.IASTORE();
     return this;
   }
 
   @Override
   public CodeStream LASTORE() {
-    current().append(factory.LASTORE());
+    codeStream.LASTORE();
     return this;
   }
 
   @Override
   public CodeStream FASTORE() {
-    current().append(factory.FASTORE());
+    codeStream.FASTORE();
     return this;
   }
 
   @Override
   public CodeStream DASTORE() {
-    current().append(factory.DASTORE());
+    codeStream.DASTORE();
     return this;
   }
 
   @Override
   public CodeStream AASTORE() {
-    current().append(factory.AASTORE());
+    codeStream.AASTORE();
     return this;
   }
 
   @Override
   public CodeStream BASTORE() {
-    current().append(factory.BASTORE());
+    codeStream.BASTORE();
     return this;
   }
 
   @Override
   public CodeStream CASTORE() {
-    current().append(factory.CASTORE());
+    codeStream.CASTORE();
     return this;
   }
 
   @Override
   public CodeStream SASTORE() {
-    current().append(factory.SASTORE());
+    codeStream.SASTORE();
     return this;
   }
 
   @Override
   public CodeStream POP() {
-    current().append(factory.POP());
+    codeStream.POP();
     return this;
   }
 
   @Override
   public CodeStream POP2() {
-    current().append(factory.POP2());
+    codeStream.POP2();
     return this;
   }
 
   @Override
   public CodeStream DUP() {
-    current().append(factory.DUP());
+    codeStream.DUP();
     return this;
   }
 
   @Override
   public CodeStream DUP_X1() {
-    current().append(factory.DUP_X1());
+    codeStream.DUP_X1();
     return this;
   }
 
   @Override
   public CodeStream DUP_X2() {
-    current().append(factory.DUP_X2());
+    codeStream.DUP_X2();
     return this;
   }
 
   @Override
   public CodeStream DUP2() {
-    current().append(factory.DUP2());
+    codeStream.DUP2();
     return this;
   }
 
   @Override
   public CodeStream DUP2_X1() {
-    current().append(factory.DUP2_X1());
+    codeStream.DUP2_X1();
     return this;
   }
 
   @Override
   public CodeStream DUP2_X2() {
-    current().append(factory.DUP2_X2());
+    codeStream.DUP2_X2();
     return this;
   }
 
   @Override
   public CodeStream SWAP() {
-    current().append(factory.SWAP());
+    codeStream.SWAP();
     return this;
   }
 
   @Override
   public CodeStream IADD() {
-    current().append(factory.IADD());
+    codeStream.IADD();
     return this;
   }
 
   @Override
   public CodeStream LADD() {
-    current().append(factory.LADD());
+    codeStream.LADD();
     return this;
   }
 
   @Override
   public CodeStream FADD() {
-    current().append(factory.FADD());
+    codeStream.FADD();
     return this;
   }
 
   @Override
   public CodeStream DADD() {
-    current().append(factory.DADD());
+    codeStream.DADD();
     return this;
   }
 
   @Override
   public CodeStream ISUB() {
-    current().append(factory.ISUB());
+    codeStream.ISUB();
     return this;
   }
 
   @Override
   public CodeStream LSUB() {
-    current().append(factory.LSUB());
+    codeStream.LSUB();
     return this;
   }
 
   @Override
   public CodeStream FSUB() {
-    current().append(factory.FSUB());
+    codeStream.FSUB();
     return this;
   }
 
   @Override
   public CodeStream DSUB() {
-    current().append(factory.DSUB());
+    codeStream.DSUB();
     return this;
   }
 
   @Override
   public CodeStream IMUL() {
-    current().append(factory.IMUL());
+    codeStream.IMUL();
     return this;
   }
 
   @Override
   public CodeStream LMUL() {
-    current().append(factory.LMUL());
+    codeStream.LMUL();
     return this;
   }
 
   @Override
   public CodeStream FMUL() {
-    current().append(factory.FMUL());
+    codeStream.FMUL();
     return this;
   }
 
   @Override
   public CodeStream DMUL() {
-    current().append(factory.DMUL());
+    codeStream.DMUL();
     return this;
   }
 
   @Override
   public CodeStream IDIV() {
-    current().append(factory.IDIV());
+    codeStream.IDIV();
     return this;
   }
 
   @Override
   public CodeStream LDIV() {
-    current().append(factory.LDIV());
+    codeStream.LDIV();
     return this;
   }
 
   @Override
   public CodeStream FDIV() {
-    current().append(factory.FDIV());
+    codeStream.FDIV();
     return this;
   }
 
   @Override
   public CodeStream DDIV() {
-    current().append(factory.DDIV());
+    codeStream.DDIV();
     return this;
   }
 
   @Override
   public CodeStream IREM() {
-    current().append(factory.IREM());
+    codeStream.IREM();
     return this;
   }
 
   @Override
   public CodeStream LREM() {
-    current().append(factory.LREM());
+    codeStream.LREM();
     return this;
   }
 
   @Override
   public CodeStream FREM() {
-    current().append(factory.FREM());
+    codeStream.FREM();
     return this;
   }
 
   @Override
   public CodeStream DREM() {
-    current().append(factory.DREM());
+    codeStream.DREM();
     return this;
   }
 
   @Override
   public CodeStream INEG() {
-    current().append(factory.INEG());
+    codeStream.INEG();
     return this;
   }
 
   @Override
   public CodeStream LNEG() {
-    current().append(factory.LNEG());
+    codeStream.LNEG();
     return this;
   }
 
   @Override
   public CodeStream FNEG() {
-    current().append(factory.FNEG());
+    codeStream.FNEG();
     return this;
   }
 
   @Override
   public CodeStream DNEG() {
-    current().append(factory.DNEG());
+    codeStream.DNEG();
     return this;
   }
 
   @Override
   public CodeStream ISHL() {
-    current().append(factory.ISHL());
+    codeStream.ISHL();
     return this;
   }
 
   @Override
   public CodeStream LSHL() {
-    current().append(factory.LSHL());
+    codeStream.LSHL();
     return this;
   }
 
   @Override
   public CodeStream ISHR() {
-    current().append(factory.ISHR());
+    codeStream.ISHR();
     return this;
   }
 
   @Override
   public CodeStream LSHR() {
-    current().append(factory.LSHR());
+    codeStream.LSHR();
     return this;
   }
 
   @Override
   public CodeStream IUSHR() {
-    current().append(factory.IUSHR());
+    codeStream.IUSHR();
     return this;
   }
 
   @Override
   public CodeStream LUSHR() {
-    current().append(factory.LUSHR());
+    codeStream.LUSHR();
     return this;
   }
 
   @Override
   public CodeStream IAND() {
-    current().append(factory.IADD());
+    codeStream.IAND();
     return this;
   }
 
   @Override
   public CodeStream LAND() {
-    current().append(factory.LADD());
+    codeStream.LAND();
     return this;
   }
 
   @Override
   public CodeStream IOR() {
-    current().append(factory.IOR());
+    codeStream.IOR();
     return this;
   }
 
   @Override
   public CodeStream LOR() {
-    current().append(factory.LOR());
+    codeStream.LOR();
     return this;
   }
 
   @Override
   public CodeStream IXOR() {
-    current().append(factory.IXOR());
+    codeStream.IXOR();
     return this;
   }
 
   @Override
   public CodeStream LXOR() {
-    current().append(factory.LXOR());
+    codeStream.LXOR();
     return this;
   }
 
   @Override
-  public CodeStream IINC(final int var, final int increment) {
-    current().append(factory.IINC(var, increment));
+  public CodeStream IINC(final int var,
+                         final int increment) {
+    codeStream.IINC(var, increment);
     return this;
   }
 
   @Override
   public CodeStream I2L() {
-    current().append(factory.I2L());
+    codeStream.I2L();
     return this;
   }
 
   @Override
   public CodeStream I2F() {
-    current().append(factory.I2F());
+    codeStream.I2F();
     return this;
   }
 
   @Override
   public CodeStream I2D() {
-    current().append(factory.I2D());
+    codeStream.I2D();
     return this;
   }
 
   @Override
   public CodeStream L2I() {
-    current().append(factory.L2I());
+    codeStream.L2I();
     return this;
   }
 
   @Override
   public CodeStream L2F() {
-    current().append(factory.L2F());
+    codeStream.L2F();
     return this;
   }
 
   @Override
   public CodeStream L2D() {
-    current().append(factory.L2D());
+    codeStream.L2D();
     return this;
   }
 
   @Override
   public CodeStream F2I() {
-    current().append(factory.F2I());
+    codeStream.F2I();
     return this;
   }
 
   @Override
   public CodeStream F2L() {
-    current().append(factory.F2L());
+    codeStream.F2L();
     return this;
   }
 
   @Override
   public CodeStream F2D() {
-    current().append(factory.F2D());
+    codeStream.F2D();
     return this;
   }
 
   @Override
   public CodeStream D2I() {
-    current().append(factory.D2I());
+    codeStream.D2I();
     return this;
   }
 
   @Override
   public CodeStream D2L() {
-    current().append(factory.D2L());
+    codeStream.D2L();
     return this;
   }
 
   @Override
   public CodeStream D2F() {
-    current().append(factory.D2F());
+    codeStream.D2F();
     return this;
   }
 
   @Override
   public CodeStream I2B() {
-    current().append(factory.I2B());
+    codeStream.I2B();
     return this;
   }
 
   @Override
   public CodeStream I2C() {
-    current().append(factory.I2C());
+    codeStream.I2C();
     return this;
   }
 
   @Override
   public CodeStream I2S() {
-    current().append(factory.I2S());
+    codeStream.I2S();
     return this;
   }
 
   @Override
   public CodeStream LCMP() {
-    current().append(factory.LCMP());
+    codeStream.LCMP();
     return this;
   }
 
   @Override
   public CodeStream FCMPL() {
-    current().append(factory.FCMPL());
+    codeStream.FCMPL();
     return this;
   }
 
   @Override
   public CodeStream FCMPG() {
-    current().append(factory.FCMPG());
+    codeStream.FCMPG();
     return this;
   }
 
   @Override
   public CodeStream DCMPL() {
-    current().append(factory.DCMPL());
+    codeStream.DCMPL();
     return this;
   }
 
   @Override
   public CodeStream DCMPG() {
-    current().append(factory.DCMPG());
+    codeStream.DCMPG();
     return this;
   }
 
   @Override
   public CodeStream IFEQ(final LABEL label) {
-    current().append(factory.IFEQ(label));
+    codeStream.IFEQ(label);
     return this;
   }
 
   @Override
   public CodeStream IFNE(final LABEL label) {
-    current().append(factory.IFNE(label));
+    codeStream.IFNE(label);
     return this;
   }
 
   @Override
   public CodeStream IFLT(final LABEL label) {
-    current().append(factory.IFLT(label));
+    codeStream.IFLT(label);
     return this;
   }
 
   @Override
   public CodeStream IFGE(final LABEL label) {
-    current().append(factory.IFGE(label));
+    codeStream.IFGE(label);
     return this;
   }
 
   @Override
   public CodeStream IFGT(final LABEL label) {
-    current().append(factory.IFGT(label));
+    codeStream.IFGT(label);
     return this;
   }
 
   @Override
   public CodeStream IFLE(final LABEL label) {
-    current().append(factory.IFLE(label));
+    codeStream.IFLE(label);
     return this;
   }
 
   @Override
   public CodeStream IF_ICMPEQ(final LABEL label) {
-    current().append(factory.IF_ICMPEQ(label));
+    codeStream.IF_ICMPEQ(label);
     return this;
   }
 
   @Override
   public CodeStream IF_ICMPNE(final LABEL label) {
-    current().append(factory.IF_ICMPNE(label));
+    codeStream.IF_ICMPNE(label);
     return this;
   }
 
   @Override
   public CodeStream IF_ICMPLT(final LABEL label) {
-    current().append(factory.IF_ICMPLT(label));
+    codeStream.IF_ICMPLT(label);
     return this;
   }
 
   @Override
   public CodeStream IF_ICMPGE(final LABEL label) {
-    current().append(factory.IF_ICMPGE(label));
+    codeStream.IF_ICMPGE(label);
     return this;
   }
 
   @Override
   public CodeStream IF_ICMPGT(final LABEL label) {
-    current().append(factory.IF_ICMPGT(label));
+    codeStream.IF_ICMPGT(label);
     return this;
   }
 
   @Override
   public CodeStream IF_ICMPLE(final LABEL label) {
-    current().append(factory.IF_ICMPLE(label));
+    codeStream.IF_ICMPLE(label);
     return this;
   }
 
   @Override
   public CodeStream IF_ACMPEQ(final LABEL label) {
-    current().append(factory.IF_ACMPEQ(label));
+    codeStream.IF_ACMPEQ(label);
     return this;
   }
 
   @Override
   public CodeStream IF_ACMPNE(final LABEL label) {
-    current().append(factory.IF_ACMPNE(label));
+    codeStream.IF_ACMPNE(label);
     return this;
   }
 
   @Override
   public CodeStream GOTO(final LABEL label) {
-    current().append(factory.GOTO(label));
+    codeStream.GOTO(label);
     return this;
   }
 
   @Override
   public CodeStream JSR(final LABEL label) {
-    current().append(factory.JSR(label));
+    codeStream.JSR(label);
     return this;
   }
 
   @Override
   public CodeStream RET(final int var) {
-    current().append(factory.RET(var));
+    codeStream.RET(var);
     return this;
   }
 
   @Override
-  public CodeStream TABLESWITCH(final int min, final int max, final LABEL defaultLabel, final LABEL... labels) {
-    current().append(factory.TABLESWITCH(min, max, defaultLabel, labels));
+  public CodeStream TABLESWITCH(final int min,
+                                final int max,
+                                final LABEL defaultLabel,
+                                final LABEL... labels) {
+    codeStream.TABLESWITCH(min, max, defaultLabel, labels);
     return this;
   }
 
   @Override
-  public CodeStream LOOKUPSWITCH(final LABEL label, final int[] keys, final LABEL[] labels) {
-    current().append(factory.LOOKUPSWITCH(label, keys, labels));
+  public CodeStream LOOKUPSWITCH(final LABEL defaultLabel,
+                                 final int[] keys,
+                                 final LABEL[] labels) {
+    codeStream.LOOKUPSWITCH(defaultLabel, keys, labels);
     return this;
   }
 
   @Override
   public CodeStream IRETURN() {
-    current().append(factory.IRETURN());
+    codeStream.IRETURN();
     return this;
   }
 
   @Override
   public CodeStream LRETURN() {
-    current().append(factory.LRETURN());
+    codeStream.LRETURN();
     return this;
   }
 
   @Override
   public CodeStream FRETURN() {
-    current().append(factory.FRETURN());
+    codeStream.FRETURN();
     return this;
   }
 
   @Override
   public CodeStream DRETURN() {
-    current().append(factory.DRETURN());
+    codeStream.DRETURN();
     return this;
   }
 
   @Override
   public CodeStream ARETURN() {
-    current().append(factory.ARETURN());
+    codeStream.ARETURN();
     return this;
   }
 
   @Override
   public CodeStream RETURN() {
-    current().append(factory.RETURN());
+    codeStream.RETURN();
     return this;
   }
 
   @Override
-  public CodeStream GETSTATIC(final String owner, final String name, final String desc) {
-    current().append(factory.GETSTATIC(owner, name, desc));
+  public CodeStream GETSTATIC(final String owner,
+                              final String name,
+                              final String desc) {
+    codeStream.GETSTATIC(owner, name, desc);
     return this;
   }
 
   @Override
-  public CodeStream PUTSTATIC(final String owner, final String name, final String desc) {
-    current().append(factory.PUTSTATIC(owner, name, desc));
+  public CodeStream PUTSTATIC(final String owner,
+                              final String name,
+                              final String desc) {
+    codeStream.PUTSTATIC(owner, name, desc);
     return this;
   }
 
   @Override
-  public CodeStream GETFIELD(final String owner, final String name, final String desc) {
-    current().append(factory.GETFIELD(owner, name, desc));
+  public CodeStream GETFIELD(final String owner,
+                             final String name,
+                             final String desc) {
+    codeStream.GETFIELD(owner, name, desc);
     return this;
   }
 
   @Override
-  public CodeStream PUTFIELD(final String owner, final String name, final String desc) {
-    current().append(factory.PUTFIELD(owner, name, desc));
+  public CodeStream PUTFIELD(final String owner,
+                             final String name,
+                             final String desc) {
+    codeStream.PUTFIELD(owner, name, desc);
     return this;
   }
 
   @Override
-  public CodeStream INVOKEVIRTUAL(final String owner, final String name, final String desc) {
-    current().append(factory.INVOKEVIRTUAL(owner, name, desc));
+  public CodeStream INVOKEVIRTUAL(final String owner,
+                                  final String name,
+                                  final String desc) {
+    codeStream.INVOKEVIRTUAL(owner, name, desc);
     return this;
   }
 
   @Override
-  public CodeStream INVOKESPECIAL(final String owner, final String name, final String desc) {
-    current().append(factory.INVOKESPECIAL(owner, name, desc));
+  public CodeStream INVOKESPECIAL(final String owner,
+                                  final String name,
+                                  final String desc) {
+    codeStream.INVOKESPECIAL(owner, name, desc);
     return this;
   }
 
   @Override
-  public CodeStream INVOKESTATIC(final String owner, final String name, final String desc, final boolean isInterface) {
-    current().append(factory.INVOKESTATIC(owner, name, desc, isInterface));
+  public CodeStream INVOKESTATIC(final String owner,
+                                 final String name,
+                                 final String desc,
+                                 final boolean isInterface) {
+    codeStream.INVOKESTATIC(owner, name, desc, isInterface);
     return this;
   }
 
   @Override
-  public CodeStream INVOKEINTERFACE(final String owner, final String name, final String desc) {
-    current().append(factory.INVOKEINTERFACE(owner, name, desc));
+  public CodeStream INVOKEINTERFACE(final String owner,
+                                    final String name,
+                                    final String desc) {
+    codeStream.INVOKEINTERFACE(owner, name, desc);
     return this;
   }
 
   @Override
-  public CodeStream INVOKEDYNAMIC(final String name, final String desc, final Handle bsm, final Object... bsmArgs) {
-    current().append(factory.INVOKEDYNAMIC(name, desc, bsm, bsmArgs));
+  public CodeStream INVOKEDYNAMIC(final String name,
+                                  final String desc,
+                                  final Handle bsm,
+                                  final Object... bsmArgs) {
+    codeStream.INVOKEDYNAMIC(name, desc, bsm, bsmArgs);
     return this;
   }
 
   @Override
   public CodeStream NEW(final String internalType) {
-    current().append(factory.NEW(internalType));
+    codeStream.NEW(internalType);
     return this;
   }
 
   @Override
   public CodeStream NEWARRAY(final ArrayType type) {
-    current().append(factory.NEWARRAY(type));
+    codeStream.NEWARRAY(type);
     return this;
   }
 
   @Override
   public CodeStream ANEWARRAY(final String internalType) {
-    current().append(factory.ANEWARRAY(internalType));
+    codeStream.ANEWARRAY(internalType);
     return this;
   }
 
   @Override
   public CodeStream ARRAYLENGTH() {
-    current().append(factory.ARRAYLENGTH());
+    codeStream.ARRAYLENGTH();
     return this;
   }
 
   @Override
   public CodeStream ATHROW() {
-    current().append(factory.ATHROW());
+    codeStream.ATHROW();
     return this;
   }
 
   @Override
   public CodeStream CHECKCAST(final String internalType) {
-    current().append(factory.CHECKCAST(internalType));
+    codeStream.CHECKCAST(internalType);
     return this;
   }
 
   @Override
   public CodeStream INSTANCEOF(final String internalType) {
-    current().append(factory.INSTANCEOF(internalType));
+    codeStream.INSTANCEOF(internalType);
     return this;
   }
 
   @Override
   public CodeStream MONITORENTER() {
-    current().append(factory.MONITORENTER());
+    codeStream.MONITORENTER();
     return this;
   }
 
   @Override
   public CodeStream MONITOREXIT() {
-    current().append(factory.MONITOREXIT());
+    codeStream.MONITOREXIT();
     return this;
   }
 
   @Override
-  public CodeStream MULTIANEWARRAY(final String internalType, final int dims) {
-    current().append(factory.MULTIANEWARRAY(internalType, dims));
+  public CodeStream MULTIANEWARRAY(final String internalType,
+                                   final int dims) {
+    codeStream.MULTIANEWARRAY(internalType, dims);
     return this;
   }
 
   @Override
   public CodeStream IFNULL(final LABEL label) {
-    current().append(factory.IFNULL(label));
+    codeStream.IFNULL(label);
     return this;
   }
 
   @Override
   public CodeStream IFNONNULL(final LABEL label) {
-    current().append(factory.IFNONNULL(label));
+    codeStream.IFNONNULL(label);
     return this;
   }
 
   @Override
   public CodeStream LABEL(final LABEL label) {
-    current().append(factory.LABEL(label));
+    codeStream.LABEL(label);
     return this;
   }
 
   @Override
-  public CodeStream TRY_CATCH(final LABEL startLabel, final LABEL endLabel, final LABEL handler, final String type) {
-    this.code.getTryCatches()
-             .add(new TryCatch(startLabel, endLabel, handler, type));
+  public CodeStream TRY_CATCH(final LABEL startLabel,
+                              final LABEL endLabel,
+                              final LABEL handler,
+                              final String type) {
+    codeStream.TRY_CATCH(startLabel, endLabel, handler, type);
     return this;
   }
 
   @Override
-  public CodeStream FRAME(final Frames type, final int nLocal, final Object[] local, final int nStack,
+  public CodeStream FRAME(final Frames type,
+                          final int nLocal,
+                          final Object[] local,
+                          final int nStack,
                           final Object[] stack) {
-    current().append(factory.FRAME(type, nLocal, local, nStack, stack));
+    codeStream.FRAME(type, nLocal, local, nStack, stack);
     return this;
   }
 
   @Override
-  public CodeStream LOCAL_VARIABLE(final String name, final String desc, final String signature, final LABEL start,
-                                   final LABEL end, final int index) {
-    this.code.addLocalVariable(new LocalVariable(index, name, desc, signature, start, end));
+  public CodeStream LOCAL_VARIABLE(final String name,
+                                   final String desc,
+                                   final String signature,
+                                   final LABEL start,
+                                   final LABEL end,
+                                   final int index) {
+    codeStream.LOCAL_VARIABLE(name, desc, signature, start, end, index);
     return this;
   }
 
   @Override
-  public CodeStream LINE_NUMBER(final int line, final LABEL start) {
-    current().append(factory.LINE_NUMBER(line, start));
+  public CodeStream LINE_NUMBER(final int line,
+                                final LABEL start) {
+    codeStream.LINE_NUMBER(line, start);
     return this;
   }
 
   @Override
-  public CodeStream MAXS(final int maxStack, final int maxLocals) {
-    this.code.setMaxStack(maxStack);
-    this.code.setMaxLocals(maxLocals);
+  public CodeStream MAXS(final int maxStack,
+                         final int maxLocals) {
+    codeStream.MAXS(maxStack, maxLocals);
     return this;
   }
 
   @Override
   public void END() {
-    //NO OP
+    codeStream.END();
   }
 }

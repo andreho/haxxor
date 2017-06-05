@@ -2,8 +2,6 @@ package net.andreho.haxxor.cgen;
 
 import net.andreho.asm.org.objectweb.asm.Handle;
 import net.andreho.asm.org.objectweb.asm.Type;
-import net.andreho.haxxor.cgen.CodeStream.ArrayType;
-import net.andreho.haxxor.cgen.CodeStream.Frames;
 import net.andreho.haxxor.cgen.instr.BEGIN;
 import net.andreho.haxxor.cgen.instr.END;
 import net.andreho.haxxor.cgen.instr.LABEL;

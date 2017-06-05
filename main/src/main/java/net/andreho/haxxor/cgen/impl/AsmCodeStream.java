@@ -5,7 +5,9 @@ import net.andreho.asm.org.objectweb.asm.Label;
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.asm.org.objectweb.asm.Type;
+import net.andreho.haxxor.cgen.ArrayType;
 import net.andreho.haxxor.cgen.CodeStream;
+import net.andreho.haxxor.cgen.Frames;
 import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.spec.api.HxParameterizable;
 

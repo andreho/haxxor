@@ -2,6 +2,7 @@ package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.cgen.Code;
 import net.andreho.haxxor.cgen.CodeStream;
+import net.andreho.haxxor.cgen.Instruction;
 import net.andreho.haxxor.cgen.InstructionFactory;
 import net.andreho.haxxor.cgen.LocalVariable;
 import net.andreho.haxxor.cgen.TryCatch;
@@ -10,8 +11,9 @@ import net.andreho.haxxor.spec.api.HxCode;
 import net.andreho.haxxor.spec.api.HxParameterizable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Objects;
+
+import static net.andreho.haxxor.Utils.isUninitialized;
 
 /**
  * <br/>Created by a.hofmann on 18.03.2016.<br/>
@@ -47,7 +49,7 @@ public class HxCodeImpl
 
   @Override
   public HxCode addLocalVariable(final LocalVariable localVariable) {
-    if (localVariables == Collections.EMPTY_LIST) {
+    if (isUninitialized(localVariables)) {
       localVariables = new ArrayList<>();
     }
     localVariables.add(localVariable);
@@ -56,7 +58,7 @@ public class HxCodeImpl
 
   @Override
   public HxCode addTryCatch(final TryCatch tryCatch) {
-    if (tryCatches == Collections.EMPTY_LIST) {
+    if (isUninitialized(tryCatches)) {
       tryCatches = new ArrayList<>();
     }
     tryCatches.add(tryCatch);
@@ -68,6 +70,14 @@ public class HxCodeImpl
     return this.owner;
   }
 
+  @Override
+  public int computeIndex() {
+    int i = 0;
+    for(Instruction inst = getFirst().getNext(), end = getLast(); inst != end; inst = inst.getNext()) {
+      inst.setIndex(i++);
+    }
+    return i;
+  }
 
   @Override
   public InstructionFactory getInstructionFactory() {

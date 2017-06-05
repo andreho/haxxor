@@ -103,10 +103,6 @@ public class Code
              .append('\n');
     }
 
-    for (TryCatch tryCatch : getTryCatches()) {
-
-    }
-
     return builder.toString();
   }
 }

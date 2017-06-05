@@ -277,7 +277,7 @@ class HxTypeTest {
 
   @ParameterizedTest
   @MethodSource(names = TEST_CLASSES_AND_PRIMITIVES)
-  @DisplayName("Only long and double allocates two slots on stack or as local variables")
+  @DisplayName("References must be computed and reported properly")
   void isReference(String typeName) {
     HxTypeReference reference = haxxor.reference(typeName);
     HxType type = haxxor.resolve(typeName);
@@ -361,7 +361,7 @@ class HxTypeTest {
   }
 
   @Test
-  @DisplayName("Change of type's declared-types must work properly")
+  @DisplayName("Addition of fields must work properly")
   void addField() {
   }
 
@@ -372,7 +372,6 @@ class HxTypeTest {
   @Test
   void removeField() {
   }
-
 
   @Test
   void hasField() {

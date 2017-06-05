@@ -76,7 +76,8 @@ public interface HxCode {
   void setMaxLocals(int maxLocals);
 
   /**
-   * @return a list with available local variables (OPTIONAL)
+   * @return a list with available local variables (OPTIONAL and depends on resolution flags of resolving Haxxor
+   * instance)
    */
   List<LocalVariable> getLocalVariables();
 
@@ -120,7 +121,7 @@ public interface HxCode {
   }
 
   /**
-   * @param tryCatch
+   * @param tryCatch block to add
    * @return
    */
   HxCode addTryCatch(TryCatch tryCatch);
@@ -129,6 +130,12 @@ public interface HxCode {
    * @return factory for instructions
    */
   InstructionFactory getInstructionFactory();
+
+  /**
+   * Recomputes the {@link Instruction#getIndex() index} for each instruction of this code
+   * @return total count of instructions in this code
+   */
+  int computeIndex();
 
   /**
    * @return the getFirst instruction of associated code

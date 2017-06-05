@@ -86,7 +86,7 @@ public interface Instruction
   void setNext(Instruction next);
 
   /**
-   * Shortcut for: <code>this.getPrevious().link(inst);</code>
+   * Shortcut for: <code>this.getPrevious().append(inst);</code>
    *
    * @param inst to prepend
    * @return given instruction
@@ -102,7 +102,7 @@ public interface Instruction
 
   /**
    * @param inst to append
-   * @return given instruction
+   * @return the given instruction
    */
   default Instruction append(Instruction inst) {
     Objects.requireNonNull(inst);

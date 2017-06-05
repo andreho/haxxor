@@ -71,8 +71,6 @@ public abstract class AbstractInstruction
     this.index = index;
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   @Override
   public Instruction getNext() {
     return next;

@@ -47,7 +47,7 @@ public class Haxxor
   private final HxTypeInitializer typeInitializer;
 
   public Haxxor() {
-    this(Flags.SKIP_DEBUG, new HaxxorBuilder(Haxxor.class.getClassLoader()));
+    this(0, new HaxxorBuilder(Haxxor.class.getClassLoader()));
   }
 
   public Haxxor(int flags) {
