@@ -2,15 +2,16 @@ package net.andreho.haxxor.spec.api;
 
 
 import net.andreho.haxxor.spec.impl.HxParameterImpl;
+import net.andreho.haxxor.spec.impl.misc.MappedList;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by a.hofmann on 31.05.2015.
@@ -32,6 +33,48 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
   HxCode getCode();
 
   /**
+   * @return
+   */
+  default boolean isVarArg() {
+    return hasModifiers(HxConstructor.Modifiers.VARARGS);
+  }
+
+  /**
+   * @return
+   */
+  default boolean isSynthetic() {
+    return hasModifiers(HxConstructor.Modifiers.SYNTHETIC);
+  }
+
+  /**
+   * @return
+   */
+  default boolean isPublic() {
+    return hasModifiers(HxConstructor.Modifiers.PUBLIC);
+  }
+
+  /**
+   * @return
+   */
+  default boolean isPrivate() {
+    return hasModifiers(HxConstructor.Modifiers.PRIVATE);
+  }
+
+  /**
+   * @return
+   */
+  default boolean isProtected() {
+    return hasModifiers(HxConstructor.Modifiers.PROTECTED);
+  }
+
+  /**
+   * @return
+   */
+  default boolean isInternal() {
+    return !isPublic() && !isProtected() && !isPrivate();
+  }
+
+  /**
    * @return length of expected arguments
    */
   default int getArity() {
@@ -45,6 +88,13 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
   default HxType getParameterTypeAt(int index) {
     return getParameters().get(index)
                           .getType();
+  }
+
+  /**
+   * @return a list-view of associated parameter's list
+   */
+  default List<HxType> getParameterTypes() {
+    return new MappedList<>(getParameters(), HxParameter::getType);
   }
 
   /**
@@ -72,9 +122,7 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
    * @return this
    */
   default P setParameters(HxParameter<P>... parameters) {
-    List<HxParameter<P>> list = new ArrayList<>(parameters.length);
-    Stream.of(parameters).map(Objects::requireNonNull).forEach(list::add);
-    return setParameters(list);
+    return setParameters(Arrays.asList(parameters));
   }
 
   /**
@@ -88,11 +136,7 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
    * @return this
    */
   default P setParameterTypes(HxType... types) {
-    final List<HxParameter<P>> parameters = new ArrayList<>(types.length);
-    for (HxType type : types) {
-      parameters.add(new HxParameterImpl<>(type));
-    }
-    return setParameters(parameters);
+    return setParameterTypes(Arrays.asList(types));
   }
 
   /**
@@ -108,19 +152,17 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
   }
 
   /**
-   * @return exception types that are declared by a <code>throws</code> declaration
-   */
-  List<HxType> getExceptionTypes();
-
-  /**
    * @param exceptionTypes exception types that are declared by a <code>throws</code> declaration
    * @return this
    */
   default P setExceptionTypes(HxType... exceptionTypes) {
-    List<HxType> list = new ArrayList<>(exceptionTypes.length);
-    Stream.of(exceptionTypes).map(Objects::requireNonNull).forEach(list::add);
-    return setExceptionTypes(list);
+    return setExceptionTypes(Arrays.asList(exceptionTypes));
   }
+
+  /**
+   * @return exception types that are declared by a <code>throws</code> declaration
+   */
+  List<HxType> getExceptionTypes();
 
   /**
    * @param exceptionTypes exception types that are declared by a <code>throws</code> declaration

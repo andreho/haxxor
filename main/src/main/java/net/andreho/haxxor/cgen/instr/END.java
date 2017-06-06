@@ -17,7 +17,10 @@ public class END
     super(-1);
   }
 
-  //----------------------------------------------------------------------------------------------------------------
+  @Override
+  public boolean isEnd() {
+    return true;
+  }
 
   @Override
   public void dumpTo(final Context context, final CodeStream codeStream) {

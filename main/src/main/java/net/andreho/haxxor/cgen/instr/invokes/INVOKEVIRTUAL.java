@@ -16,8 +16,6 @@ public class INVOKEVIRTUAL
     Utils.checkMethodName(getOpcode(), name);
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   @Override
   public void dumpTo(Context context, CodeStream codeStream) {
     codeStream.INVOKEVIRTUAL(this.owner, this.name, this.desc);

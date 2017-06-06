@@ -16,8 +16,6 @@ public class INVOKESPECIAL
     Utils.checkMethodName(getOpcode(), name);
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   @Override
   public void dumpTo(Context context, CodeStream codeStream) {
     codeStream.INVOKESPECIAL(this.owner, this.name, this.desc);

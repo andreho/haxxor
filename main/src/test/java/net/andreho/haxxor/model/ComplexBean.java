@@ -12,7 +12,6 @@ public class ComplexBean
   protected char charValue;
   short shortValue;
   volatile int intValue;
-
   private float floatValue;
   private long longValue;
   private double doubleValue;
@@ -21,9 +20,9 @@ public class ComplexBean
   private EnumA enumValue;
 
   private boolean[] booleanArray;
-  private byte[] byteArray;
-  private char[] charArray;
-  private short[] shortArray;
+  public byte[] byteArray;
+  protected char[] charArray;
+  volatile short[] shortArray;
   private int[] intArray;
   private float[] floatArray;
   private long[] longArray;
@@ -188,7 +187,7 @@ public class ComplexBean
     return doubleArray;
   }
 
-  public void setDoubleArray(final double[] doubleArray) {
+  public void setDoubleArray(final double... doubleArray) {
     this.doubleArray = doubleArray;
   }
 
@@ -212,7 +211,7 @@ public class ComplexBean
     return enumArray;
   }
 
-  public void setEnumArray(final EnumA[] enumArray) {
+  public void setEnumArray(final EnumA ... enumArray) {
     this.enumArray = enumArray;
   }
 }

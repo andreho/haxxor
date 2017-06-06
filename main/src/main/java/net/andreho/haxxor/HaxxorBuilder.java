@@ -13,9 +13,9 @@ import net.andreho.haxxor.spi.impl.DefaultHxInternalClassNameProvider;
 import net.andreho.haxxor.spi.impl.DefaultHxJavaClassNameProvider;
 import net.andreho.haxxor.spi.impl.DefaultHxTypeInitializer;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.TreeMap;
 
 /**
  * <br/>Created by a.hofmann on 19.03.2016.<br/>
@@ -75,7 +75,7 @@ public class HaxxorBuilder {
    * @return
    */
   public Map<String, HxTypeReference> createReferenceCache(Haxxor haxxor) {
-    return new TreeMap<>();
+    return new HashMap<>();
   }
 
   /**
@@ -85,7 +85,7 @@ public class HaxxorBuilder {
    * @return
    */
   public Map<String, HxType> createResolvedCache(Haxxor haxxor) {
-    return new TreeMap<>();
+    return new HashMap<>();
   }
 
   /**

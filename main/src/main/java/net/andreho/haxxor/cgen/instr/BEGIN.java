@@ -18,6 +18,11 @@ public class BEGIN
   }
 
   @Override
+  public boolean isEnd() {
+    return true;
+  }
+
+  @Override
   public void dumpTo(final Context context, final CodeStream codeStream) {
     codeStream.BEGIN();
   }

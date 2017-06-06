@@ -2,7 +2,6 @@ package net.andreho.haxxor.cgen.instr.constants;
 
 import net.andreho.asm.org.objectweb.asm.Handle;
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.asm.org.objectweb.asm.Type;
 import net.andreho.haxxor.cgen.CodeStream;
 import net.andreho.haxxor.cgen.Context;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInstruction;
@@ -70,7 +69,7 @@ public class LDC
 
   //----------------------------------------------------------------------------------------------------------------
 
-  public LDC(Type value, int type) {
+  public LDC(net.andreho.asm.org.objectweb.asm.Type value, int type) {
     super(Opcodes.LDC);
     Objects.requireNonNull(value);
     this.type = type;

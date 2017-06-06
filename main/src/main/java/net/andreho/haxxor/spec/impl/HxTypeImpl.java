@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import static net.andreho.haxxor.Utils.isUninitialized;
@@ -42,6 +43,58 @@ public class HxTypeImpl
   public HxTypeImpl(Haxxor haxxor, String name) {
     super(haxxor, name);
     this.superType = haxxor.reference("java.lang.Object");
+  }
+
+  @Override
+  public HxType initialize(Part part) {
+    switch (part) {
+      case DEFAULTS: {
+        getHaxxor().getTypeInitializer().initialize(this);
+      }
+      break;
+      case ANNOTATIONS: {
+        if (isUninitialized(getAnnotations())) {
+          this.annotations = new LinkedHashSet<>();
+        }
+      }
+      break;
+      case CONSTRUCTORS: {
+        if (isUninitialized(getConstructors())) {
+          this.constructors = new ArrayList<>();
+        }
+      }
+      break;
+      case FIELDS: {
+        if (isUninitialized(getFields())) {
+          this.fields = new ArrayList<>();
+          this.fieldMap = new LinkedHashMap<>();
+        }
+      }
+      break;
+      case INTERFACES: {
+        if (isUninitialized(getInterfaces())) {
+          this.interfaces = new ArrayList<>();
+        }
+      }
+      break;
+      case METHODS: {
+        if (isUninitialized(getMethods())) {
+          this.methods = new ArrayList<>();
+          this.methodMap = new LinkedHashMap<>();
+        }
+      }
+      break;
+      case DECLARED_TYPES: {
+        if (isUninitialized(getDeclaredTypes())) {
+          this.declaredTypes = new ArrayList<>();
+        }
+      }
+      break;
+      default:
+        throw new IllegalStateException("Invalid state.");
+    }
+
+    return this;
   }
 
   @Override
@@ -112,8 +165,12 @@ public class HxTypeImpl
   }
 
   @Override
-  public HxField getField(String name) {
-    return fieldMap.get(name);
+  public Optional<HxField> getField(String name) {
+    HxField hxField = fieldMap.get(name);
+    if(hxField != null) {
+      return Optional.of(hxField);
+    }
+    return Optional.empty();
   }
 
   @Override
@@ -149,6 +206,15 @@ public class HxTypeImpl
     return -1;
   }
 
+  private int indexOf(HxMethod method) {
+    for (int i = 0; i < methods.size(); i++) {
+      if (method == methods.get(i)) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
   @Override
   public HxType updateField(HxField field) {
     if (!equals(field.getDeclaringMember())) {
@@ -174,7 +240,7 @@ public class HxTypeImpl
       throw new IllegalArgumentException("Given field must exist within this type: " + field);
     }
 
-    if (!initialize(Part.FIELDS).hasField(field.getName()) || fieldMap.remove(field.getName()) != field) {
+    if (!hasField(field.getName()) || fieldMap.remove(field.getName()) != field) {
       throw new IllegalArgumentException("Given field must exist within this type: " + field);
     }
 
@@ -197,8 +263,16 @@ public class HxTypeImpl
       return this;
     }
 
-    this.fields = new ArrayList<>(fields.size());
-    this.fieldMap = new LinkedHashMap<>(fields.size());
+    initialize(Part.FIELDS);
+
+    for (int i = this.fields.size() - 1; i >= 0; i--) {
+      HxField hxField = this.fields.get(i);
+      removeField(hxField);
+    }
+
+    if(!this.fields.isEmpty() || !this.fieldMap.isEmpty()) {
+      throw new IllegalStateException("Setting fields to given value lead to an inconsistent state.");
+    }
 
     for (HxField field : fields) {
       if (this.fieldMap.put(field.getName(), field) != null) {
@@ -225,8 +299,15 @@ public class HxTypeImpl
       return this;
     }
 
-    this.methods = new ArrayList<>(methods.size());
-    this.methodMap = new LinkedHashMap<>(methods.size());
+    initialize(Part.METHODS);
+
+    for (int i = this.methods.size() - 1; i >= 0; i--) {
+      removeMethod(this.methods.get(i));
+    }
+
+    if(!this.methods.isEmpty() || !this.methodMap.isEmpty()) {
+      throw new IllegalStateException("Setting methods to given value lead to an inconsistent state.");
+    }
 
     for (HxMethod method : methods) {
       final Collection<HxMethod> methodsByName =
@@ -239,9 +320,36 @@ public class HxTypeImpl
         throw new IllegalStateException("Ambiguous method: " + method);
       }
 
-      method.setDeclaringMember(this);
       this.methods.add(method);
+      method.setDeclaringMember(this);
     }
+    return this;
+  }
+
+  @Override
+  public HxType removeMethod(HxMethod method) {
+    if (!equals(method.getDeclaringMember())) {
+      throw new IllegalArgumentException("Given method must exist within this type: " + method);
+    }
+
+    Collection<HxMethod> hxMethods = methodMap.get(method.getName());
+    if (!hasMethod(method.getName(), method.getReturnType(), method.getParameterTypes()) ||
+        !hxMethods.remove(method)) {
+      throw new IllegalArgumentException("Given method must exist within this type: " + method);
+    }
+
+    if(hxMethods.isEmpty()) {
+      methodMap.remove(method.getName());
+    }
+
+    int index = indexOf(method);
+    if(index > -1) {
+      methods.remove(index);
+    } else {
+      throw new IllegalStateException("Removal of given method led to an inconsistent state: " + method);
+    }
+    method.setDeclaringMember(null);
+
     return this;
   }
 
@@ -270,20 +378,20 @@ public class HxTypeImpl
 
 
   @Override
-  public HxMethod getMethod(String name) {
+  public Optional<HxMethod> getMethod(String name) {
     final Collection<HxMethod> collection = methodMap.get(name);
 
-    if (collection != null) {
-      if (collection.size() > 1) {
+    if (collection != null && !collection.isEmpty()) {
+      if (collection.size() != 1) {
         throw new IllegalStateException("There are more than one method with given name: " + name);
+      } else {
+        HxMethod hxMethod = collection
+            .iterator()
+            .next();
+        return Optional.of(hxMethod);
       }
-
-      return collection
-          .iterator()
-          .next();
     }
-
-    return null;
+    return Optional.empty();
   }
 
   @Override

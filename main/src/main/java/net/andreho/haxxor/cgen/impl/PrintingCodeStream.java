@@ -1330,9 +1330,9 @@ public class PrintingCodeStream extends DelegatingCodeStream {
     append(".END();\n");
 
     try {
-      output.append(labels.toString())
+      output.append(labels)
             .append('\n')
-            .append(code.toString());
+            .append(code);
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }

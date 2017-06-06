@@ -47,7 +47,6 @@ public class HxAnnotationImpl
   protected final HxType type;
   protected final Map<String, HxAnnotationAttribute<?, ?>> values;
   protected boolean visible;
-//  protected volatile Annotation view;
 
   public HxAnnotationImpl(HxType type,
                           boolean visible) {
@@ -74,14 +73,6 @@ public class HxAnnotationImpl
     }
   }
 
-//  @Override
-//  public <A extends Annotation> A getView(final ClassLoader classLoader) {
-//    if (this.view == null) {
-//      //TODO
-//    }
-//    return (A) view;
-//  }
-
   @Override
   public HxType getType() {
     return type;
@@ -100,14 +91,21 @@ public class HxAnnotationImpl
   @Override
   public <V> V attribute(String name) {
     final HxAnnotationAttribute<?, ?> value = values.get(name);
-    if(value == null) {
-      HxMethod method = getType().getMethod(name);
-      if(method == null) {
-        throw new IllegalArgumentException("Annotation's method not found: "+name);
-      }
-      return (V) method.getDefaultValue();
+
+    if (value != null) {
+      return (V) value.getValue();
     }
-    return (V) value.getValue();
+
+    HxMethod method =
+        getType().getMethod(name)
+                 .orElseThrow(() ->
+                                  new IllegalArgumentException(
+                                      "Method for annotation's attribute not found: " +
+                                      "" + name
+                                  )
+                 );
+
+    return (V) method.getDefaultValue();
   }
 
   private HxAnnotation set(String name,

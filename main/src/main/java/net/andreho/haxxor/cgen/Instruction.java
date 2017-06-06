@@ -30,6 +30,13 @@ public interface Instruction
   void setIndex(int index);
 
   /**
+   * @return <b>true</b> if there isn't any further instructions in iteration's direction, <b>false</b> otherwise.
+   */
+  default boolean isEnd() {
+    return false;
+  }
+
+  /**
    * @return opcode of this instruction
    */
   int getOpcode();
@@ -37,8 +44,24 @@ public interface Instruction
   /**
    * @return
    */
-  default InstructionType getInstructionType() {
-    return Instructions.of(getOpcode());
+  default Type getInstructionType() {
+    return Instructions.fromOpcode(getOpcode());
+  }
+
+  /**
+   * @param type
+   * @return
+   */
+  default boolean hasInstructionType(Type type) {
+    return getInstructionType() == type;
+  }
+
+  /**
+   * @param kind
+   * @return
+   */
+  default boolean hasInstructionKind(Kind kind) {
+    return getInstructionType().getKind() == kind;
   }
 
   /**
@@ -183,5 +206,40 @@ public interface Instruction
    */
   void dumpTo(Context context, CodeStream codeStream);
 
-  //----------------------------------------------------------------------------------------------------------------
+  enum Kind {
+    Access,
+    Allocation,
+    Arithmetic,
+    Array,
+    Binary,
+    Comparison,
+    Conversion,
+    Constants,
+    Increment,
+    Invocation,
+    Jump,
+    Switches,
+    Load,
+    Store,
+    Stack,
+    Misc,
+    Synchronization,
+    Exit
+  }
+
+  /**
+   * <br/>Created by a.hofmann on 19.03.2016.<br/>
+   */
+  interface Type {
+
+    /**
+     * @return
+     */
+    Kind getKind();
+
+    /**
+     * @return
+     */
+    int getOpcode();
+  }
 }

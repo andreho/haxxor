@@ -8,6 +8,11 @@ public interface HxMethod
             Cloneable {
 
   /**
+   * @return
+   */
+  HxMethod clone();
+
+  /**
    * @return name of this method
    */
   String getName();

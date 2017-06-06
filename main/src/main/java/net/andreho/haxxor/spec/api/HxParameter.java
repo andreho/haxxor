@@ -27,6 +27,27 @@ public interface HxParameter<P extends HxParameterizable<P>>
   HxParameter setName(String name);
 
   /**
+   * @return <b>true</b> if the parameter has a name according to the class file; returns <b>false</b> otherwise.
+   */
+  boolean isNamePresent();
+
+  /**
+   * @return <b>true</b> if this parameter represents a variable argument list; returns <b>false</b> otherwise.
+   */
+  boolean isVarArgs();
+
+  /**
+   * @return <b>true</b> if this parameter is implicitly declared in source code; returns <b>false</b> otherwise.
+   */
+  boolean isImplicit();
+
+  /**
+   * @return <b>true</b> if this parameter is neither implicitly nor explicitly declared in source code; returns
+   * <b>false</b> otherwise.
+   */
+  boolean isSynthetic();
+
+  /**
    * @return type of this parameter
    */
   HxType getType();

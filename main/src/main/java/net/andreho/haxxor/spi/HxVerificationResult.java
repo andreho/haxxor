@@ -4,13 +4,29 @@ package net.andreho.haxxor.spi;
  * <br/>Created by a.hofmann on 04.06.2017 at 00:46.
  */
 public class HxVerificationResult {
-  public static final HxVerificationResult EMPTY = new HxVerificationResult(false, "", null);
+  private static final HxVerificationResult OK = new HxVerificationResult(false, "", null);
+
+  /**
+   * @return
+   */
+  public static HxVerificationResult ok() {
+    return OK;
+  }
+
+  /**
+   * @param message
+   * @param target
+   * @return
+   */
+  public static HxVerificationResult failed(String message, Object target) {
+    return new HxVerificationResult(true, message, target);
+  }
 
   private final boolean failed;
   private final String message;
   private final Object target;
 
-  public HxVerificationResult(final boolean failed,
+  protected HxVerificationResult(final boolean failed,
                               final String message,
                               final Object target) {
     this.failed = failed;

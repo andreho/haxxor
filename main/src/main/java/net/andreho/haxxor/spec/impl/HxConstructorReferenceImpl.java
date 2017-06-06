@@ -14,6 +14,7 @@ import net.andreho.haxxor.spec.api.HxTypeReference;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
@@ -39,7 +40,8 @@ public class HxConstructorReferenceImpl
 
   public HxConstructor toConstructor() {
     if(target == null) {
-      target = declaringReference.getConstructor(parameterTypes);
+      target = declaringReference.getConstructor(parameterTypes)
+                                 .orElseThrow(() -> new IllegalStateException("Constructor not found."));
     }
     return target;
   }
@@ -166,7 +168,7 @@ public class HxConstructorReferenceImpl
   }
 
   @Override
-  public HxAnnotation getAnnotation(String type) {
+  public Optional<HxAnnotation> getAnnotation(String type) {
     return toConstructor().getAnnotation(type);
   }
 

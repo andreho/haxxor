@@ -1,5 +1,6 @@
 package net.andreho.haxxor.spec.api;
 
+import net.andreho.haxxor.Flags;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.model.ComplexBean;
 import net.andreho.haxxor.model.EmbeddingClassesBean;
@@ -15,18 +16,22 @@ import org.junit.jupiter.params.provider.ObjectArrayArguments;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static net.andreho.haxxor.spec.api.Utils.checkClassesForEquality;
+import static net.andreho.haxxor.spec.api.Utils.checkParameters;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -51,6 +56,27 @@ class HxTypeTest {
       new EmbeddingClassesBean().getAnonymousClass(),
       OverAnnotatedValueBean.class
   );
+  private static final String[] FIELDS = {
+      "boolean booleanValue",
+      "byte byteValue",
+      "short shortValue",
+      "char charValue",
+      "int intValue",
+      "float floatValue",
+      "long longValue",
+      "double doubleValue",
+      "java.lang.String stringValue",
+
+      "boolean[] booleanArray",
+      "byte[] byteArray",
+      "short[] shortArray",
+      "char[] charArray",
+      "int[] intArray",
+      "float[] floatArray",
+      "long[] longArray",
+      "double[] doubleArray",
+      "java.lang.String[] stringArray"
+  };
   private Haxxor haxxor;
 
   private static Collection<Class<?>> shuffledClasses() {
@@ -88,7 +114,7 @@ class HxTypeTest {
 
   @BeforeEach
   void setupEnvironment() {
-    haxxor = new Haxxor();
+    haxxor = new Haxxor(Flags.SKIP_CODE);
   }
 
   @Test
@@ -234,18 +260,6 @@ class HxTypeTest {
     checkClassesForEquality(interfaces, typeInterfaces);
   }
 
-  private void checkClassesForEquality(final Class<?>[] classes,
-                                       final List<HxType> types) {
-    assertEquals(classes.length, types
-        .size(), "Collections have different sizes.");
-
-    for (int i = 0; i < classes.length; i++) {
-      Class<?> originalInterface = classes[i];
-      HxType typeInterface = types.get(i);
-      assertEquals(originalInterface.getName(), typeInterface.getName());
-    }
-  }
-
   @Test
   @DisplayName("Change of type's interfaces must work properly")
   void setInterfaces() {
@@ -323,13 +337,14 @@ class HxTypeTest {
   void getField(final Class<?> cls) {
     HxType type = haxxor.resolve(cls.getName());
     Field[] clsFields = cls.getDeclaredFields();
-    List<HxField> typeFields = type.getFields();
-
-    assertEquals(clsFields.length, typeFields.size());
 
     for (int i = 0; i < clsFields.length; i++) {
       Field clsField = clsFields[i];
-      HxField hxField = typeFields.get(i);
+      Optional<HxField> hxFieldOptional = type.getField(clsField.getName());
+      assertTrue(hxFieldOptional.isPresent());
+      HxField hxField = hxFieldOptional.get();
+
+      assertTrue(type.getFields().contains(hxField));
       checkFieldsForEquality(clsField, hxField);
     }
   }
@@ -352,45 +367,200 @@ class HxTypeTest {
     }
 
     assertEquals(expected, actual);
-
-    try {
-      Utils.checkAnnotatedElementsForEquality(field, hxField);
-    } catch (InvocationTargetException | IllegalAccessException e) {
-      throw new IllegalStateException(e);
-    }
+    Utils.checkAnnotatedElementsForEquality(field, hxField);
   }
 
   @Test
   @DisplayName("Addition of fields must work properly")
   void addField() {
+    HxType type = haxxor.createType(TEST_CLASS_NAME_1);
+    for(String line : FIELDS) {
+      String[] split = line.split(" ");
+      String fieldType = split[0];
+      String fieldName = split[1];
+
+      HxField field = haxxor.createField(fieldType, fieldName);
+      type.addField(field);
+    }
+
+    for(String line : FIELDS) {
+      String[] split = line.split(" ");
+      String fieldType = split[0];
+      String fieldName = split[1];
+
+      Optional<HxField> fieldOptional = type.getField(fieldName);
+      assertTrue(fieldOptional.isPresent());
+      HxField field = fieldOptional.get();
+
+      assertTrue(type.getFields().contains(field));
+      assertEquals(type, field.getDeclaringMember());
+
+      assertEquals(fieldName, field.getName());
+      assertEquals(fieldType, field.getType().getName());
+    }
   }
 
   @Test
   void updateField() {
   }
 
-  @Test
-  void removeField() {
+  @ParameterizedTest
+  @MethodSource(names = TEST_CLASSES)
+  @DisplayName("Removal of fields must be rendered properly")
+  void removeField(final Class<?> cls) {
+    HxType type = haxxor.resolve(cls.getName());
+
+    for(Field field : cls.getDeclaredFields()) {
+      final String fieldName = field.getName();
+
+      Optional<HxField> fieldOptional = type.getField(fieldName);
+      assertTrue(fieldOptional.isPresent());
+      HxField hxField = fieldOptional.get();
+
+      assertEquals(type, hxField.getDeclaringMember());
+
+      type.removeField(hxField);
+
+      assertFalse(type.hasField(fieldName));
+      assertNull(hxField.getDeclaringMember());
+      assertFalse(type.getField(fieldName).isPresent());
+      assertFalse(type.getFields().contains(hxField));
+    }
   }
 
-  @Test
-  void hasField() {
+  @ParameterizedTest
+  @MethodSource(names = TEST_CLASSES)
+  @DisplayName("Presence of fields must be rendered properly and equal to those from Reflection-API")
+  void hasField(final Class<?> cls) {
+    HxType type = haxxor.resolve(cls.getName());
+    for(Field field : cls.getDeclaredFields()) {
+      assertTrue(type.hasField(field.getName()));
+    }
   }
 
-  @Test
-  void getFields() {
+  @ParameterizedTest
+  @MethodSource(names = TEST_CLASSES)
+  @DisplayName("Getting fields must return a field-list that is equal to the one from Reflection-API")
+  void getFields(final Class<?> cls) {
+    HxType type = haxxor.resolve(cls.getName());
+    Field[] clsFields = cls.getDeclaredFields();
+    List<HxField> typeFields = type.getFields();
+
+    assertEquals(clsFields.length, typeFields.size());
+
+    for (int i = 0; i < clsFields.length; i++) {
+      Field clsField = clsFields[i];
+      HxField hxField = typeFields.get(i);
+      checkFieldsForEquality(clsField, hxField);
+    }
   }
 
-  @Test
-  void setFields() {
+  @ParameterizedTest
+  @MethodSource(names = TEST_CLASSES)
+  @DisplayName("Setting fields of a type must work properly and follow contract")
+  void setFields(final Class<?> cls) {
+    HxType type = haxxor.resolve(cls.getName());
+    List<HxField> oldFields = new ArrayList<>(type.getFields());
+    List<HxField> newFields = Arrays.asList(
+        haxxor.createField("boolean", "done1"),
+        haxxor.createField("java.lang.String", "name1"),
+        haxxor.createField("java.util.List", "list1")
+    );
+
+    type.setFields(newFields);
+
+    assertEquals(newFields, type.getFields());
+
+    for(HxField oldField : oldFields) {
+      String oldFieldName = oldField.getName();
+
+      assertFalse(type.hasField(oldFieldName));
+      assertNull(oldField.getDeclaringMember());
+      assertFalse(type.getField(oldFieldName).isPresent());
+      assertFalse(type.getFields().contains(oldField));
+    }
+
+    for(HxField newField : newFields) {
+      String newFieldName = newField.getName();
+
+      assertTrue(type.hasField(newFieldName));
+      assertEquals(type, newField.getDeclaringMember());
+      assertTrue(type.getField(newFieldName).isPresent());
+      assertTrue(type.getFields().contains(newField));
+    }
   }
 
-  @Test
-  void getMethods() {
+  @ParameterizedTest
+  @MethodSource(names = TEST_CLASSES)
+  @DisplayName("Getting methods must return a method-list that is equal to the one from Reflection-API")
+  void getMethods(final Class<?> cls) {
+    HxType hxType = haxxor.resolve(cls.getName());
+    List<HxMethod> hxMethods = hxType.getMethods();
+    Method[] clsMethods = cls.getDeclaredMethods();
+    assertEquals(clsMethods.length, hxMethods.size());
+
+    for (int i = 0; i < clsMethods.length; i++) {
+      Method clsMethod = clsMethods[i];
+      Optional<HxMethod> hxMethodOptional = hxType.getMethod(clsMethod);
+      assertTrue(hxMethodOptional.isPresent(), "Method not found: "+clsMethod);
+      HxMethod hxMethod = hxMethodOptional.get();
+
+      assertEquals(clsMethod.getName(), hxMethod.getName());
+      assertEquals(haxxor.toJavaClassName(clsMethod.getReturnType().getName()),
+                   hxMethod.getReturnType().getName());
+
+      assertEquals(clsMethod.getParameterCount(), hxMethod.getArity());
+      assertEquals(clsMethod.getParameterCount(), hxMethod.getParameters().size());
+
+      checkParameters(clsMethod.getParameters(), hxMethod.getParameters());
+    }
   }
 
-  @Test
-  void setMethods() {
+  @ParameterizedTest
+  @MethodSource(names = TEST_CLASSES)
+  @DisplayName("Setting methods of a type must work properly and follow contract")
+  void setMethods(final Class<?> cls) {
+    HxType type = haxxor.resolve(cls.getName());
+    List<HxMethod> oldMethods = new ArrayList<>(type.getMethods());
+    List<HxMethod> newMethods = Arrays.asList(
+        haxxor.createMethod("boolean", "isDone"),
+        haxxor.createMethod("java.lang.String", "getMessage"),
+        haxxor.createMethod("void", "setMessage", "java.lang.String"),
+        haxxor.createMethod("java.util.List", "find", "java.lang.String[]")
+    );
+
+    type.setMethods(newMethods);
+
+    assertEquals(newMethods, type.getMethods());
+
+    for(HxMethod oldMethod : oldMethods) {
+      String oldMethodName = oldMethod.getName();
+
+      boolean hasMethod = type.hasMethod(oldMethodName,
+                                         oldMethod.getReturnType(),
+                                         oldMethod.getParameterTypes());
+
+      assertFalse(hasMethod, "Old method must be removed properly: " + oldMethod);
+      assertNull(oldMethod.getDeclaringMember());
+      assertFalse(type.getMethod(oldMethodName,
+                                 oldMethod.getReturnType(),
+                                 oldMethod.getParameterTypes()).isPresent());
+      assertFalse(type.getMethods().contains(oldMethod));
+    }
+
+    for(HxMethod newMethod : newMethods) {
+      String newMethodName = newMethod.getName();
+
+      assertTrue(type.hasMethod(newMethodName,
+                                newMethod.getReturnType(),
+                                newMethod.getParameterTypes()));
+
+      assertEquals(type, newMethod.getDeclaringMember());
+      assertTrue(type.getMethod(newMethodName,
+                                newMethod.getReturnType(),
+                                newMethod.getParameterTypes()).isPresent());
+      assertTrue(type.getMethods().contains(newMethod));
+    }
   }
 
   @Test

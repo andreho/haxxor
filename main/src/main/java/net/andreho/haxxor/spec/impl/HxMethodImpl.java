@@ -84,6 +84,11 @@ public class HxMethodImpl
   }
 
   @Override
+  public HxMethod clone() {
+    return new HxMethodImpl(this);
+  }
+
+  @Override
   public boolean equals(final Object o) {
     if (this == o) {
       return true;

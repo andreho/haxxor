@@ -18,6 +18,19 @@ public abstract class Utils {
   private static final int DEFAULT_READ_BUFFER_LENGTH = 1028;
 
   /**
+   * Extracts names of given classes
+   * @param classes to process
+   * @return
+   */
+  public static String[] toClassNames(Class<?> ... classes) {
+    final String[] names = new String[classes.length];
+    for (int i = 0; i < classes.length; i++) {
+      names[i] = classes[i].getName();
+    }
+    return names;
+  }
+
+  /**
    * Checks the given collection whether it needs to be initialized or not. Initialisation is only needed if the
    * given collection is <b>null</b> or equals to either {@link Collections#EMPTY_LIST} or {@link Collections#EMPTY_SET}
    * @param collection to check

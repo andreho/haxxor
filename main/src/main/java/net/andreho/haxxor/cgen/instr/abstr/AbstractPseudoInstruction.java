@@ -62,21 +62,21 @@ public abstract class AbstractPseudoInstruction
 
   @Override
   public Collection<HxAnnotation> getAnnotations() {
-    return Collections.emptySet();
+    return HxAnnotated.DEFAULT_ANNOTATION_COLLECTION;
   }
 
   @Override
   public Collection<HxAnnotated> getSuperAnnotated() {
-    return Collections.emptySet();
+    return HxAnnotated.DEFAULT_SUPER_ANNOTATED_COLLECTION;
   }
 
   @Override
   public Collection<HxAnnotation> getAnnotationsByType(final String type) {
-    return Collections.emptySet();
+    return HxAnnotated.DEFAULT_ANNOTATION_COLLECTION;
   }
 
   @Override
   public Collection<HxAnnotation> annotations(final Predicate<HxAnnotation> predicate, final boolean recursive) {
-    return Collections.emptySet();
+    return HxAnnotated.DEFAULT_ANNOTATION_COLLECTION;
   }
 }

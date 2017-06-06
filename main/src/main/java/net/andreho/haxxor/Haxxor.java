@@ -240,7 +240,6 @@ public class Haxxor
     HxTypeReference reference = this.referenceCache.get(typeName);
 
     if (reference == null) {
-
       reference = createReference(typeName);
       this.referenceCache.put(typeName, reference);
 
@@ -346,15 +345,15 @@ public class Haxxor
   }
 
   @Override
-  public HxType createType(final String internalTypeName) {
-    HxType type = elementFactory.createType(toJavaClassName(internalTypeName));
+  public HxType createType(final String className) {
+    HxType type = elementFactory.createType(toJavaClassName(className));
     getTypeInitializer().initialize(type);
     return type;
   }
 
   @Override
-  public HxTypeReference createReference(final String internalTypeName) {
-    return elementFactory.createReference(toJavaClassName(internalTypeName));
+  public HxTypeReference createReference(final String className) {
+    return elementFactory.createReference(toJavaClassName(className));
   }
 
   @Override
@@ -363,9 +362,9 @@ public class Haxxor
   }
 
   @Override
-  public HxField createField(final String fieldName,
-                             final String internalTypeName) {
-    return elementFactory.createField(fieldName, toJavaClassName(internalTypeName));
+  public HxField createField(final String className,
+                             final String fieldName) {
+    return elementFactory.createField(toJavaClassName(className), fieldName);
   }
 
   @Override
@@ -380,30 +379,31 @@ public class Haxxor
   }
 
   @Override
-  public HxMethod createMethod(final String methodName, final String returnType, final String... parameterTypes) {
-    return elementFactory.createMethod(methodName, toJavaClassName(returnType),
+  public HxMethod createMethod(final String returnType,
+                               final String methodName,
+                               final String... parameterTypes) {
+    return elementFactory.createMethod(toJavaClassName(returnType), methodName,
                                        toJavaClassNames(parameterTypes));
   }
 
   @Override
   public HxMethod createMethodReference(final String declaringType,
-                                        final String methodName,
                                         final String returnType,
+                                        final String methodName,
                                         final String... parameterTypes) {
     return elementFactory.createMethodReference(toJavaClassName(declaringType),
-                                                methodName,
-                                                toJavaClassName(returnType),
+                                                toJavaClassName(returnType), methodName,
                                                 toJavaClassNames(parameterTypes));
   }
 
   @Override
-  public HxParameter createParameter(final String internalTypeName) {
-    return elementFactory.createParameter(toJavaClassName(internalTypeName));
+  public HxParameter createParameter(final String className) {
+    return elementFactory.createParameter(toJavaClassName(className));
   }
 
   @Override
-  public HxAnnotation createAnnotation(final String internalTypeName, final boolean visible) {
-    return elementFactory.createAnnotation(toJavaClassName(internalTypeName), visible);
+  public HxAnnotation createAnnotation(final String className, final boolean visible) {
+    return elementFactory.createAnnotation(toJavaClassName(className), visible);
   }
 
   @Override

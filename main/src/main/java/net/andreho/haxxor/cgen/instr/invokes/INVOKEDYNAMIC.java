@@ -2,13 +2,14 @@ package net.andreho.haxxor.cgen.instr.invokes;
 
 import net.andreho.asm.org.objectweb.asm.Handle;
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.asm.org.objectweb.asm.Type;
 import net.andreho.haxxor.cgen.CodeStream;
 import net.andreho.haxxor.cgen.Context;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInstruction;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static net.andreho.asm.org.objectweb.asm.Type.getArgumentsAndReturnSizes;
 
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
@@ -44,7 +45,7 @@ public class INVOKEDYNAMIC
 
   @Override
   public int getStackPopCount() {
-    int argumentSizes = (Type.getArgumentsAndReturnSizes(this.desc) >> 2) - 1;
+    int argumentSizes = (getArgumentsAndReturnSizes(this.desc) >> 2) - 1;
     return argumentSizes;
   }
 

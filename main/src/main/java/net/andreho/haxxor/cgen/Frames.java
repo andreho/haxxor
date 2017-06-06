@@ -4,6 +4,7 @@ import net.andreho.asm.org.objectweb.asm.ClassReader;
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 
 /**
+ * A bit overworked version of original frame constants from {@link Opcodes}
  * <br/>Created by a.hofmann on 05.06.2017 at 07:47.
  */
 public enum Frames {

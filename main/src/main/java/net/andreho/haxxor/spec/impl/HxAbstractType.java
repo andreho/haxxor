@@ -13,15 +13,13 @@ import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxTypeReference;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
-
-import static net.andreho.haxxor.Utils.isUninitialized;
 
 /**
  * <br/>Created by andreho on 3/26/16 at 7:21 PM.<br/>
@@ -104,51 +102,6 @@ public class HxAbstractType
 
   @Override
   public HxType initialize(Part part) {
-    switch (part) {
-      case DEFAULTS: {
-        getHaxxor().getTypeInitializer().initialize(this);
-      }
-      break;
-      case ANNOTATIONS: {
-        if (isUninitialized(getAnnotations())) {
-          return setAnnotations(new LinkedHashSet<>());
-        }
-      }
-      break;
-      case CONSTRUCTORS: {
-        if (isUninitialized(getConstructors())) {
-          return setConstructors(new ArrayList<>());
-        }
-      }
-      break;
-      case FIELDS: {
-        if (isUninitialized(getFields())) {
-          return setFields(new ArrayList<>());
-        }
-      }
-      break;
-      case INTERFACES: {
-        if (isUninitialized(getInterfaces())) {
-          return setInterfaces(new ArrayList<>());
-        }
-      }
-      break;
-      case METHODS: {
-        if (isUninitialized(getMethods())) {
-          return setMethods(new ArrayList<>());
-        }
-      }
-      break;
-      case DECLARED_TYPES: {
-        if (isUninitialized(getDeclaredTypes())) {
-          return setDeclaredTypes(new ArrayList<>());
-        }
-      }
-      break;
-      default:
-        throw new IllegalStateException("Invalid state.");
-    }
-
     return this;
   }
 
@@ -201,14 +154,14 @@ public class HxAbstractType
   }
 
   @Override
-  public HxField getField(String name) {
+  public Optional<HxField> getField(String name) {
     //NO OP
-    return null;
+    return Optional.empty();
   }
 
   @Override
   public boolean hasField(String name) {
-    return getField(name) != null;
+    return getField(name).isPresent();
   }
 
   @Override
@@ -234,97 +187,68 @@ public class HxAbstractType
   }
 
   @Override
-  public Collection<HxMethod> getMethods(String name) {
-    return Collections.emptySet();
+  public HxType removeMethod(final HxMethod method) {
+    //NO OP
+    return this;
   }
 
   @Override
   public HxType addMethod(HxMethod method) {
     initialize(Part.METHODS);
 
-    if (!isUninitialized(getMethods())) {
-      if (method.getDeclaringMember() != null || !getMethods().add(method)) {
-        throw new IllegalStateException("Ambiguous method: " + method);
-      }
-
-      if (!getMethods(method.getName()).add(method)) {
-        throw new IllegalStateException("Ambiguous method: " + method);
-      }
-
-      method.setDeclaringMember(this);
+    if (this == method.getDeclaringMember()) {
+      throw new IllegalStateException("Method was already added: " + method);
+    } else if (method.getDeclaringMember() != null) {
+      method = method.clone();
     }
+    if (method.getDeclaringMember() != null) {
+      throw new IllegalStateException("Ambiguous method: " + method);
+    }
+    if (!getMethods(method.getName()).add(method)) {
+      throw new IllegalStateException("Ambiguous method: " + method);
+    }
+    if (!getMethods().add(method)) {
+      throw new IllegalStateException("Ambiguous method: " + method);
+    }
+
+    method.setDeclaringMember(this);
     return this;
   }
 
   @Override
-  public HxMethod getMethod(String name) {
+  public Optional<HxMethod> getMethod(String name) {
     //NO OP
-    return null;
+    return Optional.empty();
   }
 
   @Override
-  public HxMethod getMethodDirectly(String name, String desc) {
-    final Iterable<HxMethod> methods = getMethods(name);
+  public Collection<HxMethod> getMethods(String name) {
+    return Collections.emptySet();
+  }
 
+  @Override
+  public Optional<HxMethod> getMethodDirectly(String name, String desc) {
+    final Iterable<HxMethod> methods = getMethods(name);
     for (HxMethod method : methods) {
       if (desc.equals(method.toDescriptor())) {
-        return method;
+        return Optional.of(method);
       }
     }
-    return null;
+    return Optional.empty();
   }
 
   @Override
-  public HxMethod getMethod(String name, String returnType, String... parameters) {
-    final Iterable<HxMethod> methods = getMethods(name);
-
-    loop:
-    for (HxMethod method : methods) {
-      if (parameters.length != method.getArity()) {
-        continue;
-      }
-
-      for (int i = 0, arity = method.getArity(); i < arity; i++) {
-        HxType type = method.getParameterTypeAt(i);
-
-        if (!type.getName().equals(parameters[i])) {
-          continue loop;
-        }
-      }
-
-      if (returnType == null || method.getReturnType().hasName(returnType)) {
-        return method;
-      }
-    }
-    return null;
+  public Optional<HxMethod> getMethod(String name, String returnType, String... parameters) {
+    return getMethod(name, getHaxxor().reference(returnType), getHaxxor().referencesAsArray(parameters));
   }
 
   @Override
-  public HxMethod getMethod(final String name, final HxType returnType, final HxType... parameters) {
-    final Iterable<HxMethod> methods = getMethods(name);
-
-    loop:
-    for (HxMethod method : methods) {
-      if (parameters.length != method.getArity()) {
-        continue;
-      }
-
-      for (int i = 0, arity = method.getArity(); i < arity; i++) {
-        HxType type = method.getParameterTypeAt(i);
-
-        if (!type.equals(parameters[i])) {
-          continue loop;
-        }
-      }
-      if (returnType == null || returnType.equals(method.getReturnType())) {
-        return method;
-      }
-    }
-    return null;
+  public Optional<HxMethod> getMethod(final String name, final HxType returnType, final HxType... parameters) {
+    return getMethod(name, returnType, Arrays.asList(parameters));
   }
 
   @Override
-  public HxMethod getMethod(final String name, final HxType returnType, final List<HxType> parameters) {
+  public Optional<HxMethod> getMethod(final String name, final HxType returnType, final List<HxType> parameters) {
     final Iterable<HxMethod> methods = getMethods(name);
 
     loop:
@@ -341,26 +265,27 @@ public class HxAbstractType
         }
       }
 
-      if (returnType == null || returnType.equals(method.getReturnType())) {
-        return method;
+      if (returnType == null ||
+          returnType.equals(method.getReturnType())) {
+        return Optional.of(method);
       }
     }
-    return null;
+    return Optional.empty();
   }
 
   @Override
   public boolean hasMethod(final String name, final String returnType, final String... parameters) {
-    return getMethod(name, returnType, parameters) != null;
+    return getMethod(name, returnType, parameters).isPresent();
   }
 
   @Override
   public boolean hasMethod(final String name, final HxType returnType, final HxType... parameters) {
-    return getMethod(name, returnType, parameters) != null;
+    return getMethod(name, returnType, parameters).isPresent();
   }
 
   @Override
   public boolean hasMethod(final String name, final HxType returnType, final List<HxType> signature) {
-    return getMethod(name, returnType, signature) != null;
+    return getMethod(name, returnType, signature).isPresent();
   }
 
   @Override
@@ -378,14 +303,14 @@ public class HxAbstractType
   public HxType addConstructor(HxConstructor constructor) {
     initialize(Part.CONSTRUCTORS);
 
-    if (equals(constructor.getDeclaringMember())) {
+    if (this == constructor.getDeclaringMember()) {
       throw new IllegalStateException("Ambiguous constructor: " + constructor);
     } else if (constructor.getDeclaringMember() != null) {
       constructor = constructor.clone();
     }
 
     if (constructor.getDeclaringMember() != null ||
-        getConstructorWithParameters(constructor.getParameters()) != null ||
+        getConstructorWithParameters(constructor.getParameters()).isPresent() ||
         !getConstructors().add(constructor)) {
       throw new IllegalStateException("Ambiguous constructor: " + constructor);
     }
@@ -395,7 +320,7 @@ public class HxAbstractType
   }
 
   @Override
-  public HxConstructor getConstructorWithParameters(final List<HxParameter<HxConstructor>> signature) {
+  public Optional<HxConstructor> getConstructorWithParameters(final List<HxParameter<HxConstructor>> signature) {
     loop:
     for (HxConstructor constructor : getConstructors()) {
       if (signature.size() != constructor.getArity()) {
@@ -409,13 +334,13 @@ public class HxAbstractType
           continue loop;
         }
       }
-      return constructor;
+      return Optional.of(constructor);
     }
-    return null;
+    return Optional.empty();
   }
 
   @Override
-  public HxConstructor getConstructor(final List<HxType> signature) {
+  public Optional<HxConstructor> getConstructor(final List<HxType> signature) {
     loop:
     for (HxConstructor constructor : getConstructors()) {
       if (signature.size() != constructor.getArity()) {
@@ -429,13 +354,13 @@ public class HxAbstractType
           continue loop;
         }
       }
-      return constructor;
+      return Optional.of(constructor);
     }
-    return null;
+    return Optional.empty();
   }
 
   @Override
-  public HxConstructor getConstructor(HxType... signature) {
+  public Optional<HxConstructor> getConstructor(HxType... signature) {
     loop:
     for (HxConstructor constructor : getConstructors()) {
       if (signature.length != constructor.getArity()) {
@@ -449,13 +374,13 @@ public class HxAbstractType
           continue loop;
         }
       }
-      return constructor;
+      return Optional.of(constructor);
     }
-    return null;
+    return Optional.empty();
   }
 
   @Override
-  public HxConstructor getConstructor(String... signature) {
+  public Optional<HxConstructor> getConstructor(String... signature) {
     loop:
     for (HxConstructor constructor : getConstructors()) {
       if (signature.length != constructor.getArity()) {
@@ -470,19 +395,19 @@ public class HxAbstractType
           continue loop;
         }
       }
-      return constructor;
+      return Optional.of(constructor);
     }
-    return null;
+    return Optional.empty();
   }
 
   @Override
   public boolean hasConstructor(final String... signature) {
-    return getConstructor(signature) != null;
+    return getConstructor(signature).isPresent();
   }
 
   @Override
   public boolean hasConstructor(final HxType... signature) {
-    return getConstructor(signature) != null;
+    return getConstructor(signature).isPresent();
   }
 
   @Override

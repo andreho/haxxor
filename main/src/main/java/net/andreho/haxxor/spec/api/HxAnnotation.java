@@ -69,6 +69,8 @@ public interface HxAnnotation
    * @param name of attribute
    * @param <V>
    * @return value of the attribute
+   * @implNote this method can fetch the referenced annotation in order to get default values for not defined
+   * attributes with default values
    */
   <V> V attribute(String name);
 

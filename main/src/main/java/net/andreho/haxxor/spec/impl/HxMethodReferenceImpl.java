@@ -13,6 +13,7 @@ import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
@@ -41,7 +42,7 @@ public class HxMethodReferenceImpl
 
   public HxMethod get() {
     if (target == null) {
-      target = declaringType.getMethod(name, returnType, parameterTypes);
+      target = declaringType.getMethod(name, returnType, parameterTypes).orElseThrow(IllegalStateException::new);
     }
     return target;
   }
@@ -59,6 +60,11 @@ public class HxMethodReferenceImpl
   @Override
   public HxCode getCode() {
     return get().getCode();
+  }
+
+  @Override
+  public HxMethod clone() {
+    return get().clone();
   }
 
   @Override
@@ -190,7 +196,7 @@ public class HxMethodReferenceImpl
   }
 
   @Override
-  public HxAnnotation getAnnotation(String type) {
+  public Optional<HxAnnotation> getAnnotation(String type) {
     return get().getAnnotation(type);
   }
 

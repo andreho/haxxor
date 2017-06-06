@@ -80,6 +80,31 @@ public class HxParameterImpl<P extends HxParameterizable<P>>
   }
 
   @Override
+  public boolean isNamePresent() {
+    return this.name != null;
+  }
+
+  @Override
+  public boolean isImplicit() {
+    return hasModifiers(Modifiers.MANDATED);
+  }
+
+  @Override
+  public boolean isSynthetic() {
+    return hasModifiers(Modifiers.SYNTHETIC);
+  }
+
+  @Override
+  public boolean isVarArgs() {
+    P declaringMember = getDeclaringMember();
+    if(declaringMember != null) {
+      return declaringMember.isVarArg() &&
+             (declaringMember.getArity() - 1) == getIndex();
+    }
+    return false;
+  }
+
+  @Override
   public HxType getType() {
     return type;
   }

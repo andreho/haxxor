@@ -7,7 +7,8 @@ import net.andreho.asm.org.objectweb.asm.Opcodes;
  */
 public interface Instructions {
 
-  static InstructionType of(int opcode) {
+  static Instruction.Type fromOpcode(int opcode) {
+    //TODO: evaluate what is faster in that case a SWITCH or an ARRAY?
     switch (opcode) {
       case Opcodes.NOP:
         return Misc.NOP;
@@ -331,29 +332,8 @@ public interface Instructions {
 
   //----------------------------------------------------------------------------------------------------------------
 
-  enum Kind {
-    Access,
-    Allocation,
-    Arithmetic,
-    Array,
-    Binary,
-    Comparison,
-    Conversion,
-    Constants,
-    Increment,
-    Invocation,
-    Jump,
-    Switches,
-    Load,
-    Store,
-    Stack,
-    Misc,
-    Synchronization,
-    Exit
-  }
-
   enum Access
-      implements InstructionType {
+      implements Instruction.Type {
     GETSTATIC(Opcodes.GETSTATIC),
     PUTSTATIC(Opcodes.PUTSTATIC),
     GETFIELD(Opcodes.GETFIELD),
@@ -371,8 +351,8 @@ public interface Instructions {
     }
 
     @Override
-    public Kind getKind() {
-      return Kind.Access;
+    public Instruction.Kind getKind() {
+      return Instruction.Kind.Access;
     }
 
     public boolean isPut() {
@@ -391,7 +371,7 @@ public interface Instructions {
   }
 
   enum Allocation
-      implements InstructionType {
+      implements Instruction.Type {
     NEW(Opcodes.NEW),
 
     NEWARRAY(Opcodes.NEWARRAY),
@@ -410,8 +390,8 @@ public interface Instructions {
     }
 
     @Override
-    public Kind getKind() {
-      return Kind.Allocation;
+    public Instruction.Kind getKind() {
+      return Instruction.Kind.Allocation;
     }
 
     public boolean isArray() {
@@ -420,7 +400,7 @@ public interface Instructions {
   }
 
   enum Arithmetic
-      implements InstructionType {
+      implements Instruction.Type {
     IADD(Opcodes.IADD),
     LADD(Opcodes.LADD),
     FADD(Opcodes.FADD),
@@ -458,13 +438,13 @@ public interface Instructions {
     }
 
     @Override
-    public Kind getKind() {
-      return Kind.Arithmetic;
+    public Instruction.Kind getKind() {
+      return Instruction.Kind.Arithmetic;
     }
   }
 
   enum Array
-      implements InstructionType {
+      implements Instruction.Type {
     IALOAD(Opcodes.IALOAD),
     LALOAD(Opcodes.LALOAD),
     FALOAD(Opcodes.FALOAD),
@@ -497,8 +477,8 @@ public interface Instructions {
     }
 
     @Override
-    public Kind getKind() {
-      return Kind.Array;
+    public Instruction.Kind getKind() {
+      return Instruction.Kind.Array;
     }
 
     public boolean isStore() {
@@ -512,7 +492,7 @@ public interface Instructions {
   }
 
   enum Binary
-      implements InstructionType {
+      implements Instruction.Type {
     ISHL(Opcodes.ISHL),
     LSHL(Opcodes.LSHL),
     ISHR(Opcodes.ISHR),
@@ -532,19 +512,27 @@ public interface Instructions {
       this.opcode = opcode;
     }
 
+    public boolean is32Bit() {
+      return !is64Bit();
+    }
+
+    public boolean is64Bit() {
+      return 'L' == name().charAt(0);
+    }
+
     @Override
     public int getOpcode() {
       return this.opcode;
     }
 
     @Override
-    public Kind getKind() {
-      return Kind.Binary;
+    public Instruction.Kind getKind() {
+      return Instruction.Kind.Binary;
     }
   }
 
   enum Comparison
-      implements InstructionType {
+      implements Instruction.Type {
     LCMP(Opcodes.LCMP),
     FCMPL(Opcodes.FCMPL),
     FCMPG(Opcodes.FCMPG),
@@ -563,13 +551,13 @@ public interface Instructions {
     }
 
     @Override
-    public Kind getKind() {
-      return Kind.Comparison;
+    public Instruction.Kind getKind() {
+      return Instruction.Kind.Comparison;
     }
   }
 
   enum Conversion
-      implements InstructionType {
+      implements Instruction.Type {
     I2L(Opcodes.I2L),
     I2F(Opcodes.I2F),
     I2D(Opcodes.I2D),
@@ -601,13 +589,13 @@ public interface Instructions {
     }
 
     @Override
-    public Kind getKind() {
-      return Kind.Conversion;
+    public Instruction.Kind getKind() {
+      return Instruction.Kind.Conversion;
     }
   }
 
   enum Constants
-      implements InstructionType {
+      implements Instruction.Type {
     ACONST_NULL(Opcodes.ACONST_NULL),
     ICONST_M1(Opcodes.ICONST_M1),
     ICONST_0(Opcodes.ICONST_0),
@@ -639,13 +627,13 @@ public interface Instructions {
     }
 
     @Override
-    public Kind getKind() {
-      return Kind.Constants;
+    public Instruction.Kind getKind() {
+      return Instruction.Kind.Constants;
     }
   }
 
   enum Increment
-      implements InstructionType {
+      implements Instruction.Type {
     IINC(Opcodes.IINC);
 
     private final int opcode;
@@ -660,13 +648,13 @@ public interface Instructions {
     }
 
     @Override
-    public Kind getKind() {
-      return Kind.Increment;
+    public Instruction.Kind getKind() {
+      return Instruction.Kind.Increment;
     }
   }
 
   enum Invocation
-      implements InstructionType {
+      implements Instruction.Type {
     INVOKEVIRTUAL(Opcodes.INVOKEVIRTUAL),
     INVOKESPECIAL(Opcodes.INVOKESPECIAL),
     INVOKESTATIC(Opcodes.INVOKESTATIC),
@@ -685,13 +673,13 @@ public interface Instructions {
     }
 
     @Override
-    public Kind getKind() {
-      return Kind.Invocation;
+    public Instruction.Kind getKind() {
+      return Instruction.Kind.Invocation;
     }
   }
 
   enum Jump
-      implements InstructionType {
+      implements Instruction.Type {
     IFEQ(Opcodes.IFEQ),
     IFNE(Opcodes.IFNE),
     IFLT(Opcodes.IFLT),
@@ -725,13 +713,13 @@ public interface Instructions {
     }
 
     @Override
-    public Kind getKind() {
-      return Kind.Jump;
+    public Instruction.Kind getKind() {
+      return Instruction.Kind.Jump;
     }
   }
 
   enum Switches
-      implements InstructionType {
+      implements Instruction.Type {
     TABLESWITCH(Opcodes.TABLESWITCH),
     LOOKUPSWITCH(Opcodes.LOOKUPSWITCH);
 
@@ -747,13 +735,13 @@ public interface Instructions {
     }
 
     @Override
-    public Kind getKind() {
-      return Kind.Switches;
+    public Instruction.Kind getKind() {
+      return Instruction.Kind.Switches;
     }
   }
 
   enum Load
-      implements InstructionType {
+      implements Instruction.Type {
     ILOAD(Opcodes.ILOAD),
     LLOAD(Opcodes.LLOAD),
     FLOAD(Opcodes.FLOAD),
@@ -772,13 +760,13 @@ public interface Instructions {
     }
 
     @Override
-    public Kind getKind() {
-      return Kind.Load;
+    public Instruction.Kind getKind() {
+      return Instruction.Kind.Load;
     }
   }
 
   enum Store
-      implements InstructionType {
+      implements Instruction.Type {
     ISTORE(Opcodes.ISTORE),
     LSTORE(Opcodes.LSTORE),
     FSTORE(Opcodes.FSTORE),
@@ -797,13 +785,13 @@ public interface Instructions {
     }
 
     @Override
-    public Kind getKind() {
-      return Kind.Store;
+    public Instruction.Kind getKind() {
+      return Instruction.Kind.Store;
     }
   }
 
   enum Misc
-      implements InstructionType {
+      implements Instruction.Type {
     NOP(Opcodes.NOP),
     JSR(Opcodes.JSR),
     RET(Opcodes.RET);
@@ -820,13 +808,13 @@ public interface Instructions {
     }
 
     @Override
-    public Kind getKind() {
-      return Kind.Misc;
+    public Instruction.Kind getKind() {
+      return Instruction.Kind.Misc;
     }
   }
 
   enum Stack
-      implements InstructionType {
+      implements Instruction.Type {
     POP(Opcodes.POP),
     POP2(Opcodes.POP2),
     DUP(Opcodes.DUP),
@@ -849,13 +837,13 @@ public interface Instructions {
     }
 
     @Override
-    public Kind getKind() {
-      return Kind.Stack;
+    public Instruction.Kind getKind() {
+      return Instruction.Kind.Stack;
     }
   }
 
   enum Synchronization
-      implements InstructionType {
+      implements Instruction.Type {
     MONITORENTER(Opcodes.MONITORENTER),
     MONITOREXIT(Opcodes.MONITOREXIT);
 
@@ -871,15 +859,15 @@ public interface Instructions {
     }
 
     @Override
-    public Kind getKind() {
-      return Kind.Synchronization;
+    public Instruction.Kind getKind() {
+      return Instruction.Kind.Synchronization;
     }
   }
 
   //----------------------------------------------------------------------------------------------------------------
 
   enum Exit
-      implements InstructionType {
+      implements Instruction.Type {
     IRETURN(Opcodes.IRETURN),
     LRETURN(Opcodes.LRETURN),
     FRETURN(Opcodes.FRETURN),
@@ -900,8 +888,8 @@ public interface Instructions {
     }
 
     @Override
-    public Kind getKind() {
-      return Kind.Exit;
+    public Instruction.Kind getKind() {
+      return Instruction.Kind.Exit;
     }
   }
 }

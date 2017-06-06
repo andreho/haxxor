@@ -52,6 +52,7 @@ public class HxFieldVisitor
   @Override
   public void visitEnd() {
     super.visitEnd();
-    this.type.addField(this.field);
+    this.type.initialize(HxType.Part.FIELDS)
+             .addField(this.field);
   }
 }

@@ -14,6 +14,7 @@ import net.andreho.haxxor.spec.api.HxTypeReference;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
@@ -361,7 +362,7 @@ public class HxTypeReferenceImpl
   }
 
   @Override
-  public HxAnnotation getAnnotation(String type) {
+  public Optional<HxAnnotation> getAnnotation(String type) {
     return toType().getAnnotation(type);
   }
 
@@ -405,12 +406,12 @@ public class HxTypeReferenceImpl
   }
 
   @Override
-  public HxField getField(String name) {
+  public Optional<HxField> getField(String name) {
     return toType().getField(name);
   }
 
   @Override
-  public HxMethod getMethod(String name) {
+  public Optional<HxMethod> getMethod(String name) {
     return toType().getMethod(name);
   }
 

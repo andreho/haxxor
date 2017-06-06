@@ -16,25 +16,25 @@ import java.util.Objects;
 public class LABEL
     extends AbstractPseudoInstruction
     implements Instruction {
-  //----------------------------------------------------------------------------------------------------------------
 
   private Label asmLabel;
   private Instruction next;
   private Instruction previous;
   private List<Instruction> references = new ArrayList<>();
 
-  //----------------------------------------------------------------------------------------------------------------
-
   public LABEL() {
     this(new Label());
   }
-
   public LABEL(Label asmLabel) {
+    this(asmLabel, false);
+  }
+  public LABEL(Label asmLabel, boolean link) {
     super();
     this.asmLabel = asmLabel;
+    if(link) {
+      this.asmLabel.info = this;
+    }
   }
-
-  //----------------------------------------------------------------------------------------------------------------
 
   @Override
   public void dumpTo(Context context, CodeStream codeStream) {
@@ -42,8 +42,6 @@ public class LABEL
            .putIfAbsent(this, getPrevious());
     codeStream.LABEL(this);
   }
-
-  //----------------------------------------------------------------------------------------------------------------
 
   public Label getAsmLabel() {
     return this.asmLabel;
@@ -74,15 +72,12 @@ public class LABEL
     this.next = next;
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   @Override
   public String toString() {
     int count = 0;
     Instruction instruction = getPrevious();
-    while (instruction != null) {
-      if (instruction.getOpcode() == -1 &&
-          instruction instanceof LABEL) {
+    while (instruction != null && !instruction.isEnd()) {
+      if (instruction instanceof LABEL) {
         count++;
       }
       instruction = instruction.getPrevious();
@@ -107,6 +102,4 @@ public class LABEL
   public int hashCode() {
     return Objects.hashCode(this.asmLabel);
   }
-
-  //----------------------------------------------------------------------------------------------------------------
 }

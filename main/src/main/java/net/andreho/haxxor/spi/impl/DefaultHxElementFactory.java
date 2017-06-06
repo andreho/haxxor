@@ -59,8 +59,8 @@ public class DefaultHxElementFactory
   }
 
   @Override
-  public HxField createField(final String fieldName,
-                             final String internalTypeName) {
+  public HxField createField(final String internalTypeName,
+                             final String fieldName) {
     return new HxFieldImpl(fieldName, haxxor.reference(internalTypeName));
   }
 
@@ -75,12 +75,16 @@ public class DefaultHxElementFactory
   }
 
   @Override
-  public HxMethod createMethod(final String methodName, final String returnType, final String... parameterTypes) {
+  public HxMethod createMethod(final String returnType,
+                               final String methodName,
+                               final String... parameterTypes) {
     return new HxMethodImpl(methodName, createReference(returnType), haxxor.referencesAsArray(parameterTypes));
   }
 
   @Override
-  public HxMethod createMethodReference(final String declaringType, final String methodName, final String returnType,
+  public HxMethod createMethodReference(final String declaringType,
+                                        final String returnType,
+                                        final String methodName,
                                         final String... parameterTypes) {
     return new HxMethodReferenceImpl(haxxor, declaringType, methodName, returnType, parameterTypes);
   }

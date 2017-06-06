@@ -3,28 +3,29 @@ package net.andreho.haxxor.spec.api;
 import net.andreho.haxxor.Haxxor;
 
 import java.lang.reflect.Array;
+import java.util.Objects;
 
 /**
  * <br/>Created by a.hofmann on 04.06.2015.<br/>
  */
 public final class HxEnum {
-
   private final HxType type;
   private final String name;
   private volatile Enum<?> fetchedEnum;
 
-  //----------------------------------------------------------------------------------------------------------------
 
   public HxEnum(Haxxor haxxor, Enum e) {
     this(haxxor.reference(e.getClass().getName()), e.name());
   }
 
   public HxEnum(HxType type, String name) {
-    this.type = type;
-    this.name = name;
-  }
+    this.type = Objects.requireNonNull(type, "Enum's type can't be null.");
+    this.name = Objects.requireNonNull(name, "Enum's name can't be null.");
 
-  //----------------------------------------------------------------------------------------------------------------
+    if(name.isEmpty()) {
+      throw new IllegalArgumentException("Enum's name can't be empty.");
+    }
+  }
 
   /**
    * @param haxxor
@@ -46,7 +47,7 @@ public final class HxEnum {
   public static <E extends Enum<E>> E[] toEnumArray(Class<E> enumType, HxEnum... array) {
     final E[] result = (E[]) Array.newInstance(enumType, array.length);
     for (int i = 0; i < array.length; i++) {
-      result[i] = (E) array[i].loadEnum();
+      result[i] = (E) array[i].loadEnum(enumType.getClassLoader());
     }
     return result;
   }
@@ -66,8 +67,6 @@ public final class HxEnum {
     return result;
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   public HxType getType() {
     return type;
   }
@@ -76,19 +75,21 @@ public final class HxEnum {
     return name;
   }
 
-  public Enum loadEnum() {
-    Enum<?> e = this.fetchedEnum;
-    if (e != null) {
-      return e;
-    }
-
-    final Class<Enum> enumClass = (Class<Enum>) type.loadClass();
-    e = Enum.valueOf(enumClass, name);
-    this.fetchedEnum = e;
-    return e;
+  public <E extends Enum<E>> E loadEnum() {
+    return loadEnum(type.getHaxxor().getClassLoader());
   }
 
-  //----------------------------------------------------------------------------------------------------------------
+  public <E extends Enum<E>> E loadEnum(ClassLoader classLoader) {
+    Enum<?> e = this.fetchedEnum;
+    if (e != null) {
+      return (E) e;
+    }
+
+    final Class<E> enumClass = (Class<E>) type.loadClass(classLoader);
+    e = Enum.valueOf(enumClass, name);
+    this.fetchedEnum = e;
+    return (E) e;
+  }
 
   @Override
   public String toString() {
@@ -96,20 +97,23 @@ public final class HxEnum {
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) {
+  public boolean equals(Object other) {
+    if (this == other) {
       return true;
     }
-    if (o == null || getClass() != o.getClass()) {
+    if (other == null || getClass() != other.getClass()) {
       return false;
     }
 
-    HxEnum hxEnum = (HxEnum) o;
+    HxEnum otherEnum = (HxEnum) other;
 
-    if (type != null ? !type.equals(hxEnum.type) : hxEnum.type != null) {
+    if (!Objects.equals(type, otherEnum.type)) {
       return false;
     }
-    return !(name != null ? !name.equals(hxEnum.name) : hxEnum.name != null);
+    if (!Objects.equals(name, otherEnum.name)) {
+      return false;
+    }
+    return true;
   }
 
   @Override

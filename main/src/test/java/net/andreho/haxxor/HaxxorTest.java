@@ -184,7 +184,7 @@ class HaxxorTest {
 
   @Test
   void createField() {
-    HxField field = haxxor.createField("aField", TEST_BEAN_CLASSNAME);
+    HxField field = haxxor.createField(TEST_BEAN_CLASSNAME, "aField");
     assertNotNull(field);
     assertNull(field.getDeclaringMember());
   }
@@ -205,8 +205,7 @@ class HaxxorTest {
 
   @Test
   void createMethod() {
-    HxMethod method = haxxor.createMethod(TEST_BEAN_CLASSNAME,
-                                          "void",
+    HxMethod method = haxxor.createMethod("void", TEST_BEAN_CLASSNAME,
                                           TEST_BEAN_CLASSNAME);
     assertNotNull(method);
     assertNull(method.getDeclaringMember());

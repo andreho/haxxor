@@ -36,7 +36,8 @@ public class HxTypeVisitor
     this(haxxor, null);
   }
 
-  public HxTypeVisitor(Haxxor haxxor, ClassVisitor cv) {
+  public HxTypeVisitor(Haxxor haxxor,
+                       ClassVisitor cv) {
     super(Opcodes.ASM5, cv);
     this.haxxor = haxxor;
   }
@@ -46,7 +47,12 @@ public class HxTypeVisitor
   }
 
   @Override
-  public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+  public void visit(int version,
+                    int access,
+                    String name,
+                    String signature,
+                    String superName,
+                    String[] interfaces) {
     super.visit(version, access, name, signature, superName, interfaces);
 
     this.name = name;
@@ -64,25 +70,33 @@ public class HxTypeVisitor
   }
 
   @Override
-  public void visitSource(String source, String debug) {
+  public void visitSource(String source,
+                          String debug) {
     super.visitSource(source, debug);
   }
 
   @Override
-  public void visitInnerClass(String name, String outerName, String innerName, int access) {
+  public void visitInnerClass(String name,
+                              String outerName,
+                              String innerName,
+                              int access) {
     super.visitInnerClass(name, outerName, innerName, access);
 
-    if(Objects.equals(this.name, name)) { //isn't it redundant?
-      if(outerName != null) {
+    if (Objects.equals(this.name, name)) { //isn't it redundant?
+      if (outerName != null) {
         type.setDeclaringMember(haxxor.reference(outerName));
       }
-    } else if(Objects.equals(this.name, outerName)) {
-      type.initialize(Part.DECLARED_TYPES).getDeclaredTypes().add(haxxor.reference(name));
+    } else if (Objects.equals(this.name, outerName)) {
+      type.initialize(Part.DECLARED_TYPES)
+          .getDeclaredTypes()
+          .add(haxxor.reference(name));
     }
   }
 
   @Override
-  public void visitOuterClass(String owner, String name, String desc) {
+  public void visitOuterClass(String owner,
+                              String name,
+                              String desc) {
     super.visitOuterClass(owner, name, desc);
 
     if (name != null && desc != null) {
@@ -91,7 +105,7 @@ public class HxTypeVisitor
         this.type.setDeclaringMember(constructorReference);
       } else {
         final String returnType = desc.substring(desc.lastIndexOf(')') + 1);
-        HxMethod methodReference = haxxor.createMethodReference(owner, name, returnType, normalizeSignature(desc));
+        HxMethod methodReference = haxxor.createMethodReference(owner, returnType, name, normalizeSignature(desc));
         this.type.setDeclaringMember(methodReference);
       }
     } else {
@@ -101,7 +115,8 @@ public class HxTypeVisitor
   }
 
   @Override
-  public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+  public AnnotationVisitor visitAnnotation(String desc,
+                                           boolean visible) {
     final HxAnnotation hxAnnotation =
         this.haxxor.createAnnotation(desc, visible);
     this.type.initialize(Part.ANNOTATIONS);
@@ -110,7 +125,10 @@ public class HxTypeVisitor
   }
 
   @Override
-  public AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath, String desc, boolean visible) {
+  public AnnotationVisitor visitTypeAnnotation(int typeRef,
+                                               TypePath typePath,
+                                               String desc,
+                                               boolean visible) {
     return super.visitTypeAnnotation(typeRef, typePath, desc, visible);
   }
 
@@ -119,12 +137,15 @@ public class HxTypeVisitor
     super.visitAttribute(attr);
   }
 
-
   @Override
-  public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
+  public FieldVisitor visitField(int access,
+                                 String name,
+                                 String desc,
+                                 String signature,
+                                 Object value) {
     this.type.initialize(Part.FIELDS);
     HxField hxField = this.haxxor
-        .createField(name, normalizeClassname(desc))
+        .createField(normalizeClassname(desc), name)
         .setModifiers(access)
         .setGenericSignature(signature)
         .setDefaultValue(value);
@@ -133,7 +154,11 @@ public class HxTypeVisitor
   }
 
   @Override
-  public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+  public MethodVisitor visitMethod(int access,
+                                   String name,
+                                   String desc,
+                                   String signature,
+                                   String[] exceptions) {
     final String[] parameterTypes = normalizeSignature(desc);
     HxParameterizable parameterizable;
 
@@ -141,12 +166,13 @@ public class HxTypeVisitor
       parameterizable = this.haxxor.createConstructor(parameterTypes);
     } else {
       String returnType = normalizeReturnType(desc);
-      parameterizable = this.haxxor.createMethod(name, returnType, parameterTypes);
+      parameterizable = this.haxxor.createMethod(returnType, name, parameterTypes);
     }
 
+    parameterizable.setModifiers(access);
     parameterizable.setGenericSignature(signature);
 
-    if (exceptions != null) {
+    if (exceptions != null && exceptions.length > 0) {
       parameterizable.setExceptionTypes(this.haxxor.referencesAsArray(exceptions));
     }
 

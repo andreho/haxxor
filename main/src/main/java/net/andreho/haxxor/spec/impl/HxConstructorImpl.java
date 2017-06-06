@@ -53,6 +53,6 @@ public class HxConstructorImpl
 
   @Override
   public String toString() {
-    return getDeclaringMember() + super.toString() + "void";
+    return ((getDeclaringMember() == null)? "undefined" :  getDeclaringMember()) + super.toString();
   }
 }

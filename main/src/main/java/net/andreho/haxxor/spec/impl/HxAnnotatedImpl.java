@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
@@ -94,26 +95,26 @@ public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>
                                  annotation.getHaxxor()
                                            .resolve(type);
 
-      HxAnnotation hxAnnotation = repeatableAnnotationType.getAnnotation(REPEATABLE_ANNOTATION_CLASS);
+      final Optional<HxAnnotation> optional = repeatableAnnotationType.getAnnotation(REPEATABLE_ANNOTATION_CLASS);
 
-      if (hxAnnotation != null) {
-        repeatableType = hxAnnotation.attribute("value");
+      if (optional.isPresent()) {
+        repeatableType = optional.get().attribute("value");
         break;
       }
     }
 
     if (repeatableType != null) {
-      final HxAnnotation value = getAnnotation(repeatableType);
+      final Optional<HxAnnotation> optional = getAnnotation(repeatableType);
 
-      if (value != null) {
-        HxAnnotation[] annotations = value.attribute("value");
+      if (optional.isPresent()) {
+        HxAnnotation[] annotations = optional.get().attribute("value");
         return new ArrayList<>(Arrays.asList(annotations));
       }
     } else {
-      final HxAnnotation annotation = getAnnotation(type);
+      final Optional<HxAnnotation> optional = getAnnotation(type);
 
-      if (annotation != null) {
-        return new ArrayList<>(Arrays.asList(annotation));
+      if (optional.isPresent()) {
+        return new ArrayList<>(Arrays.asList(optional.get()));
       }
     }
 

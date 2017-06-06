@@ -1,12 +1,18 @@
 package net.andreho.haxxor.spec.api;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
+import net.andreho.haxxor.Utils;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+
+import static net.andreho.haxxor.Utils.toClassNames;
 
 /**
  * Created by a.hofmann on 30.05.2015.
@@ -73,18 +79,18 @@ public interface HxType
   HxType getSuperType();
 
   /**
+   * @param superType
+   * @return
+   */
+  HxType setSuperType(HxType superType);
+
+  /**
    * Shortcut for: <code>this.setSuperType(getHaxxor().reference(superType))</code>
    *
    * @param superType to reference as super type
    * @return
    */
   HxType setSuperType(String superType);
-
-  /**
-   * @param superType
-   * @return
-   */
-  HxType setSuperType(HxType superType);
 
   /**
    * @return
@@ -95,15 +101,15 @@ public interface HxType
    * @param interfaces
    * @return
    */
-  HxType setInterfaces(List<HxType> interfaces);
+  default HxType setInterfaces(String... interfaces) {
+    return setInterfaces(getHaxxor().referencesAsList(interfaces));
+  }
 
   /**
    * @param interfaces
    * @return
    */
-  default HxType setInterfaces(String ... interfaces) {
-    return setInterfaces(getHaxxor().referencesAsList(interfaces));
-  }
+  HxType setInterfaces(List<HxType> interfaces);
 
   /**
    * @return count of slots that are needed to store a value of this type on stack or as local variable
@@ -155,9 +161,9 @@ public interface HxType
    * Gets a field with given name
    *
    * @param name of a field to search
-   * @return <b>null</b> or a field with given name
+   * @return {@link Optional#empty() empty} or a field with given name
    */
-  HxField getField(String name);
+  Optional<HxField> getField(String name);
 
   /**
    * Checks whether there is a field with given name or not
@@ -199,21 +205,48 @@ public interface HxType
    * @param method
    * @return
    */
+  HxType removeMethod(HxMethod method);
+
+  /**
+   * @param method
+   * @return
+   */
   HxType addMethod(HxMethod method);
 
   /**
-   * @param name
-   * @return
-   * @throws IllegalStateException
+   * @param name of a method
+   * @return {@link Optional#empty() empty} or a method with given name
+   * @throws IllegalStateException if there is more than one method with given name
    */
-  HxMethod getMethod(String name);
+  Optional<HxMethod> getMethod(String name);
 
   /**
-   * @param name is name of wanted method
-   * @param desc is signature description of wanted method
+   * @param name is name of the wanted method
+   * @param desc is signature description of the wanted method
+   * @return {@link Optional#empty() empty} or a method with given name and signature
+   */
+  Optional<HxMethod> getMethodDirectly(String name,
+                                       String desc);
+
+  /**
+   * @param method
    * @return
    */
-  HxMethod getMethodDirectly(String name, String desc);
+  default Optional<HxMethod> getMethod(Method method) {
+    return getMethod(method.getName(),
+                     getHaxxor().reference(method.getReturnType().getName()),
+                     getHaxxor().referencesAsArray(toClassNames(method.getParameterTypes())));
+  }
+
+  /**
+   * @param name
+   * @param returnType
+   * @param parameters
+   * @return {@link Optional#empty() empty} or a method with given name and signature
+   */
+  Optional<HxMethod> getMethod(String name,
+                               String returnType,
+                               String... parameters);
 
   /**
    * @param name
@@ -221,7 +254,9 @@ public interface HxType
    * @param parameters
    * @return
    */
-  HxMethod getMethod(String name, String returnType, String... parameters);
+  Optional<HxMethod> getMethod(String name,
+                               HxType returnType,
+                               HxType... parameters);
 
   /**
    * @param name
@@ -229,7 +264,19 @@ public interface HxType
    * @param parameters
    * @return
    */
-  HxMethod getMethod(String name, HxType returnType, HxType... parameters);
+  Optional<HxMethod> getMethod(String name,
+                               HxType returnType,
+                               List<HxType> parameters);
+
+  /**
+   * @param method
+   * @return
+   */
+  default boolean hasMethod(Method method) {
+    return hasMethod(method.getName(),
+                     getHaxxor().reference(method.getReturnType().getName()),
+                     getHaxxor().referencesAsArray(toClassNames(method.getParameterTypes())));
+  }
 
   /**
    * @param name
@@ -237,7 +284,9 @@ public interface HxType
    * @param parameters
    * @return
    */
-  HxMethod getMethod(String name, HxType returnType, List<HxType> parameters);
+  boolean hasMethod(String name,
+                    String returnType,
+                    String... parameters);
 
   /**
    * @param name
@@ -245,15 +294,9 @@ public interface HxType
    * @param parameters
    * @return
    */
-  boolean hasMethod(String name, String returnType, String... parameters);
-
-  /**
-   * @param name
-   * @param returnType
-   * @param parameters
-   * @return
-   */
-  boolean hasMethod(String name, HxType returnType, HxType... parameters);
+  boolean hasMethod(String name,
+                    HxType returnType,
+                    HxType... parameters);
 
   /**
    * @param name
@@ -261,7 +304,9 @@ public interface HxType
    * @param signature
    * @return
    */
-  boolean hasMethod(String name, HxType returnType, List<HxType> signature);
+  boolean hasMethod(String name,
+                    HxType returnType,
+                    List<HxType> signature);
 
   /**
    * @return
@@ -284,25 +329,41 @@ public interface HxType
    * @param signature of wanted constructor as list
    * @return
    */
-  HxConstructor getConstructorWithParameters(List<HxParameter<HxConstructor>> signature);
+  Optional<HxConstructor> getConstructorWithParameters(List<HxParameter<HxConstructor>> signature);
+
+  /**
+   * @param constructor
+   * @return
+   */
+  default Optional<HxConstructor> getConstructor(Constructor<?> constructor) {
+    return getConstructor(Utils.toClassNames(constructor.getParameterTypes()));
+  }
 
   /**
    * @param signature of wanted constructor as list
    * @return
    */
-  HxConstructor getConstructor(List<HxType> signature);
+  Optional<HxConstructor> getConstructor(List<HxType> signature);
 
   /**
    * @param signature of wanted constructor as a HxType array
    * @return
    */
-  HxConstructor getConstructor(HxType... signature);
+  Optional<HxConstructor> getConstructor(HxType... signature);
 
   /**
    * @param signature of wanted constructor as an array of type names
    * @return
    */
-  HxConstructor getConstructor(String... signature);
+  Optional<HxConstructor> getConstructor(String... signature);
+
+  /**
+   * @param constructor
+   * @return
+   */
+  default boolean hasConstructor(Constructor<?> constructor) {
+    return hasConstructor(Utils.toClassNames(constructor.getParameterTypes()));
+  }
 
   /**
    * @param signature
@@ -387,7 +448,8 @@ public interface HxType
    * @param recursive
    * @return
    */
-  Collection<HxField> fields(Predicate<HxField> predicate, boolean recursive);
+  Collection<HxField> fields(Predicate<HxField> predicate,
+                             boolean recursive);
 
   //----------------------------------------------------------------------------------------------------------------
 
@@ -407,7 +469,8 @@ public interface HxType
    * @param recursive
    * @return
    */
-  Collection<HxMethod> methods(Predicate<HxMethod> predicate, boolean recursive);
+  Collection<HxMethod> methods(Predicate<HxMethod> predicate,
+                               boolean recursive);
 
   //----------------------------------------------------------------------------------------------------------------
 
@@ -427,7 +490,8 @@ public interface HxType
    * @param recursive
    * @return
    */
-  Collection<HxConstructor> constructors(Predicate<HxConstructor> predicate, boolean recursive);
+  Collection<HxConstructor> constructors(Predicate<HxConstructor> predicate,
+                                         boolean recursive);
 
   //----------------------------------------------------------------------------------------------------------------
 
@@ -447,7 +511,8 @@ public interface HxType
    * @param recursive
    * @return
    */
-  Collection<HxType> types(Predicate<HxType> predicate, boolean recursive);
+  Collection<HxType> types(Predicate<HxType> predicate,
+                           boolean recursive);
 
   //----------------------------------------------------------------------------------------------------------------
 
@@ -467,7 +532,8 @@ public interface HxType
    * @param recursive
    * @return
    */
-  Collection<HxType> interfaces(Predicate<HxType> predicate, boolean recursive);
+  Collection<HxType> interfaces(Predicate<HxType> predicate,
+                                boolean recursive);
 
   //----------------------------------------------------------------------------------------------------------------
 
@@ -606,6 +672,7 @@ public interface HxType
 
   /**
    * Creates bytecode representation of the actual type's state.
+   *
    * @return
    */
   byte[] toByteArray();

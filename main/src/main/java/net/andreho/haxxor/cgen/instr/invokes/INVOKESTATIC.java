@@ -16,8 +16,6 @@ public class INVOKESTATIC
     Utils.checkMethodName(getOpcode(), name);
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   @Override
   public void dumpTo(Context context, CodeStream codeStream) {
     codeStream.INVOKESTATIC(this.owner, this.name, this.desc, this.isInterface);

@@ -196,9 +196,7 @@ public abstract class AbstractInstruction
         default: {
           return context.getStackPush()
                         .prepare()
-                        .push(
-                            Utils.transformDesc(desc.substring(off + 1))
-                        )
+                        .push(Utils.transformDesc(desc.substring(off + 1)))
                         .get();
         }
       }
