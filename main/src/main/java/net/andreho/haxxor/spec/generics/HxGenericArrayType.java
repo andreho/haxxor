@@ -9,7 +9,10 @@ public interface HxGenericArrayType
     extends HxGeneric {
 
   /**
-   * @return either an instance of HxType, HxParameteriziedType, HxTypeVariable
+   * @return an instance of either
+   * {@link net.andreho.haxxor.spec.api.HxType} or
+   * {@link HxParameterizedType} or
+   * {@link HxTypeVariable}
    */
   HxGeneric getGenericComponentType();
 

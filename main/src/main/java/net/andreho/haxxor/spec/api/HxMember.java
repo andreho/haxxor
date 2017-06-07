@@ -30,6 +30,9 @@ public interface HxMember<M extends HxMember<M>> {
    * @return
    */
   default boolean hasModifiers(int bitSet) {
+    if(0 == bitSet) {
+      throw new IllegalArgumentException("Invalid mask for modifiers: "+bitSet);
+    }
     return (getModifiers() & bitSet) == bitSet;
   }
 

@@ -1,6 +1,10 @@
 package net.andreho.haxxor;
 
 import net.andreho.asm.org.objectweb.asm.Type;
+import net.andreho.haxxor.spec.api.HxMethod;
+import net.andreho.haxxor.spec.api.HxParameterizable;
+import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.spi.HxJavaClassNameProvider;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -15,14 +19,177 @@ import java.util.Objects;
  * <br/>Created by a.hofmann on 30.05.2017 at 14:35.
  */
 public abstract class Utils {
+
   private static final int DEFAULT_READ_BUFFER_LENGTH = 1028;
+
+  private Utils() {
+  }
+
+  public static <P extends HxParameterizable<P>>
+  boolean hasDescriptor(final HxParameterizable<P> parameterizable,
+                        final String descriptor) {
+
+    final int arity = parameterizable.getParametersCount();
+    final int returnIndex = descriptor.lastIndexOf(')');
+    final int length = descriptor.length();
+
+    if (descriptor.charAt(0) != '(' || returnIndex < 1) {
+      throw new IllegalArgumentException("Invalid descriptor: " + descriptor);
+    }
+
+    int parameters = 0;
+    if (descriptor.charAt(1) != ')') {
+      if (arity == 0) {
+        return false;
+      }
+      for (int i = 1; i < returnIndex; ) {
+        if(parameters >= arity) {
+          return false;
+        }
+        int result = checkDescriptorsParameters(parameterizable.getParameterTypeAt(parameters), descriptor, i, returnIndex);
+        if (result < 0) {
+          return false;
+        } else {
+          parameters++;
+        }
+        i = result;
+      }
+    }
+
+    if (parameters != arity) {
+      return false;
+    }
+
+    if (parameterizable instanceof HxMethod) {
+      if (checkDescriptorsParameters(
+          ((HxMethod) parameterizable).getReturnType(),
+          descriptor,
+          returnIndex + 1,
+          length) < 0) {
+        return false;
+      }
+    } else if (descriptor.charAt(returnIndex + 1) != 'V') {
+      return false;
+    }
+
+    return true;
+  }
+
+  private static int checkDescriptorsParameters(final HxType type,
+                                                final String desc,
+                                                int index,
+                                                final int length) {
+    int dim = 0;
+    while (index < length) {
+      char c = desc.charAt(index);
+      switch (c) {
+        case '[':
+          dim++;
+          break;
+        case 'V':
+        case 'Z':
+        case 'B':
+        case 'S':
+        case 'C':
+        case 'I':
+        case 'F':
+        case 'J':
+        case 'D':
+          if (!isTypeWithDimension(type, toPrimitiveClassName(c), dim)) {
+            return -1;
+          }
+          return index + 1;
+        case 'L':
+          int sc = desc.indexOf(';', index + 2);
+          if (sc < 0) {
+            throw new IllegalArgumentException("Invalid descriptor: " + desc);
+          }
+          if (!isTypeWithDescriptorAndDimension(
+              type,
+              desc,
+              dim,
+              index + 1,
+              sc)) {
+            return -1;
+          }
+          return sc + 1;
+      }
+      index++;
+    }
+    return -1;
+  }
+
+  private static String toPrimitiveClassName(char c) {
+    switch (c) {
+      case 'V':
+        return "void";
+      case 'Z':
+        return "boolean";
+      case 'B':
+        return "byte";
+      case 'S':
+        return "short";
+      case 'C':
+        return "char";
+      case 'I':
+        return "int";
+      case 'F':
+        return "float";
+      case 'J':
+        return "long";
+      case 'D':
+        return "double";
+      default:
+        throw new IllegalArgumentException("Not a primitive literal {V,Z,B,S,C,I,F,J,D}: " + c);
+    }
+  }
+
+  private static boolean isTypeWithDimension(final HxType type,
+                                             final String className,
+                                             final int dim) {
+    HxType componentType = type;
+    while (componentType.isArray()) {
+      componentType = componentType.getComponentType();
+    }
+    return type.getDimension() == dim && className.equals(componentType.getName());
+  }
+
+  private static boolean isTypeWithDescriptorAndDimension(final HxType type,
+                                                          final String descriptor,
+                                                          final int dim,
+                                                          final int from,
+                                                          final int to) {
+    HxType componentType = type;
+    while (componentType.isArray()) {
+      componentType = componentType.getComponentType();
+    }
+
+    final String classname = componentType.getName();
+    if (type.getDimension() != dim || classname.length() != (to - from)) {
+      return false;
+    }
+
+    for (int i = 0, len = classname.length(); i < len; i++) {
+      char a = classname.charAt(i);
+      char b = descriptor.charAt(i + from);
+
+      if (a == '.' && (a == b || b == '/')) {
+        continue;
+      }
+      if (a != b) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   /**
    * Extracts names of given classes
+   *
    * @param classes to process
    * @return
    */
-  public static String[] toClassNames(Class<?> ... classes) {
+  public static String[] toClassNames(final Class<?>... classes) {
     final String[] names = new String[classes.length];
     for (int i = 0; i < classes.length; i++) {
       names[i] = classes[i].getName();
@@ -31,8 +198,24 @@ public abstract class Utils {
   }
 
   /**
+   * Extracts names of given classes
+   *
+   * @param classes to process
+   * @return
+   */
+  public static String[] toClassNames(final HxJavaClassNameProvider classNameProvider,
+                                      final Class<?>... classes) {
+    final String[] names = new String[classes.length];
+    for (int i = 0; i < classes.length; i++) {
+      names[i] = classNameProvider.toJavaClassName(classes[i].getName());
+    }
+    return names;
+  }
+
+  /**
    * Checks the given collection whether it needs to be initialized or not. Initialisation is only needed if the
    * given collection is <b>null</b> or equals to either {@link Collections#EMPTY_LIST} or {@link Collections#EMPTY_SET}
+   *
    * @param collection to check
    * @return <b>true</b> if the given collection can't be used and must be initialized, <b>false</b> otherwise
    */
@@ -46,10 +229,11 @@ public abstract class Utils {
   /**
    * Checks the given map whether it needs to be initialized or not. Initialisation is only needed if the
    * given collection is <b>null</b> or equals to {@link Collections#EMPTY_MAP}
+   *
    * @param map to check
    * @return <b>true</b> if the given map can't be used and must be initialized, <b>false</b> otherwise
    */
-  public static boolean isUninitialized(Map<?,?> map) {
+  public static boolean isUninitialized(Map<?, ?> map) {
     return
         map == null ||
         map == Collections.EMPTY_MAP;
@@ -126,7 +310,9 @@ public abstract class Utils {
    * @param <T>
    * @return an iterable object that always creates an iterator with given array and parameters
    */
-  public static final <T> Iterable<T> iterable(final T[] array, final int offset, final int length) {
+  public static final <T> Iterable<T> iterable(final T[] array,
+                                               final int offset,
+                                               final int length) {
     return () -> iterator(array, offset, length);
   }
 
@@ -150,7 +336,9 @@ public abstract class Utils {
    * @param <T>
    * @return an iterator that visits elements of given array using given offset and length
    */
-  public static final <T> Iterator<T> iterator(final T[] array, final int offset, final int length) {
+  public static final <T> Iterator<T> iterator(final T[] array,
+                                               final int offset,
+                                               final int length) {
     return new Iterator<T>() {
       final int len = Math.min(array.length, length);
       int i = Math.min(array.length, offset);
@@ -165,8 +353,5 @@ public abstract class Utils {
         return array[i++];
       }
     };
-  }
-
-  private Utils() {
   }
 }

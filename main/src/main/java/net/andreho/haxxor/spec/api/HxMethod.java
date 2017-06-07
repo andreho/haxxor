@@ -10,12 +10,39 @@ public interface HxMethod
   /**
    * @return
    */
-  HxMethod clone();
+  default HxMethod clone() {
+    return clone(getName());
+  }
+
+  /**
+   * @param name of the cloned method
+   * @return a cloned version of this method with given name
+   */
+  HxMethod clone(String name);
 
   /**
    * @return name of this method
    */
   String getName();
+
+  /**
+   * @param name
+   * @return
+   */
+  default boolean hasName(String name) {
+    return name.equals(getName());
+  }
+
+  /**
+   * @param returnType
+   * @return
+   */
+  default boolean hasReturnType(String returnType) {
+    if(getReturnType() == null) {
+      return returnType == null;
+    }
+    return getReturnType().getName().equals(returnType);
+  }
 
   /**
    * @return the return value of this method
@@ -27,22 +54,16 @@ public interface HxMethod
    * @return
    * @implSpec return value can't be null
    */
-  HxMethod setReturnType(HxType returnType);
+  default HxMethod setReturnType(String returnType) {
+    return setReturnType(getHaxxor().reference(returnType));
+  }
 
   /**
-   * @return <b>true</b> if this method was declared by an annotation, represents an annotation's attribute and has a
-   * default value, <b>false</b> otherwise.
+   * @param returnType
+   * @return
+   * @implSpec return value can't be null
    */
-  default boolean hasDefaultValue() {
-    HxType type = getDeclaringMember();
-    if(type == null || !type.isAnnotation()) {
-      return false;
-    }
-    if(getArity() > 0) {
-      return false;
-    }
-    return getDefaultValue() != null;
-  }
+  HxMethod setReturnType(HxType returnType);
 
   /**
    * @return default value of this annotation attribute
@@ -56,10 +77,78 @@ public interface HxMethod
   HxMethod setDefaultValue(Object value);
 
   /**
+   * @return <b>true</b> if this method was declared by an annotation, represents an annotation's attribute and has a
+   * default value, <b>false</b> otherwise.
+   */
+  default boolean hasDefaultValue() {
+    return isAnnotationAttribute() && getDefaultValue() != null;
+  }
+
+  /**
    * @return
    */
   default HxGeneric getGenericReturnType() {
     return getReturnType();
+  }
+
+  /**
+   * @return <b>true</b> if this method is an annotation's attribute, <b>false</b> otherwise.
+   */
+  default boolean isAnnotationAttribute() {
+    HxType type = getDeclaringMember();
+    if(type == null || !type.isAnnotation()) {
+      return false;
+    }
+    return
+        isPublic() &&
+        isAbstract() &&
+        getParametersCount() == 0 &&
+        !hasReturnType("void") &&
+        !"hashCode".equals(getName()) &&
+        !"toString".equals(getName()) &&
+        !"annotationType".equals(getName());
+  }
+
+  /**
+   * @return
+   */
+  default boolean isStatic() {
+    return hasModifiers(Modifiers.STATIC);
+  }
+
+  /**
+   * @return
+   */
+  default boolean isAbstract() {
+    return hasModifiers(Modifiers.ABSTRACT);
+  }
+
+  /**
+   * @return
+   */
+  default boolean isSynchronized() {
+    return hasModifiers(Modifiers.SYNCHRONIZED);
+  }
+
+  /**
+   * @return
+   */
+  default boolean isBrindge() {
+    return hasModifiers(Modifiers.BRIDGE);
+  }
+
+  /**
+   * @return
+   */
+  default boolean isNative() {
+    return hasModifiers(Modifiers.NATIVE);
+  }
+
+  /**
+   * @return
+   */
+  default boolean isFinal() {
+    return hasModifiers(Modifiers.FINAL);
   }
 
   enum Modifiers

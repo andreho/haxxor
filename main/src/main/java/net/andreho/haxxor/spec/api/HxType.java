@@ -3,11 +3,14 @@ package net.andreho.haxxor.spec.api;
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.Utils;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -40,8 +43,6 @@ public interface HxType
    */
   HxType initialize(Part part);
 
-  //----------------------------------------------------------------------------------------------------------------
-
   /**
    * @return byte-code version
    */
@@ -57,13 +58,14 @@ public interface HxType
    * @return the standard Java classname, like:
    * <code>int</code>,
    * <code>byte[]</code>,
-   * <code>java.lang.String</code> or
+   * <code>java.lang.String</code>,
+   * <code>java.lang.String[][]</code> or
    * <code>java.util.Map$Entry</code> etc.)
    */
   String getName();
 
   /**
-   * @return simple type name of this type
+   * @return simple name of this type
    * @see Class#getSimpleName()
    */
   String getSimpleName();
@@ -71,12 +73,28 @@ public interface HxType
   /**
    * @return package of this type
    */
-  String getPackageName();
+  default String getPackageName() {
+    if(isArray() || isPrimitive()) {
+      return null;
+    }
+    int index = getName().lastIndexOf(HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR);
+    return index < 0 ? "" : getName().substring(0, index);
+  }
 
   /**
    * @return the parent-type of this type
    */
   HxType getSuperType();
+
+  /**
+   * Shortcut for: <code>this.setSuperType(getHaxxor().reference(superType))</code>
+   *
+   * @param superType to reference as super type
+   * @return
+   */
+  default HxType setSuperType(String superType) {
+    return setSuperType(getHaxxor().reference(superType));
+  }
 
   /**
    * @param superType
@@ -85,12 +103,20 @@ public interface HxType
   HxType setSuperType(HxType superType);
 
   /**
-   * Shortcut for: <code>this.setSuperType(getHaxxor().reference(superType))</code>
-   *
-   * @param superType to reference as super type
+   * @param superType
    * @return
    */
-  HxType setSuperType(String superType);
+  default boolean hasSuperType(String superType) {
+    return Objects.equals(superType, getSuperType() == null? null : getSuperType().getName());
+  }
+
+  /**
+   * @param superType
+   * @return
+   */
+  default boolean hasSuperType(HxType superType) {
+    return Objects.equals(superType, getSuperType());
+  }
 
   /**
    * @return
@@ -101,26 +127,46 @@ public interface HxType
    * @param interfaces
    * @return
    */
-  default HxType setInterfaces(String... interfaces) {
-    return setInterfaces(getHaxxor().referencesAsList(interfaces));
-  }
+  HxType setInterfaces(List<HxType> interfaces);
 
   /**
    * @param interfaces
    * @return
    */
-  HxType setInterfaces(List<HxType> interfaces);
+  default HxType setInterfaces(String... interfaces) {
+    return setInterfaces(getHaxxor().referencesAsList(interfaces));
+  }
+
+  /**
+   * @param interfaceName
+   * @return
+   */
+  default boolean hasInterface(String interfaceName) {
+    Objects.requireNonNull(interfaceName, "Interface name can't be null.");
+    for(HxType itf : getInterfaces()) {
+      if(interfaceName.equals(itf.getName())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * @param hxInterface
+   * @return
+   */
+  default boolean hasInterface(HxType hxInterface) {
+    Objects.requireNonNull(hxInterface, "Interface can't be null.");
+    return hasInterface(hxInterface.getName());
+  }
 
   /**
    * @return count of slots that are needed to store a value of this type on stack or as local variable
    * @implSpec <code>long</code> and <code>double</code> take two slots and all other only one
    */
-  int getSlotsCount();
-
-  /**
-   * @return
-   */
-  boolean isReference();
+  default int getSlotsCount() {
+    return ("long".equals(getName()) || "double".equals(getName()))? 2 : 1;
+  }
 
   /**
    * @return
@@ -134,22 +180,108 @@ public interface HxType
   HxType setDeclaredTypes(List<HxType> declaredTypes);
 
   /**
-   * Adds given field to this type
-   *
-   * @param field
    * @return
-   * @throws IllegalArgumentException if given field is already present in this type
    */
-  HxType addField(HxField field);
+  HxType getEnclosingType();
 
   /**
-   * Replaces corresponding field by name with given field version
-   *
-   * @param field to use
-   * @return this
-   * @throws IllegalArgumentException if given field isn't present in this type
+   * @return
    */
-  HxType updateField(HxField field);
+  HxMethod getEnclosingMethod();
+
+  /**
+   * @return
+   */
+  HxConstructor getEnclosingConstructor();
+
+  /**
+   * @param field to search for
+   * @return <b>-1</b> if given field doesn't belong to this type,
+   * otherwise zero-based position of the given field in the {@link #getFields()} list
+   */
+  default int indexOf(HxField field) {
+    if(!equals(field.getDeclaringMember())) {
+      return -1;
+    }
+    int idx = 0;
+    for(HxField hxField : getFields()) {
+      if(field == hxField) {
+        return idx;
+      }
+      idx++;
+    }
+    return -1;
+  }
+
+  /**
+   * @param constructor to search for
+   * @return <b>-1</b> if given constructor doesn't belong to this type,
+   * otherwise zero-based position of the given constructor in the {@link #getConstructors()} list
+   */
+  default int indexOf(HxConstructor constructor) {
+    if(!equals(constructor.getDeclaringMember())) {
+      return -1;
+    }
+    int idx = 0;
+    for(HxConstructor hxConstructor : getConstructors()) {
+      if(constructor == hxConstructor) {
+        return idx;
+      }
+      idx++;
+    }
+    return -1;
+  }
+
+  /**
+   * @param method to search for
+   * @return <b>-1</b> if given method doesn't belong to this type,
+   * otherwise zero-based position of the given method in the {@link #getMethods()} list
+   */
+  default int indexOf(HxMethod method) {
+    if(!equals(method.getDeclaringMember())) {
+      return -1;
+    }
+    int idx = 0;
+    for(HxMethod hxMethod : getMethods()) {
+      if(method == hxMethod) {
+        return idx;
+      }
+      idx++;
+    }
+    return -1;
+  }
+  /**
+   * @return
+   */
+  List<HxField> getFields();
+
+  /**
+   * @param fields
+   * @return
+   */
+  HxType setFields(List<HxField> fields);
+
+  /**
+   * Adds given field to this type at specific position
+   *
+   * @param field to add
+   * @return this
+   * @throws IllegalArgumentException if given field is already present in this type
+   */
+  default HxType addField(HxField field) {
+    return addFieldAt(getFields().size(), field);
+  }
+
+  /**
+   * Adds given field to this type at specific position
+   *
+   * @param index where to insert given field
+   * @param field to add
+   * @return this
+   * @throws IllegalArgumentException if given field is already present in this type
+   */
+  HxType addFieldAt(int index,
+                    HxField field);
 
   /**
    * @param field
@@ -163,7 +295,7 @@ public interface HxType
    * @param name of a field to search
    * @return {@link Optional#empty() empty} or a field with given name
    */
-  Optional<HxField> getField(String name);
+  Optional<HxField> findField(String name);
 
   /**
    * Checks whether there is a field with given name or not
@@ -171,18 +303,9 @@ public interface HxType
    * @param name of a field
    * @return <b>true</b> if there is a field with given name, <b>false</b> otherwise.
    */
-  boolean hasField(String name);
-
-  /**
-   * @return
-   */
-  List<HxField> getFields();
-
-  /**
-   * @param fields
-   * @return
-   */
-  HxType setFields(List<HxField> fields);
+  default boolean hasField(String name) {
+    return findField(name).isPresent();
+  }
 
   /**
    * @return
@@ -190,16 +313,16 @@ public interface HxType
   List<HxMethod> getMethods();
 
   /**
-   * @param methods
-   * @return
-   */
-  HxType setMethods(List<HxMethod> methods);
-
-  /**
    * @param name
    * @return
    */
   Collection<HxMethod> getMethods(String name);
+
+  /**
+   * @param methods
+   * @return
+   */
+  HxType setMethods(List<HxMethod> methods);
 
   /**
    * @param method
@@ -211,102 +334,207 @@ public interface HxType
    * @param method
    * @return
    */
-  HxType addMethod(HxMethod method);
+  default HxType addMethod(HxMethod method) {
+    return addMethodAt(getMethods().size(), method);
+  }
+
+  /**
+   * @param index where to insert given method
+   * @param method to add
+   * @return
+   */
+  HxType addMethodAt(int index,
+                     HxMethod method);
 
   /**
    * @param name of a method
    * @return {@link Optional#empty() empty} or a method with given name
    * @throws IllegalStateException if there is more than one method with given name
    */
-  Optional<HxMethod> getMethod(String name);
+  Optional<HxMethod> findMethod(String name);
 
   /**
    * @param name is name of the wanted method
-   * @param desc is signature description of the wanted method
+   * @param descriptor is signature description of the wanted method
    * @return {@link Optional#empty() empty} or a method with given name and signature
    */
-  Optional<HxMethod> getMethodDirectly(String name,
-                                       String desc);
+  Optional<HxMethod> findMethodDirectly(String name,
+                                        String descriptor);
 
   /**
    * @param method
    * @return
    */
-  default Optional<HxMethod> getMethod(Method method) {
-    return getMethod(method.getName(),
-                     getHaxxor().reference(method.getReturnType().getName()),
-                     getHaxxor().referencesAsArray(toClassNames(method.getParameterTypes())));
+  default Optional<HxMethod> findMethod(Method method) {
+    HxTypeReference returnTypeReference = getHaxxor().reference(method.getReturnType().getName());
+    return findMethod(returnTypeReference,
+                      method.getName(),
+                      getHaxxor().referencesAsArray(toClassNames(getHaxxor(), method.getParameterTypes())));
+  }
+
+  /**
+   * @param method
+   * @return
+   */
+  default Optional<HxMethod> findMethod(HxMethod method) {
+    return findMethod(method.getReturnType(),
+                      method.getName(),
+                      method.getParameterTypes());
+  }
+
+  /**
+   * @param returnType
+   * @param name
+   * @param parameters
+   * @return {@link Optional#empty() empty} or a method with given name and signature
+   */
+  default Optional<HxMethod> findMethod(String returnType,
+                                String name,
+                                String... parameters) {
+    return findMethod(getHaxxor().reference(returnType),
+                      name,
+                      getHaxxor().referencesAsArray(parameters));
+  }
+
+  /**
+   * @param returnType
+   * @param name
+   * @param parameters
+   * @return
+   */
+  default Optional<HxMethod> findMethod(HxType returnType,
+                                String name,
+                                HxType... parameters) {
+    return findMethod(returnType,
+                      name,
+                      Arrays.asList(parameters));
+  }
+
+  /**
+   * @param returnType
+   * @param name
+   * @param parameters
+   * @return
+   */
+  default Optional<HxMethod> findMethod(HxType returnType,
+                                String name,
+                                List<HxType> parameters) {
+    return findMethod(Optional.of(returnType), name, parameters);
+  }
+
+  /**
+   * @param returnType
+   * @param name
+   * @param parameters
+   * @return
+   */
+  Optional<HxMethod> findMethod(Optional<HxType> returnType,
+                                String name,
+                                List<HxType> parameters);
+
+  /**
+   * @param name
+   * @param parameters
+   * @return
+   */
+  default Optional<HxMethod> findMethod(String name,
+                                List<HxType> parameters) {
+    return findMethod(Optional.empty(), name, parameters);
   }
 
   /**
    * @param name
-   * @param returnType
-   * @param parameters
-   * @return {@link Optional#empty() empty} or a method with given name and signature
-   */
-  Optional<HxMethod> getMethod(String name,
-                               String returnType,
-                               String... parameters);
-
-  /**
-   * @param name
-   * @param returnType
    * @param parameters
    * @return
    */
-  Optional<HxMethod> getMethod(String name,
-                               HxType returnType,
-                               HxType... parameters);
+  default Optional<HxMethod> findMethod(String name,
+                                HxType ... parameters) {
+    return findMethod(name, Arrays.asList(parameters));
+  }
 
   /**
    * @param name
-   * @param returnType
    * @param parameters
    * @return
    */
-  Optional<HxMethod> getMethod(String name,
-                               HxType returnType,
-                               List<HxType> parameters);
+  default Optional<HxMethod> findMethod(String name,
+                                String ... parameters) {
+    return findMethod(name, getHaxxor().referencesAsArray(parameters));
+  }
 
   /**
    * @param method
    * @return
    */
   default boolean hasMethod(Method method) {
-    return hasMethod(method.getName(),
-                     getHaxxor().reference(method.getReturnType().getName()),
-                     getHaxxor().referencesAsArray(toClassNames(method.getParameterTypes())));
+    return findMethod(method).isPresent();
+  }
+
+  /**
+   * @param returnType
+   * @param name
+   * @param parameters
+   * @return
+   */
+  default boolean hasMethod(String returnType,
+                            String name,
+                            String... parameters) {
+    return findMethod(returnType, name, parameters).isPresent();
+  }
+
+  /**
+   * @param returnType
+   * @param name
+   * @param parameters
+   * @return
+   */
+  default boolean hasMethod(HxType returnType,
+                    String name,
+                    HxType... parameters) {
+    return findMethod(returnType, name, parameters).isPresent();
+  }
+
+  /**
+   * @param returnType
+   * @param name
+   * @param parameters
+   * @return
+   */
+  default boolean hasMethod(HxType returnType,
+                    String name,
+                    List<HxType> parameters) {
+    return findMethod(returnType, name, parameters).isPresent();
   }
 
   /**
    * @param name
-   * @param returnType
    * @param parameters
    * @return
    */
-  boolean hasMethod(String name,
-                    String returnType,
-                    String... parameters);
+  default boolean hasMethod(String name,
+                            String... parameters) {
+    return findMethod(name, parameters).isPresent();
+  }
 
   /**
    * @param name
-   * @param returnType
    * @param parameters
    * @return
    */
-  boolean hasMethod(String name,
-                    HxType returnType,
-                    HxType... parameters);
+  default boolean hasMethod(String name,
+                            HxType... parameters) {
+    return findMethod(name, parameters).isPresent();
+  }
 
   /**
    * @param name
-   * @param returnType
-   * @param signature
+   * @param parameters
    * @return
    */
-  boolean hasMethod(String name,
-                    HxType returnType,
-                    List<HxType> signature);
+  default boolean hasMethod(String name,
+                            List<HxType> parameters) {
+    return findMethod(name, parameters).isPresent();
+  }
 
   /**
    * @return
@@ -323,66 +551,105 @@ public interface HxType
    * @param constructor
    * @return
    */
-  HxType addConstructor(HxConstructor constructor);
+  default HxType addConstructor(HxConstructor constructor) {
+    return addConstructorAt(getConstructors().size(), constructor);
+  }
 
   /**
-   * @param signature of wanted constructor as list
+   * @param index
+   * @param constructor
    * @return
    */
-  Optional<HxConstructor> getConstructorWithParameters(List<HxParameter<HxConstructor>> signature);
+  HxType addConstructorAt(int index, HxConstructor constructor);
 
   /**
    * @param constructor
    * @return
    */
-  default Optional<HxConstructor> getConstructor(Constructor<?> constructor) {
-    return getConstructor(Utils.toClassNames(constructor.getParameterTypes()));
+  HxType removeConstructor(HxConstructor constructor);
+
+  /**
+   * @param descriptor is signature description of the constructor
+   * @return
+   */
+  Optional<HxConstructor> findConstructorDirectly(String descriptor);
+
+  /**
+   * @param constructor
+   * @return
+   */
+  default Optional<HxConstructor> findConstructor(Constructor<?> constructor) {
+    return findConstructor(Utils.toClassNames(getHaxxor(), constructor.getParameterTypes()));
+  }
+
+  /**
+   * @param constructor
+   * @return
+   */
+  default Optional<HxConstructor> findConstructor(HxConstructor constructor) {
+    return findConstructor(constructor.getParameterTypes());
   }
 
   /**
    * @param signature of wanted constructor as list
    * @return
    */
-  Optional<HxConstructor> getConstructor(List<HxType> signature);
+  Optional<HxConstructor> findConstructor(List<HxType> signature);
 
   /**
    * @param signature of wanted constructor as a HxType array
    * @return
    */
-  Optional<HxConstructor> getConstructor(HxType... signature);
+  default Optional<HxConstructor> findConstructor(HxType... signature) {
+    return findConstructor(Arrays.asList(signature));
+  }
 
   /**
    * @param signature of wanted constructor as an array of type names
    * @return
    */
-  Optional<HxConstructor> getConstructor(String... signature);
+  default Optional<HxConstructor> findConstructor(String... signature) {
+    return findConstructor(getHaxxor().referencesAsArray(signature));
+  }
 
   /**
    * @param constructor
    * @return
    */
   default boolean hasConstructor(Constructor<?> constructor) {
-    return hasConstructor(Utils.toClassNames(constructor.getParameterTypes()));
+    return hasConstructor(Utils.toClassNames(getHaxxor(), constructor.getParameterTypes()));
   }
 
   /**
-   * @param signature
+   * @param parameters
    * @return
    */
-  boolean hasConstructor(String... signature);
+  default boolean hasConstructor(String... parameters) {
+    return findConstructor(parameters).isPresent();
+  }
 
   /**
-   * @param signature
+   * @param parameters
    * @return
    */
-  boolean hasConstructor(HxType... signature);
+  default boolean hasConstructor(HxType... parameters) {
+    return findConstructor(parameters).isPresent();
+  }
 
-  //----------------------------------------------------------------------------------------------------------------
+  /**
+   * @param parameters
+   * @return
+   */
+  default boolean hasConstructor(List<HxType> parameters) {
+    return findConstructor(parameters).isPresent();
+  }
 
   /**
    * @return whether this type has a generic specification or not
    */
-  boolean isGeneric();
+  default boolean isGeneric() {
+    return getGenericSignature() != null || !getGenericSignature().isEmpty();
+  }
 
   /**
    * @return raw generic signature of this element
@@ -405,15 +672,15 @@ public interface HxType
    */
   List<HxGeneric> getGenericInterfaces();
 
-  //----------------------------------------------------------------------------------------------------------------
-
   /**
    * Shortcut for: <code>getName().equals(haxxor.toJavaClassName(className))</code>
    *
    * @param className to check against
    * @return <b>true</b> if name of this type is equal to the given one, <b>false</b> otherwise.
    */
-  boolean hasName(String className);
+  default boolean hasName(String className) {
+    return getName().equals(getHaxxor().toJavaClassName(className));
+  }
 
   /**
    * Shortcut for: <code>otherType.isAssignableFrom(this)</code>
@@ -421,7 +688,9 @@ public interface HxType
    * @param otherType to check against
    * @return
    */
-  boolean isTypeOf(HxType otherType);
+  default boolean isTypeOf(HxType otherType) {
+    return otherType.isAssignableFrom(this);
+  }
 
   /**
    * @param otherType
@@ -538,23 +807,6 @@ public interface HxType
   //----------------------------------------------------------------------------------------------------------------
 
   /**
-   * @return
-   */
-  HxType getEnclosingType();
-
-  /**
-   * @return
-   */
-  HxMethod getEnclosingMethod();
-
-  /**
-   * @return
-   */
-  HxConstructor getEnclosingConstructor();
-
-  //----------------------------------------------------------------------------------------------------------------
-
-  /**
    * @return component type of this array type or <b>null</b> if it isn't array type
    */
   HxType getComponentType();
@@ -562,14 +814,14 @@ public interface HxType
   /**
    * @return whether this type represents array type or not
    */
-  boolean isArray();
+  default boolean isArray() {
+    return getDimension() > 0;
+  }
 
   /**
    * @return a number of dimension that this type has
    */
   int getDimension();
-
-  //----------------------------------------------------------------------------------------------------------------
 
   /**
    * @return <b>true</b> if this is a primitive type, <b>false</b> otherwise.
@@ -586,62 +838,89 @@ public interface HxType
    */
   boolean isMemberType();
 
-  //----------------------------------------------------------------------------------------------------------------
-
   /**
    * @return <b>true</b> if this is a final type, <b>false</b> otherwise.
    */
-  boolean isFinal();
+  default boolean isFinal() {
+    return hasModifiers(Modifiers.FINAL);
+  }
 
   /**
    * @return <b>true</b> if this is a public type, <b>false</b> otherwise.
    */
-  boolean isPublic();
+  default boolean isPublic() {
+    return hasModifiers(Modifiers.PUBLIC);
+  }
 
   /**
    * @return <b>true</b> if this is a protected type, <b>false</b> otherwise.
    */
-  boolean isProtected();
+  default boolean isProtected() {
+    return hasModifiers(Modifiers.PROTECTED);
+  }
 
   /**
    * @return <b>true</b> if this is a private type, <b>false</b> otherwise.
    */
-  boolean isPrivate();
+  default boolean isPrivate() {
+    return hasModifiers(Modifiers.PRIVATE);
+  }
 
   /**
    * @return <b>true</b> if this is an internal (package-private) type, <b>false</b> otherwise.
    */
-  boolean isInternal();
+  default boolean isInternal() {
+    return !isPublic() && !isProtected() && !isPrivate();
+  }
 
   /**
    * @return <b>true</b> if this is an abstract type, <b>false</b> otherwise.
    */
-  boolean isAbstract();
+  default boolean isAbstract() {
+    return hasModifiers(Modifiers.ABSTRACT);
+  }
 
   /**
    * @return <b>true</b> if this is an interface type, <b>false</b> otherwise.
    */
-  boolean isInterface();
+  default boolean isInterface() {
+    return hasModifiers(Modifiers.INTERFACE);
+  }
 
   /**
    * @return <b>true</b> if this is an enum type, <b>false</b> otherwise.
    */
-  boolean isEnum();
+  default boolean isEnum() {
+    return hasModifiers(Modifiers.ENUM);
+  }
 
   /**
    * @return <b>true</b> if this is an annotation type, <b>false</b> otherwise.
    */
-  boolean isAnnotation();
+  default boolean isAnnotation() {
+    return hasModifiers(Modifiers.ANNOTATION);
+  }
 
   /**
    * @return <b>true</b> if this is an anonymous type, <b>false</b> otherwise.
    */
-  boolean isAnonymous();
+  default boolean isAnonymous() {
+    return getSimpleName().isEmpty();
+  }
 
   /**
    * @return
    */
-  Class<?> loadClass();
+  default boolean isReference() {
+    return this instanceof HxTypeReference;
+  }
+
+  /**
+   * @return
+   */
+  default Class<?> loadClass() {
+    return loadClass(getHaxxor().getClassLoader());
+  }
 
   /**
    * @param classLoader
@@ -652,18 +931,38 @@ public interface HxType
   /**
    * @return internal classname of this type
    */
-  String toInternalName();
+  default String toInternalName() {
+    if(isPrimitive() || isArray()) {
+      return toDescriptor();
+    }
+    return getName().replace(HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR, HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR);
+  }
+
+  /**
+   * @return parameter descriptor of this type
+   */
+  default String toDescriptor() {
+    return toDescriptor(new StringBuilder(getName().length() + 2)).toString();
+  }
 
   /**
    * @param builder to use
    * @return parameter descriptor of this type printed to the given builder instance
    */
-  Appendable toDescriptor(Appendable builder);
-
-  /**
-   * @return parameter descriptor of this type
-   */
-  String toDescriptor();
+  default Appendable toDescriptor(Appendable builder) {
+    try {
+      if (isArray()) {
+        builder.append('[');
+        return getComponentType().toDescriptor(builder);
+      }
+      builder.append('L')
+             .append(toInternalName())
+             .append(';');
+    } catch (IOException e) {
+      throw new IllegalStateException(e);
+    }
+    return builder;
+  }
 
   /**
    * @return a reference to this type

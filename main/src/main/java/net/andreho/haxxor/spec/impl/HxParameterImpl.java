@@ -1,6 +1,7 @@
 package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.spec.api.HxConstants;
 import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxParameterizable;
 import net.andreho.haxxor.spec.api.HxType;
@@ -99,7 +100,7 @@ public class HxParameterImpl<P extends HxParameterizable<P>>
     P declaringMember = getDeclaringMember();
     if(declaringMember != null) {
       return declaringMember.isVarArg() &&
-             (declaringMember.getArity() - 1) == getIndex();
+             (declaringMember.getParametersCount() - 1) == getIndex();
     }
     return false;
   }
@@ -124,8 +125,26 @@ public class HxParameterImpl<P extends HxParameterizable<P>>
   }
 
   @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    final HxParameterImpl<?> other = (HxParameterImpl<?>) o;
+    return Objects.equals(getType(), other.getType());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(getType());
+  }
+
+  @Override
   public String toString() {
     HxType type = getType();
-    return (type == null? "undefined" : type.getName())+ " " + getName();
+    return (type == null ? HxConstants.UNDEFINED_TYPE : type.getName()) + " " + getName();
   }
 }

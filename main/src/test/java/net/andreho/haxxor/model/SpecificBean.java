@@ -10,4 +10,9 @@ public class SpecificBean
   public SpecificBean(final String name) {
     super(name);
   }
+
+  @Override
+  void someAbstractMethod() {
+
+  }
 }

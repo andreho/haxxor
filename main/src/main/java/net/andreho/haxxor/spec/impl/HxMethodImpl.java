@@ -1,5 +1,6 @@
 package net.andreho.haxxor.spec.impl;
 
+import net.andreho.haxxor.spec.api.HxConstants;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 
@@ -37,11 +38,8 @@ public class HxMethodImpl
     }
   }
 
-  public HxMethodImpl(HxMethodImpl prototype) {
-    this(prototype.name, prototype);
-  }
-
-  public HxMethodImpl(String name, HxMethodImpl prototype) {
+  protected HxMethodImpl(String name,
+                         HxMethodImpl prototype) {
     this.declaringMember = null;
 
     this.name = Objects.requireNonNull(name != null ? name : prototype.name, "Method's name can't be null.");
@@ -52,6 +50,16 @@ public class HxMethodImpl
 
     prototype.cloneParametersTo(this);
     prototype.cloneAnnotationsTo(this);
+  }
+
+  @Override
+  public HxMethod clone() {
+    return clone(getName());
+  }
+
+  @Override
+  public HxMethod clone(String name) {
+    return new HxMethodImpl(name, this);
   }
 
   @Override
@@ -77,15 +85,11 @@ public class HxMethodImpl
 
   @Override
   public HxMethod setDefaultValue(Object value) {
-    this.defaultValue = Objects.requireNonNull(value,
-                                               "Default values are only used together with annotations and " +
-                                               "can't be null.");
+    this.defaultValue = Objects.requireNonNull(
+        value,
+        "Default values on methods are only used together with annotations and can't be null."
+    );
     return this;
-  }
-
-  @Override
-  public HxMethod clone() {
-    return new HxMethodImpl(this);
   }
 
   @Override
@@ -117,9 +121,7 @@ public class HxMethodImpl
 
   @Override
   public String toString() {
-    if (getDeclaringMember() == null) {
-      return getName() + super.toString() + getReturnType().getName();
-    }
-    return getDeclaringMember() + "." + getName() + super.toString() + getReturnType().getName();
+    return (getDeclaringMember() == null ? HxConstants.UNDEFINED_TYPE : getDeclaringMember()) + "."
+           + getName() + super.toString() + getReturnType().getName();
   }
 }

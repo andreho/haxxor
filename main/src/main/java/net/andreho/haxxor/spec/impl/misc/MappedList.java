@@ -17,7 +17,19 @@ public class MappedList<E, V>
   private final Function<E, V> toValue;
   private final List<E> list;
 
-  public MappedList(final List<E> list,
+  /**
+   * @param list
+   * @param toValue
+   * @param <E>
+   * @param <V>
+   * @return
+   */
+  public static <E,V> List<V> create(final List<E> list,
+                                     final Function<E, V> toValue) {
+    return new MappedList<>(list, toValue);
+  }
+
+  private MappedList(final List<E> list,
                     final Function<E, V> toValue) {
     this.list = Objects.requireNonNull(list);
     this.toValue = Objects.requireNonNull(toValue);
@@ -48,17 +60,6 @@ public class MappedList<E, V>
   }
 
   @Override
-  protected void removeRange(final int fromIndex,
-                             final int toIndex) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public boolean add(final V value) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public void add(final int index,
                   final V value) {
     throw new UnsupportedOperationException();
@@ -71,22 +72,13 @@ public class MappedList<E, V>
   }
 
   @Override
-  public boolean remove(final Object o) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public V remove(final int index) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public void sort(final Comparator<? super V> c) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void clear() {
+  protected void removeRange(final int fromIndex,
+                             final int toIndex) {
     throw new UnsupportedOperationException();
   }
 

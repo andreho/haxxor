@@ -97,7 +97,7 @@ public class HxAnnotationImpl
     }
 
     HxMethod method =
-        getType().getMethod(name)
+        getType().findMethod(name)
                  .orElseThrow(() ->
                                   new IllegalArgumentException(
                                       "Method for annotation's attribute not found: " +

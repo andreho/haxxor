@@ -40,7 +40,7 @@ public class HxConstructorReferenceImpl
 
   public HxConstructor toConstructor() {
     if(target == null) {
-      target = declaringReference.getConstructor(parameterTypes)
+      target = declaringReference.findConstructor(parameterTypes)
                                  .orElseThrow(() -> new IllegalStateException("Constructor not found."));
     }
     return target;
@@ -49,6 +49,11 @@ public class HxConstructorReferenceImpl
   @Override
   public HxConstructor clone() {
     return toConstructor().clone();
+  }
+
+  @Override
+  public int getIndex() {
+    return toConstructor().getIndex();
   }
 
   @Override

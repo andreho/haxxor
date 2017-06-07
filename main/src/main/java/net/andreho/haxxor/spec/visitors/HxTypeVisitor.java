@@ -129,7 +129,8 @@ public class HxTypeVisitor
                                                TypePath typePath,
                                                String desc,
                                                boolean visible) {
-    return super.visitTypeAnnotation(typeRef, typePath, desc, visible);
+    AnnotationVisitor av = super.visitTypeAnnotation(typeRef, typePath, desc, visible);
+    return av;
   }
 
   @Override
@@ -177,6 +178,7 @@ public class HxTypeVisitor
     }
 
     return new HxParameterizableVisitor(
+        haxxor,
         type,
         parameterizable,
         super.visitMethod(access, name, desc, signature, exceptions)

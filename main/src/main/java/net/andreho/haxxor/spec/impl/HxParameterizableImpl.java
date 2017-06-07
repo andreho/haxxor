@@ -2,6 +2,7 @@ package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxCode;
+import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxMethod.Modifiers;
 import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxParameterizable;
@@ -44,6 +45,18 @@ public abstract class HxParameterizableImpl<P extends HxParameterizable<P>>
   @Override
   public Haxxor getHaxxor() {
     return ((HxProvider) getDeclaringMember()).getHaxxor();
+  }
+
+  @Override
+  public int getIndex() {
+    HxType type = getDeclaringMember();
+    if(type == null) {
+      return -1;
+    }
+    if(this instanceof HxConstructor) {
+      return type.indexOf((HxConstructor) this);
+    }
+    return type.indexOf((HxConstructor) this);
   }
 
   @Override
@@ -109,8 +122,9 @@ public abstract class HxParameterizableImpl<P extends HxParameterizable<P>>
   }
 
   @Override
-  public P addParameter(final HxParameter<P> parameter) {
-    initializeParameters().add(applyParameter(parameter));
+  public P addParameterAt(int index,
+                          final HxParameter<P> parameter) {
+    initializeParameters().add(index, applyParameter(parameter));
     return (P) this;
   }
 
@@ -124,12 +138,6 @@ public abstract class HxParameterizableImpl<P extends HxParameterizable<P>>
     HxParameter<P> oldParameter = getParameterAt(index);
     initializeParameters().set(index, applyParameter(parameter));
     oldParameter.setDeclaringMember(null);
-    return (P) this;
-  }
-
-  @Override
-  public P addParameterAt(final int index, final HxParameter<P> parameter) {
-    initializeParameters().add(index, applyParameter(parameter));
     return (P) this;
   }
 
@@ -176,11 +184,11 @@ public abstract class HxParameterizableImpl<P extends HxParameterizable<P>>
   public String toString() {
     final StringBuilder builder = new StringBuilder("(");
 
-    if (getArity() > 0) {
+    if (getParametersCount() > 0) {
       HxType type = getParameterTypeAt(0);
       builder.append(type.getName());
 
-      for (int i = 1, arity = getArity(); i < arity; i++) {
+      for (int i = 1, arity = getParametersCount(); i < arity; i++) {
         builder.append(',');
         type = getParameterTypeAt(i);
         builder.append(type.getName());

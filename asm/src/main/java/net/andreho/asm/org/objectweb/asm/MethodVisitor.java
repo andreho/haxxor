@@ -806,7 +806,7 @@ public abstract class MethodVisitor {
      *            element type, or static inner type within 'typeRef'. May be
      *            <tt>null</tt> if the annotation targets 'typeRef' as a whole.
      * @param start
-     *            the fist instructions corresponding to the continuous ranges
+     *            the first instructions corresponding to the continuous ranges
      *            that make the scope of this local variable (inclusive).
      * @param end
      *            the last instructions corresponding to the continuous ranges

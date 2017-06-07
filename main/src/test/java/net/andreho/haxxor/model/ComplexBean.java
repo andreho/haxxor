@@ -1,5 +1,9 @@
 package net.andreho.haxxor.model;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 /**
  * <br/>Created by a.hofmann on 31.05.2017 at 17:40.
  */
@@ -30,6 +34,19 @@ public class ComplexBean
   private String[] stringArray;
   private Class<?>[] classArray;
   private EnumA[] enumArray;
+
+  @Override
+  void someAbstractMethod() {
+
+  }
+
+  @Override
+  protected String methodToOverride(final String a,
+                                    final int b,
+                                    final byte... array) {
+    super.methodToOverride(a, b, array);
+    return null;
+  }
 
   public static String staticFunction() {
     return "ok";
@@ -213,5 +230,33 @@ public class ComplexBean
 
   public void setEnumArray(final EnumA ... enumArray) {
     this.enumArray = enumArray;
+  }
+
+  public Map<String, Integer> aMethod(String name) {
+    return null;
+  }
+
+  public Map<String, Integer> aMethod(String name, int index) {
+    return null;
+  }
+
+  public Map<String, Integer> aMethod(String name, long index) {
+    return null;
+  }
+
+  public List<?> aMethod(String name, long ... index) {
+    return null;
+  }
+
+  public Collection<Integer> aMethod(String name, int index, List<InterfaceA> list) {
+    return null;
+  }
+
+  public Map<String, Integer> aMethod(String name, int index, Collection<InterfaceA> collection) {
+    return null;
+  }
+
+  public Map<String, Integer> aMethod(String name, int index, List<InterfaceA> list, EnumC enumC) {
+    return null;
   }
 }

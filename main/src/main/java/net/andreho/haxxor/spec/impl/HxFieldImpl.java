@@ -1,6 +1,7 @@
 package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.spec.api.HxConstants;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
@@ -14,13 +15,13 @@ public class HxFieldImpl
     extends HxAnnotatedImpl<HxField>
     implements HxField {
 
-  protected String name;
+  protected final String name;
   protected HxType type;
   protected Object defaultValue;
   protected String genericSignature;
 
-  public HxFieldImpl(String name,
-                     HxType type) {
+  public HxFieldImpl(HxType type,
+                     String name) {
     super();
     this.setModifiers(HxMethod.Modifiers.PUBLIC.toBit());
 
@@ -39,7 +40,7 @@ public class HxFieldImpl
   public HxFieldImpl(HxType declaringType,
                      String name,
                      HxType type) {
-    this(name, type);
+    this(type, name);
 
     if (declaringType == null) {
       throw new IllegalArgumentException("Declaring owner can't be null.");
@@ -47,11 +48,12 @@ public class HxFieldImpl
     this.declaringMember = declaringType;
   }
 
-  protected HxFieldImpl(HxFieldImpl prototype) {
+  protected HxFieldImpl(String name, HxFieldImpl prototype) {
+
     this.declaringMember = null;
 
+    this.name = name != null? name : prototype.name;
     this.type = prototype.type;
-    this.name = prototype.name;
     this.modifiers = prototype.modifiers;
     this.defaultValue = prototype.defaultValue;
     this.genericSignature = prototype.genericSignature;
@@ -65,24 +67,28 @@ public class HxFieldImpl
   }
 
   @Override
-  public String getName() {
-    return name;
+  public HxField clone() {
+    return clone(getName());
   }
 
   @Override
-  public HxField setName(String name) {
-    if (name == null || name.isEmpty()) {
-      throw new IllegalArgumentException("Field name can't be neither null nor empty.");
+  public HxField clone(final String name) {
+    return new HxFieldImpl(name, this);
+  }
+
+  @Override
+  public int getIndex() {
+    HxType hxType = getDeclaringMember();
+    if(hxType == null) {
+      return -1;
     }
+    return hxType.indexOf(this);
+  }
 
-    this.name = name;
 
-    if (getDeclaringMember() != null) {
-      HxType type = getDeclaringMember();
-      type.updateField(this);
-    }
-
-    return this;
+  @Override
+  public String getName() {
+    return name;
   }
 
   @Override
@@ -93,7 +99,7 @@ public class HxFieldImpl
   @Override
   public HxField setType(HxType type) {
     if (type == null) {
-      throw new IllegalArgumentException("Type can't be null");
+      throw new IllegalArgumentException("Field's type can't be null");
     }
 
     this.type = type;
@@ -133,12 +139,13 @@ public class HxFieldImpl
 
     HxField other = (HxField) o;
 
-    return Objects.equals(getName(), other.getName());
-  }
-
-  @Override
-  public HxField clone() {
-    return new HxFieldImpl(this);
+    if(!Objects.equals(getName(), other.getName())) {
+      return false;
+    }
+    if(!Objects.equals(getType(), other.getType())) {
+      return false;
+    }
+    return true;
   }
 
   @Override
@@ -148,6 +155,11 @@ public class HxFieldImpl
 
   @Override
   public String toString() {
-    return getDeclaringMember() + "." + getName();
+    String declaring =
+        getDeclaringMember() == null ?
+        HxConstants.UNDEFINED_TYPE :
+        getDeclaringMember().toString();
+
+    return declaring + "." + getName();
   }
 }

@@ -30,8 +30,8 @@ public class HxArrayTypeImpl
     this.modifiers = Modifiers.PUBLIC.toBit() | Modifiers.ABSTRACT.toBit();
     this.interfaces = Collections.unmodifiableList(
         Arrays.asList(
-            haxxor.reference(SERIALIZABLE_CLASS.getName()),
-            haxxor.reference(CLONEABLE_CLASS.getName())
+            haxxor.reference(CLONEABLE_CLASS.getName()),
+            haxxor.reference(SERIALIZABLE_CLASS.getName())
         )
     );
   }

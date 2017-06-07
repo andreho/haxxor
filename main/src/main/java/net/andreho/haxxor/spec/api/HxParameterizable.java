@@ -1,6 +1,7 @@
 package net.andreho.haxxor.spec.api;
 
 
+import net.andreho.haxxor.Utils;
 import net.andreho.haxxor.spec.impl.HxParameterImpl;
 import net.andreho.haxxor.spec.impl.misc.MappedList;
 
@@ -20,7 +21,16 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
     extends HxAnnotated<P>,
             HxMember<P>,
             HxOwned<P>,
+            HxIndexed,
             HxProvider {
+
+
+  /**
+   * @return <b>-1</b> if this parameterizable element wasn't found or not bound to any type,
+   * otherwise the zero-based position of this parameterizable element in the corresponding collection of declaring type
+   */
+  @Override
+  int getIndex();
 
   /**
    * @return <b>true</b> if this executable defines some code, <b>false</b> otherwise.
@@ -33,51 +43,26 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
   HxCode getCode();
 
   /**
+   * @param count
    * @return
    */
-  default boolean isVarArg() {
-    return hasModifiers(HxConstructor.Modifiers.VARARGS);
+  default boolean hasParametersCount(int count) {
+    return hasParametersCount(count, count);
   }
 
   /**
+   * @param min
+   * @param max
    * @return
    */
-  default boolean isSynthetic() {
-    return hasModifiers(HxConstructor.Modifiers.SYNTHETIC);
+  default boolean hasParametersCount(int min, int max) {
+    return min <= getParametersCount() && getParametersCount() <= max;
   }
 
   /**
-   * @return
+   * @return count of expected parameters
    */
-  default boolean isPublic() {
-    return hasModifiers(HxConstructor.Modifiers.PUBLIC);
-  }
-
-  /**
-   * @return
-   */
-  default boolean isPrivate() {
-    return hasModifiers(HxConstructor.Modifiers.PRIVATE);
-  }
-
-  /**
-   * @return
-   */
-  default boolean isProtected() {
-    return hasModifiers(HxConstructor.Modifiers.PROTECTED);
-  }
-
-  /**
-   * @return
-   */
-  default boolean isInternal() {
-    return !isPublic() && !isProtected() && !isPrivate();
-  }
-
-  /**
-   * @return length of expected arguments
-   */
-  default int getArity() {
+  default int getParametersCount() {
     return getParameters().size();
   }
 
@@ -94,7 +79,7 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
    * @return a list-view of associated parameter's list
    */
   default List<HxType> getParameterTypes() {
-    return new MappedList<>(getParameters(), HxParameter::getType);
+    return MappedList.create(getParameters(), HxParameter::getType);
   }
 
   /**
@@ -106,7 +91,30 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
    * @param parameter
    * @return
    */
-  P addParameter(HxParameter<P> parameter);
+  default P addParameter(HxParameter<P> parameter) {
+    return addParameterAt(getParametersCount(), parameter);
+  }
+
+  /**
+   * @param parameter
+   * @return
+   */
+  P addParameterAt(int index,
+                   HxParameter<P> parameter);
+
+  /**
+   * @param index of wanted formal parameter
+   * @return a formal parameter at the given index
+   */
+  HxParameter<P> getParameterAt(int index);
+
+  /**
+   * @param index     of parameter to replace
+   * @param parameter new parameter at the given index
+   * @return this
+   */
+  P setParameterAt(int index,
+                   HxParameter<P> parameter);
 
   /**
    * @param type
@@ -170,26 +178,6 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
    */
   P setExceptionTypes(List<HxType> exceptionTypes);
 
-  /**
-   * @param index of wanted formal parameter
-   * @return a formal parameter at the given index
-   */
-  HxParameter<P> getParameterAt(int index);
-
-  /**
-   * @param index     of parameter to replace
-   * @param parameter new parameter at the given index
-   * @return this
-   */
-  P setParameterAt(int index, HxParameter<P> parameter);
-
-  /**
-   * @param index     of parameter to move ahead by one
-   * @param parameter new parameter at the given index
-   * @return this
-   */
-  P addParameterAt(int index, HxParameter<P> parameter);
-
 
   /**
    * @return a collection with overridden methods or constructors
@@ -235,6 +223,48 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
   }
 
   /**
+   * @return
+   */
+  default boolean isVarArg() {
+    return hasModifiers(HxConstructor.Modifiers.VARARGS);
+  }
+
+  /**
+   * @return
+   */
+  default boolean isSynthetic() {
+    return hasModifiers(HxConstructor.Modifiers.SYNTHETIC);
+  }
+
+  /**
+   * @return
+   */
+  default boolean isPublic() {
+    return hasModifiers(HxConstructor.Modifiers.PUBLIC);
+  }
+
+  /**
+   * @return
+   */
+  default boolean isPrivate() {
+    return hasModifiers(HxConstructor.Modifiers.PRIVATE);
+  }
+
+  /**
+   * @return
+   */
+  default boolean isProtected() {
+    return hasModifiers(HxConstructor.Modifiers.PROTECTED);
+  }
+
+  /**
+   * @return
+   */
+  default boolean isInternal() {
+    return !isPublic() && !isProtected() && !isPrivate();
+  }
+
+  /**
    * @return a method descriptor of this method
    */
   default String toDescriptor() {
@@ -249,7 +279,7 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
     try {
       builder.append('(');
 
-      for (int i = 0, len = getArity(); i < len; i++) {
+      for (int i = 0, len = getParametersCount(); i < len; i++) {
         final HxType type = getParameterTypeAt(i);
         type.toDescriptor(builder);
       }
@@ -267,5 +297,13 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
     }
 
     return builder;
+  }
+
+  /**
+   * @param descriptor
+   * @return
+   */
+  default boolean hasDescriptor(String descriptor) {
+    return Utils.hasDescriptor(this, descriptor);
   }
 }

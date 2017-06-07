@@ -1,20 +1,66 @@
 package net.andreho.haxxor.spec.generics.impl;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.asm.org.objectweb.asm.signature.SignatureVisitor;
-import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.spec.api.HxAnnotated;
+import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxGeneric;
 import net.andreho.haxxor.spec.impl.HxAnnotatedImpl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Collection;
+import java.util.function.Predicate;
 
 /**
  * <br/>Created by andreho on 3/26/16 at 7:17 PM.<br/>
  */
-public abstract class HxAbstractGeneric
-    extends HxAnnotatedImpl {
+public abstract class HxAbstractGeneric<A extends HxGeneric<A>> implements HxAnnotated<A> {
+  private HxAnnotated annotated;
+
+  @Override
+  public Collection<HxAnnotation> getAnnotations() {
+    if(annotated == null) {
+      return HxAnnotated.DEFAULT_ANNOTATION_COLLECTION;
+    }
+    return annotated.getAnnotations();
+  }
+
+  @Override
+  public A setAnnotations(final Collection<HxAnnotation> collection) {
+    if(annotated == null) {
+      annotated = new HxAnnotatedImpl();
+    }
+    annotated.setAnnotations(collection);
+    return (A) this;
+  }
+
+  @Override
+  public Collection<HxAnnotated> getSuperAnnotated() {
+    return HxAnnotated.DEFAULT_SUPER_ANNOTATED_COLLECTION;
+  }
+
+  @Override
+  public Collection<HxAnnotation> getAnnotationsByType(final String type) {
+    if(annotated == null) {
+      return HxAnnotated.DEFAULT_ANNOTATION_COLLECTION;
+    }
+    return annotated.getAnnotationsByType(type);
+  }
+
+  @Override
+  public Collection<HxAnnotation> annotations(final Predicate predicate,
+                                              final boolean recursive) {
+    if(annotated == null) {
+      return HxAnnotated.DEFAULT_ANNOTATION_COLLECTION;
+    }
+
+    return null;
+  }
+
+
+  public abstract HxGeneric attach(HxGeneric generic);
+}
+
+
+/*
+
 
   private static void parseType(final Haxxor haxxor, final String signature, final SignatureVisitor v) {
     int len = signature.length();
@@ -158,5 +204,4 @@ public abstract class HxAbstractGeneric
     return Collections.emptyList();
   }
 
-  public abstract HxGeneric attach(HxGeneric generic);
-}
+ */

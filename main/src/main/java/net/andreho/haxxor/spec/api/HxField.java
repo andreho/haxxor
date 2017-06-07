@@ -20,19 +20,32 @@ public interface HxField
     extends HxAnnotated<HxField>,
             HxMember<HxField>,
             HxOwned<HxField>,
+            HxIndexed,
             HxProvider,
             Cloneable {
+
+  /**
+   * @return a new cloned version of this field
+   */
+  HxField clone();
+
+  /**
+   * @param name of the cloned field's version
+   * @return a new cloned version of this field but with another one name
+   */
+  HxField clone(String name);
+
+  /**
+   * @return <b>-1</b> if this field wasn't found or not bound to any type,
+   * otherwise the zero-based position of this field in the corresponding collection of declaring type
+   */
+  @Override
+  int getIndex();
 
   /**
    * @return name of this field
    */
   String getName();
-
-  /**
-   * @param name of this field
-   * @return
-   */
-  HxField setName(String name);
 
   /**
    * @param type of this field
@@ -85,10 +98,80 @@ public interface HxField
   }
 
   /**
+   * @return <b>true</b> if this field has public visibility, <b>false</b> otherwise.
+   */
+  default boolean isPublic() {
+    return hasModifiers(Modifiers.PUBLIC);
+  }
+
+  /**
+   * @return <b>true</b> if this field has protected visibility, <b>false</b> otherwise.
+   */
+  default boolean isProtected() {
+    return hasModifiers(Modifiers.PROTECTED);
+  }
+
+  /**
+   * @return <b>true</b> if this field has private visibility, <b>false</b> otherwise.
+   */
+  default boolean isPrivate() {
+    return hasModifiers(Modifiers.PRIVATE);
+  }
+
+  /**
+   * @return <b>true</b> if this field has package-private visibility, <b>false</b> otherwise.
+   */
+  default boolean isInternal() {
+    return !isPublic() && !isProtected() && !isPrivate();
+  }
+
+  /**
+   * @return <b>true</b> if this field defines volatile access, <b>false</b> otherwise.
+   */
+  default boolean isVolatile() {
+    return hasModifiers(Modifiers.VOLATILE);
+  }
+
+  /**
+   * @return <b>true</b> if this field is transient, <b>false</b> otherwise.
+   */
+  default boolean isTransient() {
+    return hasModifiers(Modifiers.TRANSIENT);
+  }
+
+  /**
+   * @return <b>true</b> if this field is synthetic, <b>false</b> otherwise.
+   */
+  default boolean isSynthetic() {
+    return hasModifiers(Modifiers.SYNTHETIC);
+  }
+
+  /**
+   * @return <b>true</b> if this field is static, <b>false</b> otherwise.
+   */
+  default boolean isStatic() {
+    return hasModifiers(Modifiers.STATIC);
+  }
+
+  /**
+   * @return <b>true</b> if this field is final, <b>false</b> otherwise.
+   */
+  default boolean isFinal() {
+    return hasModifiers(Modifiers.FINAL);
+  }
+
+  /**
+   * @return <b>true</b> if this field defines one of enum constants, <b>false</b> otherwise.
+   */
+  default boolean isEnum() {
+    return hasModifiers(Modifiers.ENUM);
+  }
+
+  /**
    * @return <b>true</b> if this field instance has some generic information
    */
   default boolean isGeneric() {
-    return getGenericSignature() != null;
+    return getGenericSignature() != null && !getGenericSignature().isEmpty();
   }
 
   /**
@@ -105,11 +188,6 @@ public interface HxField
   default HxField setGenericSignature(String genericSignature) {
     return this;
   }
-
-  /**
-   * @return a new cloned version of this field
-   */
-  HxField clone();
 
   /**
    * @return generic type of this field

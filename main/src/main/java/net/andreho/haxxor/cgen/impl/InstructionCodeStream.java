@@ -1038,8 +1038,7 @@ public class InstructionCodeStream
 
   @Override
   public CodeStream TRY_CATCH(final LABEL startLabel, final LABEL endLabel, final LABEL handler, final String type) {
-    this.code.getTryCatches()
-             .add(new TryCatch(startLabel, endLabel, handler, type));
+    this.code.addTryCatch(new TryCatch(startLabel, endLabel, handler, type));
     return this;
   }
 

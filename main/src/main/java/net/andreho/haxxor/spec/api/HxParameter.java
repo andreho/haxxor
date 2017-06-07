@@ -7,11 +7,12 @@ public interface HxParameter<P extends HxParameterizable<P>>
     extends HxAnnotated<HxParameter<P>>,
             HxMember<HxParameter<P>>,
             HxOwned<HxParameter<P>>,
+            HxIndexed,
             HxProvider,
             Cloneable {
 
   /**
-   * @return index of this parameter in the parameter list of the owning method/constructor
+   * @return zero-based index of this parameter in the parameter list of the owning method/constructor
    */
   int getIndex();
 

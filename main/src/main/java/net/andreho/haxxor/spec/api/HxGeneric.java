@@ -6,7 +6,4 @@ package net.andreho.haxxor.spec.api;
 public interface HxGeneric<G extends HxGeneric<G>>
     extends HxAnnotated<G> {
 
-  enum Kind {
-
-  }
 }

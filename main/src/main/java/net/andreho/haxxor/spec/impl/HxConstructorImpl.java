@@ -1,6 +1,7 @@
 package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.spec.api.HxConstants;
 import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxType;
 
@@ -29,7 +30,7 @@ public class HxConstructorImpl
     setParameterTypes(parameterTypes);
   }
 
-  public HxConstructorImpl(HxConstructorImpl prototype) {
+  protected HxConstructorImpl(HxConstructorImpl prototype) {
     this.declaringMember = null;
     this.haxxor = prototype.haxxor;
     this.genericSignature = prototype.genericSignature;
@@ -53,6 +54,6 @@ public class HxConstructorImpl
 
   @Override
   public String toString() {
-    return ((getDeclaringMember() == null)? "undefined" :  getDeclaringMember()) + super.toString();
+    return ((getDeclaringMember() == null) ? HxConstants.UNDEFINED_TYPE : getDeclaringMember()) + super.toString();
   }
 }

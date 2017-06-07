@@ -40,11 +40,22 @@ public class HxMethodReferenceImpl
     this.parameterTypes = parameterTypes;
   }
 
-  public HxMethod get() {
+  public HxMethod toMethod() {
     if (target == null) {
-      target = declaringType.getMethod(name, returnType, parameterTypes).orElseThrow(IllegalStateException::new);
+      target = declaringType.findMethod(returnType, name, parameterTypes)
+                            .orElseThrow(() -> new IllegalStateException("Method not found."));
     }
     return target;
+  }
+
+  @Override
+  public HxMethod clone() {
+    return clone(getName());
+  }
+
+  @Override
+  public HxMethod clone(String name) {
+    return toMethod().clone(name);
   }
 
   @Override
@@ -53,19 +64,20 @@ public class HxMethodReferenceImpl
   }
 
   @Override
+  public int getIndex() {
+    return toMethod().getIndex();
+  }
+
+  @Override
   public boolean hasCode() {
-    return get().hasCode();
+    return toMethod().hasCode();
   }
 
   @Override
   public HxCode getCode() {
-    return get().getCode();
+    return toMethod().getCode();
   }
 
-  @Override
-  public HxMethod clone() {
-    return get().clone();
-  }
 
   @Override
   public String getName() {
@@ -74,161 +86,161 @@ public class HxMethodReferenceImpl
 
   @Override
   public HxMethod setModifiers(HxModifier... modifiers) {
-    get().setModifiers(modifiers);
+    toMethod().setModifiers(modifiers);
     return this;
   }
 
   @Override
   public HxMethod setModifiers(int modifiers) {
-    get().setModifiers(modifiers);
+    toMethod().setModifiers(modifiers);
     return this;
   }
 
   @Override
   public int getModifiers() {
-    return get().getModifiers();
+    return toMethod().getModifiers();
   }
 
   @Override
   public HxType getReturnType() {
     //Because the return type doesn't identify a method itself
-    return get().getReturnType();
+    return toMethod().getReturnType();
   }
 
   @Override
   public HxMethod setReturnType(HxType returnType) {
-    get().setReturnType(returnType);
+    toMethod().setReturnType(returnType);
     return this;
   }
 
   @Override
   public Object getDefaultValue() {
-    return get().getDefaultValue();
+    return toMethod().getDefaultValue();
   }
 
   @Override
   public HxMethod setDefaultValue(Object value) {
-    get().setDefaultValue(value);
+    toMethod().setDefaultValue(value);
     return this;
   }
 
   @Override
   public List<HxParameter<HxMethod>> getParameters() {
-    return get().getParameters();
+    return toMethod().getParameters();
   }
 
   @Override
   public HxMethod setParameters(final List<HxParameter<HxMethod>> parameters) {
-    get().setParameters(parameters);
+    toMethod().setParameters(parameters);
     return this;
   }
 
   @Override
   public List<HxType> getExceptionTypes() {
-    return get().getExceptionTypes();
+    return toMethod().getExceptionTypes();
   }
 
   @Override
   public HxMethod setExceptionTypes(final List<HxType> exceptionTypes) {
-    get().setExceptionTypes(exceptionTypes);
+    toMethod().setExceptionTypes(exceptionTypes);
     return this;
   }
 
   @Override
   public HxMethod setParameterAt(final int index, final HxParameter parameter) {
-    get().setParameterAt(index, parameter);
+    toMethod().setParameterAt(index, parameter);
     return this;
   }
 
   @Override
   public HxMethod addParameter(final HxParameter<HxMethod> parameter) {
-    get().addParameter(parameter);
+    toMethod().addParameter(parameter);
     return this;
   }
 
   @Override
   public HxMethod addParameterAt(final int index, final HxParameter<HxMethod> parameter) {
-    get().addParameterAt(index, parameter);
+    toMethod().addParameterAt(index, parameter);
     return this;
   }
 
   @Override
   public HxMethod setExceptionTypes(HxType... exceptionTypes) {
-    get().setExceptionTypes(exceptionTypes);
+    toMethod().setExceptionTypes(exceptionTypes);
     return this;
   }
 
   @Override
   public HxParameter getParameterAt(final int index) {
-    return get().getParameterAt(index);
+    return toMethod().getParameterAt(index);
   }
 
   @Override
   public Collection<HxParameterizable> getOverriddenMembers() {
-    return get().getOverriddenMembers();
+    return toMethod().getOverriddenMembers();
   }
 
   @Override
   public HxMethod addAnnotation(HxAnnotation annotation) {
-    get().addAnnotation(annotation);
+    toMethod().addAnnotation(annotation);
     return this;
   }
 
   @Override
   public HxMethod setAnnotations(Collection<HxAnnotation> annotations) {
-    get().setAnnotations(annotations);
+    toMethod().setAnnotations(annotations);
     return this;
   }
 
   @Override
   public Collection<HxAnnotated> getSuperAnnotated() {
-    return get().getSuperAnnotated();
+    return toMethod().getSuperAnnotated();
   }
 
   @Override
   public Collection<HxAnnotation> getAnnotations() {
-    return get().getAnnotations();
+    return toMethod().getAnnotations();
   }
 
   @Override
   public boolean isAnnotationPresent(String type) {
-    return get().isAnnotationPresent(type);
+    return toMethod().isAnnotationPresent(type);
   }
 
   @Override
   public Optional<HxAnnotation> getAnnotation(String type) {
-    return get().getAnnotation(type);
+    return toMethod().getAnnotation(type);
   }
 
   @Override
   public Collection<HxAnnotation> getAnnotationsByType(String type) {
-    return get().getAnnotationsByType(type);
+    return toMethod().getAnnotationsByType(type);
   }
 
   @Override
   public Collection<HxAnnotation> annotations(Predicate<HxAnnotation> predicate, boolean recursive) {
-    return get().annotations(predicate, recursive);
+    return toMethod().annotations(predicate, recursive);
   }
 
   @Override
   public String getGenericSignature() {
-    return get().getGenericSignature();
+    return toMethod().getGenericSignature();
   }
 
   @Override
   public HxMethod setGenericSignature(String genericSignature) {
-    get().setGenericSignature(genericSignature);
+    toMethod().setGenericSignature(genericSignature);
     return this;
   }
 
   @Override
   public <M extends HxMember> M getDeclaringMember() {
-    return get().getDeclaringMember();
+    return toMethod().getDeclaringMember();
   }
 
   @Override
   public HxMethod setDeclaringMember(HxMember declaringMember) {
-    get().setDeclaringMember(declaringMember);
+    toMethod().setDeclaringMember(declaringMember);
     return this;
   }
 }

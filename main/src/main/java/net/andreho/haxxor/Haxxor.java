@@ -13,7 +13,6 @@ import net.andreho.haxxor.spec.impl.HxPrimitiveTypeImpl;
 import net.andreho.haxxor.spec.visitors.HxTypeVisitor;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
 import net.andreho.haxxor.spi.HxElementFactory;
-import net.andreho.haxxor.spi.HxInternalClassNameProvider;
 import net.andreho.haxxor.spi.HxJavaClassNameProvider;
 import net.andreho.haxxor.spi.HxTypeInitializer;
 
@@ -41,7 +40,6 @@ public class Haxxor
   private final Map<String, HxType> resolvedCache;
   private final Map<String, HxTypeReference> referenceCache;
   private final WeakReference<ClassLoader> classLoaderWeakReference;
-  private final HxInternalClassNameProvider internalClassNameProvider;
   private final HxJavaClassNameProvider javaClassNameProvider;
   private final HxElementFactory elementFactory;
   private final HxTypeInitializer typeInitializer;
@@ -54,11 +52,13 @@ public class Haxxor
     this(flags, new HaxxorBuilder(Haxxor.class.getClassLoader()));
   }
 
-  public Haxxor(int flags, ClassLoader classLoader) {
+  public Haxxor(int flags,
+                ClassLoader classLoader) {
     this(flags, new HaxxorBuilder(classLoader));
   }
 
-  public Haxxor(int flags, HaxxorBuilder builder) {
+  public Haxxor(int flags,
+                HaxxorBuilder builder) {
 
     this.flags = flags;
     this.classLoaderWeakReference = new WeakReference<>(builder.provideClassLoader(this));
@@ -69,7 +69,6 @@ public class Haxxor
     this.typeInitializer = builder.createTypeInitializer(this);
     this.elementFactory = builder.createElementFactory(this);
     this.javaClassNameProvider = builder.createJavaClassNameProvider(this);
-    this.internalClassNameProvider = builder.createInternalClassNameProvider(this);
 
     initialize();
   }
@@ -127,7 +126,8 @@ public class Haxxor
    * @param className
    * @return
    */
-  protected HxType readClass(String className, int opts) {
+  protected HxType readClass(String className,
+                             int opts) {
     final byte[] content = getByteCodeLoader().load(className);
     final HxTypeVisitor visitor = createTypeVisitor();
     final ClassReader classReader = new ClassReader(content);
@@ -144,13 +144,6 @@ public class Haxxor
    */
   public HxByteCodeLoader getByteCodeLoader() {
     return byteCodeLoader;
-  }
-
-  /**
-   * @return the associated internal classname provider instance
-   */
-  public HxInternalClassNameProvider getInternalClassNameProvider() {
-    return internalClassNameProvider;
   }
 
   /**
@@ -301,10 +294,13 @@ public class Haxxor
    * Resolves corresponding type by its name to a {@link HxType haxxor type}
    *
    * @param typeName to resolve
-   * @param opts     describes how to resolve wanted type
+   * @param options  describes how to resolve wanted type
    * @return a real resolved instance of {@link HxType}
+   * @implNote resolution means that the corresponding <code>*.class</code> file is loaded, parsed according to given
+   * options and represented as a {@link HxType}
    */
-  public HxType resolve(String typeName, int opts) {
+  public HxType resolve(String typeName,
+                        int options) {
     checkClassLoaderAvailability();
     typeName = toJavaClassName(typeName);
     HxType type = this.resolvedCache.get(typeName);
@@ -313,7 +309,7 @@ public class Haxxor
       if (isArray(typeName)) {
         type = new HxArrayTypeImpl(this, typeName);
       } else {
-        type = readClass(typeName, opts);
+        type = readClass(typeName, options);
       }
 
       this.resolvedCache.put(typeName, type);
@@ -373,9 +369,10 @@ public class Haxxor
   }
 
   @Override
-  public HxConstructor createConstructorReference(final String declaringType, final String... parameterTypes) {
+  public HxConstructor createConstructorReference(final String declaringType,
+                                                  final String... parameterTypes) {
     return elementFactory.createConstructorReference(toJavaClassName(declaringType),
-                                                     toJavaClassNames (parameterTypes));
+                                                     toJavaClassNames(parameterTypes));
   }
 
   @Override
@@ -402,7 +399,8 @@ public class Haxxor
   }
 
   @Override
-  public HxAnnotation createAnnotation(final String className, final boolean visible) {
+  public HxAnnotation createAnnotation(final String className,
+                                       final boolean visible) {
     return elementFactory.createAnnotation(toJavaClassName(className), visible);
   }
 

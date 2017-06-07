@@ -15,6 +15,12 @@ public abstract class AbstractBean
     this.name = Objects.requireNonNull(name);
   }
 
+  abstract void someAbstractMethod();
+
+  protected Object methodToOverride(String a, int b, byte ... array) {
+    return null;
+  }
+
   public String getName() {
     return name;
   }

@@ -165,7 +165,7 @@ public class HxTypeImpl
   }
 
   @Override
-  public Optional<HxField> getField(String name) {
+  public Optional<HxField> findField(String name) {
     HxField hxField = fieldMap.get(name);
     if(hxField != null) {
       return Optional.of(hxField);
@@ -179,56 +179,52 @@ public class HxTypeImpl
   }
 
   @Override
-  public HxType addField(HxField field) {
+  public HxType addFieldAt(int index,
+                           HxField field) {
     if (field.getDeclaringMember() != null && !equals(field.getDeclaringMember())) {
       field = field.clone();
     }
 
+    initialize(Part.FIELDS);
+
     if (field.getDeclaringMember() != null ||
-        initialize(Part.FIELDS).hasField(field.getName()) ||
+        hasField(field.getName()) ||
         fieldMap.put(field.getName(), field) != null) {
 
       throw new IllegalArgumentException("Given field was already associated with this type: " + field);
     }
 
+    fields.add(index, field);
     field.setDeclaringMember(this);
-    fields.add(field);
 
     return this;
   }
 
-  private int indexOf(HxField field) {
-    for (int i = 0; i < fields.size(); i++) {
-      if (field == fields.get(i)) {
-        return i;
-      }
-    }
-    return -1;
-  }
-
-  private int indexOf(HxMethod method) {
-    for (int i = 0; i < methods.size(); i++) {
-      if (method == methods.get(i)) {
-        return i;
-      }
-    }
-    return -1;
-  }
-
   @Override
-  public HxType updateField(HxField field) {
-    if (!equals(field.getDeclaringMember())) {
-      throw new IllegalArgumentException("Given field must exist within this type: " + field);
+  public HxType setFields(List<HxField> fields) {
+    if (isUninitialized(fields)) {
+      this.fields = Collections.emptyList();
+      this.fieldMap = Collections.emptyMap();
+      return this;
     }
 
-    HxField current = this.fieldMap.get(field.getName());
+    initialize(Part.FIELDS);
 
-    if (current == null) {
-      int index = indexOf(field);
-      if (index < 0) {
-        throw new IllegalArgumentException("Given field must exist within this type: " + field);
+    for (int i = this.fields.size() - 1; i >= 0; i--) {
+      removeField(this.fields.get(i));
+    }
+
+    if(!this.fields.isEmpty() || !this.fieldMap.isEmpty()) {
+      throw new IllegalStateException("Setting fields to given value lead to an inconsistent state.");
+    }
+
+    for (HxField field : fields) {
+      if (this.fieldMap.put(field.getName(), field) != null) {
+        throw new IllegalStateException("Ambiguous field: " + field);
       }
-      this.fieldMap.put(field.getName(), fields.get(index));
+
+      field.setDeclaringMember(this);
+      this.fields.add(field);
     }
 
     return this;
@@ -256,39 +252,55 @@ public class HxTypeImpl
   }
 
   @Override
-  public HxType setFields(List<HxField> fields) {
-    if (isUninitialized(fields)) {
-      this.fields = Collections.emptyList();
-      this.fieldMap = Collections.emptyMap();
-      return this;
-    }
+  public Optional<HxMethod> findMethod(String name) {
+    final Collection<HxMethod> collection = methodMap.get(name);
 
-    initialize(Part.FIELDS);
-
-    for (int i = this.fields.size() - 1; i >= 0; i--) {
-      HxField hxField = this.fields.get(i);
-      removeField(hxField);
-    }
-
-    if(!this.fields.isEmpty() || !this.fieldMap.isEmpty()) {
-      throw new IllegalStateException("Setting fields to given value lead to an inconsistent state.");
-    }
-
-    for (HxField field : fields) {
-      if (this.fieldMap.put(field.getName(), field) != null) {
-        throw new IllegalStateException("Ambiguous field: " + field);
+    if (collection != null && !collection.isEmpty()) {
+      if (collection.size() != 1) {
+        throw new IllegalStateException("There are more than one method with given name: " + name);
+      } else {
+        HxMethod hxMethod = collection
+            .iterator()
+            .next();
+        return Optional.of(hxMethod);
       }
-
-      field.setDeclaringMember(this);
-      this.fields.add(field);
     }
-
-    return this;
+    return Optional.empty();
   }
 
   @Override
   public List<HxMethod> getMethods() {
     return methods;
+  }
+
+  @Override
+  public Collection<HxMethod> getMethods(String name) {
+    return methodMap.computeIfAbsent(name, (key) -> new LinkedHashSet<>());
+  }
+
+  @Override
+  public HxType addMethodAt(final int index,
+                            HxMethod method) {
+    initialize(Part.METHODS);
+
+    if (equals(method.getDeclaringMember())) {
+      throw new IllegalStateException("Method was already added: " + method);
+    } else if (method.getDeclaringMember() != null) {
+      method = method.clone();
+    }
+
+    if (method.getDeclaringMember() != null) {
+      throw new IllegalStateException("Ambiguous method: " + method);
+    }
+    if (!getMethods(method.getName()).add(method)) {
+      throw new IllegalStateException("Ambiguous method: " + method);
+    }
+    if (!getMethods().add(method)) {
+      throw new IllegalStateException("Ambiguous method: " + method);
+    }
+
+    method.setDeclaringMember(this);
+    return this;
   }
 
   @Override
@@ -310,19 +322,9 @@ public class HxTypeImpl
     }
 
     for (HxMethod method : methods) {
-      final Collection<HxMethod> methodsByName =
-          this.methodMap.computeIfAbsent(
-              method.getName(),
-              (key) -> new LinkedHashSet<>()
-          );
-
-      if (!methodsByName.add(method)) {
-        throw new IllegalStateException("Ambiguous method: " + method);
-      }
-
-      this.methods.add(method);
-      method.setDeclaringMember(this);
+      addMethod(method);
     }
+
     return this;
   }
 
@@ -333,7 +335,7 @@ public class HxTypeImpl
     }
 
     Collection<HxMethod> hxMethods = methodMap.get(method.getName());
-    if (!hasMethod(method.getName(), method.getReturnType(), method.getParameterTypes()) ||
+    if (!hasMethod(method.getReturnType(), method.getName(), method.getParameterTypes()) ||
         !hxMethods.remove(method)) {
       throw new IllegalArgumentException("Given method must exist within this type: " + method);
     }
@@ -359,44 +361,63 @@ public class HxTypeImpl
   }
 
   @Override
+  public HxType addConstructorAt(final int index,
+                                 HxConstructor constructor) {
+    initialize(Part.CONSTRUCTORS);
+
+    if (equals(constructor.getDeclaringMember())) {
+      throw new IllegalStateException("Ambiguous constructor: " + constructor);
+    } else if (constructor.getDeclaringMember() != null) {
+      constructor = constructor.clone();
+    }
+    if (constructor.getDeclaringMember() != null || hasConstructor(constructor.getParameterTypes())) {
+      throw new IllegalStateException("Ambiguous constructor: " + constructor);
+    }
+
+    constructors.add(index, constructor);
+    constructor.setDeclaringMember(this);
+
+    return super.addConstructorAt(index, constructor);
+  }
+
+  @Override
   public HxType setConstructors(List<HxConstructor> constructors) {
     if (isUninitialized(constructors)) {
       this.constructors = Collections.emptyList();
       return this;
     }
 
-    this.constructors = new ArrayList<>(constructors.size());
+    initialize(Part.CONSTRUCTORS);
+
+    for (int i = this.constructors.size() - 1; i >= 0; i--) {
+      removeConstructor(this.constructors.get(i));
+    }
+
+    if(!this.constructors.isEmpty()) {
+      throw new IllegalStateException("Setting constructors to given value lead to an inconsistent state.");
+    }
 
     for (HxConstructor constructor : constructors) {
-      if (!this.constructors.add(constructor)) {
-        throw new IllegalStateException("Ambiguous constructor: " + constructor);
-      }
-      constructor.setDeclaringMember(this);
+      addConstructor(constructor);
     }
     return this;
   }
 
-
   @Override
-  public Optional<HxMethod> getMethod(String name) {
-    final Collection<HxMethod> collection = methodMap.get(name);
-
-    if (collection != null && !collection.isEmpty()) {
-      if (collection.size() != 1) {
-        throw new IllegalStateException("There are more than one method with given name: " + name);
-      } else {
-        HxMethod hxMethod = collection
-            .iterator()
-            .next();
-        return Optional.of(hxMethod);
-      }
+  public HxType removeConstructor(HxConstructor constructor) {
+    if (!equals(constructor.getDeclaringMember())) {
+      throw new IllegalArgumentException("Given constructor must exist within this type: " + constructor);
     }
-    return Optional.empty();
-  }
 
-  @Override
-  public Collection<HxMethod> getMethods(String name) {
-    return methodMap.computeIfAbsent(name, (key) -> new LinkedHashSet<>());
+    int index = indexOf(constructor);
+    if(index > -1) {
+      constructors.remove(index);
+    } else {
+      throw new IllegalStateException("Removal of given constructor led to an inconsistent state: " + constructor);
+    }
+    constructor.setDeclaringMember(null);
+
+    return this;
   }
 
   @Override
@@ -481,44 +502,34 @@ public class HxTypeImpl
   @Override
   public Collection<HxType> interfaces(Predicate<HxType> predicate, boolean recursive) {
     List<HxType> result = new ArrayList<>();
-
     HxType current = this;
-
     while (current != null) {
       for (HxType interfaze : current.getInterfaces()) {
         if (predicate.test(interfaze)) {
           result.add(current);
         }
       }
-
       if (!recursive) {
         break;
       }
-
       current = current.getSuperType();
     }
-
     return result;
   }
 
   @Override
   public Collection<HxType> types(Predicate<HxType> predicate, boolean recursive) {
     List<HxType> result = new ArrayList<>();
-
     HxType current = this;
-
     while (current != null) {
       if (predicate.test(current)) {
         result.add(current);
       }
-
       if (!recursive) {
         break;
       }
-
       current = current.getSuperType();
     }
-
     return result;
   }
 

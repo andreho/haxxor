@@ -104,18 +104,7 @@ public class HxTypeReferenceImpl
 
   @Override
   public boolean isPrimitive() {
-    switch (getName()) {
-      case "void":
-      case "boolean":
-      case "byte":
-      case "char":
-      case "short":
-      case "int":
-      case "float":
-      case "long":
-      case "double": return true;
-    }
-    return false;
+    return isAvailable() && toType().isPrimitive();
   }
 
   @Override
@@ -259,14 +248,9 @@ public class HxTypeReferenceImpl
   }
 
   @Override
-  public HxType addField(HxField field) {
-    toType().addField(field);
-    return this;
-  }
-
-  @Override
-  public HxType updateField(HxField field) {
-    toType().updateField(field);
+  public HxType addFieldAt(int index,
+                           HxField field) {
+    toType().addFieldAt(index, field);
     return this;
   }
 
@@ -406,18 +390,26 @@ public class HxTypeReferenceImpl
   }
 
   @Override
-  public Optional<HxField> getField(String name) {
-    return toType().getField(name);
+  public Optional<HxField> findField(String name) {
+    return toType().findField(name);
   }
 
   @Override
-  public Optional<HxMethod> getMethod(String name) {
-    return toType().getMethod(name);
+  public Optional<HxMethod> findMethod(String name) {
+    return toType().findMethod(name);
   }
 
   @Override
   public Collection<HxMethod> getMethods(String name) {
     return toType().getMethods(name);
+  }
+
+  @Override
+  public Appendable toDescriptor(final Appendable builder) {
+    if(isPrimitive()) {
+      return type.toDescriptor(builder);
+    }
+    return super.toDescriptor(builder);
   }
 
   @Override

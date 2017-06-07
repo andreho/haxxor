@@ -28,6 +28,11 @@ public class EmbeddingClassesBean
     this.localClassFromConstructor = new LocalClassFromConstructor(name);
   }
 
+  @Override
+  void someAbstractMethod() {
+
+  }
+
   public Class<?> getLocalClassFromConstructor() {
     return localClassFromConstructor.getClass();
   }

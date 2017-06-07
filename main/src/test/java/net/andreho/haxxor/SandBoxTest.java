@@ -2,6 +2,7 @@ package net.andreho.haxxor;
 
 
 import net.andreho.haxxor.model.AbstractBean;
+import net.andreho.haxxor.model.AnnotatedBeanWithJava8Features;
 import net.andreho.haxxor.spec.api.HxType;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -53,6 +54,6 @@ class SandBoxTest {
   @Test
   @Disabled
   void printDebugCode() {
-    Debugger.trace(DebugCode.class);
+    Debugger.trace(AnnotatedBeanWithJava8Features.class.getName());
   }
 }

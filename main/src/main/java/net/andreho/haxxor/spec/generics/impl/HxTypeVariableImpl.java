@@ -4,7 +4,7 @@ import net.andreho.haxxor.spec.api.HxGeneric;
 import net.andreho.haxxor.spec.api.HxMember;
 import net.andreho.haxxor.spec.generics.HxTypeVariable;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -15,7 +15,8 @@ public class HxTypeVariableImpl
     implements HxTypeVariable {
 
   private String name;
-  private List<HxGeneric> bounds = new ArrayList<>();
+  private HxMember declaring;
+  private List<HxGeneric> bounds = Collections.emptyList();
 
   @Override
   public String getName() {
@@ -41,12 +42,12 @@ public class HxTypeVariableImpl
 
   @Override
   public HxMember getGenericDeclaration() {
-    return getDeclaringMember();
+    return declaring;
   }
 
   @Override
   public HxTypeVariable setGenericDeclaration(HxMember genericDeclaration) {
-    setDeclaringMember(genericDeclaration);
+    this.declaring = genericDeclaration;
     return this;
   }
 

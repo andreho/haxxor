@@ -17,6 +17,9 @@ public interface HxConstructor
    */
   HxConstructor clone();
 
+  /**
+   * Modifiers available for a constructor
+   */
   enum Modifiers
       implements HxModifier {
     PUBLIC(0x0001),
@@ -26,8 +29,6 @@ public interface HxConstructor
     PROTECTED(0x0004),
     // class, field, method
     FINAL(0x0010),
-    // class, field, method, parameter
-    SYNCHRONIZED(0x0020),
     // method
     BRIDGE(0x0040),
     // method

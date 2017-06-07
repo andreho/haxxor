@@ -7,6 +7,7 @@ import net.andreho.haxxor.spec.api.HxModifier;
 import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxTypeReference;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -19,7 +20,8 @@ public class HxPrimitiveTypeImpl
 
   private volatile HxTypeReference reference;
 
-  public HxPrimitiveTypeImpl(final Haxxor haxxor, final String name) {
+  public HxPrimitiveTypeImpl(final Haxxor haxxor,
+                             final String name) {
     super(haxxor, name);
     this.modifiers = 0x80000000 | //special bit for primitive types
                      Modifiers.PUBLIC.toBit() |
@@ -83,8 +85,48 @@ public class HxPrimitiveTypeImpl
   }
 
   @Override
+  public Appendable toDescriptor(final Appendable builder) {
+    try {
+      switch (getName()) {
+        case "void":
+          builder.append('V');
+          break;
+        case "boolean":
+          builder.append('Z');
+          break;
+        case "byte":
+          builder.append('B');
+          break;
+        case "char":
+          builder.append('C');
+          break;
+        case "short":
+          builder.append('S');
+          break;
+        case "int":
+          builder.append('I');
+          break;
+        case "float":
+          builder.append('F');
+          break;
+        case "long":
+          builder.append('J');
+          break;
+        case "double":
+          builder.append('D');
+          break;
+        default:
+          throw new IllegalStateException("Not a primitive type: " + getName());
+      }
+    } catch (IOException e) {
+      throw new IllegalStateException(e);
+    }
+    return builder;
+  }
+
+  @Override
   public HxTypeReference toReference() {
-    if(reference == null) {
+    if (reference == null) {
       reference = super.toReference();
     }
     return reference;
