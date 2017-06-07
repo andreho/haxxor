@@ -1,8 +1,8 @@
-package net.andreho.haxxor.spec.generics.impl;
+package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.spec.api.HxGeneric;
+import net.andreho.haxxor.spec.api.HxParameterizedType;
 import net.andreho.haxxor.spec.api.HxType;
-import net.andreho.haxxor.spec.generics.HxParameterizedType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,13 +13,10 @@ import java.util.List;
 public class HxParameterizedTypeImpl
     extends HxAbstractGeneric
     implements HxParameterizedType {
-  //-----------------------------------------------------------------------------------------------------------------
 
   private HxType rawType;
   private HxGeneric ownerType;
   private List<HxGeneric> actualTypeArguments = new ArrayList<>();
-
-  //-----------------------------------------------------------------------------------------------------------------
 
   @Override
   public HxType getRawType() {

@@ -15,7 +15,7 @@ import static net.andreho.haxxor.Utils.isUninitialized;
  * Created by a.hofmann on 30.05.2015.
  */
 public class HxConstructorImpl
-    extends HxParameterizableImpl<HxConstructor>
+    extends HxExecutableImpl<HxConstructor>
     implements HxConstructor {
 
   private final Haxxor haxxor;

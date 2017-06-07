@@ -40,16 +40,28 @@ public final class HxEnum {
   /**
    * Constructs an array with requested enum instances
    *
+   * @param classLoader that is used for loading
+   * @param enumType that is expected
+   * @param array    of enum-refs
+   * @return array with requested enum instances
+   */
+  public static <E extends Enum<E>> E[] toEnumArray(ClassLoader classLoader, Class<E> enumType, HxEnum... array) {
+    final E[] result = (E[]) Array.newInstance(enumType, array.length);
+    for (int i = 0; i < array.length; i++) {
+      result[i] = (E) array[i].loadEnum(classLoader);
+    }
+    return result;
+  }
+
+  /**
+   * Constructs an array with requested enum instances
+   *
    * @param enumType that is expected
    * @param array    of enum-refs
    * @return array with requested enum instances
    */
   public static <E extends Enum<E>> E[] toEnumArray(Class<E> enumType, HxEnum... array) {
-    final E[] result = (E[]) Array.newInstance(enumType, array.length);
-    for (int i = 0; i < array.length; i++) {
-      result[i] = (E) array[i].loadEnum(enumType.getClassLoader());
-    }
-    return result;
+    return toEnumArray(enumType.getClassLoader(), enumType, array);
   }
 
   /**
@@ -84,9 +96,12 @@ public final class HxEnum {
     if (e != null) {
       return (E) e;
     }
-
-    final Class<E> enumClass = (Class<E>) type.loadClass(classLoader);
-    e = Enum.valueOf(enumClass, name);
+    try {
+      final Class<E> enumClass = (Class<E>) type.loadClass(classLoader);
+      e = Enum.valueOf(enumClass, name);
+    } catch (ClassNotFoundException ex) {
+      throw new IllegalStateException("Given class-loader was unable to load the given enum-class: "+getType(), ex);
+    }
     this.fetchedEnum = e;
     return (E) e;
   }

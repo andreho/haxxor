@@ -10,17 +10,17 @@ import net.andreho.asm.org.objectweb.asm.TypePath;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxConstructor;
+import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxParameterizable;
 import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxType.Part;
 
 import java.util.Objects;
 
-import static net.andreho.haxxor.Utils.normalizeClassname;
 import static net.andreho.haxxor.Utils.normalizeReturnType;
 import static net.andreho.haxxor.Utils.normalizeSignature;
+import static net.andreho.haxxor.Utils.toPrimitiveClassname;
 
 /**
  * <br/>Created by a.hofmann on 10.11.2015.<br/>
@@ -146,7 +146,7 @@ public class HxTypeVisitor
                                  Object value) {
     this.type.initialize(Part.FIELDS);
     HxField hxField = this.haxxor
-        .createField(normalizeClassname(desc), name)
+        .createField(toPrimitiveClassname(desc), name)
         .setModifiers(access)
         .setGenericSignature(signature)
         .setDefaultValue(value);
@@ -161,7 +161,7 @@ public class HxTypeVisitor
                                    String signature,
                                    String[] exceptions) {
     final String[] parameterTypes = normalizeSignature(desc);
-    HxParameterizable parameterizable;
+    HxExecutable parameterizable;
 
     if ("<init>".equals(name)) {
       parameterizable = this.haxxor.createConstructor(parameterTypes);

@@ -177,7 +177,7 @@ class HxTypeTest {
 
   @BeforeEach
   void setupEnvironment() {
-    haxxor = new Haxxor(); //Flags.SKIP_CODE);
+    haxxor = new Haxxor(Haxxor.Flags.SKIP_CODE); //Haxxor.Flags.SKIP_CODE
   }
 
   @Test

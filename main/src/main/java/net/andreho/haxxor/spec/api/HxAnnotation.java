@@ -2,6 +2,8 @@ package net.andreho.haxxor.spec.api;
 
 import net.andreho.haxxor.Haxxor;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Map;
 
 /**
@@ -49,6 +51,16 @@ public interface HxAnnotation
 //  <A extends Annotation> A getView(ClassLoader classLoader);
 
   /**
+   * @return
+   */
+  RetentionPolicy getRetention();
+
+  /**
+   * @return
+   */
+  ElementType[] getElementTypes();
+
+  /**
    * @return type of this annotation
    */
   HxType getType();
@@ -76,59 +88,87 @@ public interface HxAnnotation
 
   //----------------------------------------------------------------------------------------------------------------
 
-  HxAnnotation attribute(final String name, boolean value);
+  HxAnnotation attribute(final String name,
+                         boolean value);
 
-  HxAnnotation attribute(final String name, byte value);
+  HxAnnotation attribute(final String name,
+                         byte value);
 
-  HxAnnotation attribute(final String name, char value);
+  HxAnnotation attribute(final String name,
+                         char value);
 
-  HxAnnotation attribute(final String name, short value);
+  HxAnnotation attribute(final String name,
+                         short value);
 
-  HxAnnotation attribute(final String name, int value);
+  HxAnnotation attribute(final String name,
+                         int value);
 
-  HxAnnotation attribute(final String name, float value);
+  HxAnnotation attribute(final String name,
+                         float value);
 
-  HxAnnotation attribute(final String name, long value);
+  HxAnnotation attribute(final String name,
+                         long value);
 
-  HxAnnotation attribute(final String name, double value);
+  HxAnnotation attribute(final String name,
+                         double value);
 
-  HxAnnotation attribute(final String name, String value);
+  HxAnnotation attribute(final String name,
+                         String value);
 
-  <E extends Enum<E>> HxAnnotation attribute(final String name, E value);
+  <E extends Enum<E>> HxAnnotation attribute(final String name,
+                                             E value);
 
-  HxAnnotation attribute(final String name, HxEnum value);
+  HxAnnotation attribute(final String name,
+                         HxEnum value);
 
-  HxAnnotation attribute(final String name, Class<?> value);
+  HxAnnotation attribute(final String name,
+                         Class<?> value);
 
-  HxAnnotation attribute(final String name, HxType value);
+  HxAnnotation attribute(final String name,
+                         HxType value);
 
-  HxAnnotation attribute(final String name, HxAnnotation value);
+  HxAnnotation attribute(final String name,
+                         HxAnnotation value);
 
-  HxAnnotation attribute(final String name, boolean[] value);
+  HxAnnotation attribute(final String name,
+                         boolean[] value);
 
-  HxAnnotation attribute(final String name, byte[] value);
+  HxAnnotation attribute(final String name,
+                         byte[] value);
 
-  HxAnnotation attribute(final String name, char[] value);
+  HxAnnotation attribute(final String name,
+                         char[] value);
 
-  HxAnnotation attribute(final String name, short[] value);
+  HxAnnotation attribute(final String name,
+                         short[] value);
 
-  HxAnnotation attribute(final String name, int[] value);
+  HxAnnotation attribute(final String name,
+                         int[] value);
 
-  HxAnnotation attribute(final String name, float[] value);
+  HxAnnotation attribute(final String name,
+                         float[] value);
 
-  HxAnnotation attribute(final String name, long[] value);
+  HxAnnotation attribute(final String name,
+                         long[] value);
 
-  HxAnnotation attribute(final String name, double[] value);
+  HxAnnotation attribute(final String name,
+                         double[] value);
 
-  HxAnnotation attribute(final String name, String[] value);
+  HxAnnotation attribute(final String name,
+                         String[] value);
 
-  HxAnnotation attribute(final String name, HxEnum[] value);
+  HxAnnotation attribute(final String name,
+                         HxEnum[] value);
 
-  <E extends Enum<E>> HxAnnotation attribute(final String name, E[] value);
+  <E extends Enum<E>> HxAnnotation attribute(final String name,
+                                             E[] value);
 
-  HxAnnotation attribute(final String name, Class<?>[] value);
+  HxAnnotation attribute(final String name,
+                         Class<?>[] value);
 
-  HxAnnotation attribute(final String name, HxType[] value);
+  HxAnnotation attribute(final String name,
+                         HxType[] value);
 
-  HxAnnotation attribute(final String name, HxAnnotation[] value);
+  HxAnnotation attribute(final String name,
+                         HxAnnotation[] value);
 }

@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 /**
  * Created by a.hofmann on 31.05.2015.
  */
-public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> & HxOwned<P>>
+public interface HxExecutable<P extends HxMember<P> & HxExecutable<P> & HxOwned<P>>
     extends HxAnnotated<P>,
             HxMember<P>,
             HxOwned<P>,
@@ -26,8 +26,8 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
 
 
   /**
-   * @return <b>-1</b> if this parameterizable element wasn't found or not bound to any type,
-   * otherwise the zero-based position of this parameterizable element in the corresponding collection of declaring type
+   * @return <b>-1</b> if this executable element wasn't found or not bound to any type,
+   * otherwise the zero-based position of this executable element in the corresponding collection of declaring type
    */
   @Override
   int getIndex();
@@ -182,7 +182,7 @@ public interface HxParameterizable<P extends HxMember<P> & HxParameterizable<P> 
   /**
    * @return a collection with overridden methods or constructors
    */
-  default Collection<HxParameterizable> getOverriddenMembers() {
+  default Collection<HxExecutable> getOverriddenMembers() {
     return Collections.emptySet();
   }
 

@@ -8,7 +8,7 @@ import net.andreho.haxxor.cgen.LocalVariable;
 import net.andreho.haxxor.cgen.TryCatch;
 import net.andreho.haxxor.cgen.impl.InstructionCodeStream;
 import net.andreho.haxxor.spec.api.HxCode;
-import net.andreho.haxxor.spec.api.HxParameterizable;
+import net.andreho.haxxor.spec.api.HxExecutable;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -25,9 +25,9 @@ public class HxCodeImpl
   private static final InstructionFactory DEFAULT_INSTRUCTION_FACTORY = new InstructionFactory() {
   };
 
-  private final HxParameterizable owner;
+  private final HxExecutable owner;
 
-  public HxCodeImpl(final HxParameterizable owner) {
+  public HxCodeImpl(final HxExecutable owner) {
     super();
     this.owner = Objects.requireNonNull(owner);
   }
@@ -66,7 +66,7 @@ public class HxCodeImpl
   }
 
   @Override
-  public HxParameterizable getOwner() {
+  public HxExecutable getOwner() {
     return this.owner;
   }
 

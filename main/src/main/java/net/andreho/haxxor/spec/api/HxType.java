@@ -8,7 +8,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -918,7 +917,8 @@ public interface HxType
   /**
    * @return
    */
-  default Class<?> loadClass() {
+  default Class<?> loadClass()
+  throws ClassNotFoundException {
     return loadClass(getHaxxor().getClassLoader());
   }
 
@@ -926,7 +926,8 @@ public interface HxType
    * @param classLoader
    * @return
    */
-  Class<?> loadClass(ClassLoader classLoader);
+  Class<?> loadClass(ClassLoader classLoader)
+  throws ClassNotFoundException;
 
   /**
    * @return internal classname of this type
@@ -1047,43 +1048,10 @@ public interface HxType
      * Transforms given modifiers to an equal enum-set
      *
      * @param modifiers to transform
-     * @return enum-set representation of given modifiers
+     * @return enum-set representation of given type's modifiers
      */
-    public static Set<Modifiers> toModifiers(int modifiers) {
-      final Set<Modifiers> modifierSet = EnumSet.noneOf(Modifiers.class);
-
-      if ((modifiers & Opcodes.ACC_PUBLIC) != 0) {
-        modifierSet.add(PUBLIC);
-      } else if ((modifiers & Opcodes.ACC_PROTECTED) != 0) {
-        modifierSet.add(PROTECTED);
-      } else if ((modifiers & Opcodes.ACC_PRIVATE) != 0) {
-        modifierSet.add(PRIVATE);
-      }
-
-      if ((modifiers & Opcodes.ACC_SUPER) != 0) {
-        modifierSet.add(SUPER);
-      }
-
-      if ((modifiers & Opcodes.ACC_ABSTRACT) != 0) {
-        modifierSet.add(ABSTRACT);
-      } else if ((modifiers & Opcodes.ACC_FINAL) != 0) {
-        modifierSet.add(FINAL);
-      }
-
-      if ((modifiers & Opcodes.ACC_INTERFACE) != 0) {
-        modifierSet.add(INTERFACE);
-      }
-      if ((modifiers & Opcodes.ACC_SYNTHETIC) != 0) {
-        modifierSet.add(SYNTHETIC);
-      }
-
-      if ((modifiers & Opcodes.ACC_ANNOTATION) != 0) {
-        modifierSet.add(ANNOTATION);
-      } else if ((modifiers & Opcodes.ACC_ENUM) != 0) {
-        modifierSet.add(ENUM);
-      }
-
-      return modifierSet;
+    public static Set<Modifiers> toSet(int modifiers) {
+      return HxModifier.toSet(Modifiers.class, modifiers);
     }
 
     @Override

@@ -1,10 +1,12 @@
 package net.andreho.haxxor.spec.api;
 
+import java.util.Set;
+
 /**
  * Created by a.hofmann on 31.05.2015.
  */
 public interface HxMethod
-    extends HxParameterizable<HxMethod>,
+    extends HxExecutable<HxMethod>,
             Cloneable {
 
   /**
@@ -38,10 +40,11 @@ public interface HxMethod
    * @return
    */
   default boolean hasReturnType(String returnType) {
-    if(getReturnType() == null) {
+    if (getReturnType() == null) {
       return returnType == null;
     }
-    return getReturnType().getName().equals(returnType);
+    return getReturnType().getName()
+                          .equals(returnType);
   }
 
   /**
@@ -54,16 +57,16 @@ public interface HxMethod
    * @return
    * @implSpec return value can't be null
    */
-  default HxMethod setReturnType(String returnType) {
-    return setReturnType(getHaxxor().reference(returnType));
-  }
+  HxMethod setReturnType(HxType returnType);
 
   /**
    * @param returnType
    * @return
    * @implSpec return value can't be null
    */
-  HxMethod setReturnType(HxType returnType);
+  default HxMethod setReturnType(String returnType) {
+    return setReturnType(getHaxxor().reference(returnType));
+  }
 
   /**
    * @return default value of this annotation attribute
@@ -96,7 +99,7 @@ public interface HxMethod
    */
   default boolean isAnnotationAttribute() {
     HxType type = getDeclaringMember();
-    if(type == null || !type.isAnnotation()) {
+    if (type == null || !type.isAnnotation()) {
       return false;
     }
     return
@@ -181,6 +184,16 @@ public interface HxMethod
 
     Modifiers(int bit) {
       this.bit = bit;
+    }
+
+    /**
+     * Transforms given modifiers to an equal enum-set
+     *
+     * @param modifiers to transform
+     * @return enum-set representation of given modifiers
+     */
+    public static Set<Modifiers> toSet(int modifiers) {
+      return HxModifier.toSet(Modifiers.class, modifiers);
     }
 
     @Override

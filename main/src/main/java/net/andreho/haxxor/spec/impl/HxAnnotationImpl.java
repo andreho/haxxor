@@ -32,10 +32,14 @@ import net.andreho.haxxor.spec.impl.annotation.arrays.ShortArrayAnnotationAttrib
 import net.andreho.haxxor.spec.impl.annotation.arrays.StringArrayAnnotationAttribute;
 import net.andreho.haxxor.spec.impl.annotation.arrays.SubAnnotationArrayAttribute;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by a.hofmann on 30.05.2015.
@@ -61,7 +65,7 @@ public class HxAnnotationImpl
     this.visible = visible;
   }
 
-  public HxAnnotationImpl(HxAnnotationImpl prototype) {
+  protected HxAnnotationImpl(HxAnnotationImpl prototype) {
     this.declaringMember = null;
 
     this.type = prototype.type;
@@ -71,6 +75,25 @@ public class HxAnnotationImpl
     for (HxAnnotationAttribute<?, ?> entry : prototype.values.values()) {
       set(entry.getName(), entry.clone());
     }
+  }
+
+  @Override
+  public RetentionPolicy getRetention() {
+    if(visible) {
+      return RetentionPolicy.RUNTIME;
+    }
+    return RetentionPolicy.CLASS;
+  }
+
+  @Override
+  public ElementType[] getElementTypes() {
+    Optional<HxAnnotation> targetAnnotation = getType().getAnnotation(Target.class);
+    if(targetAnnotation.isPresent()) {
+      HxAnnotation annotation = targetAnnotation.get();
+      HxEnum[] hxEnums = annotation.attribute("value");
+      return HxEnum.toEnumArray(ElementType.class, hxEnums);
+    }
+    return new ElementType[0];
   }
 
   @Override

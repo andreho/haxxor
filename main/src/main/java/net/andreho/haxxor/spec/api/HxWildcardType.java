@@ -1,7 +1,5 @@
-package net.andreho.haxxor.spec.generics;
+package net.andreho.haxxor.spec.api;
 
-
-import net.andreho.haxxor.spec.api.HxGeneric;
 
 import java.util.List;
 

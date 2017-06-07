@@ -65,7 +65,7 @@ public class SignatureReader {
      * <code>signature</code> parameter of the
      * {@link net.andreho.asm.org.objectweb.asm.ClassVisitor#visitMethod
      * ClassVisitor.visitMethod} method).
-     * 
+     *
      * @param v
      *            the visitor that must visit this signature.
      */

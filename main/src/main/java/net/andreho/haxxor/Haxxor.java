@@ -1,6 +1,8 @@
 package net.andreho.haxxor;
 
 import net.andreho.asm.org.objectweb.asm.ClassReader;
+import net.andreho.asm.org.objectweb.asm.ClassWriter;
+import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxField;
@@ -12,9 +14,11 @@ import net.andreho.haxxor.spec.impl.HxArrayTypeImpl;
 import net.andreho.haxxor.spec.impl.HxPrimitiveTypeImpl;
 import net.andreho.haxxor.spec.visitors.HxTypeVisitor;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
+import net.andreho.haxxor.spi.HxClassNameSupplier;
 import net.andreho.haxxor.spi.HxElementFactory;
-import net.andreho.haxxor.spi.HxJavaClassNameProvider;
 import net.andreho.haxxor.spi.HxTypeInitializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -22,8 +26,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This class is <b>NOT THREAD-SAFE.</b>
@@ -31,16 +33,16 @@ import java.util.logging.Logger;
  */
 public class Haxxor
     implements HxElementFactory,
-               HxJavaClassNameProvider {
+               HxClassNameSupplier {
 
-  private static final Logger LOG = Logger.getLogger(Haxxor.class.getName());
+  private static final Logger LOG = LoggerFactory.getLogger(Haxxor.class.getName());
 
   private final int flags;
   private final HxByteCodeLoader byteCodeLoader;
   private final Map<String, HxType> resolvedCache;
   private final Map<String, HxTypeReference> referenceCache;
   private final WeakReference<ClassLoader> classLoaderWeakReference;
-  private final HxJavaClassNameProvider javaClassNameProvider;
+  private final HxClassNameSupplier classNameSupplier;
   private final HxElementFactory elementFactory;
   private final HxTypeInitializer typeInitializer;
 
@@ -48,10 +50,20 @@ public class Haxxor
     this(0, new HaxxorBuilder(Haxxor.class.getClassLoader()));
   }
 
+  /**
+   * @param flags
+   * @see Haxxor.Flags
+   */
   public Haxxor(int flags) {
     this(flags, new HaxxorBuilder(Haxxor.class.getClassLoader()));
   }
 
+  /**
+   *
+   * @param flags
+   * @param classLoader
+   * @see Haxxor.Flags
+   */
   public Haxxor(int flags,
                 ClassLoader classLoader) {
     this(flags, new HaxxorBuilder(classLoader));
@@ -68,7 +80,7 @@ public class Haxxor
     this.referenceCache = builder.createReferenceCache(this);
     this.typeInitializer = builder.createTypeInitializer(this);
     this.elementFactory = builder.createElementFactory(this);
-    this.javaClassNameProvider = builder.createJavaClassNameProvider(this);
+    this.classNameSupplier = builder.createJavaClassNameProvider(this);
 
     initialize();
   }
@@ -149,8 +161,8 @@ public class Haxxor
   /**
    * @return the associated java classname provider
    */
-  public HxJavaClassNameProvider getJavaClassNameProvider() {
-    return javaClassNameProvider;
+  public HxClassNameSupplier getClassNameSupplier() {
+    return classNameSupplier;
   }
 
   /**
@@ -236,8 +248,8 @@ public class Haxxor
       reference = createReference(typeName);
       this.referenceCache.put(typeName, reference);
 
-      if (LOG.isLoggable(Level.CONFIG)) {
-        LOG.config("New reference: " + typeName);
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("New reference: {}", typeName);
       }
     }
 
@@ -314,8 +326,8 @@ public class Haxxor
 
       this.resolvedCache.put(typeName, type);
 
-      if (LOG.isLoggable(Level.CONFIG)) {
-        LOG.config("New type: " + typeName);
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("New type: {}", typeName);
       }
     }
     return type;
@@ -329,15 +341,7 @@ public class Haxxor
 
   @Override
   public String toJavaClassName(final String typeName) {
-    return javaClassNameProvider.toJavaClassName(typeName);
-  }
-
-  private String[] toJavaClassNames(final String... typeNames) {
-    String[] array = new String[typeNames.length];
-    for (int i = 0; i < typeNames.length; i++) {
-      array[i] = toJavaClassName(typeNames[i]);
-    }
-    return array;
+    return classNameSupplier.toJavaClassName(typeName);
   }
 
   @Override
@@ -414,5 +418,50 @@ public class Haxxor
     }
 
     return builder.toString();
+  }
+
+  /**
+   * <br/>Created by a.hofmann on 30.05.2017 at 12:45.
+   */
+  public static abstract class Flags {
+
+    /**
+     * Flag to skip method code. If this class is set <code>CODE</code>
+     * attribute won't be visited. This can be used, for example, to retrieve
+     * annotations for methods and method parameters.
+     */
+    public static final int SKIP_CODE = 1;
+
+    /**
+     * Flag to skip the debug information in the class. If this flag is set the
+     * debug information of the class is not visited, i.e. the
+     * {@link MethodVisitor#visitLocalVariable visitLocalVariable} and
+     * {@link MethodVisitor#visitLineNumber visitLineNumber} methods will not be
+     * called.
+     */
+    public static final int SKIP_DEBUG = 2;
+
+    /**
+     * Flag to skip the stack map frames in the class. If this flag is set the
+     * stack map frames of the class is not visited, i.e. the
+     * {@link MethodVisitor#visitFrame visitFrame} method will not be called.
+     * This flag is useful when the {@link ClassWriter#COMPUTE_FRAMES} option is
+     * used: it avoids visiting frames that will be ignored and recomputed from
+     * scratch in the class writer.
+     */
+    public static final int SKIP_FRAMES = 4;
+
+//    /**
+//     * Flag to expand the stack map frames. By default stack map frames are
+//     * visited in their original format (i.e. "expanded" for classes whose
+//     * version is less than V1_6, and "compressed" for the other classes). If
+//     * this flag is set, stack map frames are always visited in expanded format
+//     * (this option adds a decompression/recompression step in ClassReader and
+//     * ClassWriter which degrades performances quite a lot).
+//     */
+//    public static final int EXPAND_FRAMES = 8;
+
+    private Flags() {
+    }
   }
 }

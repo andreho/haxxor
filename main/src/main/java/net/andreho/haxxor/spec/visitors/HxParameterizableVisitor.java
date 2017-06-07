@@ -19,8 +19,8 @@ import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxCode;
 import net.andreho.haxxor.spec.api.HxConstructor;
+import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxParameterizable;
 import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxType.Part;
 
@@ -36,7 +36,7 @@ public class HxParameterizableVisitor
 
   protected final Haxxor haxxor;
   protected final HxType declaringType;
-  protected final HxParameterizable target;
+  protected final HxExecutable target;
   protected final HxCode code;
   protected final CodeStream codeStream;
   protected final Map<Label, LABEL> remapping;
@@ -45,13 +45,13 @@ public class HxParameterizableVisitor
 
   public HxParameterizableVisitor(final Haxxor haxxor,
                                   final HxType declaringType,
-                                  final HxParameterizable hxParameterizable) {
-    this(haxxor, declaringType, hxParameterizable, null);
+                                  final HxExecutable hxExecutable) {
+    this(haxxor, declaringType, hxExecutable, null);
   }
 
   public HxParameterizableVisitor(final Haxxor haxxor,
                                   final HxType declaringType,
-                                  final HxParameterizable target,
+                                  final HxExecutable target,
                                   final MethodVisitor mv) {
     super(Opcodes.ASM5, mv);
     this.haxxor = haxxor;

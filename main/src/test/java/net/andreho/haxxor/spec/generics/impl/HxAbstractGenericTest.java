@@ -1,279 +1,219 @@
 package net.andreho.haxxor.spec.generics.impl;
 
+import net.andreho.asm.org.objectweb.asm.ClassReader;
+import net.andreho.asm.org.objectweb.asm.ClassVisitor;
+import net.andreho.asm.org.objectweb.asm.FieldVisitor;
+import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.asm.org.objectweb.asm.signature.SignatureReader;
-import net.andreho.asm.org.objectweb.asm.signature.SignatureVisitor;
-import net.andreho.haxxor.Debugger;
-import net.andreho.haxxor.spec.api.HxGeneric;
-import net.andreho.haxxor.spec.generics.HxTypeVariable;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import net.andreho.haxxor.spec.visitors.HxGenericSignatureReader;
+import net.andreho.haxxor.spec.visitors.HxGenericSignatureVisitor;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static net.andreho.haxxor.Utils.normalizeClassname;
+
 /**
  * Created by a.hofmann on 19.07.2016.
  */
-public class HxAbstractGenericTest {
-   static final int FORMAL_TYPE = 0;
-   static final int CLASS_BOUND = 1;
-   static final int INTERFACE_BOUND = 2;
+public class HxAbstractGenericTest
+    extends ClassVisitor {
 
-   //----------------------------------------------------------------------------------------------------------------
-   static final int SUPER_CLASS = 3;
-   static final int INTERFACE = 4;
+  private static final String TEST_CLASSES = "testClasses";
+  private Class<?> target;
+  private String classname;
 
-   @Test
-   @Disabled
-   public void asd() {
-      Debugger.trace(Node8 .class);
-   }
+  public HxAbstractGenericTest() {
+    super(Opcodes.ASM5);
+  }
 
-   @Test
-   @Disabled
-   public void test() {
-      TypeVariable<Class<Node5>>[] typeVariables = Node5.class.getTypeParameters();
-      for (TypeVariable t :
-            typeVariables) {
-         t.getBounds();
-         t.getGenericDeclaration();
+  private static Iterable<Class<?>> testClasses() {
+    return Arrays.asList(HxAbstractGenericTest.class.getDeclaredClasses());
+  }
+
+  @ParameterizedTest
+  @MethodSource(names = TEST_CLASSES)
+  void checkSignatureParsing(Class<?> cls)
+  throws IOException {
+    final ClassReader cr = new ClassReader(cls.getName());
+    this.target = cls;
+    cr.accept(this, ClassReader.SKIP_CODE);
+  }
+
+  private String printTypeParameters(Class<?> cls) {
+    StringBuilder builder = new StringBuilder();
+    final TypeVariable<? extends Class<?>>[] typeParameters = cls.getTypeParameters();
+    if (typeParameters.length > 0) {
+      builder.append("<")
+             .append(typeParameters[0].getTypeName());
+      for (int i = 1; i < typeParameters.length; i++) {
+        builder.append(",")
+               .append(typeParameters[i].getTypeName());
       }
+      builder.append(">");
+    }
+    return builder.toString();
+  }
 
-      String s =
-//            "<A::Ljava/io/Serializable;>Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<TA;>;";
-//            "<A::Ljava/util/List<+Ljava/io/Serializable;>;
-// >Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;";
-//            "<A::Ljava/util/List<+Ljava/io/Serializable;>;B::Ljava/util/Collection<Ljava/lang/String;>;" +
-//            "C:Ljava/lang/Number;>" +
-//            "Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;";
-//      "<A::Ljava/io/Serializable;" +
-//      ":Ljava/lang/Comparable<TA;>;" +
-//      ":Ljava/util/Collection<+TA;>;>" +
-//      "Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;";
-      "<A:Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$AnyNode;" +
-      ":Ljava/io/Serializable;" +
-      ":Ljava/lang/Comparable<TA;>;" +
-      ":Ljava/util/Collection<Ljava/util/Set<Ljava/util/List<Ljava/util/Map<TA;*>;>;>;>;>" +
-      "Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;";
+  @Override
+  public void visit(final int version,
+                    final int access,
+                    final String name,
+                    final String signature,
+                    final String superName,
+                    final String[] interfaces) {
+    super.visit(version, access, name, signature, superName, interfaces);
+    System.out.println(classname = normalizeClassname(name) + ": " + signature);
+//    System.out.println(target.getName() + ": " + printTypeParameters(target));
+    System.out.println();
 
-      SignatureReader sr = new SignatureReader(s);
-      sr.accept(new ClassSignatureReader());
+    if (signature != null) {
+      HxGenericSignatureReader reader = new HxGenericSignatureReader(signature);
+      reader.accept(new HxGenericSignatureVisitor());
       System.out.println();
-   }
+    }
+  }
 
-   @Test
-   @Disabled
-   public void test0() {
-      String s =
-//            "<A::Ljava/io/Serializable;>Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<TA;>;";
-//            "<A::Ljava/util/List<+Ljava/io/Serializable;>;
-// >Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;";
-      "<A::Ljava/io/Serializable;" +
-      ":Ljava/lang/Comparable<TA;>;" +
-      ":Ljava/util/Collection<+TA;>;>"+
-      "Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;";
-   }
+  @Override
+  public MethodVisitor visitMethod(final int access,
+                                   final String name,
+                                   final String desc,
+                                   final String signature,
+                                   final String[] exceptions) {
+    //System.out.println(classname + "." + name + desc + ": " + signature);
+    return super.visitMethod(access, name, desc, signature, exceptions);
+  }
 
-   //null
-   static abstract class AnyNode {
+  @Override
+  public FieldVisitor visitField(final int access,
+                                 final String name,
+                                 final String desc,
+                                 final String signature,
+                                 final Object value) {
+    //System.out.println(classname + "." + name +"#" + desc + ": " + signature);
+    return super.visitField(access, name, desc, signature, value);
+  }
 
-   }
+  //-----------------------------------------------------------------------------------------------------------------
 
-   //-----------------------------------------------------------------------------------------------------------------
+  interface INode0 {
 
-   //<V::Ljava/io/Serializable;>Ljava/lang/Object;
-   static abstract class NodeX<V extends Serializable> {
+  }
 
-   }
+  interface INode1<A>
+      extends INode0 {
 
-   //Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;
-   static class Node0 extends NodeX<String> {
+  }
 
-   }
+  interface INode2<A, B>
+      extends INode1<A> {
 
-   //<A::Ljava/io/Serializable;>Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<TA;>;
-   static class Node1<A extends Serializable> extends NodeX<A> {
+  }
 
-   }
+  interface INode3<A, B, C>
+      extends INode2<A, B> {
 
-   //<V:Ljava/lang/Object;>Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;
-   static class Node2<V> extends NodeX<String> {
+  }
 
-   }
+  interface INode4<A extends Serializable, B extends Cloneable & Comparable<A>, C extends List<A>, D extends Map<A,
+      Collection<?>>>
+      extends INode3<A, B, C> {
 
-   //<A:Ljava/lang/Object;B:Ljava/lang/Object;C:Ljava/lang/Object;
-   // >Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;
-   static class Node3<A, B, C> extends NodeX<String> {
+  }
 
-   }
-   //----------------------------------------------------------------------------------------------------------------
+  //null
+  static abstract class AnyNode {
 
-   //<A::Ljava/util/List<+Ljava/io/Serializable;>;>
-   // Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;
-   static class Node4<A extends List<? extends Serializable>> extends NodeX<String> {
+  }
 
-   }
+  static abstract class Node
+      extends AnyNode {
 
-   //<A::Ljava/util/List<+Ljava/io/Serializable;>;B::Ljava/util/Collection<Ljava/lang/String;>;C:Ljava/lang/Number;
-   // >Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;
-   static class Node5<A extends List<? extends Serializable>, B extends Collection<String>, C extends Number>
-         extends NodeX<String> {
+  }
 
-   }
+  //<V::Ljava/io/Serializable;>Ljava/lang/Object;
+  static abstract class NodeX<V extends Serializable>
+      extends Node implements INode1<List<V>[]> {
 
-   //<A:Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$Node6<TA;>;
-   // >Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;
-   static class Node6<A extends Node6<A>> extends NodeX<String> {
+  }
 
-   }
+  //----------------------------------------------------------------------------------------------------------------
 
-   //<A::Ljava/io/Serializable;:Ljava/lang/Comparable<TA;>;:Ljava/util/Collection<+TA;>;>
-   // Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;
-   static class Node7<A extends Serializable & Comparable<A> & Collection<? extends A>> extends NodeX<String> {
+  static abstract class NodeY<V extends Number & Comparable<V>>
+      extends Node implements INode1<List<V>[]> {
 
-   }
+  }
 
-   /*
-   <A:Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$AnyNode;
-   :Ljava/io/Serializable;
-   :Ljava/lang/Comparable<TA;>;
-   :Ljava/util/Collection<Ljava/util/Set<Ljava/util/List<Ljava/util/Map<TA;*>;>;>;>;>
-   Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;
-   */
-   static class Node8<A extends AnyNode & Serializable & Comparable<A> & Collection<Set<List<Map<A,?>>>>>
-         extends NodeX<String> {
+  //Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;
+  static class Node0
+      extends NodeX<String> {
 
-   }
+  }
 
-   static abstract class AbstractSignatureReader extends SignatureVisitor {
-      protected HxGeneric parent;
+  //<A::Ljava/io/Serializable;>Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<TA;>;
+  static class Node1<A extends Serializable>
+      extends NodeX<A> {
 
-      public AbstractSignatureReader(){
-         super(Opcodes.ASM5);
-      }
+  }
 
-      public AbstractSignatureReader(HxGeneric parent){
-         this();
-         this.parent = parent;
-      }
-   }
+  //<V:Ljava/lang/Object;>Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;
+  static class Node2<V>
+      extends NodeX<String> {
 
-   static class ClassSignatureReader extends AbstractSignatureReader {
+  }
 
-      private List<HxTypeVariable> typeVariables = new ArrayList<>();
-      private HxGeneric superClass;
-      private List<HxGeneric> interfaces = new ArrayList<>();
-      private int step;
-      private int depth;
+  //<A:Ljava/lang/Object;B:Ljava/lang/Object;C:Ljava/lang/Object;
+  // >Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;
+  static class Node3<A, B, C>
+      extends NodeX<String> {
 
-      private void print(String s) {
-         StringBuilder stb = new StringBuilder();
-         int indent = this.depth;
-         while(indent-- > 0){
-            stb.append('|');
-         }
-         stb.append(s);
-         System.out.println(stb);
-      }
+  }
 
-      @Override
-      public void visitFormalTypeParameter(String name) {
-         print("visitFormalTypeParameter(\""+name+"\");");
-         this.step = FORMAL_TYPE;
-         super.visitFormalTypeParameter(name);
-         this.typeVariables.add(new HxTypeVariableImpl().setName(name));
-      }
+  //<A::Ljava/util/List<+Ljava/io/Serializable;>;>
+  // Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;
+  static class Node4<A extends List<? extends Serializable>>
+      extends NodeX<String> {
 
-      /*
-      ClassSignature =
-      ( visitFormalTypeParameter visitClassBound? visitInterfaceBound* )* ( visitSuperclass visitInterface* )
-       */
-      @Override
-      public SignatureVisitor visitClassBound() {
-         print("visitClassBound(); ->");
-         this.step = CLASS_BOUND;
-         this.depth++;
-         return super.visitClassBound();
-      }
+  }
 
-      @Override
-      public SignatureVisitor visitInterfaceBound() {
-         print("visitInterfaceBound(); ->");
-         this.step = INTERFACE_BOUND;
-         this.depth++;
-         return super.visitInterfaceBound();
-      }
+  //<A::Ljava/util/List<+Ljava/io/Serializable;>;B::Ljava/util/Collection<Ljava/lang/String;>;C:Ljava/lang/Number;
+  // >Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;
+  static class Node5<A extends List<? extends Serializable>, B extends Collection<String>, C extends Number>
+      extends NodeX<String> {
 
-      @Override
-      public SignatureVisitor visitSuperclass() {
-         print("visitSuperclass(); ->");
-         this.depth++;
-         return super.visitSuperclass();
-      }
+  }
 
-      @Override
-      public SignatureVisitor visitInterface() {
-         print("visitInterface(); ->");
-         this.depth++;
-         return super.visitInterface();
-      }
+  //<A:Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$Node6<TA;>;
+  // >Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;
+  static class Node6<A extends Node6<A>>
+      extends NodeX<String> {
 
-      @Override
-      public SignatureVisitor visitArrayType() {
-         print("visitArrayType(); ->");
-         this.depth++;
-         return super.visitArrayType();
-      }
+  }
 
-      @Override
-      public void visitBaseType(char descriptor) {
-         print("visitBaseType('"+descriptor+"');");
-         super.visitBaseType(descriptor);
-      }
+  //<A::Ljava/io/Serializable;:Ljava/lang/Comparable<TA;>;:Ljava/util/Collection<+TA;>;>
+  // Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;
+  static class Node7<A extends Serializable & Comparable<A> & Collection<? extends A>>
+      extends NodeX<String> {
 
-      @Override
-      public void visitClassType(String name) {
-         print("visitClassType(\""+name+"\");");
-         super.visitClassType(name);
-      }
+  }
 
-      @Override
-      public void visitTypeVariable(String name) {
-         print("visitTypeVariable(\""+name+"\");");
-         super.visitTypeVariable(name);
-         visitEnd();
-      }
+  /*
+  <A:Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$AnyNode;
+  :Ljava/io/Serializable;
+  :Ljava/lang/Comparable<TA;>;
+  :Ljava/util/Collection<Ljava/util/Set<Ljava/util/List<Ljava/util/Map<TA;*>;>;>;>;>
+  Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;
+  */
+  static class Node8<A extends AnyNode & Serializable & Comparable<A> & Collection<Set<List<Map<A, ?>>>>>
+      extends NodeX<String> {
 
-      @Override
-      public void visitInnerClassType(String name) {
-         print("visitInnerClassType(\""+name+"\");");
-         super.visitInnerClassType(name);
-      }
-
-      @Override
-      public void visitTypeArgument() {
-         print("visitTypeArgument();");
-         super.visitTypeArgument();
-      }
-
-      @Override
-      public SignatureVisitor visitTypeArgument(char wildcard) {
-         print("visitTypeArgument('"+wildcard+"'); ->");
-         this.depth++;
-         return super.visitTypeArgument(wildcard);
-      }
-
-      @Override
-      public void visitEnd() {
-         this.depth--;
-         print("visitEnd();");
-         super.visitEnd();
-      }
-   }
+  }
 }

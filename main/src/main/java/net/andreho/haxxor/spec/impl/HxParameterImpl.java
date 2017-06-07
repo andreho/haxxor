@@ -2,8 +2,8 @@ package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxConstants;
+import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxParameter;
-import net.andreho.haxxor.spec.api.HxParameterizable;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Objects;
@@ -11,7 +11,7 @@ import java.util.Objects;
 /**
  * Created by a.hofmann on 30.05.2015.
  */
-public class HxParameterImpl<P extends HxParameterizable<P>>
+public class HxParameterImpl<P extends HxExecutable<P>>
     extends HxAnnotatedImpl<HxParameter<P>>
     implements
     HxParameter<P> {

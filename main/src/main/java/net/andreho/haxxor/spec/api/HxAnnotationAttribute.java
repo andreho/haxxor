@@ -21,10 +21,12 @@ public interface HxAnnotationAttribute<V, T> extends Cloneable {
   void setValue(V value);
 
   /**
-   * Transforms if needed the value of this attribute to the given one
+   * Transforms if needed the value of this attribute to the given type
    * @param type is the corresponding annotation's attribute-type
    * @return value that is compatible with attribute's type of
    * the referenced {@link java.lang.annotation.Annotation annotation}
+   * @see HxEnum
+   * @see HxType
    */
   T original(Class<?> type);
 

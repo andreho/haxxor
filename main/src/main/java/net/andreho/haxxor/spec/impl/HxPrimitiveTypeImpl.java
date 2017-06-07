@@ -3,7 +3,6 @@ package net.andreho.haxxor.spec.impl;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxMember;
-import net.andreho.haxxor.spec.api.HxModifier;
 import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxTypeReference;
 
@@ -18,15 +17,15 @@ public class HxPrimitiveTypeImpl
     extends HxAbstractType
     implements HxType {
 
+  private static final int PRIMITIVE_MODIFIERS = Modifiers.PUBLIC.toBit() |
+                                                Modifiers.FINAL.toBit() |
+                                                Modifiers.ABSTRACT.toBit();
   private volatile HxTypeReference reference;
 
   public HxPrimitiveTypeImpl(final Haxxor haxxor,
                              final String name) {
     super(haxxor, name);
-    this.modifiers = 0x80000000 | //special bit for primitive types
-                     Modifiers.PUBLIC.toBit() |
-                     Modifiers.FINAL.toBit() |
-                     Modifiers.SUPER.toBit();
+    this.modifiers = PRIMITIVE_MODIFIERS;
   }
 
   @Override
@@ -41,11 +40,6 @@ public class HxPrimitiveTypeImpl
 
   @Override
   public HxType setDeclaringMember(HxMember declaringMember) {
-    return this;
-  }
-
-  @Override
-  public HxType setModifiers(HxModifier... modifiers) {
     return this;
   }
 
@@ -130,5 +124,23 @@ public class HxPrimitiveTypeImpl
       reference = super.toReference();
     }
     return reference;
+  }
+
+  @Override
+  public Class<?> loadClass(final ClassLoader classLoader)
+  throws ClassNotFoundException {
+    switch (getName()) {
+      case "void": return Void.TYPE;
+      case "boolean": return Boolean.TYPE;
+      case "byte": return Byte.TYPE;
+      case "short": return Short.TYPE;
+      case "char": return Character.TYPE;
+      case "int": return Integer.TYPE;
+      case "float": return Float.TYPE;
+      case "long": return Long.TYPE;
+      case "double": return Double.TYPE;
+      default:
+        throw new IllegalStateException();
+    }
   }
 }

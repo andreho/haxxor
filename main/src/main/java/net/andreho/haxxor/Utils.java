@@ -1,10 +1,11 @@
 package net.andreho.haxxor;
 
 import net.andreho.asm.org.objectweb.asm.Type;
+import net.andreho.haxxor.spec.api.HxConstants;
+import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxParameterizable;
 import net.andreho.haxxor.spec.api.HxType;
-import net.andreho.haxxor.spi.HxJavaClassNameProvider;
+import net.andreho.haxxor.spi.HxClassNameSupplier;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,8 +26,8 @@ public abstract class Utils {
   private Utils() {
   }
 
-  public static <P extends HxParameterizable<P>>
-  boolean hasDescriptor(final HxParameterizable<P> parameterizable,
+  public static <P extends HxExecutable<P>>
+  boolean hasDescriptor(final HxExecutable<P> parameterizable,
                         final String descriptor) {
 
     final int arity = parameterizable.getParametersCount();
@@ -203,7 +204,7 @@ public abstract class Utils {
    * @param classes to process
    * @return
    */
-  public static String[] toClassNames(final HxJavaClassNameProvider classNameProvider,
+  public static String[] toClassNames(final HxClassNameSupplier classNameProvider,
                                       final Class<?>... classes) {
     final String[] names = new String[classes.length];
     for (int i = 0; i < classes.length; i++) {
@@ -258,13 +259,39 @@ public abstract class Utils {
     return outputStream.toByteArray();
   }
 
+  public static String toPrimitiveClassname(String desc) {
+    if(desc.length() != 1) {
+      return desc;
+    }
+    return toPrimitiveClassname(desc, 0);
+  }
+  public static String toPrimitiveClassname(String desc, int index) {
+    switch (desc.charAt(index)) {
+      case 'V': return "void";
+      case 'Z': return "boolean";
+      case 'B': return "byte";
+      case 'S': return "short";
+      case 'C': return "char";
+      case 'I': return "int";
+      case 'F': return "float";
+      case 'J': return "long";
+      case 'D': return "double";
+      default:
+        throw new IllegalArgumentException("Not valid descriptor: "+desc);
+    }
+  }
+
   /**
    * @param classname
    * @return
    */
   public static String normalizeClassname(String classname) {
-    Objects.requireNonNull(classname, "Class name is null");
-    return normalizeType(Type.getType(classname.replace('.', '/')));
+    Objects.requireNonNull(classname, "Classname can't be null.");
+    String internalForm = classname.replace(HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR, HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR);
+    if(classname.endsWith(";")) {
+      return normalizeType(Type.getType(internalForm));
+    }
+    return normalizeType(Type.getObjectType(internalForm));
   }
 
   /**

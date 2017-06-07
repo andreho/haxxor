@@ -1,9 +1,11 @@
 package net.andreho.haxxor.spec.api;
 
+import java.util.Set;
+
 /**
  * Created by a.hofmann on 31.05.2015.
  */
-public interface HxParameter<P extends HxParameterizable<P>>
+public interface HxParameter<P extends HxExecutable<P>>
     extends HxAnnotated<HxParameter<P>>,
             HxMember<HxParameter<P>>,
             HxOwned<HxParameter<P>>,
@@ -62,7 +64,7 @@ public interface HxParameter<P extends HxParameterizable<P>>
    * @return owning constructor or method instance
    */
   @Override
-  HxParameterizable getDeclaringMember();
+  HxExecutable getDeclaringMember();
 
   @Override
   HxParameter<P> setModifiers(HxModifier... modifiers);
@@ -81,15 +83,23 @@ public interface HxParameter<P extends HxParameterizable<P>>
   enum Modifiers
       implements HxModifier {
     FINAL(0x0010),
-    // class, field, method, parameter
     SYNTHETIC(0x1000),
-    // class, field, method, parameter
-    MANDATED(0x8000); // parameter
+    MANDATED(0x8000);
 
     final int bit;
 
     Modifiers(int bit) {
       this.bit = bit;
+    }
+
+    /**
+     * Transforms given modifiers to an equal enum-set
+     *
+     * @param modifiers to transform
+     * @return enum-set representation of given parameter's modifiers
+     */
+    public static Set<Modifiers> toSet(int modifiers) {
+      return HxModifier.toSet(Modifiers.class, modifiers);
     }
 
     @Override

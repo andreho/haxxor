@@ -32,7 +32,7 @@ public interface HxCode {
   /**
    * @return owning method or constructor of this code block
    */
-  HxParameterizable getOwner();
+  HxExecutable getOwner();
 
   /**
    * @return

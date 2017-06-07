@@ -1,7 +1,7 @@
-package net.andreho.haxxor.spec.generics.impl;
+package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.spec.api.HxGeneric;
-import net.andreho.haxxor.spec.generics.HxWildcardType;
+import net.andreho.haxxor.spec.api.HxWildcardType;
 
 import java.util.Collections;
 import java.util.List;

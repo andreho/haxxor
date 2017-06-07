@@ -1,7 +1,7 @@
-package net.andreho.haxxor.spec.generics.impl;
+package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.spec.api.HxGeneric;
-import net.andreho.haxxor.spec.generics.HxGenericArrayType;
+import net.andreho.haxxor.spec.api.HxGenericArrayType;
 
 /**
  * <br/>Created by andreho on 3/26/16 at 10:24 PM.<br/>

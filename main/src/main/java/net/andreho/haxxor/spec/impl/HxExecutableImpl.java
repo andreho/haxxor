@@ -3,9 +3,9 @@ package net.andreho.haxxor.spec.impl;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxCode;
 import net.andreho.haxxor.spec.api.HxConstructor;
+import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxMethod.Modifiers;
 import net.andreho.haxxor.spec.api.HxParameter;
-import net.andreho.haxxor.spec.api.HxParameterizable;
 import net.andreho.haxxor.spec.api.HxProvider;
 import net.andreho.haxxor.spec.api.HxType;
 
@@ -19,9 +19,9 @@ import static net.andreho.haxxor.Utils.isUninitialized;
 /**
  * Created by a.hofmann on 31.05.2015.
  */
-public abstract class HxParameterizableImpl<P extends HxParameterizable<P>>
+public abstract class HxExecutableImpl<P extends HxExecutable<P>>
     extends HxAnnotatedImpl<P>
-    implements HxParameterizable<P> {
+    implements HxExecutable<P> {
 
   protected static final List DEFAULT_EMPTY_PARAMETERS = Collections.emptyList();
   protected static final List DEFAULT_EMPTY_EXCEPTIONS = Collections.emptyList();
@@ -31,12 +31,12 @@ public abstract class HxParameterizableImpl<P extends HxParameterizable<P>>
   protected String genericSignature;
   protected HxCode code;
 
-  public HxParameterizableImpl() {
+  public HxExecutableImpl() {
     super();
     this.setModifiers(Modifiers.PUBLIC.toBit());
   }
 
-  protected void cloneParametersTo(HxParameterizable<P> other) {
+  protected void cloneParametersTo(HxExecutable<P> other) {
     for (HxParameter<P> parameter : getParameters()) {
       other.addParameter(parameter.clone());
     }
@@ -158,7 +158,7 @@ public abstract class HxParameterizableImpl<P extends HxParameterizable<P>>
   }
 
   @Override
-  public Collection<HxParameterizable> getOverriddenMembers() {
+  public Collection<HxExecutable> getOverriddenMembers() {
     return Collections.emptySet();
   }
 
@@ -167,11 +167,11 @@ public abstract class HxParameterizableImpl<P extends HxParameterizable<P>>
     if (this == o) {
       return true;
     }
-    if (!(o instanceof HxParameterizable)) {
+    if (!(o instanceof HxExecutable)) {
       return false;
     }
 
-    final HxParameterizable other = (HxParameterizable) o;
+    final HxExecutable other = (HxExecutable) o;
     return getParameters().equals(other.getParameters());
   }
 

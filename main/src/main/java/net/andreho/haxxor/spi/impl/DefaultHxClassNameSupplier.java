@@ -1,6 +1,6 @@
 package net.andreho.haxxor.spi.impl;
 
-import net.andreho.haxxor.spi.HxJavaClassNameProvider;
+import net.andreho.haxxor.spi.HxClassNameSupplier;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,8 +9,8 @@ import java.util.Map;
 /**
  * <br/>Created by a.hofmann on 30.05.2017 at 12:52.
  */
-public class DefaultHxJavaClassNameProvider
-    implements HxJavaClassNameProvider {
+public class DefaultHxClassNameSupplier
+    implements HxClassNameSupplier {
 
   private static final Map<String, String> PRIMITIVES;
   private static final String ARRAY_DIMENSION = "[]";

@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public abstract class HxTypeTestUtils {
 
-  public static <P extends HxParameterizable<P>>
+  public static <P extends HxExecutable<P>>
   void checkParameters(final Parameter[] parameters,
                        final List<HxParameter<P>> hxParameters) {
     assertEquals(parameters.length, hxParameters.size(), "Invalid parameters length.");
@@ -52,7 +52,7 @@ public abstract class HxTypeTestUtils {
   }
 
   private static void checkExecutable(final Executable executable,
-                                      final HxParameterizable<?> parameterizable,
+                                      final HxExecutable<?> parameterizable,
                                       final Haxxor haxxor) {
     assertEquals(executable.getParameterCount(), parameterizable.getParametersCount());
     assertEquals(executable.getParameterCount(), parameterizable.getParameters().size());
@@ -84,9 +84,9 @@ public abstract class HxTypeTestUtils {
   }
 
 
-  public static <P extends HxParameterizable<P>> void checkParameters(final Parameter parameter,
-                                                                      final HxParameter<P> hxParameter,
-                                                                      final Haxxor haxxor) {
+  public static <P extends HxExecutable<P>> void checkParameters(final Parameter parameter,
+                                                                 final HxParameter<P> hxParameter,
+                                                                 final Haxxor haxxor) {
     assertEquals(parameter.getName(), hxParameter.getName(),
                  "Invalid parameter's name.");
 
@@ -128,8 +128,8 @@ public abstract class HxTypeTestUtils {
 
   public static void checkModifiers(final int modifiers,
                                     final HxMember<?> hxMember) {
-    Set<HxField.Modifiers> givenModifiers = HxField.Modifiers.toModifiers(modifiers);
-    Set<HxField.Modifiers> hxModifiers = HxField.Modifiers.toModifiers(hxMember.getModifiers());
+    Set<HxField.Modifiers> givenModifiers = HxField.Modifiers.toSet(modifiers);
+    Set<HxField.Modifiers> hxModifiers = HxField.Modifiers.toSet(hxMember.getModifiers());
     assertTrue(hxModifiers.containsAll(givenModifiers), "Modifiers are invalid: " + givenModifiers);
   }
 

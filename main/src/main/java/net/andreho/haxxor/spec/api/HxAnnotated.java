@@ -136,7 +136,7 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
    * @return
    */
   default A removeAnnotation(HxAnnotation annotation) {
-    if(this != annotation.getDeclaringMember()) {
+    if(equals(annotation.getDeclaringMember())) {
       throw new IllegalArgumentException(
           "Given annotation does't belong to this annotated element: "+annotation
       );

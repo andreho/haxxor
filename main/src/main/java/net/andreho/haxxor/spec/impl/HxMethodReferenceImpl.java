@@ -4,11 +4,11 @@ import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxCode;
+import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxMember;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxModifier;
 import net.andreho.haxxor.spec.api.HxParameter;
-import net.andreho.haxxor.spec.api.HxParameterizable;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Collection;
@@ -176,7 +176,7 @@ public class HxMethodReferenceImpl
   }
 
   @Override
-  public Collection<HxParameterizable> getOverriddenMembers() {
+  public Collection<HxExecutable> getOverriddenMembers() {
     return toMethod().getOverriddenMembers();
   }
 

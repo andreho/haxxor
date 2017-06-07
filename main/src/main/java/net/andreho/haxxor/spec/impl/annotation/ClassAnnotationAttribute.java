@@ -13,7 +13,8 @@ public class ClassAnnotationAttribute
 
   private volatile WeakReference<Class<?>> classReference;
 
-  public ClassAnnotationAttribute(final String name, final HxType value) {
+  public ClassAnnotationAttribute(final String name,
+                                  final HxType value) {
     super(name, value);
   }
 
@@ -21,8 +22,13 @@ public class ClassAnnotationAttribute
   public Class<?> original(Class<?> type) {
     WeakReference<Class<?>> reference = this.classReference;
     if (reference == null) {
-      Class<?> cls = getValue().loadClass(type.getClassLoader());
-      this.classReference = reference = new WeakReference<>(cls);
+      try {
+        Class<?> cls = getValue().loadClass(type.getClassLoader());
+        this.classReference = reference = new WeakReference<>(cls);
+      } catch (ClassNotFoundException ex) {
+        throw new IllegalStateException("Given class-loader was unable to load the given enum-class: " + getValue(),
+                                        ex);
+      }
     }
     return reference.get();
   }

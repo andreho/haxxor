@@ -2,12 +2,13 @@ package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxAnnotation;
+import net.andreho.haxxor.spec.api.HxConstants;
 import net.andreho.haxxor.spec.api.HxConstructor;
+import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxGeneric;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxModifier;
-import net.andreho.haxxor.spec.api.HxParameterizable;
 import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxTypeReference;
 
@@ -535,7 +536,7 @@ public class HxAbstractType
   @Override
   public boolean isMemberType() {
     return getSimpleBinaryName() != null &&
-           getDeclaringMember() instanceof HxParameterizable;
+           getDeclaringMember() instanceof HxExecutable;
   }
 
   @Override
@@ -552,13 +553,14 @@ public class HxAbstractType
   }
 
   @Override
-  public Class<?> loadClass() {
-    return null;
-  }
-
-  @Override
-  public Class<?> loadClass(final ClassLoader classLoader) {
-    return null;
+  public Class<?> loadClass(final ClassLoader classLoader)
+  throws ClassNotFoundException {
+    String name = getName();
+    if(isArray()) {
+      name = toDescriptor()
+          .replace(HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR, HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR);
+    }
+    return Class.forName(name, true, classLoader);
   }
 
   @Override

@@ -1,7 +1,5 @@
 package net.andreho.haxxor.spec.api;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
-
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -228,40 +226,14 @@ public interface HxField
      * @param modifiers to transform
      * @return a set with extracted modifiers
      */
-    public static Set<Modifiers> toModifiers(int modifiers) {
-      final Set<Modifiers> modifierSet = EnumSet.noneOf(Modifiers.class);
-
-      if ((modifiers & Opcodes.ACC_PUBLIC) != 0) {
-        modifierSet.add(PUBLIC);
-      } else if ((modifiers & Opcodes.ACC_PROTECTED) != 0) {
-        modifierSet.add(PROTECTED);
-      } else if ((modifiers & Opcodes.ACC_PRIVATE) != 0) {
-        modifierSet.add(PRIVATE);
-      }
-
-      if ((modifiers & Opcodes.ACC_STATIC) != 0) {
-        modifierSet.add(STATIC);
-      }
-
-      if ((modifiers & Opcodes.ACC_FINAL) != 0) {
-        modifierSet.add(FINAL);
-      } else if ((modifiers & Opcodes.ACC_VOLATILE) != 0) {
-        modifierSet.add(VOLATILE);
-      }
-
-      if ((modifiers & Opcodes.ACC_TRANSIENT) != 0) {
-        modifierSet.add(TRANSIENT);
-      }
-
-      if ((modifiers & Opcodes.ACC_SYNTHETIC) != 0) {
-        modifierSet.add(SYNTHETIC);
-      }
-
-      if ((modifiers & Opcodes.ACC_ENUM) != 0) {
-        modifierSet.add(ENUM);
-      }
-
-      return modifierSet;
+    /**
+     * Transforms given modifiers to an equal enum-set
+     *
+     * @param modifiers to transform
+     * @return enum-set representation of given field's modifiers
+     */
+    public static Set<Modifiers> toSet(int modifiers) {
+      return HxModifier.toSet(Modifiers.class, modifiers);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package net.andreho.haxxor.spi.impl;
 
-import net.andreho.haxxor.spi.HxJavaClassNameProvider;
+import net.andreho.haxxor.spi.HxClassNameSupplier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -9,13 +9,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * <br/>Created by a.hofmann on 02.06.2017 at 16:21.
  */
-class DefaultHxJavaClassNameProviderTest implements HxJavaClassNameProvider {
+class DefaultHxClassNameSupplierTest
+    implements HxClassNameSupplier {
 
-  private HxJavaClassNameProvider nameProvider;
+  private HxClassNameSupplier nameProvider;
 
   @BeforeEach
   void prepare() {
-    nameProvider = new DefaultHxJavaClassNameProvider();
+    nameProvider = new DefaultHxClassNameSupplier();
   }
 
   @Test

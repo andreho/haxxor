@@ -19,6 +19,8 @@ public class HxArrayTypeImpl
     extends HxAbstractType
     implements HxType {
 
+  private static final int ARRAY_MODIFIERS =
+      Modifiers.PUBLIC.toBit() | Modifiers.FINAL.toBit() | Modifiers.ABSTRACT.toBit();
   private static final Class<Serializable> SERIALIZABLE_CLASS = Serializable.class;
   private static final Class<Cloneable> CLONEABLE_CLASS = Cloneable.class;
 
@@ -27,7 +29,7 @@ public class HxArrayTypeImpl
   public HxArrayTypeImpl(final Haxxor haxxor, final String arrayTypeName) {
     super(haxxor, arrayTypeName);
 
-    this.modifiers = Modifiers.PUBLIC.toBit() | Modifiers.ABSTRACT.toBit();
+    this.modifiers = ARRAY_MODIFIERS;
     this.interfaces = Collections.unmodifiableList(
         Arrays.asList(
             haxxor.reference(CLONEABLE_CLASS.getName()),

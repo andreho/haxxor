@@ -9,7 +9,7 @@ import net.andreho.haxxor.cgen.ArrayType;
 import net.andreho.haxxor.cgen.CodeStream;
 import net.andreho.haxxor.cgen.Frames;
 import net.andreho.haxxor.cgen.instr.LABEL;
-import net.andreho.haxxor.spec.api.HxParameterizable;
+import net.andreho.haxxor.spec.api.HxExecutable;
 
 /**
  * <br/>Created by a.hofmann on 16.06.2015.<br/>
@@ -25,9 +25,9 @@ public class AsmCodeStream
 
   protected int lineNumber;
   private final MethodVisitor mv;
-  private final HxParameterizable element;
+  private final HxExecutable element;
 
-  public AsmCodeStream(HxParameterizable element, MethodVisitor mv) {
+  public AsmCodeStream(HxExecutable element, MethodVisitor mv) {
     this.mv = mv;
     this.element = element;
   }

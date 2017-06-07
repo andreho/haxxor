@@ -1,9 +1,8 @@
-package net.andreho.haxxor.spec.generics.impl;
+package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxGeneric;
-import net.andreho.haxxor.spec.impl.HxAnnotatedImpl;
 
 import java.util.Collection;
 import java.util.function.Predicate;
@@ -54,10 +53,8 @@ public abstract class HxAbstractGeneric<A extends HxGeneric<A>> implements HxAnn
     return null;
   }
 
-
   public abstract HxGeneric attach(HxGeneric generic);
 }
-
 
 /*
 

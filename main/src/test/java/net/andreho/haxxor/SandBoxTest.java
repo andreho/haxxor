@@ -1,8 +1,10 @@
 package net.andreho.haxxor;
 
 
+import net.andreho.haxxor.cgen.Instruction;
 import net.andreho.haxxor.model.AbstractBean;
 import net.andreho.haxxor.model.AnnotatedBeanWithJava8Features;
+import net.andreho.haxxor.model.EnumC;
 import net.andreho.haxxor.spec.api.HxType;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -41,7 +43,19 @@ class SandBoxTest {
   @Test
   @Disabled
   void checkSomeConditions() {
-    System.out.println(HxType.Modifiers.toModifiers(int[].class.getModifiers()));
+    System.out.println(HxType.Modifiers.toSet(int.class.getModifiers()));
+    System.out.println(HxType.Modifiers.toSet(String[].class.getModifiers()));
+    System.out.println(HxType.Modifiers.toSet(int[].class.getModifiers()));
+    System.out.println(HxType.Modifiers.toSet(int[][].class.getModifiers()));
+    System.out.println(HxType.Modifiers.toSet(EnumC.class.getModifiers()));
+    System.out.println(HxType.Modifiers.toSet(Instruction.class.getModifiers()));
+    System.out.println(HxType.Modifiers.toSet(AbstractBean.class.getModifiers()));
+    System.out.println(HxType.Modifiers.toSet(SandBoxTest.class.getModifiers()));
+
+    System.out.println(int.class.getName());
+    System.out.println(String[].class.getName());
+    System.out.println(int[].class.getName());
+    System.out.println(int[][].class.getName());
   }
 
   @Test

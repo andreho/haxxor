@@ -1,8 +1,8 @@
-package net.andreho.haxxor.spec.generics.impl;
+package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.spec.api.HxGeneric;
 import net.andreho.haxxor.spec.api.HxMember;
-import net.andreho.haxxor.spec.generics.HxTypeVariable;
+import net.andreho.haxxor.spec.api.HxTypeVariable;
 
 import java.util.Collections;
 import java.util.List;
