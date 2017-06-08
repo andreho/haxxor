@@ -11,5 +11,9 @@ public interface HxWildcardType
 
   List<HxGeneric> getUpperBounds();
 
+  HxWildcardType setUpperBounds(List<HxGeneric> upperBounds);
+
   List<HxGeneric> getLowerBounds();
+
+  HxWildcardType setLowerBounds(List<HxGeneric> lowerBounds);
 }

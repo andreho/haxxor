@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 /**
  * <br/>Created by andreho on 3/26/16 at 7:17 PM.<br/>
  */
-public abstract class HxAbstractGeneric<A extends HxGeneric<A>> implements HxAnnotated<A> {
+public abstract class HxAbstractGeneric<A extends HxGeneric<A>> implements HxAnnotated<A>, HxGeneric<A> {
   private HxAnnotated annotated;
 
   @Override
@@ -53,7 +53,16 @@ public abstract class HxAbstractGeneric<A extends HxGeneric<A>> implements HxAnn
     return null;
   }
 
-  public abstract HxGeneric attach(HxGeneric generic);
+  protected HxGeneric<?> minimize(HxGeneric<?> hxGeneric) {
+    if(hxGeneric instanceof HxAbstractGeneric) {
+      return ((HxAbstractGeneric) hxGeneric).minimize();
+    }
+    return hxGeneric;
+  }
+
+  protected HxGeneric<?> minimize() {
+    return this;
+  }
 }
 
 /*

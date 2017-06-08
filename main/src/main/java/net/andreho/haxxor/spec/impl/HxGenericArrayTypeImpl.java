@@ -9,11 +9,7 @@ import net.andreho.haxxor.spec.api.HxGenericArrayType;
 public class HxGenericArrayTypeImpl
     extends HxAbstractGeneric
     implements HxGenericArrayType {
-  //-----------------------------------------------------------------------------------------------------------------
-
   private HxGeneric genericComponentType;
-
-  //-----------------------------------------------------------------------------------------------------------------
 
   @Override
   public HxGeneric getGenericComponentType() {
@@ -23,12 +19,6 @@ public class HxGenericArrayTypeImpl
   @Override
   public HxGenericArrayTypeImpl setGenericComponentType(final HxGeneric genericComponentType) {
     this.genericComponentType = genericComponentType;
-    return this;
-  }
-
-  @Override
-  public HxGenericArrayType attach(final HxGeneric generic) {
-    this.genericComponentType = generic;
     return this;
   }
 }

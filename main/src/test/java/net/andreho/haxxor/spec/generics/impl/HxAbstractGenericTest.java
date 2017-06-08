@@ -5,16 +5,27 @@ import net.andreho.asm.org.objectweb.asm.ClassVisitor;
 import net.andreho.asm.org.objectweb.asm.FieldVisitor;
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.asm.org.objectweb.asm.Opcodes;
+import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.spec.impl.HxGenericTypeImpl;
 import net.andreho.haxxor.spec.visitors.HxGenericSignatureReader;
 import net.andreho.haxxor.spec.visitors.HxGenericSignatureVisitor;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,6 +38,7 @@ import static net.andreho.haxxor.Utils.normalizeClassname;
 public class HxAbstractGenericTest
     extends ClassVisitor {
 
+  private static Haxxor haxxor;
   private static final String TEST_CLASSES = "testClasses";
   private Class<?> target;
   private String classname;
@@ -39,13 +51,68 @@ public class HxAbstractGenericTest
     return Arrays.asList(HxAbstractGenericTest.class.getDeclaredClasses());
   }
 
+  @BeforeAll
+  static void setupGlobalHaxxor() {
+    haxxor = new Haxxor();
+  }
+
   @ParameterizedTest
   @MethodSource(names = TEST_CLASSES)
   void checkSignatureParsing(Class<?> cls)
   throws IOException {
     final ClassReader cr = new ClassReader(cls.getName());
     this.target = cls;
+
+    visitAll(cls.getTypeParameters());
+    visitAll(cls.getGenericSuperclass());
+    visitAll(cls.getGenericInterfaces());
+
     cr.accept(this, ClassReader.SKIP_CODE);
+  }
+
+  private static void visitAll(Type ... types) {
+    visitAll(Collections.newSetFromMap(new IdentityHashMap<>()), types);
+  }
+  private static void visitAll(Set<Type> visited, Type ... types) {
+    for(Type type : types) {
+      visit(visited, type);
+    }
+  }
+
+  private static void visit(Set<Type> visited,
+                               Type type) {
+    if(!visited.add(type)) {
+      return;
+    }
+
+    if(type instanceof TypeVariable) {
+      TypeVariable<?> typeVariable = (TypeVariable<?>) type;
+
+      visitAll(visited, typeVariable.getBounds());
+    } else if(type instanceof ParameterizedType) {
+      ParameterizedType parameterizedType = (ParameterizedType) type;
+      Type ownerType = parameterizedType.getOwnerType();
+      Type rawType = parameterizedType.getRawType();
+
+      visitAll(visited, parameterizedType.getActualTypeArguments());
+    } else if(type instanceof GenericArrayType) {
+      GenericArrayType arrayType = (GenericArrayType) type;
+      Type componentType = arrayType.getGenericComponentType();
+
+      visit(visited, componentType);
+    } else if(type instanceof WildcardType) {
+      WildcardType wildcardType = (WildcardType) type;
+
+      visitAll(visited, wildcardType.getLowerBounds());
+      visitAll(visited, wildcardType.getUpperBounds());
+    }
+  }
+
+  @Test
+  @Disabled
+  void doTest()
+  throws IOException {
+    checkSignatureParsing(NodeXY.class);
   }
 
   private String printTypeParameters(Class<?> cls) {
@@ -77,7 +144,7 @@ public class HxAbstractGenericTest
 
     if (signature != null) {
       HxGenericSignatureReader reader = new HxGenericSignatureReader(signature);
-      reader.accept(new HxGenericSignatureVisitor());
+      reader.accept(new HxGenericSignatureVisitor(haxxor, new HxGenericTypeImpl()));
       System.out.println();
     }
   }
@@ -119,13 +186,13 @@ public class HxAbstractGenericTest
   }
 
   interface INode3<A, B, C>
-      extends INode2<A, B> {
+      extends INode2<A[][], byte[]> {
 
   }
 
   interface INode4<A extends Serializable, B extends Cloneable & Comparable<A>, C extends List<A>, D extends Map<A,
       Collection<?>>>
-      extends INode3<A, B, C> {
+      extends INode3<Map<?,?>, Serializable[], C> {
 
   }
 
@@ -147,8 +214,13 @@ public class HxAbstractGenericTest
 
   //----------------------------------------------------------------------------------------------------------------
 
-  static abstract class NodeY<V extends Number & Comparable<V>>
+  static abstract class NodeY<V extends Number>
       extends Node implements INode1<List<V>[]> {
+
+  }
+
+  static abstract class NodeXY<V extends Number & Comparable<V>>
+      extends Node implements INode0, INode1<List<V>[]>, INode2<List<V>[], byte[]> {
 
   }
 

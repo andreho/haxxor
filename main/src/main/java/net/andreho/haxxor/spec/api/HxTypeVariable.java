@@ -6,7 +6,7 @@ import java.util.List;
  * <br/>Created by a.hofmann on 11.03.2016.<br/>
  */
 public interface HxTypeVariable
-    extends HxGeneric {
+    extends HxGeneric<HxTypeVariable> {
 
   /**
    * @return a formal name of this type variable
@@ -19,9 +19,15 @@ public interface HxTypeVariable
    */
   HxTypeVariable setName(String name);
 
-  List<HxGeneric> getBounds();
+  HxGeneric<?> getClassBound();
 
-  HxTypeVariable setBounds(List<HxGeneric> bounds);
+  HxTypeVariable setClassBound(HxGeneric<?> classBound);
+
+  List<HxGeneric<?>> getInterfaceBounds();
+
+  HxTypeVariable setInterfaceBounds(List<HxGeneric<?>> interfaceBounds);
+
+  HxTypeVariable addInterfaceBound(HxGeneric<?> interfaceBound);
 
   //Either a Type or one of Parameterizable
   HxMember getGenericDeclaration();

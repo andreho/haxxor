@@ -4,19 +4,24 @@ import net.andreho.haxxor.spec.api.HxGeneric;
 import net.andreho.haxxor.spec.api.HxMember;
 import net.andreho.haxxor.spec.api.HxTypeVariable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static net.andreho.haxxor.Utils.isUninitialized;
+
 
 /**
  * <br/>Created by andreho on 3/26/16 at 10:16 PM.<br/>
  */
 public class HxTypeVariableImpl
-    extends HxAbstractGeneric
+    extends HxAbstractGeneric<HxTypeVariable>
     implements HxTypeVariable {
 
   private String name;
   private HxMember declaring;
-  private List<HxGeneric> bounds = Collections.emptyList();
+  private HxGeneric<?> classBound;
+  private List<HxGeneric<?>> interfaceBounds = Collections.emptyList();
 
   @Override
   public String getName() {
@@ -24,19 +29,39 @@ public class HxTypeVariableImpl
   }
 
   @Override
-  public HxTypeVariable setName(String name) {
+  public HxTypeVariableImpl setName(String name) {
     this.name = name;
     return this;
   }
 
   @Override
-  public List<HxGeneric> getBounds() {
-    return bounds;
+  public HxGeneric<?> getClassBound() {
+    return classBound;
   }
 
   @Override
-  public HxTypeVariable setBounds(List<HxGeneric> bounds) {
-    this.bounds = bounds;
+  public HxTypeVariableImpl setClassBound(final HxGeneric<?> classBound) {
+    this.classBound = minimize(classBound);
+    return this;
+  }
+
+  @Override
+  public List<HxGeneric<?>> getInterfaceBounds() {
+    return interfaceBounds;
+  }
+
+  @Override
+  public HxTypeVariableImpl setInterfaceBounds(List<HxGeneric<?>> interfaceBounds) {
+    this.interfaceBounds = interfaceBounds;
+    return this;
+  }
+
+  @Override
+  public HxTypeVariable addInterfaceBound(final HxGeneric<?> interfaceBound) {
+    if(isUninitialized(interfaceBounds)) {
+      setInterfaceBounds(new ArrayList<>());
+    }
+    getInterfaceBounds().add(minimize(interfaceBound));
     return this;
   }
 
@@ -46,14 +71,16 @@ public class HxTypeVariableImpl
   }
 
   @Override
-  public HxTypeVariable setGenericDeclaration(HxMember genericDeclaration) {
+  public HxTypeVariableImpl setGenericDeclaration(HxMember genericDeclaration) {
     this.declaring = genericDeclaration;
     return this;
   }
-
-  @Override
-  public HxTypeVariable attach(final HxGeneric generic) {
-    getBounds().add(generic);
-    return this;
-  }
+//  @Override
+//  public HxTypeVariableImpl attach(final HxGeneric generic) {
+//    if(isUninitialized(interfaceBounds)) {
+//      setInterfaceBounds(new ArrayList<>());
+//    }
+//    getInterfaceBounds().add(generic);
+//    return this;
+//  }
 }
