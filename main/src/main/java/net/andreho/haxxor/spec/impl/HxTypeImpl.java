@@ -120,8 +120,8 @@ public class HxTypeImpl
   }
 
   @Override
-  public HxType getSuperType() {
-    return superType;
+  public Optional<HxType> getSuperType() {
+    return Optional.ofNullable(superType);
   }
 
   @Override
@@ -432,12 +432,13 @@ public class HxTypeImpl
           result.add(field);
         }
       }
-
       if (!recursive) {
         break;
       }
-
-      current = current.getSuperType();
+      if(!current.hasSuperType()) {
+        break;
+      }
+      current = current.getSuperType().get();
     }
 
     return result;
@@ -458,7 +459,10 @@ public class HxTypeImpl
       if (!recursive) {
         break;
       }
-      current = current.getSuperType();
+      if(!current.hasSuperType()) {
+        break;
+      }
+      current = current.getSuperType().get();
     }
 
     current = this;
@@ -470,7 +474,10 @@ public class HxTypeImpl
       if (!recursive) {
         break;
       }
-      current = current.getSuperType();
+      if(!current.hasSuperType()) {
+        break;
+      }
+      current = current.getSuperType().get();
     }
 
     return result;
@@ -488,12 +495,13 @@ public class HxTypeImpl
           result.add(constructor);
         }
       }
-
       if (!recursive) {
         break;
       }
-
-      current = current.getSuperType();
+      if(!current.hasSuperType()) {
+        break;
+      }
+      current = current.getSuperType().get();
     }
 
     return result;
@@ -512,7 +520,11 @@ public class HxTypeImpl
       if (!recursive) {
         break;
       }
-      current = current.getSuperType();
+
+      if(!current.hasSuperType()) {
+        break;
+      }
+      current = current.getSuperType().get();
     }
     return result;
   }
@@ -528,7 +540,10 @@ public class HxTypeImpl
       if (!recursive) {
         break;
       }
-      current = current.getSuperType();
+      if(!current.hasSuperType()) {
+        break;
+      }
+      current = current.getSuperType().get();
     }
     return result;
   }
@@ -541,7 +556,7 @@ public class HxTypeImpl
                  getModifiers(),
                  getName(),
                  getGenericSignature(),
-                 getSuperType().getName(),
+                 getSuperType().get().getName(),
                  getInterfaces().toArray(new String[0]));
 
     for (HxAnnotation annotation : getAnnotations()) {

@@ -2,6 +2,7 @@ package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxGeneric;
+import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxWildcardType;
 
 import java.util.ArrayList;
@@ -65,5 +66,17 @@ public class HxWildcardTypeImpl
     addUpperBound(haxxor.reference("java.lang.Object"));
     this.lowerBounds = Collections.emptyList();
     return this;
+  }
+
+  @Override
+  public String toString() {
+    if(getLowerBounds().isEmpty() && getUpperBounds().size() == 1) {
+      HxGeneric hxGeneric = getUpperBounds().get(0);
+      if(hxGeneric instanceof HxType &&
+         "java.lang.Object".equals(((HxType) hxGeneric).getName())) {
+        return "?";
+      }
+    }
+    return "*";
   }
 }

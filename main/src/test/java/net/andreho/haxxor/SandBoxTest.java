@@ -70,4 +70,31 @@ class SandBoxTest {
   void printDebugCode() {
     Debugger.trace(AnnotatedBeanWithJava8Features.class.getName());
   }
+
+
+  @Test
+  @Disabled
+  void cornerCases() {
+//    String string = "hello";
+//    StringBuilder builder = new StringBuilder("hello");
+//    StringBuilder builder2 = new StringBuilder("hello");
+//
+//    System.out.println(((Object) string) == builder);
+//    System.out.println(string.equals(builder));
+//    System.out.println(builder.equals(builder2));
+
+//    System.out.print("Foo.Bar:");
+//    http://www.javapoint.ru
+//    return;
+
+//    work();
+  }
+
+  private static void work() {
+    try {
+      work();
+    } finally {
+      work();
+    }
+  }
 }

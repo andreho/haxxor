@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by a.hofmann on 31.05.2015.
@@ -44,13 +45,13 @@ public class HxArrayTypeImpl
   }
 
   @Override
-  public HxType getSuperType() {
-    return getHaxxor().reference("java.lang.Object");
+  public Optional<HxType> getSuperType() {
+    return Optional.of(getHaxxor().reference("java.lang.Object"));
   }
 
   @Override
   public Version getVersion() {
-    return getComponentType().getVersion();
+    return getComponentType().get().getVersion();
   }
 
   @Override

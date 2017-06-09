@@ -1,57 +1,28 @@
-package net.andreho.haxxor.spec.visitors.generics;
+package net.andreho.haxxor.spec.visitors.generics.x;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.asm.org.objectweb.asm.signature.SignatureVisitor;
 import net.andreho.haxxor.Haxxor;
-import net.andreho.haxxor.spec.api.HxGeneric;
-
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
- * <br/>Created by a.hofmann on 08.06.2017 at 01:00.
+ * <br/>Created by a.hofmann on 08.06.2017 at 18:20.
  */
-public class TargetedSignatureVisitor<T extends HxGeneric> extends SignatureVisitor {
+public class ControlledVisitor
+    extends SignatureVisitor {
 
   private final Haxxor haxxor;
-  private final Function<String, HxGeneric<?>> variableResolver;
-  private final Consumer<T> consumer;
-  protected T target;
 
   /**
    * Constructs a new {@link SignatureVisitor}.
-   *  @param haxxor
-   * @param consumer
-   * @param variableResolver
+   * @param haxxor
    */
-  public TargetedSignatureVisitor(final Haxxor haxxor,
-                                  final Consumer<T> consumer,
-                                  final Function<String, HxGeneric<?>> variableResolver) {
+  public ControlledVisitor(final Haxxor haxxor) {
     super(Opcodes.ASM5);
-
     this.haxxor = haxxor;
-    this.consumer = consumer;
-    this.variableResolver = variableResolver;
   }
 
-  protected final Haxxor getHaxxor() {
+  protected Haxxor getHaxxor() {
     return haxxor;
-  }
-
-  protected final Function<String, HxGeneric<?>> getVariableResolver() {
-    return variableResolver;
-  }
-
-  protected final void consume(T target) {
-    consumer.accept(target);
-  }
-
-  protected final HxGeneric<?> variable(String name) {
-    return variableResolver.apply(name);
-  }
-
-  protected <V extends T> V getTarget() {
-    return (V) target;
   }
 
   @Override
@@ -131,7 +102,6 @@ public class TargetedSignatureVisitor<T extends HxGeneric> extends SignatureVisi
 
   @Override
   public void visitEnd() {
-    System.out.println(getClass().getSimpleName()+ ".visitEnd()");
-    consume(target);
+    throw new UnsupportedOperationException(getClass().getSimpleName());
   }
 }

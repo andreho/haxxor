@@ -90,6 +90,7 @@ class HaxxorTest {
     assertTrue(haxxor.hasReference(TEST_BEAN_CLASSNAME));
   }
 
+
   @Test
   void referenceForArray() {
     HxTypeReference reference =
@@ -99,12 +100,12 @@ class HaxxorTest {
 //    HxType type = reference.toType();
     assertNotNull(type);
     assertNotNull(type.getComponentType());
-    assertNotNull(type.getComponentType().getComponentType());
+    assertNotNull(type.getComponentType().get().getComponentType().get());
     assertTrue(type.isArray());
     assertEquals(2, type.getDimension());
     assertEquals(TEST_BEAN_CLASSNAME + "[][]", type.getName());
-    assertEquals(TEST_BEAN_CLASSNAME + "[]", type.getComponentType().getName());
-    assertEquals(TEST_BEAN_CLASSNAME + "", type.getComponentType().getComponentType().getName());
+    assertEquals(TEST_BEAN_CLASSNAME + "[]", type.getComponentType().get().getName());
+    assertEquals(TEST_BEAN_CLASSNAME + "", type.getComponentType().get().getComponentType().get().getName());
     assertTrue(haxxor.hasReference(TEST_BEAN_CLASSNAME + "[][]"));
     assertTrue(haxxor.hasReference(TEST_BEAN_CLASSNAME + "[]"));
     assertTrue(haxxor.hasReference(TEST_BEAN_CLASSNAME + ""));

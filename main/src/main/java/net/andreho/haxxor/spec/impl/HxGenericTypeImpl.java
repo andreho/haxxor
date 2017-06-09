@@ -6,6 +6,7 @@ import net.andreho.haxxor.spec.api.HxTypeVariable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import static net.andreho.haxxor.Utils.isUninitialized;
@@ -59,5 +60,40 @@ public class HxGenericTypeImpl implements HxGenericType {
   @Override
   public void interpret(final String signature) {
 
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    printTypeVariables(builder);
+    printExtends(builder);
+    printImplements(builder);
+    return builder.toString();
+  }
+
+  private void printTypeVariables(final StringBuilder builder) {
+    Iterator<HxTypeVariable> variableIterator = getTypeVariables().iterator();
+    if(variableIterator.hasNext()) {
+      builder.append('<').append(variableIterator.next());
+      while(variableIterator.hasNext()) {
+        builder.append(',').append(variableIterator.next());
+      }
+      builder.append('>');
+    }
+  }
+  private void printExtends(final StringBuilder builder) {
+    if(getSuperType() != null) {
+      builder.append(" extends ").append(getSuperType());
+    }
+  }
+  private void printImplements(final StringBuilder builder) {
+    Iterator<HxGeneric<?>> interfaceIterator = getInterfaces().iterator();
+    if(interfaceIterator.hasNext()) {
+      builder.append(" implements ").append(interfaceIterator.next());
+      while(interfaceIterator.hasNext()) {
+        builder.append(',').append(interfaceIterator.next());
+      }
+      builder.append('>');
+    }
   }
 }

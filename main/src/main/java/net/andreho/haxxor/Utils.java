@@ -150,7 +150,7 @@ public abstract class Utils {
                                              final int dim) {
     HxType componentType = type;
     while (componentType.isArray()) {
-      componentType = componentType.getComponentType();
+      componentType = componentType.getComponentType().get();
     }
     return type.getDimension() == dim && className.equals(componentType.getName());
   }
@@ -162,7 +162,7 @@ public abstract class Utils {
                                                           final int to) {
     HxType componentType = type;
     while (componentType.isArray()) {
-      componentType = componentType.getComponentType();
+      componentType = componentType.getComponentType().get();
     }
 
     final String classname = componentType.getName();

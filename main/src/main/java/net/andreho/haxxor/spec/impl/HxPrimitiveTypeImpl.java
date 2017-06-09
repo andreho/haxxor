@@ -34,11 +34,6 @@ public class HxPrimitiveTypeImpl
   }
 
   @Override
-  public HxType getSuperType() {
-    return null;
-  }
-
-  @Override
   public HxType setDeclaringMember(HxMember declaringMember) {
     return this;
   }

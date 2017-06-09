@@ -7,21 +7,180 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * <br/>Created by a.hofmann on 05.06.2017 at 03:09.
  */
 public abstract class HxTypeTestUtils {
+
+  public static void checkTypes(java.lang.reflect.Type type,
+                                 HxGeneric<?> hxGeneric) {
+    if (type == null) {
+      //assertNull(hxGeneric);
+      return;
+    }
+
+    checkUnknownType(Collections.newSetFromMap(new IdentityHashMap<>()), type, hxGeneric);
+  }
+
+  public static void checkTypes(TypeVariable<?>[] typeVariables,
+                                 List<HxTypeVariable> hxTypeVariables) {
+    Set<Object> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+    assertEquals(typeVariables.length, hxTypeVariables.size());
+
+    for (int i = 0; i < typeVariables.length; i++) {
+      TypeVariable<?> typeVariable = typeVariables[i];
+      HxTypeVariable hxTypeVariable = hxTypeVariables.get(i);
+      checkTypeVariable(visited, typeVariable, hxTypeVariable);
+    }
+  }
+
+  public static void checkTypes(java.lang.reflect.Type[] types,
+                                 List<HxGeneric<?>> hxGenerics) {
+    Set<Object> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+    assertEquals(types.length, hxGenerics.size());
+
+    for (int i = 0; i < types.length; i++) {
+      java.lang.reflect.Type typeVariable = types[i];
+      HxGeneric hxGeneric = hxGenerics.get(i);
+      checkUnknownType(visited, typeVariable, hxGeneric);
+    }
+  }
+
+  private static void checkUnknownType(Set<Object> visited,
+                                       java.lang.reflect.Type type,
+                                       HxGeneric<?> hxGeneric) {
+    if (visited.add(type)) {
+      assertTrue(visited.add(hxGeneric), hxGeneric.toString());
+    } else {
+      assertFalse(visited.add(hxGeneric), hxGeneric.toString());
+      return;
+    }
+
+    if (type instanceof TypeVariable) {
+      assertTrue(hxGeneric instanceof HxTypeVariable);
+      checkTypeVariable(visited, (TypeVariable) type, (HxTypeVariable) hxGeneric);
+    } else if (type instanceof ParameterizedType) {
+      assertTrue(hxGeneric instanceof HxParameterizedType);
+      checkParameterizedType(visited, (ParameterizedType) type, (HxParameterizedType) hxGeneric);
+    } else if (type instanceof WildcardType) {
+      assertTrue(hxGeneric instanceof HxWildcardType);
+      checkWildcardType(visited, (WildcardType) type, (HxWildcardType) hxGeneric);
+    } else if (type instanceof GenericArrayType) {
+      assertTrue(hxGeneric instanceof HxGenericArrayType);
+      checkGenericArrayType(visited, (GenericArrayType) type, (HxGenericArrayType) hxGeneric);
+    }
+  }
+
+  private static void checkTypeVariable(Set<Object> visited,
+                                        TypeVariable<?> typeVariable,
+                                        HxTypeVariable hxTypeVariable) {
+    assertEquals(typeVariable.getName(), hxTypeVariable.getName());
+
+    final java.lang.reflect.Type[] bounds = typeVariable.getBounds();
+    final HxGeneric<?> hxClassBound = hxTypeVariable.getClassBound();
+
+    assertEquals(bounds.length, (hxClassBound != null ? 1 : 0) + hxTypeVariable.getInterfaceBounds()
+                                                                               .size());
+
+    int offset = 0;
+    if (hxClassBound != null) {
+      java.lang.reflect.Type classBound = typeVariable.getBounds()[offset++];
+      checkUnknownType(visited, classBound, hxClassBound);
+    }
+    for (int i = 0, len = hxTypeVariable.getInterfaceBounds()
+                                        .size(); i < len; i++) {
+      checkUnknownType(visited, bounds[i + offset], hxTypeVariable.getInterfaceBounds()
+                                                                  .get(i));
+    }
+  }
+
+  private static void checkParameterizedType(Set<Object> visited,
+                                             ParameterizedType parameterizedType,
+                                             HxParameterizedType hxParameterizedType) {
+    java.lang.reflect.Type rawType = parameterizedType.getRawType();
+    HxType hxRawType = hxParameterizedType.getRawType();
+    boolean equalNames = Objects.equals(hxRawType.getHaxxor().toJavaClassName(((Class) rawType).getName()), hxRawType.getName());
+    if(!equalNames) {
+      System.out.println("WTF?");
+    }
+    assertTrue(equalNames, "Invalid raw-type: "+hxRawType);
+
+    java.lang.reflect.Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+    List<HxGeneric<?>> hxActualTypeArguments = hxParameterizedType.getActualTypeArguments();
+
+    assertNotNull(actualTypeArguments);
+    assertNotNull(hxActualTypeArguments);
+    assertEquals(actualTypeArguments.length, hxActualTypeArguments.size());
+
+    for (int i = 0; i < actualTypeArguments.length; i++) {
+      java.lang.reflect.Type actualTypeArgument = actualTypeArguments[i];
+      HxGeneric<?> actualHxTypeArgument = hxActualTypeArguments.get(i);
+
+      checkUnknownType(visited, actualTypeArgument, actualHxTypeArgument);
+    }
+  }
+
+  private static void checkWildcardType(Set<Object> visited,
+                                        WildcardType wildcardType,
+                                        HxWildcardType hxWildcardType) {
+    java.lang.reflect.Type[] upperBounds = wildcardType.getUpperBounds();
+    java.lang.reflect.Type[] lowerBounds = wildcardType.getLowerBounds();
+
+    List<HxGeneric> hxUpperBounds = hxWildcardType.getUpperBounds();
+    List<HxGeneric> hxLowerBounds = hxWildcardType.getLowerBounds();
+
+    assertNotNull(upperBounds);
+    assertNotNull(lowerBounds);
+
+    assertNotNull(hxUpperBounds);
+    assertNotNull(hxLowerBounds);
+
+    assertEquals(upperBounds.length, hxUpperBounds.size());
+    assertEquals(lowerBounds.length, hxLowerBounds.size());
+
+    for (int i = 0; i < upperBounds.length; i++) {
+      java.lang.reflect.Type upperBound = upperBounds[i];
+      HxGeneric<?> hxUpperBound = hxUpperBounds.get(i);
+      checkUnknownType(visited, upperBound, hxUpperBound);
+    }
+
+    for (int i = 0; i < lowerBounds.length; i++) {
+      java.lang.reflect.Type lowerBound = lowerBounds[i];
+      HxGeneric<?> hxLowerBound = hxLowerBounds.get(i);
+      checkUnknownType(visited, lowerBound, hxLowerBound);
+    }
+  }
+
+  private static void checkGenericArrayType(Set<Object> visited,
+                                            GenericArrayType genericArrayType,
+                                            HxGenericArrayType hxGenericArrayType) {
+    java.lang.reflect.Type genericComponentType = genericArrayType.getGenericComponentType();
+    HxGeneric<?> hxGenericComponentType = hxGenericArrayType.getGenericComponentType();
+    assertNotNull(genericComponentType);
+    assertNotNull(hxGenericComponentType);
+
+    checkUnknownType(visited, genericComponentType, hxGenericComponentType);
+  }
 
   public static <P extends HxExecutable<P>>
   void checkParameters(final Parameter[] parameters,

@@ -3,9 +3,11 @@ package net.andreho.haxxor.spec.impl;
 import net.andreho.haxxor.spec.api.HxGeneric;
 import net.andreho.haxxor.spec.api.HxParameterizedType;
 import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.spec.api.HxTypeVariable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import static net.andreho.haxxor.Utils.isUninitialized;
@@ -57,7 +59,7 @@ public class HxParameterizedTypeImpl
   @Override
   public HxParameterizedTypeImpl addActualTypeArgument(final HxGeneric<?> actualTypeArgument) {
     if (isUninitialized(actualTypeArguments)) {
-      setActualTypeArguments(new ArrayList<>());
+      setActualTypeArguments(new ArrayList<>(1));
     }
     getActualTypeArguments().add(actualTypeArgument);
     return this;
@@ -71,12 +73,39 @@ public class HxParameterizedTypeImpl
     return this;
   }
 
-//  @Override
-//  public HxParameterizedTypeImpl attach(final HxGeneric generic) {
-//    if(Utils.isUninitialized(actualTypeArguments)) {
-//      setActualTypeArguments(new ArrayList<>());
+  @Override
+  public String toString() {
+    HxType component = getRawType();
+//    int dim = 0;
+//    while(component.isArray()) {
+//      component = component.getComponentType().get();
+//      dim++;
 //    }
-//    getActualTypeArguments().add(generic);
-//    return this;
-//  }
+
+    StringBuilder builder = new StringBuilder().append(component);
+    Iterator<HxGeneric<?>> iterator = getActualTypeArguments().iterator();
+    if(iterator.hasNext()) {
+      builder.append('<');
+      HxGeneric<?> hxGeneric = iterator.next();
+      if(hxGeneric instanceof HxTypeVariable) {
+        builder.append(((HxTypeVariable) hxGeneric).getName());
+      } else {
+        builder.append(hxGeneric);
+      }
+      while(iterator.hasNext()) {
+        hxGeneric = iterator.next();
+        builder.append(',');
+        if(hxGeneric instanceof HxTypeVariable) {
+          builder.append(((HxTypeVariable) hxGeneric).getName());
+        } else {
+          builder.append(hxGeneric);
+        }
+      }
+      builder.append('>');
+    }
+//    while(dim-- > 0) {
+//      builder.append("[]");
+//    }
+    return builder.toString();
+  }
 }

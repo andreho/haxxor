@@ -6,7 +6,7 @@ import net.andreho.haxxor.spec.api.HxConstants;
 import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxField;
-import net.andreho.haxxor.spec.api.HxGeneric;
+import net.andreho.haxxor.spec.api.HxGenericType;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxModifier;
 import net.andreho.haxxor.spec.api.HxType;
@@ -61,8 +61,8 @@ public class HxAbstractType
   }
 
   @Override
-  public HxType getSuperType() {
-    return null;
+  public Optional<HxType> getSuperType() {
+    return Optional.empty();
   }
 
   @Override
@@ -295,13 +295,8 @@ public class HxAbstractType
   }
 
   @Override
-  public HxGeneric getGenericSuperType() {
-    return getSuperType();
-  }
-
-  @Override
-  public List<HxGeneric> getGenericInterfaces() {
-    return Collections.emptyList();
+  public Optional<HxGenericType> getGenericType() {
+    return Optional.empty();
   }
 
   @Override
@@ -317,30 +312,36 @@ public class HxAbstractType
         return false;
       }
       return this.getDimension() == otherType.getDimension() &&
-             this.getComponentType()
-                 .isAssignableFrom(otherType.getComponentType());
+             this.getComponentType().get()
+                 .isAssignableFrom(otherType.getComponentType().get());
     }
 
-    HxType current = otherType;
+    HxType current = otherType; //current is not NULL at this moment
 
     if(isInterface()) {
-      while (current != null) {
+      do {
+        //search only for interfaces of current type (independent whether interface or not)
         for(HxType itf : current.getInterfaces()) {
           if(isAssignableFrom(itf)) {
             return true;
           }
         }
-        current = current.getSuperType();
-      }
+        if(!current.hasSuperType()) {
+          break;
+        }
+        current = current.getSuperType().get();
+      } while (true);
     } else {
-      while (current != null) {
+      do {
         if (equals(current)) {
           return true;
         }
-        current = current.getSuperType();
-      }
+        if(!current.hasSuperType()) {
+          break;
+        }
+        current = current.getSuperType().get();
+      } while (true);
     }
-
     return false;
   }
 
@@ -425,41 +426,42 @@ public class HxAbstractType
   }
 
   @Override
-  public HxType getEnclosingType() {
-    if (getEnclosingMethod() != null) {
-      return getEnclosingMethod().getDeclaringMember();
-    } else if (getEnclosingConstructor() != null) {
-      return getEnclosingConstructor().getDeclaringMember();
+  public Optional<HxType> getEnclosingType() {
+    if (getEnclosingMethod().isPresent()) {
+      return Optional.of(getEnclosingMethod().get().getDeclaringMember());
+    } else if (getEnclosingConstructor().isPresent()) {
+      return Optional.of(getEnclosingConstructor().get().getDeclaringMember());
     }
-    return getDeclaringMember();
+    return Optional.ofNullable(getDeclaringMember());
   }
 
   @Override
-  public HxMethod getEnclosingMethod() {
+  public Optional<HxMethod> getEnclosingMethod() {
     if (getDeclaringMember() instanceof HxMethod) {
-      return getDeclaringMember();
+      return Optional.of(getDeclaringMember());
     }
-    return null;
+    return Optional.empty();
   }
 
   @Override
-  public HxConstructor getEnclosingConstructor() {
+  public Optional<HxConstructor> getEnclosingConstructor() {
     if (getDeclaringMember() instanceof HxConstructor) {
-      return getDeclaringMember();
+      return Optional.of(getDeclaringMember());
     }
-    return null;
+    return Optional.empty();
   }
 
   private String getSimpleBinaryName() {
     /* Code was copied from original java.lang.Class */
-    HxType enclosingType = getEnclosingType();
-    if (enclosingType == null) {
+    Optional<HxType> enclosingType = getEnclosingType();
+    if (!enclosingType.isPresent()) {
       // top level class
       return null;
     }
     // Otherwise, strip the enclosing class' name
     try {
-      return getName().substring(enclosingType.getName()
+      return getName().substring(enclosingType.get()
+                                              .getName()
                                               .length());
     } catch (IndexOutOfBoundsException ex) {
       throw new InternalError("Malformed class name: " + getName(), ex);
@@ -470,7 +472,7 @@ public class HxAbstractType
   public String getSimpleName() {
     /* Code was copied from original java.lang.Class */
     if (isArray()) {
-      return getComponentType().getSimpleName() + "[]";
+      return getComponentType().get().getSimpleName() + "[]";
     }
 
     String simpleName = getSimpleBinaryName();
@@ -496,13 +498,14 @@ public class HxAbstractType
   }
 
   @Override
-  public HxType getComponentType() {
+  public Optional<HxType> getComponentType() {
     if (isArray()) {
       String name = getName();
       String componentType = name.substring(0, name.length() - 2);
-      return getHaxxor().reference(componentType);
+      HxTypeReference reference = getHaxxor().reference(componentType);
+      return Optional.of(reference);
     }
-    return null;
+    return Optional.empty();
   }
 
   @Override

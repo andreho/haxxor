@@ -307,14 +307,17 @@ class HxTypeTest {
     HxType type1 = haxxor.createType(TEST_CLASS_NAME_1);
     type1.setSuperType(newSuperType);
     assertNotNull(type1.getSuperType());
-    assertEquals(newSuperType, type1.getSuperType()
+    assertEquals(newSuperType, type1.getSuperType().get()
                                     .getName());
+
+    assertTrue(type1.hasSuperType(newSuperType));
 
     HxType type2 = haxxor.createType(TEST_CLASS_NAME_2);
     type2.setSuperType(haxxor.reference(newSuperType));
     assertNotNull(type2.getSuperType());
-    assertEquals(newSuperType, type2.getSuperType()
+    assertEquals(newSuperType, type2.getSuperType().get()
                                     .getName());
+    assertTrue(type2.hasSuperType(newSuperType));
   }
 
   @ParameterizedTest
@@ -824,30 +827,30 @@ class HxTypeTest {
     HxType hxType = haxxor.resolve(cls.getName());
 
     Class<?> enclosingClass = cls.getEnclosingClass();
-    HxType enclosingType = hxType.getEnclosingType();
+    Optional<HxType> enclosingType = hxType.getEnclosingType();
 
     if(enclosingClass == null) {
-      assertNull(enclosingType);
+      assertFalse(enclosingType.isPresent());
     } else {
-      assertEquals(enclosingClass.getName(), enclosingType.getName());
+      assertEquals(enclosingClass.getName(), enclosingType.get().getName());
     }
 
     Method enclosingMethod = cls.getEnclosingMethod();
-    HxMethod enclosingHxMethod = hxType.getEnclosingMethod();
+    Optional<HxMethod> enclosingHxMethod = hxType.getEnclosingMethod();
 
     if(enclosingMethod == null) {
-      assertNull(enclosingHxMethod);
+      assertFalse(enclosingHxMethod.isPresent());
     } else {
-      checkMethods(enclosingMethod, enclosingHxMethod);
+      checkMethods(enclosingMethod, enclosingHxMethod.get());
     }
 
     Constructor<?> enclosingConstructor = cls.getEnclosingConstructor();
-    HxConstructor enclosingHxConstructor = hxType.getEnclosingConstructor();
+    Optional<HxConstructor> enclosingHxConstructor = hxType.getEnclosingConstructor();
 
     if(enclosingConstructor == null) {
-      assertNull(enclosingHxConstructor);
+      assertFalse(enclosingHxConstructor.isPresent());
     } else {
-      checkConstructors(enclosingConstructor, enclosingHxConstructor);
+      checkConstructors(enclosingConstructor, enclosingHxConstructor.get());
     }
   }
 
@@ -877,7 +880,7 @@ class HxTypeTest {
                      hxComponent.getName());
 
         component = component.getComponentType();
-        hxComponent = hxComponent.getComponentType();
+        hxComponent = hxComponent.getComponentType().get();
         dim++;
       }
 
@@ -886,7 +889,7 @@ class HxTypeTest {
     } else {
       assertFalse(hxType.getName().contains("[") || hxType.getName().contains("]"));
       assertFalse(hxType.isArray());
-      assertNull(hxType.getComponentType());
+      assertFalse(hxType.getComponentType().isPresent());
     }
     assertEquals(dim, hxType.getDimension());
   }

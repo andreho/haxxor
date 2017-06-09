@@ -79,15 +79,15 @@ public class ParameterizedTypeSignatureVisitor
   @Override
   public void visitBaseType(final char descriptor) {
     switch (descriptor) {
-      case 'V':
-      case 'Z':
-      case 'B':
-      case 'S':
-      case 'C':
-      case 'I':
-      case 'F':
-      case 'J':
-      case 'D':
+      case 'V': visitClassType("void"); break;
+      case 'Z': visitClassType("boolean"); break;
+      case 'B': visitClassType("byte"); break;
+      case 'S': visitClassType("short"); break;
+      case 'C': visitClassType("char"); break;
+      case 'I': visitClassType("int"); break;
+      case 'F': visitClassType("float"); break;
+      case 'J': visitClassType("long"); break;
+      case 'D': visitClassType("double"); break;
         default:
           throw new IllegalStateException();
     }

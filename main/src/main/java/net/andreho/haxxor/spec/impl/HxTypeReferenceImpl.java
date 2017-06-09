@@ -210,7 +210,7 @@ public class HxTypeReferenceImpl
   }
 
   @Override
-  public HxType getSuperType() {
+  public Optional<HxType> getSuperType() {
     return toType().getSuperType();
   }
 
@@ -232,7 +232,7 @@ public class HxTypeReferenceImpl
   }
 
   @Override
-  public HxType getComponentType() {
+  public Optional<HxType> getComponentType() {
     return toType().getComponentType();
   }
 

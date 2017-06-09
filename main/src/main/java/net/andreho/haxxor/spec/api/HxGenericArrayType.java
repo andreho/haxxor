@@ -4,7 +4,7 @@ package net.andreho.haxxor.spec.api;
  * <br/>Created by a.hofmann on 11.03.2016.<br/>
  */
 public interface HxGenericArrayType
-    extends HxGeneric {
+    extends HxGeneric<HxGenericArrayType> {
 
   /**
    * @return an instance of either
@@ -12,7 +12,7 @@ public interface HxGenericArrayType
    * {@link HxParameterizedType} or
    * {@link HxTypeVariable}
    */
-  HxGeneric getGenericComponentType();
+  HxGeneric<?> getGenericComponentType();
 
-  HxGenericArrayType setGenericComponentType(final HxGeneric genericComponentType);
+  HxGenericArrayType setGenericComponentType(final HxGeneric<?> genericComponentType);
 }

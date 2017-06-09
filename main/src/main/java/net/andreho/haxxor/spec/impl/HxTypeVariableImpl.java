@@ -6,6 +6,7 @@ import net.andreho.haxxor.spec.api.HxTypeVariable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import static net.andreho.haxxor.Utils.isUninitialized;
@@ -59,7 +60,7 @@ public class HxTypeVariableImpl
   @Override
   public HxTypeVariable addInterfaceBound(final HxGeneric<?> interfaceBound) {
     if(isUninitialized(interfaceBounds)) {
-      setInterfaceBounds(new ArrayList<>());
+      setInterfaceBounds(new ArrayList<>(1));
     }
     getInterfaceBounds().add(minimize(interfaceBound));
     return this;
@@ -75,12 +76,28 @@ public class HxTypeVariableImpl
     this.declaring = genericDeclaration;
     return this;
   }
-//  @Override
-//  public HxTypeVariableImpl attach(final HxGeneric generic) {
-//    if(isUninitialized(interfaceBounds)) {
-//      setInterfaceBounds(new ArrayList<>());
-//    }
-//    getInterfaceBounds().add(generic);
-//    return this;
-//  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder(getName());
+    final Iterator<HxGeneric<?>> iterator = getInterfaceBounds().iterator();
+    final boolean hasClassBound = getClassBound() != null;
+    final boolean hasInterfaceBounds = iterator.hasNext();
+
+    if(hasClassBound) {
+      builder.append(" extends ").append(getClassBound());
+    }
+    if(hasInterfaceBounds) {
+      if(!hasClassBound) {
+        builder.append(" extends ");
+      } else {
+        builder.append(" & ");
+      }
+      builder.append(iterator.next());
+      while(iterator.hasNext()) {
+        builder.append(" & ").append(iterator.next());
+      }
+    }
+    return builder.toString();
+  }
 }

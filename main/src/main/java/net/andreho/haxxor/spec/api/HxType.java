@@ -83,7 +83,7 @@ public interface HxType
   /**
    * @return the parent-type of this type
    */
-  HxType getSuperType();
+  Optional<HxType> getSuperType();
 
   /**
    * Shortcut for: <code>this.setSuperType(getHaxxor().reference(superType))</code>
@@ -106,7 +106,9 @@ public interface HxType
    * @return
    */
   default boolean hasSuperType(String superType) {
-    return Objects.equals(superType, getSuperType() == null? null : getSuperType().getName());
+    return getSuperType().isPresent()?
+            getSuperType().get().hasName(superType) :
+           superType == null;
   }
 
   /**
@@ -115,6 +117,13 @@ public interface HxType
    */
   default boolean hasSuperType(HxType superType) {
     return Objects.equals(superType, getSuperType());
+  }
+
+  /**
+   * @return <b>true</b> if this type has a reference to a super type, <b>false</b> otherwise.
+   */
+  default boolean hasSuperType() {
+    return getSuperType().isPresent();
   }
 
   /**
@@ -176,22 +185,30 @@ public interface HxType
    * @param declaredTypes
    * @return
    */
+  default HxType setDeclaredTypes(HxType ... declaredTypes) {
+    return setDeclaredTypes(Arrays.asList(declaredTypes));
+  }
+
+  /**
+   * @param declaredTypes
+   * @return
+   */
   HxType setDeclaredTypes(List<HxType> declaredTypes);
 
   /**
    * @return
    */
-  HxType getEnclosingType();
+  Optional<HxType> getEnclosingType();
 
   /**
    * @return
    */
-  HxMethod getEnclosingMethod();
+  Optional<HxMethod> getEnclosingMethod();
 
   /**
    * @return
    */
-  HxConstructor getEnclosingConstructor();
+  Optional<HxConstructor> getEnclosingConstructor();
 
   /**
    * @param field to search for
@@ -664,12 +681,7 @@ public interface HxType
   /**
    * @return
    */
-  HxGeneric getGenericSuperType();
-
-  /**
-   * @return
-   */
-  List<HxGeneric> getGenericInterfaces();
+  Optional<HxGenericType> getGenericType();
 
   /**
    * Shortcut for: <code>getName().equals(haxxor.toJavaClassName(className))</code>
@@ -808,7 +820,7 @@ public interface HxType
   /**
    * @return component type of this array type or <b>null</b> if it isn't array type
    */
-  HxType getComponentType();
+  Optional<HxType> getComponentType();
 
   /**
    * @return whether this type represents array type or not
@@ -936,7 +948,10 @@ public interface HxType
     if(isPrimitive() || isArray()) {
       return toDescriptor();
     }
-    return getName().replace(HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR, HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR);
+    return getName().replace(
+        HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR,
+        HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR
+    );
   }
 
   /**
@@ -954,11 +969,18 @@ public interface HxType
     try {
       if (isArray()) {
         builder.append('[');
-        return getComponentType().toDescriptor(builder);
+        return getComponentType().get().toDescriptor(builder);
       }
-      builder.append('L')
-             .append(toInternalName())
-             .append(';');
+      builder.append('L');
+      final String name = getName();
+      for(int i = 0, len = name.length(); i<len; i++) {
+        char c = name.charAt(i);
+        if(c == HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR) {
+          c = HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR;
+        }
+        builder.append(c);
+      }
+      builder.append(';');
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }
