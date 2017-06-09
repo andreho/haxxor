@@ -76,6 +76,8 @@ public abstract class HxTypeTestUtils {
       return;
     }
 
+    System.out.println("-> " +type);
+
     if (type instanceof TypeVariable) {
       assertTrue(hxGeneric instanceof HxTypeVariable);
       checkTypeVariable(visited, (TypeVariable) type, (HxTypeVariable) hxGeneric);

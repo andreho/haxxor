@@ -82,7 +82,7 @@ public class HxGenericTypeImpl implements HxGenericType {
     }
   }
   private void printExtends(final StringBuilder builder) {
-    if(getSuperType() != null) {
+    if(getSuperType() != null && !"java.lang.Object".equals(getSuperType().toString())) {
       builder.append(" extends ").append(getSuperType());
     }
   }

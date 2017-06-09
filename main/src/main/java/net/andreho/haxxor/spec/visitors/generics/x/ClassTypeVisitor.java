@@ -145,8 +145,11 @@ public class ClassTypeVisitor extends ConsumingVisitor {
   @Override
   public void visitTypeVariable(final String name) {
     System.out.println("visitTypeVariable(\""+name+"\")");
-    HxTypeVariable typeArgument = typeVariable(name);
-    consume(typeArgument);
+    HxGeneric<?> result = typeVariable(name);
+    while(dimension-- > 0) {
+      result = new HxGenericArrayTypeImpl().setGenericComponentType(result);
+    }
+    consume(result);
 //    asParameterizedType().addActualTypeArgument(typeArgument);
     //asParameterizedType().addActualTypeArgument(typeVariable(name));
   }

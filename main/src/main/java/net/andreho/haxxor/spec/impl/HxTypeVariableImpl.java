@@ -81,7 +81,7 @@ public class HxTypeVariableImpl
   public String toString() {
     StringBuilder builder = new StringBuilder(getName());
     final Iterator<HxGeneric<?>> iterator = getInterfaceBounds().iterator();
-    final boolean hasClassBound = getClassBound() != null;
+    final boolean hasClassBound = getClassBound() != null && !"java.lang.Object".equals(getClassBound().toString());
     final boolean hasInterfaceBounds = iterator.hasNext();
 
     if(hasClassBound) {
