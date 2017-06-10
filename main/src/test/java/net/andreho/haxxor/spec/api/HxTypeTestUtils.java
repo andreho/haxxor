@@ -45,7 +45,7 @@ public abstract class HxTypeTestUtils {
   public static void checkTypes(TypeVariable<?>[] typeVariables,
                                  List<HxTypeVariable> hxTypeVariables) {
     Set<Object> visited = Collections.newSetFromMap(new IdentityHashMap<>());
-    assertEquals(typeVariables.length, hxTypeVariables.size());
+    assertEquals(typeVariables.length, hxTypeVariables.size(), "Invalid size of list with HxTypeVariable-s.");
 
     for (int i = 0; i < typeVariables.length; i++) {
       TypeVariable<?> typeVariable = typeVariables[i];
@@ -57,7 +57,7 @@ public abstract class HxTypeTestUtils {
   public static void checkTypes(java.lang.reflect.Type[] types,
                                  List<HxGeneric<?>> hxGenerics) {
     Set<Object> visited = Collections.newSetFromMap(new IdentityHashMap<>());
-    assertEquals(types.length, hxGenerics.size());
+    assertEquals(types.length, hxGenerics.size(), "Invalid size of list with HxGeneric-s.");
 
     for (int i = 0; i < types.length; i++) {
       java.lang.reflect.Type typeVariable = types[i];
@@ -70,25 +70,25 @@ public abstract class HxTypeTestUtils {
                                        java.lang.reflect.Type type,
                                        HxGeneric<?> hxGeneric) {
     if (visited.add(type)) {
-      assertTrue(visited.add(hxGeneric), hxGeneric.toString());
+      assertTrue(visited.add(hxGeneric), "Invalid tracking of HxGeneric: " + hxGeneric.toString());
     } else {
-      assertFalse(visited.add(hxGeneric), hxGeneric.toString());
+      assertFalse(visited.add(hxGeneric), "Invalid tracking of HxGeneric: " + hxGeneric.toString());
       return;
     }
 
     System.out.println("-> " +type);
 
     if (type instanceof TypeVariable) {
-      assertTrue(hxGeneric instanceof HxTypeVariable);
+      assertTrue(hxGeneric instanceof HxTypeVariable, "Expected: HxTypeVariable");
       checkTypeVariable(visited, (TypeVariable) type, (HxTypeVariable) hxGeneric);
     } else if (type instanceof ParameterizedType) {
-      assertTrue(hxGeneric instanceof HxParameterizedType);
+      assertTrue(hxGeneric instanceof HxParameterizedType, "Expected: HxParameterizedType");
       checkParameterizedType(visited, (ParameterizedType) type, (HxParameterizedType) hxGeneric);
     } else if (type instanceof WildcardType) {
-      assertTrue(hxGeneric instanceof HxWildcardType);
+      assertTrue(hxGeneric instanceof HxWildcardType, "Expected: HxWildcardType");
       checkWildcardType(visited, (WildcardType) type, (HxWildcardType) hxGeneric);
     } else if (type instanceof GenericArrayType) {
-      assertTrue(hxGeneric instanceof HxGenericArrayType);
+      assertTrue(hxGeneric instanceof HxGenericArrayType, "Expected: HxGenericArrayType");
       checkGenericArrayType(visited, (GenericArrayType) type, (HxGenericArrayType) hxGeneric);
     }
   }
@@ -101,8 +101,10 @@ public abstract class HxTypeTestUtils {
     final java.lang.reflect.Type[] bounds = typeVariable.getBounds();
     final HxGeneric<?> hxClassBound = hxTypeVariable.getClassBound();
 
-    assertEquals(bounds.length, (hxClassBound != null ? 1 : 0) + hxTypeVariable.getInterfaceBounds()
-                                                                               .size());
+    assertEquals(bounds.length,
+                 (hxClassBound != null ? 1 : 0) +
+                 hxTypeVariable.getInterfaceBounds().size(),
+                 "HxTypeVariable has invalid class-bound.");
 
     int offset = 0;
     if (hxClassBound != null) {
@@ -111,8 +113,9 @@ public abstract class HxTypeTestUtils {
     }
     for (int i = 0, len = hxTypeVariable.getInterfaceBounds()
                                         .size(); i < len; i++) {
-      checkUnknownType(visited, bounds[i + offset], hxTypeVariable.getInterfaceBounds()
-                                                                  .get(i));
+      checkUnknownType(visited,
+                       bounds[i + offset],
+                       hxTypeVariable.getInterfaceBounds().get(i));
     }
   }
 
@@ -125,14 +128,15 @@ public abstract class HxTypeTestUtils {
     if(!equalNames) {
       System.out.println("WTF?");
     }
-    assertTrue(equalNames, "Invalid raw-type: "+hxRawType);
+    assertTrue(equalNames, "HxParameterizedType has invalid raw-type: "+hxRawType);
 
     java.lang.reflect.Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
     List<HxGeneric<?>> hxActualTypeArguments = hxParameterizedType.getActualTypeArguments();
 
-    assertNotNull(actualTypeArguments);
-    assertNotNull(hxActualTypeArguments);
-    assertEquals(actualTypeArguments.length, hxActualTypeArguments.size());
+    assertNotNull(actualTypeArguments, "Actual-Arguments of ParameterizedType can't be null.");
+    assertNotNull(hxActualTypeArguments, "Actual-Arguments of HxParameterizedType can't be null.");
+    assertEquals(actualTypeArguments.length, hxActualTypeArguments.size(),
+                 "Actual-Arguments of HxParameterizedType has invalid size.");
 
     for (int i = 0; i < actualTypeArguments.length; i++) {
       java.lang.reflect.Type actualTypeArgument = actualTypeArguments[i];
@@ -157,8 +161,8 @@ public abstract class HxTypeTestUtils {
     assertNotNull(hxUpperBounds);
     assertNotNull(hxLowerBounds);
 
-    assertEquals(upperBounds.length, hxUpperBounds.size());
-    assertEquals(lowerBounds.length, hxLowerBounds.size());
+    assertEquals(upperBounds.length, hxUpperBounds.size(), "Wildcard's upper-bound has invalid size.");
+    assertEquals(lowerBounds.length, hxLowerBounds.size(), "Wildcard's lower-bound has invalid size.");
 
     for (int i = 0; i < upperBounds.length; i++) {
       java.lang.reflect.Type upperBound = upperBounds[i];
@@ -193,7 +197,7 @@ public abstract class HxTypeTestUtils {
       final HxParameter<P> hxParameter = hxParameters.get(i);
       final Haxxor haxxor = hxParameter.getHaxxor();
 
-      checkParameters(parameter, hxParameter, haxxor);
+      checkParameter(parameter, hxParameter, haxxor);
     }
   }
 
@@ -202,7 +206,7 @@ public abstract class HxTypeTestUtils {
     assertEquals(haxxor.toJavaClassName(method.getReturnType().getName()),
                  hxMethod.getReturnType().getName());
 
-    assertEquals(method.getName(), hxMethod.getName());
+    assertEquals(method.getName(), hxMethod.getName(), "Method has invalid name.");
 
     checkExecutable(method, hxMethod, haxxor);
   }
@@ -215,9 +219,12 @@ public abstract class HxTypeTestUtils {
   private static void checkExecutable(final Executable executable,
                                       final HxExecutable<?> parameterizable,
                                       final Haxxor haxxor) {
-    assertEquals(executable.getParameterCount(), parameterizable.getParametersCount());
-    assertEquals(executable.getParameterCount(), parameterizable.getParameters().size());
-    assertEquals(executable.getParameterCount(), parameterizable.getParameterTypes().size());
+    assertEquals(executable.getParameterCount(), parameterizable.getParametersCount(),
+                 "Parameter's count is wrong.");
+    assertEquals(executable.getParameterCount(), parameterizable.getParameters().size(),
+                 "Size of parameter's list is wrong.");
+    assertEquals(executable.getParameterCount(), parameterizable.getParameterTypes().size(),
+                 "Size of list with parameter's types is wrong.");
 
     String givenDescriptor;
     if(executable instanceof Method) {
@@ -226,28 +233,32 @@ public abstract class HxTypeTestUtils {
       givenDescriptor = Type.getConstructorDescriptor((Constructor<?>) executable);
     }
 
-    assertEquals(givenDescriptor, parameterizable.toDescriptor());
-    assertTrue(parameterizable.hasDescriptor(givenDescriptor));
+    assertEquals(givenDescriptor, parameterizable.toDescriptor(),
+                 "Invalid descriptor.");
+    assertTrue(parameterizable.hasDescriptor(givenDescriptor),
+               "Current parameterizable object must have given descriptor.");
 
     checkAnnotated(executable, parameterizable);
     checkParameters(executable.getParameters(), parameterizable.getParameters());
 
-    Parameter[] parameters = executable.getParameters();
+    final Parameter[] parameters = executable.getParameters();
+    final Class<?>[] parameterTypes = executable.getParameterTypes();
+
     for (int i = 0; i < parameters.length; i++) {
       Parameter parameter = parameters[i];
-
       HxType hxParameterType = parameterizable.getParameterTypeAt(i);
-      assertEquals(haxxor.toJavaClassName(executable.getParameterTypes()[i].getName()),
-                   hxParameterType.getName());
+
       assertEquals(haxxor.toJavaClassName(parameter.getType().getName()),
-                   hxParameterType.getName());
+                   hxParameterType.getName(), "Parameter's type at "+i+" is invalid.");
+      assertEquals(haxxor.toJavaClassName(parameterTypes[i].getName()),
+                   hxParameterType.getName(), "Type of parameter at "+i+" is invalid.");
     }
   }
 
 
-  public static <P extends HxExecutable<P>> void checkParameters(final Parameter parameter,
-                                                                 final HxParameter<P> hxParameter,
-                                                                 final Haxxor haxxor) {
+  public static <P extends HxExecutable<P>> void checkParameter(final Parameter parameter,
+                                                                final HxParameter<P> hxParameter,
+                                                                final Haxxor haxxor) {
     assertEquals(parameter.getName(), hxParameter.getName(),
                  "Invalid parameter's name.");
 
@@ -321,9 +332,9 @@ public abstract class HxTypeTestUtils {
 
   public static void checkAnnotations(final Annotation annotation,
                                       final HxAnnotation hxAnnotation) {
-    assertEquals(annotation.annotationType()
-                           .getName(), hxAnnotation.getType()
-                                                   .getName());
+    assertEquals(annotation.annotationType().getName(),
+                 hxAnnotation.getType().getName(),
+                 "Annotation's type is invalid.");
     try {
 
       for (Method method : annotation.annotationType()

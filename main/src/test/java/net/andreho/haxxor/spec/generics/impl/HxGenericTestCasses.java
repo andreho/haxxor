@@ -22,6 +22,12 @@ public class HxGenericTestCasses {
   }
 
   //<V::Ljava/io/Serializable;>Ljava/lang/Object;
+  static abstract class NodeA<A>
+      extends Node {
+
+  }
+
+  //<V::Ljava/io/Serializable;>Ljava/lang/Object;
   static abstract class NodeX<V extends Serializable>
       extends Node
       implements INode1<List<V>[]> {
@@ -74,6 +80,23 @@ public class HxGenericTestCasses {
 
   }
 
+  static class Node4A<A extends List<? super Object[]>>
+      extends NodeX<String> {
+
+  }
+
+  static class Node4B<E, C extends Map<E, Map<List<Map<String, Collection<E[][]>>>, Collection<E>>>>
+      extends NodeA<String>
+      implements INode1<C> {
+
+  }
+
+  static class Node4C<A extends Serializable, B extends Cloneable, C extends Comparable<C>, D extends A, E extends D>
+      extends NodeA<String>
+      implements INode1<A> {
+
+  }
+
   //<A::Ljava/util/List<+Ljava/io/Serializable;>;B::Ljava/util/Collection<Ljava/lang/String;>;C:Ljava/lang/Number;
   // >Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;
   static class Node5<A extends List<? extends Serializable>, B extends Collection<String>, C extends Number>
@@ -90,7 +113,14 @@ public class HxGenericTestCasses {
 
   //<A::Ljava/io/Serializable;:Ljava/lang/Comparable<TA;>;:Ljava/util/Collection<+TA;>;>
   // Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;
-  static class Node7<A extends Serializable & Comparable<A> & Collection<? extends A>>
+  static class Node7A<A extends Serializable & Comparable<A> & Collection<? extends A>>
+      extends NodeX<String> {
+
+  }
+
+  //<A::Ljava/io/Serializable;:Ljava/lang/Comparable<TA;>;:Ljava/util/Collection<+TA;>;>
+  // Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;
+  static class Node7B<A extends Serializable & Comparable<A> & Collection<? super A>>
       extends NodeX<String> {
 
   }
@@ -115,8 +145,6 @@ public class HxGenericTestCasses {
       extends INode0 {
 
   }
-
-  //-----------------------------------------------------------------------------------------------------------------
 
   interface INode2<A, B>
       extends INode1<A> {

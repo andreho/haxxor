@@ -62,7 +62,7 @@ public class HxAbstractGenericTest
   @Disabled
   void doTest()
   throws IOException {
-    checkSignatureParsing(HxGenericTestCasses.NodeXY.class);
+    checkSignatureParsing(HxGenericTestCasses.Node7B.class);
   }
 
   private String printTypeParameters(Class<?> cls) {

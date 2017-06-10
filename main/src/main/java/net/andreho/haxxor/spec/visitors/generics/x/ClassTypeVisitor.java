@@ -92,11 +92,6 @@ public class ClassTypeVisitor extends ConsumingVisitor {
     return this;
   }
 
-  @Override
-  public void visitTypeArgument() {
-    System.out.println("visitTypeArgument()");
-    asParameterizedType().addActualTypeArgument(new HxWildcardTypeImpl().asUnboundType(getHaxxor()));
-  }
 
   protected void visitPrimitiveClassType(String name) {
     HxType aType = getHaxxor().reference(asArray(name));
@@ -128,18 +123,29 @@ public class ClassTypeVisitor extends ConsumingVisitor {
   @Override
   public SignatureVisitor visitTypeArgument(final char wildcard) {
     System.out.println("visitTypeArgument('"+wildcard+"')");
-    if('=' == wildcard) {
-
-    } else if('+' == wildcard) {
-
-    } else if('-' == wildcard) {
-
-    }
     HxParameterizedTypeImpl parameterizedType = asParameterizedType();
-    if(array) {
-      asGenericArray();
+
+    if('+' == wildcard || '-' == wildcard) {
+      System.out.println(wildcard);
+      HxWildcardTypeImpl wildcardType = new HxWildcardTypeImpl();
+      parameterizedType.addActualTypeArgument(wildcardType);
+      if('+' == wildcard) {
+        return new ClassTypeVisitor(getHaxxor(), wildcardType::addUpperBound, getVariableResolver());
+      } //else if('-' == wildcard)
+      wildcardType.addUpperBound(getHaxxor().reference("java.lang.Object"));
+      return new ClassTypeVisitor(getHaxxor(), wildcardType::addLowerBound, getVariableResolver());
+    } else {
+      if(array) {
+        asGenericArray();
+      }
     }
     return new ClassTypeVisitor(getHaxxor(), parameterizedType::addActualTypeArgument, getVariableResolver());
+  }
+
+  @Override
+  public void visitTypeArgument() {
+    System.out.println("visitTypeArgument()");
+    asParameterizedType().addActualTypeArgument(new HxWildcardTypeImpl().asUnboundType(getHaxxor()));
   }
 
   @Override
@@ -151,14 +157,14 @@ public class ClassTypeVisitor extends ConsumingVisitor {
     }
     consume(result);
 //    asParameterizedType().addActualTypeArgument(typeArgument);
-    //asParameterizedType().addActualTypeArgument(typeVariable(name));
+//    asParameterizedType().addActualTypeArgument(typeVariable(name));
   }
 
   @Override
   public void visitEnd() {
     System.out.println("visitEnd()");
     HxGeneric<?> result;
-    if(arrayType != null) {
+     if(arrayType != null) {
       result = arrayType;
     } else if(parameterizedType != null) {
       result = parameterizedType.minimize();
@@ -174,7 +180,8 @@ public class ClassTypeVisitor extends ConsumingVisitor {
           result = new HxGenericArrayTypeImpl().setGenericComponentType(result);
         }
       } else if(result instanceof HxType) {
-        result = getHaxxor().reference(asArray(dimension, ((HxType) result).getName()));
+        final String typeName = ((HxType) result).getName();
+        result = getHaxxor().reference(asArray(dimension, typeName));
       }
     }
     consume(result);
