@@ -1,8 +1,8 @@
 package net.andreho.haxxor.cgen.instr.invokes;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.cgen.CodeStream;
-import net.andreho.haxxor.cgen.Context;
+import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInvokeInstruction;
 
 /**
@@ -17,7 +17,7 @@ public class INVOKESPECIAL
   }
 
   @Override
-  public void dumpTo(Context context, CodeStream codeStream) {
+  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
     codeStream.INVOKESPECIAL(this.owner, this.name, this.desc);
   }
 }

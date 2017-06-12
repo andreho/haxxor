@@ -1,8 +1,8 @@
 package net.andreho.haxxor.cgen.instr.switches;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.cgen.CodeStream;
-import net.andreho.haxxor.cgen.Context;
+import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractJumpInstruction;
 
@@ -16,8 +16,6 @@ public class LOOKUPSWITCH
     extends AbstractJumpInstruction {
 
   private final int[] keys;
-
-  //----------------------------------------------------------------------------------------------------------------
   private final LABEL[] labels;
 
   public LOOKUPSWITCH(LABEL defaultLabel, int[] keys, LABEL[] labels) {
@@ -26,15 +24,13 @@ public class LOOKUPSWITCH
     this.labels = labels;
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   @Override
-  public void dumpTo(Context context, CodeStream codeStream) {
+  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
     codeStream.LOOKUPSWITCH(this.label, this.keys, this.labels);
   }
 
   @Override
-  public List<Object> apply(final Context context) {
+  public List<Object> apply(final HxComputingContext context) {
     for (LABEL label : getLabels()) {
       label.addReference(this);
     }
@@ -42,13 +38,6 @@ public class LOOKUPSWITCH
     getDefaultLabel().addReference(this);
     return NO_STACK_PUSH;
   }
-
-  @Override
-  public int getStackPopCount() {
-    return 1;
-  }
-
-  //----------------------------------------------------------------------------------------------------------------
 
   public int[] getKeys() {
     return this.keys;

@@ -1,9 +1,9 @@
 package net.andreho.haxxor.cgen.instr.create;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.cgen.ArrayType;
-import net.andreho.haxxor.cgen.CodeStream;
-import net.andreho.haxxor.cgen.Context;
+import net.andreho.haxxor.cgen.HxArrayType;
+import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractSingleOperandInstruction;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
 public class NEWARRAY
     extends AbstractSingleOperandInstruction {
 
-  public NEWARRAY(ArrayType type) {
+  public NEWARRAY(HxArrayType type) {
     super(Opcodes.NEWARRAY, type.getCode());
   }
 
@@ -23,24 +23,19 @@ public class NEWARRAY
   }
 
   @Override
-  public void dumpTo(Context context, CodeStream codeStream) {
-    codeStream.NEWARRAY(ArrayType.fromCode(this.operand));
+  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+    codeStream.NEWARRAY(HxArrayType.fromCode(this.operand));
   }
 
   @Override
-  public List<Object> apply(final Context context) {
-    return ArrayType.fromCode(this.operand)
-                    .getStackOperands();
-  }
-
-  @Override
-  public int getStackPopCount() {
-    return 1;
+  public List<Object> apply(final HxComputingContext context) {
+    return HxArrayType.fromCode(this.operand)
+                      .getStackOperands();
   }
 
   @Override
   public String toString() {
-    return super.toString() + " " + ArrayType.fromCode(this.operand)
-                                             .getClassName();
+    return super.toString() + " " + HxArrayType.fromCode(this.operand)
+                                               .getClassName();
   }
 }

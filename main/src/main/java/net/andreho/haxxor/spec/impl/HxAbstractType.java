@@ -285,16 +285,6 @@ public class HxAbstractType
   }
 
   @Override
-  public String getGenericSignature() {
-    return "";
-  }
-
-  @Override
-  public HxType setGenericSignature(String genericSignature) {
-    return this;
-  }
-
-  @Override
   public Optional<HxGenericType> getGenericType() {
     return Optional.empty();
   }
@@ -452,7 +442,7 @@ public class HxAbstractType
   }
 
   private String getSimpleBinaryName() {
-    /* Code was copied from original java.lang.Class */
+    /* HxLinkedCode was copied from original java.lang.Class */
     Optional<HxType> enclosingType = getEnclosingType();
     if (!enclosingType.isPresent()) {
       // top level class
@@ -470,7 +460,7 @@ public class HxAbstractType
 
   @Override
   public String getSimpleName() {
-    /* Code was copied from original java.lang.Class */
+    /* HxLinkedCode was copied from original java.lang.Class */
     if (isArray()) {
       return getComponentType().get().getSimpleName() + "[]";
     }
@@ -499,13 +489,15 @@ public class HxAbstractType
 
   @Override
   public Optional<HxType> getComponentType() {
-    if (isArray()) {
-      String name = getName();
-      String componentType = name.substring(0, name.length() - 2);
-      HxTypeReference reference = getHaxxor().reference(componentType);
-      return Optional.of(reference);
+    if (!isArray()) {
+      return Optional.empty();
     }
-    return Optional.empty();
+
+    final String name = getName();
+    final String componentType = name.substring(0, name.length() - 2);
+    final HxTypeReference reference = getHaxxor().reference(componentType);
+
+    return Optional.of(reference);
   }
 
   @Override

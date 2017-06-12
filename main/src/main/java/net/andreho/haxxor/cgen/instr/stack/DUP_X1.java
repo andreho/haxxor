@@ -1,8 +1,8 @@
 package net.andreho.haxxor.cgen.instr.stack;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.cgen.CodeStream;
-import net.andreho.haxxor.cgen.Context;
+import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractZeroOperandInstruction;
 
 import java.util.List;
@@ -19,12 +19,12 @@ public class DUP_X1
   }
 
   @Override
-  public void dumpTo(Context context, CodeStream codeStream) {
+  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
     codeStream.DUP_X1();
   }
 
   @Override
-  public List<Object> apply(final Context context) {
+  public List<Object> apply(final HxComputingContext context) {
     Object value1 = context.getStack()
                            .peek();
     Object value2 = context.getStack()
@@ -34,10 +34,5 @@ public class DUP_X1
                   .prepare()
                   .push(value1, value2, value1)
                   .get();
-  }
-
-  @Override
-  public int getStackPopCount() {
-    return 2;
   }
 }

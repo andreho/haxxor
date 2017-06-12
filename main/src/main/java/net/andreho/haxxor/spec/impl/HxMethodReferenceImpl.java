@@ -223,7 +223,7 @@ public class HxMethodReferenceImpl
   }
 
   @Override
-  public String getGenericSignature() {
+  public Optional<String> getGenericSignature() {
     return toMethod().getGenericSignature();
   }
 

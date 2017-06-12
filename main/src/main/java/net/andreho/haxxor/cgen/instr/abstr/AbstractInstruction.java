@@ -1,8 +1,8 @@
 package net.andreho.haxxor.cgen.instr.abstr;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.cgen.Context;
-import net.andreho.haxxor.cgen.Instruction;
+import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.impl.HxAnnotatedImpl;
@@ -17,9 +17,11 @@ import java.util.function.Predicate;
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
 public abstract class AbstractInstruction
-    implements Instruction {
+    implements HxInstruction {
 
   public static final List<Object> NO_STACK_PUSH = Collections.emptyList();
+  protected static final int SINGLE_SLOT_SIZE = 1;
+  protected static final int DOUBLE_SLOT_SIZE = SINGLE_SLOT_SIZE + SINGLE_SLOT_SIZE;
   //----------------------------------------------------------------------------------------------------------------
   protected static final List<Object> PUSH_NULL = Collections.singletonList(Opcodes.NULL);
   protected static final List<Object> PUSH_UNINITIALIZED_THIS = Collections.singletonList(Opcodes.UNINITIALIZED_THIS);
@@ -38,8 +40,8 @@ public abstract class AbstractInstruction
   //----------------------------------------------------------------------------------------------------------------
 
   protected final int opcode;
-  protected Instruction next;
-  protected Instruction previous;
+  protected HxInstruction next;
+  protected HxInstruction previous;
   protected HxAnnotated annotated;
   private int index = -1;
 
@@ -72,28 +74,38 @@ public abstract class AbstractInstruction
   }
 
   @Override
-  public Instruction getNext() {
+  public int getPopSize() {
+    return getInstructionType().getPopSize();
+  }
+
+  @Override
+  public int getPushSize() {
+    return getInstructionType().getPushSize();
+  }
+
+  @Override
+  public HxInstruction getNext() {
     return next;
   }
 
   @Override
-  public void setNext(Instruction next) {
+  public void setNext(HxInstruction next) {
     this.next = next;
   }
 
   @Override
-  public Instruction getPrevious() {
+  public HxInstruction getPrevious() {
     return previous;
   }
 
   @Override
-  public void setPrevious(Instruction previous) {
+  public void setPrevious(HxInstruction previous) {
     this.previous = previous;
   }
 
   @Override
   public String toString() {
-    return "   " + getClass().getSimpleName();
+    return getClass().getSimpleName();
   }
 
   private HxAnnotated initAnnotated() {
@@ -104,7 +116,7 @@ public abstract class AbstractInstruction
   }
 
   @Override
-  public Instruction setAnnotations(final Collection<HxAnnotation> annotations) {
+  public HxInstruction setAnnotations(final Collection<HxAnnotation> annotations) {
     initAnnotated().setAnnotations(annotations);
     return this;
   }
@@ -172,7 +184,7 @@ public abstract class AbstractInstruction
      * @param desc    to analyse (either of a method or a field)
      * @return a type name in an internal type form (or special constant)
      */
-    public static List<Object> retrieveType(Context context, String desc) {
+    public static List<Object> retrieveType(HxComputingContext context, String desc) {
       int off;
       if (desc.charAt(0) != '(' || (off = desc.lastIndexOf(')')) < 0) {
         throw new IllegalArgumentException("Invalid descriptor: " + desc);

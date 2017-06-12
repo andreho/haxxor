@@ -32,6 +32,12 @@ public class HxGenericTestCasses {
       extends Node
       implements INode1<List<V>[]> {
 
+    private Map<String, V> mapWithStringAndValues;
+    private List<Set<V>> listOfSetsWithValues;
+    private List<V[]> listOfArraysWithValues;
+    private List<V> listOfValues;
+    private V[] arrayOfValues;
+    private V value;
   }
 
   static abstract class NodeY<V extends Number>
@@ -132,7 +138,7 @@ public class HxGenericTestCasses {
   :Ljava/util/Collection<Ljava/util/Set<Ljava/util/List<Ljava/util/Map<TA;*>;>;>;>;>
   Lnet/andreho/haxxor/spec/generics/impl/HxAbstractGenericTest$NodeX<Ljava/lang/String;>;
   */
-  static class Node8<A extends AnyNode & Serializable & Comparable<A> & Collection<Set<List<Map<A, ?>>>>>
+  static class Node8<A extends AnyNode & Serializable & Comparable<A> & Collection<Set<List<Map<A, ?>>[]>>>
       extends NodeX<String> {
 
   }
@@ -152,7 +158,7 @@ public class HxGenericTestCasses {
   }
 
   interface INode3<A, B, C>
-      extends INode2<A[][], byte[]> {
+      extends INode2<List<A[][]>, byte[]> {
 
   }
 

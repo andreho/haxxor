@@ -18,6 +18,7 @@ public interface HxField
     extends HxAnnotated<HxField>,
             HxMember<HxField>,
             HxOwned<HxField>,
+            HxGeneric<HxField>,
             HxIndexed,
             HxProvider,
             Cloneable {
@@ -166,31 +167,9 @@ public interface HxField
   }
 
   /**
-   * @return <b>true</b> if this field instance has some generic information
-   */
-  default boolean isGeneric() {
-    return getGenericSignature() != null && !getGenericSignature().isEmpty();
-  }
-
-  /**
-   * @return raw generic signature of this element
-   */
-  default String getGenericSignature() {
-    return "";
-  }
-
-  /**
-   * @param genericSignature new raw generic signature
-   * @return
-   */
-  default HxField setGenericSignature(String genericSignature) {
-    return this;
-  }
-
-  /**
    * @return generic type of this field
    */
-  default HxGeneric getGenericType() {
+  default HxGenericElement getGenericElement() {
     return getType();
   }
 

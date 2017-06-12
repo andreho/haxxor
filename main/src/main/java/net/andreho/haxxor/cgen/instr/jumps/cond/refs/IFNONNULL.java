@@ -1,8 +1,8 @@
 package net.andreho.haxxor.cgen.instr.jumps.cond.refs;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.cgen.CodeStream;
-import net.andreho.haxxor.cgen.Context;
+import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractJumpInstruction;
 
@@ -17,12 +17,7 @@ public class IFNONNULL
   }
 
   @Override
-  public void dumpTo(Context context, CodeStream codeStream) {
+  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
     codeStream.IFNONNULL(this.label);
-  }
-
-  @Override
-  public int getStackPopCount() {
-    return 1;
   }
 }

@@ -1,8 +1,8 @@
 package net.andreho.haxxor.cgen.instr;
 
-import net.andreho.haxxor.cgen.CodeStream;
-import net.andreho.haxxor.cgen.Context;
-import net.andreho.haxxor.cgen.Instruction;
+import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInstruction;
 
 import java.util.List;
@@ -23,32 +23,37 @@ public class END
   }
 
   @Override
-  public void dumpTo(final Context context, final CodeStream codeStream) {
+  public void dumpTo(final HxComputingContext context, final HxCodeStream codeStream) {
     codeStream.END();
   }
 
   @Override
-  public List<Object> apply(final Context context) {
+  public List<Object> apply(final HxComputingContext context) {
     return NO_STACK_PUSH;
   }
 
   @Override
-  public int getStackPopCount() {
+  public int getPushSize() {
     return 0;
   }
 
   @Override
-  public void setNext(final Instruction next) {
+  public int getPopSize() {
+    return 0;
+  }
+
+  @Override
+  public void setNext(final HxInstruction next) {
     throw new IllegalStateException("END must be the last instruction.");
   }
 
   @Override
-  public Instruction append(final Instruction inst) {
+  public HxInstruction append(final HxInstruction inst) {
     throw new IllegalStateException("END must be the last instruction.");
   }
 
   @Override
-  public Instruction remove() {
+  public HxInstruction remove() {
     throw new IllegalStateException("END instruction can't be removed.");
   }
 }

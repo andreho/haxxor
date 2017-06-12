@@ -28,10 +28,12 @@ public class HxTypeImpl
     implements HxType {
 
   protected Version version = Version.V1_8;
+
   protected HxType superType;
-  protected String genericSignature = "";
   protected List<HxType> interfaces = Collections.emptyList();
   protected List<HxType> declaredTypes = Collections.emptyList();
+
+  protected Optional<String> genericSignature = Optional.empty();
 
   protected List<HxField> fields = Collections.emptyList();
   protected Map<String, HxField> fieldMap = Collections.emptyMap();
@@ -109,13 +111,17 @@ public class HxTypeImpl
   }
 
   @Override
-  public String getGenericSignature() {
+  public Optional<String> getGenericSignature() {
     return genericSignature;
   }
 
   @Override
   public HxType setGenericSignature(String genericSignature) {
-    this.genericSignature = genericSignature;
+    if(genericSignature == null || genericSignature.isEmpty()) {
+      this.genericSignature = Optional.empty();
+    } else {
+      this.genericSignature = Optional.of(genericSignature);
+    }
     return this;
   }
 
@@ -555,9 +561,10 @@ public class HxTypeImpl
     writer.visit(getVersion().getCode(),
                  getModifiers(),
                  getName(),
-                 getGenericSignature(),
-                 getSuperType().get().getName(),
-                 getInterfaces().toArray(new String[0]));
+                 getGenericSignature().orElse(null),
+                 getSuperType().get().toInternalName(),
+                 getInterfaces().stream().map(HxType::toInternalName).toArray(String[]::new)
+    );
 
     for (HxAnnotation annotation : getAnnotations()) {
       //writer.visitAnnotation()

@@ -7,13 +7,13 @@ import java.util.List;
  * <br/>Created by a.hofmann on 11.03.2016.<br/>
  */
 public interface HxWildcardType
-    extends HxGeneric<HxWildcardType> {
+    extends HxGenericElement<HxWildcardType> {
 
-  List<HxGeneric> getUpperBounds();
+  List<HxGenericElement> getUpperBounds();
 
-  HxWildcardType setUpperBounds(List<HxGeneric> upperBounds);
+  HxWildcardType setUpperBounds(List<HxGenericElement> upperBounds);
 
-  List<HxGeneric> getLowerBounds();
+  List<HxGenericElement> getLowerBounds();
 
-  HxWildcardType setLowerBounds(List<HxGeneric> lowerBounds);
+  HxWildcardType setLowerBounds(List<HxGenericElement> lowerBounds);
 }

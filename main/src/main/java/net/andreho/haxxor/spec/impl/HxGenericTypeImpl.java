@@ -1,50 +1,36 @@
 package net.andreho.haxxor.spec.impl;
 
-import net.andreho.haxxor.spec.api.HxGeneric;
+import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.spec.api.HxGenericElement;
 import net.andreho.haxxor.spec.api.HxGenericType;
+import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxTypeVariable;
+import net.andreho.haxxor.spec.visitors.HxGenericSignatureReader;
+import net.andreho.haxxor.spec.visitors.HxGenericSignatureVisitor;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
+import static java.util.Objects.requireNonNull;
 import static net.andreho.haxxor.Utils.isUninitialized;
+import static net.andreho.haxxor.spec.api.HxConstants.JAVA_LANG_OBJECT;
 
 /**
  * <br/>Created by a.hofmann on 08.06.2017 at 00:25.
  */
-public class HxGenericTypeImpl implements HxGenericType {
+public class HxGenericTypeImpl extends HxAbstractInterpretable implements HxGenericType {
 
+  private final HxType declaringType;
+  private HxGenericElement<?> superType;
   private List<HxTypeVariable> typeVariables = Collections.emptyList();
-  private HxGeneric<?> superType;
-  private List<HxGeneric<?>> interfaces = Collections.emptyList();
+  private List<HxGenericElement<?>> interfaces = Collections.emptyList();
 
-  @Override
-  public List<HxTypeVariable> getTypeVariables() {
-    return typeVariables;
-  }
-
-  public void setTypeVariables(final List<HxTypeVariable> typeVariables) {
-    this.typeVariables = typeVariables;
-  }
-
-  @Override
-  public HxGeneric<?> getSuperType() {
-    return superType;
-  }
-
-  public void setSuperType(final HxGeneric<?> superType) {
-    this.superType = superType;
-  }
-
-  @Override
-  public List<HxGeneric<?>> getInterfaces() {
-    return interfaces;
-  }
-
-  public void setInterfaces(final List<HxGeneric<?>> interfaces) {
-    this.interfaces = interfaces;
+  public HxGenericTypeImpl(HxType owner, String signature) {
+    this.declaringType = requireNonNull(owner);
+    interpret(signature);
   }
 
   public HxGenericTypeImpl initialize() {
@@ -58,8 +44,60 @@ public class HxGenericTypeImpl implements HxGenericType {
   }
 
   @Override
-  public void interpret(final String signature) {
+  protected void interpret(final String signature) {
+    final HxGenericSignatureReader reader = new HxGenericSignatureReader(signature);
+    final HxGenericSignatureVisitor visitor = new HxGenericSignatureVisitor(this);
+    reader.accept(visitor);
+  }
 
+  @Override
+  public Haxxor getHaxxor() {
+    return getDeclaringType().getHaxxor();
+  }
+
+  @Override
+  public HxType getDeclaringType() {
+    return declaringType;
+  }
+
+  @Override
+  public Optional<HxTypeVariable> getVariable(final String name) {
+    for(HxTypeVariable variable : getTypeVariables()) {
+      if(name.equals(variable.getName())) {
+        return Optional.of(variable);
+      }
+    }
+    return Optional.empty();
+  }
+
+  @Override
+  public List<HxTypeVariable> getTypeVariables() {
+    return typeVariables;
+  }
+
+  public HxGenericTypeImpl setTypeVariables(final List<HxTypeVariable> typeVariables) {
+    this.typeVariables = requireNonNull(typeVariables);
+    return this;
+  }
+
+  @Override
+  public HxGenericElement<?> getSuperType() {
+    return superType;
+  }
+
+  public HxGenericTypeImpl setSuperType(final HxGenericElement<?> superType) {
+    this.superType = superType;
+    return this;
+  }
+
+  @Override
+  public List<HxGenericElement<?>> getInterfaces() {
+    return interfaces;
+  }
+
+  public HxGenericTypeImpl setInterfaces(final List<HxGenericElement<?>> interfaces) {
+    this.interfaces = requireNonNull(interfaces);
+    return this;
   }
 
   @Override
@@ -82,12 +120,12 @@ public class HxGenericTypeImpl implements HxGenericType {
     }
   }
   private void printExtends(final StringBuilder builder) {
-    if(getSuperType() != null && !"java.lang.Object".equals(getSuperType().toString())) {
+    if(getSuperType() != null && !JAVA_LANG_OBJECT.equals(getSuperType().toString())) {
       builder.append(" extends ").append(getSuperType());
     }
   }
   private void printImplements(final StringBuilder builder) {
-    Iterator<HxGeneric<?>> interfaceIterator = getInterfaces().iterator();
+    Iterator<HxGenericElement<?>> interfaceIterator = getInterfaces().iterator();
     if(interfaceIterator.hasNext()) {
       builder.append(" implements ").append(interfaceIterator.next());
       while(interfaceIterator.hasNext()) {

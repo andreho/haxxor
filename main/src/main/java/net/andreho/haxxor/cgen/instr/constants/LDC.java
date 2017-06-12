@@ -1,11 +1,18 @@
 package net.andreho.haxxor.cgen.instr.constants;
 
-import net.andreho.asm.org.objectweb.asm.Handle;
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.cgen.CodeStream;
-import net.andreho.haxxor.cgen.Context;
+import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxHandle;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInstruction;
-import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.cgen.instr.constants.ldc.DoubleLDC;
+import net.andreho.haxxor.cgen.instr.constants.ldc.FloatLDC;
+import net.andreho.haxxor.cgen.instr.constants.ldc.IntegerLDC;
+import net.andreho.haxxor.cgen.instr.constants.ldc.LongLDC;
+import net.andreho.haxxor.cgen.instr.constants.ldc.MethodHandleLDC;
+import net.andreho.haxxor.cgen.instr.constants.ldc.MethodTypeLDC;
+import net.andreho.haxxor.cgen.instr.constants.ldc.StringLDC;
+import net.andreho.haxxor.cgen.instr.constants.ldc.TypeLDC;
 
 import java.util.List;
 import java.util.Objects;
@@ -13,145 +20,85 @@ import java.util.Objects;
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
-public class LDC
+public abstract class LDC<T>
     extends AbstractInstruction {
 
-  public static final int METHOD = 5;
-  public static final int TYPE = 7;
-  //    private static final int BOOLEAN = -4;
-//    private static final int BYTE = -3;
-//    private static final int CHAR = -2;
-//    private static final int SHORT = -1;
-  protected static final int INT = 0;
-  protected static final int FLOAT = 1;
-  protected static final int LONG = 2;
-  protected static final int DOUBLE = 3;
-  protected static final int STRING = 4;
-  protected static final int HANDLE = 6;
+  public static LDC<Integer> of(int value) {
+    return new IntegerLDC(value);
+  }
 
-  //----------------------------------------------------------------------------------------------------------------
-  private final int type;
-  private final Object value;
+  public static LDC<Float> of(float value) {
+    return new FloatLDC(value);
+  }
 
-  protected LDC(Object value, int type) {
+  public static LDC<Long> of(long value) {
+    return new LongLDC(value);
+  }
+
+  public static LDC<Double> of(double value) {
+    return new DoubleLDC(value);
+  }
+
+  public static LDC<String> of(String value) {
+    return new StringLDC(value);
+  }
+
+  public static LDC<String> ofType(String value) {
+    return new TypeLDC(value);
+  }
+
+  public static LDC<String> ofMethodType(String value) {
+    return new MethodTypeLDC(value);
+  }
+
+  public static LDC<HxHandle> ofMethodHandle(HxHandle value) {
+    return new MethodHandleLDC(value);
+  }
+
+  public enum ConstantType {
+    INT,
+    FLOAT,
+    LONG,
+    DOUBLE,
+    STRING,
+    TYPE,
+    METHOD_TYPE,
+    METHOD_HANDLE
+  }
+
+  private final ConstantType type;
+  private final T value;
+
+  protected LDC(T value, ConstantType type) {
     super(Opcodes.LDC);
     this.value = Objects.requireNonNull(value);
-    this.type = type;
+    this.type = Objects.requireNonNull(type);
   }
 
-  public LDC(int value) {
-    this(Integer.valueOf(value), INT);
+  public ConstantType getType() {
+    return type;
   }
 
-  public LDC(float value) {
-    this(Float.valueOf(value), FLOAT);
-  }
-
-  public LDC(long value) {
-    this(Long.valueOf(value), LONG);
-  }
-
-  public LDC(double value) {
-    this(Double.valueOf(value), DOUBLE);
-  }
-
-  public LDC(String value) {
-    this(value, STRING);
-  }
-
-  public LDC(Handle value) {
-    this(value, HANDLE);
-  }
-
-  public LDC(Type value) {
-    this(value, TYPE);
-  }
-
-  //----------------------------------------------------------------------------------------------------------------
-
-  public LDC(net.andreho.asm.org.objectweb.asm.Type value, int type) {
-    super(Opcodes.LDC);
-    Objects.requireNonNull(value);
-    this.type = type;
-    switch (type) {
-      case METHOD:
-        this.value = value.getDescriptor();
-        break;
-      case TYPE:
-        this.value = value.getInternalName();
-      default:
-        throw new IllegalArgumentException("Unsupported type in conjunction with a Type instance: " + type);
-    }
-  }
-
-  public LDC(HxType value) {
-    this(value.getName(), TYPE);
-  }
-
-  //----------------------------------------------------------------------------------------------------------------
-
-  @Override
-  public void dumpTo(Context context, CodeStream codeStream) {
-    switch (type) {
-      case INT:
-        codeStream.LDC((Integer) value);
-        break;
-      case FLOAT:
-        codeStream.LDC((Float) value);
-        break;
-      case LONG:
-        codeStream.LDC((Long) value);
-        break;
-      case DOUBLE:
-        codeStream.LDC((Double) value);
-        break;
-      case STRING:
-        codeStream.LDC(value.toString());
-        break;
-      case METHOD:
-        codeStream.METHOD(value.toString());
-        break;
-      case HANDLE:
-        codeStream.HANDLE((Handle) value);
-        break;
-      default: {
-        if (value instanceof String) {
-          codeStream.TYPE(value.toString());
-        } else {
-          throw new IllegalStateException("Unreachable.");
-        }
-      }
-    }
+  public T getValue() {
+    return value;
   }
 
   @Override
-  public List<Object> apply(final Context context) {
-    switch (type) {
-      case INT:
-        return PUSH_INT;
-      case FLOAT:
-        return PUSH_FLOAT;
-      case LONG:
-        return PUSH_LONG;
-      case DOUBLE:
-        return PUSH_DOUBLE;
-      case STRING:
-        return PUSH_STRING;
-      case METHOD:
-        return PUSH_METHOD;
-      case HANDLE:
-        return PUSH_HANDLE;
-      case TYPE:
-        return PUSH_TYPE;
-      default: {
-        throw new IllegalStateException("Unreachable.");
-      }
-    }
-  }
+  public abstract void dumpTo(HxComputingContext context, HxCodeStream codeStream);
 
   @Override
-  public int getStackPopCount() {
+  public abstract List<Object> apply(final HxComputingContext context);
+
+  @Override
+  public int getPopSize() {
     return 0;
+  }
+
+  @Override
+  public int getPushSize() {
+    return getType() == ConstantType.LONG || getType() == ConstantType.DOUBLE?
+           DOUBLE_SLOT_SIZE :
+           SINGLE_SLOT_SIZE;
   }
 
   @Override

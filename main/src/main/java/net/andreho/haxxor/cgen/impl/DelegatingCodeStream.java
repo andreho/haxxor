@@ -1,1092 +1,1092 @@
 package net.andreho.haxxor.cgen.impl;
 
-import net.andreho.asm.org.objectweb.asm.Handle;
-import net.andreho.haxxor.cgen.ArrayType;
-import net.andreho.haxxor.cgen.CodeStream;
-import net.andreho.haxxor.cgen.Frames;
+import net.andreho.haxxor.cgen.HxArrayType;
+import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxFrames;
+import net.andreho.haxxor.cgen.HxHandle;
 import net.andreho.haxxor.cgen.instr.LABEL;
 
 /**
  * <br/>Created by a.hofmann on 05.06.2017 at 07:05.
  */
 public class DelegatingCodeStream
-    implements CodeStream {
+    implements HxCodeStream {
 
-  private final CodeStream codeStream;
+  private final HxCodeStream codeStream;
 
-  public DelegatingCodeStream(final CodeStream codeStream) {
+  public DelegatingCodeStream(final HxCodeStream codeStream) {
     this.codeStream = codeStream;
   }
 
   @Override
-  public CodeStream BEGIN() {
+  public HxCodeStream BEGIN() {
     codeStream.BEGIN();
     return this;
   }
 
   @Override
-  public CodeStream NOP() {
+  public HxCodeStream NOP() {
     codeStream.NOP();
     return this;
   }
 
   @Override
-  public CodeStream ACONST_NULL() {
+  public HxCodeStream ACONST_NULL() {
     codeStream.ACONST_NULL();
     return this;
   }
 
   @Override
-  public CodeStream ICONST_M1() {
+  public HxCodeStream ICONST_M1() {
     codeStream.ICONST_M1();
     return this;
   }
 
   @Override
-  public CodeStream ICONST_0() {
+  public HxCodeStream ICONST_0() {
     codeStream.ICONST_0();
     return this;
   }
 
   @Override
-  public CodeStream ICONST_1() {
+  public HxCodeStream ICONST_1() {
     codeStream.ICONST_1();
     return this;
   }
 
   @Override
-  public CodeStream ICONST_2() {
+  public HxCodeStream ICONST_2() {
     codeStream.ICONST_2();
     return this;
   }
 
   @Override
-  public CodeStream ICONST_3() {
+  public HxCodeStream ICONST_3() {
     codeStream.ICONST_3();
     return this;
   }
 
   @Override
-  public CodeStream ICONST_4() {
+  public HxCodeStream ICONST_4() {
     codeStream.ICONST_4();
     return this;
   }
 
   @Override
-  public CodeStream ICONST_5() {
+  public HxCodeStream ICONST_5() {
     codeStream.ICONST_5();
     return this;
   }
 
   @Override
-  public CodeStream LCONST_0() {
+  public HxCodeStream LCONST_0() {
     codeStream.LCONST_0();
     return this;
   }
 
   @Override
-  public CodeStream LCONST_1() {
+  public HxCodeStream LCONST_1() {
     codeStream.LCONST_1();
     return this;
   }
 
   @Override
-  public CodeStream FCONST_0() {
+  public HxCodeStream FCONST_0() {
     codeStream.FCONST_0();
     return this;
   }
 
   @Override
-  public CodeStream FCONST_1() {
+  public HxCodeStream FCONST_1() {
     codeStream.FCONST_1();
     return this;
   }
 
   @Override
-  public CodeStream FCONST_2() {
+  public HxCodeStream FCONST_2() {
     codeStream.FCONST_2();
     return this;
   }
 
   @Override
-  public CodeStream DCONST_0() {
+  public HxCodeStream DCONST_0() {
     codeStream.DCONST_0();
     return this;
   }
 
   @Override
-  public CodeStream DCONST_1() {
+  public HxCodeStream DCONST_1() {
     codeStream.DCONST_1();
     return this;
   }
 
   @Override
-  public CodeStream BIPUSH(final byte value) {
+  public HxCodeStream BIPUSH(final byte value) {
     codeStream.BIPUSH(value);
     return this;
   }
 
   @Override
-  public CodeStream SIPUSH(final short value) {
+  public HxCodeStream SIPUSH(final short value) {
     codeStream.SIPUSH(value);
     return this;
   }
 
   @Override
-  public CodeStream LDC(final int value) {
+  public HxCodeStream LDC(final int value) {
     codeStream.LDC(value);
     return this;
   }
 
   @Override
-  public CodeStream LDC(final float value) {
+  public HxCodeStream LDC(final float value) {
     codeStream.LDC(value);
     return this;
   }
 
   @Override
-  public CodeStream LDC(final long value) {
+  public HxCodeStream LDC(final long value) {
     codeStream.LDC(value);
     return this;
   }
 
   @Override
-  public CodeStream LDC(final double value) {
+  public HxCodeStream LDC(final double value) {
     codeStream.LDC(value);
     return this;
   }
 
   @Override
-  public CodeStream LDC(final String value) {
+  public HxCodeStream LDC(final String value) {
     codeStream.LDC(value);
     return this;
   }
 
   @Override
-  public CodeStream HANDLE(final Handle handle) {
+  public HxCodeStream HANDLE(final HxHandle handle) {
     codeStream.HANDLE(handle);
     return this;
   }
 
   @Override
-  public CodeStream METHOD(final String methodDescriptor) {
+  public HxCodeStream METHOD(final String methodDescriptor) {
     codeStream.METHOD(methodDescriptor);
     return this;
   }
 
   @Override
-  public CodeStream TYPE(final String internalType) {
+  public HxCodeStream TYPE(final String internalType) {
     codeStream.TYPE(internalType);
     return this;
   }
 
   @Override
-  public CodeStream ILOAD(final int idx) {
+  public HxCodeStream ILOAD(final int idx) {
     codeStream.ILOAD(idx);
     return this;
   }
 
   @Override
-  public CodeStream LLOAD(final int idx) {
+  public HxCodeStream LLOAD(final int idx) {
     codeStream.LLOAD(idx);
     return this;
   }
 
   @Override
-  public CodeStream FLOAD(final int idx) {
+  public HxCodeStream FLOAD(final int idx) {
     codeStream.FLOAD(idx);
     return this;
   }
 
   @Override
-  public CodeStream DLOAD(final int idx) {
+  public HxCodeStream DLOAD(final int idx) {
     codeStream.DLOAD(idx);
     return this;
   }
 
   @Override
-  public CodeStream ALOAD(final int idx) {
+  public HxCodeStream ALOAD(final int idx) {
     codeStream.ALOAD(idx);
     return this;
   }
 
   @Override
-  public CodeStream THIS() {
+  public HxCodeStream THIS() {
     codeStream.THIS();
     return this;
   }
 
   @Override
-  public CodeStream IALOAD() {
+  public HxCodeStream IALOAD() {
     codeStream.IALOAD();
     return this;
   }
 
   @Override
-  public CodeStream LALOAD() {
+  public HxCodeStream LALOAD() {
     codeStream.LALOAD();
     return this;
   }
 
   @Override
-  public CodeStream FALOAD() {
+  public HxCodeStream FALOAD() {
     codeStream.FALOAD();
     return this;
   }
 
   @Override
-  public CodeStream DALOAD() {
+  public HxCodeStream DALOAD() {
     codeStream.DALOAD();
     return this;
   }
 
   @Override
-  public CodeStream AALOAD() {
+  public HxCodeStream AALOAD() {
     codeStream.AALOAD();
     return this;
   }
 
   @Override
-  public CodeStream BALOAD() {
+  public HxCodeStream BALOAD() {
     codeStream.BALOAD();
     return this;
   }
 
   @Override
-  public CodeStream CALOAD() {
+  public HxCodeStream CALOAD() {
     codeStream.CALOAD();
     return this;
   }
 
   @Override
-  public CodeStream SALOAD() {
+  public HxCodeStream SALOAD() {
     codeStream.SALOAD();
     return this;
   }
 
   @Override
-  public CodeStream ISTORE(final int idx) {
+  public HxCodeStream ISTORE(final int idx) {
     codeStream.ISTORE(idx);
     return this;
   }
 
   @Override
-  public CodeStream LSTORE(final int idx) {
+  public HxCodeStream LSTORE(final int idx) {
     codeStream.LSTORE(idx);
     return this;
   }
 
   @Override
-  public CodeStream FSTORE(final int idx) {
+  public HxCodeStream FSTORE(final int idx) {
     codeStream.FSTORE(idx);
     return this;
   }
 
   @Override
-  public CodeStream DSTORE(final int idx) {
+  public HxCodeStream DSTORE(final int idx) {
     codeStream.DSTORE(idx);
     return this;
   }
 
   @Override
-  public CodeStream ASTORE(final int idx) {
+  public HxCodeStream ASTORE(final int idx) {
     codeStream.ASTORE(idx);
     return this;
   }
 
   @Override
-  public CodeStream IASTORE() {
+  public HxCodeStream IASTORE() {
     codeStream.IASTORE();
     return this;
   }
 
   @Override
-  public CodeStream LASTORE() {
+  public HxCodeStream LASTORE() {
     codeStream.LASTORE();
     return this;
   }
 
   @Override
-  public CodeStream FASTORE() {
+  public HxCodeStream FASTORE() {
     codeStream.FASTORE();
     return this;
   }
 
   @Override
-  public CodeStream DASTORE() {
+  public HxCodeStream DASTORE() {
     codeStream.DASTORE();
     return this;
   }
 
   @Override
-  public CodeStream AASTORE() {
+  public HxCodeStream AASTORE() {
     codeStream.AASTORE();
     return this;
   }
 
   @Override
-  public CodeStream BASTORE() {
+  public HxCodeStream BASTORE() {
     codeStream.BASTORE();
     return this;
   }
 
   @Override
-  public CodeStream CASTORE() {
+  public HxCodeStream CASTORE() {
     codeStream.CASTORE();
     return this;
   }
 
   @Override
-  public CodeStream SASTORE() {
+  public HxCodeStream SASTORE() {
     codeStream.SASTORE();
     return this;
   }
 
   @Override
-  public CodeStream POP() {
+  public HxCodeStream POP() {
     codeStream.POP();
     return this;
   }
 
   @Override
-  public CodeStream POP2() {
+  public HxCodeStream POP2() {
     codeStream.POP2();
     return this;
   }
 
   @Override
-  public CodeStream DUP() {
+  public HxCodeStream DUP() {
     codeStream.DUP();
     return this;
   }
 
   @Override
-  public CodeStream DUP_X1() {
+  public HxCodeStream DUP_X1() {
     codeStream.DUP_X1();
     return this;
   }
 
   @Override
-  public CodeStream DUP_X2() {
+  public HxCodeStream DUP_X2() {
     codeStream.DUP_X2();
     return this;
   }
 
   @Override
-  public CodeStream DUP2() {
+  public HxCodeStream DUP2() {
     codeStream.DUP2();
     return this;
   }
 
   @Override
-  public CodeStream DUP2_X1() {
+  public HxCodeStream DUP2_X1() {
     codeStream.DUP2_X1();
     return this;
   }
 
   @Override
-  public CodeStream DUP2_X2() {
+  public HxCodeStream DUP2_X2() {
     codeStream.DUP2_X2();
     return this;
   }
 
   @Override
-  public CodeStream SWAP() {
+  public HxCodeStream SWAP() {
     codeStream.SWAP();
     return this;
   }
 
   @Override
-  public CodeStream IADD() {
+  public HxCodeStream IADD() {
     codeStream.IADD();
     return this;
   }
 
   @Override
-  public CodeStream LADD() {
+  public HxCodeStream LADD() {
     codeStream.LADD();
     return this;
   }
 
   @Override
-  public CodeStream FADD() {
+  public HxCodeStream FADD() {
     codeStream.FADD();
     return this;
   }
 
   @Override
-  public CodeStream DADD() {
+  public HxCodeStream DADD() {
     codeStream.DADD();
     return this;
   }
 
   @Override
-  public CodeStream ISUB() {
+  public HxCodeStream ISUB() {
     codeStream.ISUB();
     return this;
   }
 
   @Override
-  public CodeStream LSUB() {
+  public HxCodeStream LSUB() {
     codeStream.LSUB();
     return this;
   }
 
   @Override
-  public CodeStream FSUB() {
+  public HxCodeStream FSUB() {
     codeStream.FSUB();
     return this;
   }
 
   @Override
-  public CodeStream DSUB() {
+  public HxCodeStream DSUB() {
     codeStream.DSUB();
     return this;
   }
 
   @Override
-  public CodeStream IMUL() {
+  public HxCodeStream IMUL() {
     codeStream.IMUL();
     return this;
   }
 
   @Override
-  public CodeStream LMUL() {
+  public HxCodeStream LMUL() {
     codeStream.LMUL();
     return this;
   }
 
   @Override
-  public CodeStream FMUL() {
+  public HxCodeStream FMUL() {
     codeStream.FMUL();
     return this;
   }
 
   @Override
-  public CodeStream DMUL() {
+  public HxCodeStream DMUL() {
     codeStream.DMUL();
     return this;
   }
 
   @Override
-  public CodeStream IDIV() {
+  public HxCodeStream IDIV() {
     codeStream.IDIV();
     return this;
   }
 
   @Override
-  public CodeStream LDIV() {
+  public HxCodeStream LDIV() {
     codeStream.LDIV();
     return this;
   }
 
   @Override
-  public CodeStream FDIV() {
+  public HxCodeStream FDIV() {
     codeStream.FDIV();
     return this;
   }
 
   @Override
-  public CodeStream DDIV() {
+  public HxCodeStream DDIV() {
     codeStream.DDIV();
     return this;
   }
 
   @Override
-  public CodeStream IREM() {
+  public HxCodeStream IREM() {
     codeStream.IREM();
     return this;
   }
 
   @Override
-  public CodeStream LREM() {
+  public HxCodeStream LREM() {
     codeStream.LREM();
     return this;
   }
 
   @Override
-  public CodeStream FREM() {
+  public HxCodeStream FREM() {
     codeStream.FREM();
     return this;
   }
 
   @Override
-  public CodeStream DREM() {
+  public HxCodeStream DREM() {
     codeStream.DREM();
     return this;
   }
 
   @Override
-  public CodeStream INEG() {
+  public HxCodeStream INEG() {
     codeStream.INEG();
     return this;
   }
 
   @Override
-  public CodeStream LNEG() {
+  public HxCodeStream LNEG() {
     codeStream.LNEG();
     return this;
   }
 
   @Override
-  public CodeStream FNEG() {
+  public HxCodeStream FNEG() {
     codeStream.FNEG();
     return this;
   }
 
   @Override
-  public CodeStream DNEG() {
+  public HxCodeStream DNEG() {
     codeStream.DNEG();
     return this;
   }
 
   @Override
-  public CodeStream ISHL() {
+  public HxCodeStream ISHL() {
     codeStream.ISHL();
     return this;
   }
 
   @Override
-  public CodeStream LSHL() {
+  public HxCodeStream LSHL() {
     codeStream.LSHL();
     return this;
   }
 
   @Override
-  public CodeStream ISHR() {
+  public HxCodeStream ISHR() {
     codeStream.ISHR();
     return this;
   }
 
   @Override
-  public CodeStream LSHR() {
+  public HxCodeStream LSHR() {
     codeStream.LSHR();
     return this;
   }
 
   @Override
-  public CodeStream IUSHR() {
+  public HxCodeStream IUSHR() {
     codeStream.IUSHR();
     return this;
   }
 
   @Override
-  public CodeStream LUSHR() {
+  public HxCodeStream LUSHR() {
     codeStream.LUSHR();
     return this;
   }
 
   @Override
-  public CodeStream IAND() {
+  public HxCodeStream IAND() {
     codeStream.IAND();
     return this;
   }
 
   @Override
-  public CodeStream LAND() {
+  public HxCodeStream LAND() {
     codeStream.LAND();
     return this;
   }
 
   @Override
-  public CodeStream IOR() {
+  public HxCodeStream IOR() {
     codeStream.IOR();
     return this;
   }
 
   @Override
-  public CodeStream LOR() {
+  public HxCodeStream LOR() {
     codeStream.LOR();
     return this;
   }
 
   @Override
-  public CodeStream IXOR() {
+  public HxCodeStream IXOR() {
     codeStream.IXOR();
     return this;
   }
 
   @Override
-  public CodeStream LXOR() {
+  public HxCodeStream LXOR() {
     codeStream.LXOR();
     return this;
   }
 
   @Override
-  public CodeStream IINC(final int var,
-                         final int increment) {
+  public HxCodeStream IINC(final int var,
+                           final int increment) {
     codeStream.IINC(var, increment);
     return this;
   }
 
   @Override
-  public CodeStream I2L() {
+  public HxCodeStream I2L() {
     codeStream.I2L();
     return this;
   }
 
   @Override
-  public CodeStream I2F() {
+  public HxCodeStream I2F() {
     codeStream.I2F();
     return this;
   }
 
   @Override
-  public CodeStream I2D() {
+  public HxCodeStream I2D() {
     codeStream.I2D();
     return this;
   }
 
   @Override
-  public CodeStream L2I() {
+  public HxCodeStream L2I() {
     codeStream.L2I();
     return this;
   }
 
   @Override
-  public CodeStream L2F() {
+  public HxCodeStream L2F() {
     codeStream.L2F();
     return this;
   }
 
   @Override
-  public CodeStream L2D() {
+  public HxCodeStream L2D() {
     codeStream.L2D();
     return this;
   }
 
   @Override
-  public CodeStream F2I() {
+  public HxCodeStream F2I() {
     codeStream.F2I();
     return this;
   }
 
   @Override
-  public CodeStream F2L() {
+  public HxCodeStream F2L() {
     codeStream.F2L();
     return this;
   }
 
   @Override
-  public CodeStream F2D() {
+  public HxCodeStream F2D() {
     codeStream.F2D();
     return this;
   }
 
   @Override
-  public CodeStream D2I() {
+  public HxCodeStream D2I() {
     codeStream.D2I();
     return this;
   }
 
   @Override
-  public CodeStream D2L() {
+  public HxCodeStream D2L() {
     codeStream.D2L();
     return this;
   }
 
   @Override
-  public CodeStream D2F() {
+  public HxCodeStream D2F() {
     codeStream.D2F();
     return this;
   }
 
   @Override
-  public CodeStream I2B() {
+  public HxCodeStream I2B() {
     codeStream.I2B();
     return this;
   }
 
   @Override
-  public CodeStream I2C() {
+  public HxCodeStream I2C() {
     codeStream.I2C();
     return this;
   }
 
   @Override
-  public CodeStream I2S() {
+  public HxCodeStream I2S() {
     codeStream.I2S();
     return this;
   }
 
   @Override
-  public CodeStream LCMP() {
+  public HxCodeStream LCMP() {
     codeStream.LCMP();
     return this;
   }
 
   @Override
-  public CodeStream FCMPL() {
+  public HxCodeStream FCMPL() {
     codeStream.FCMPL();
     return this;
   }
 
   @Override
-  public CodeStream FCMPG() {
+  public HxCodeStream FCMPG() {
     codeStream.FCMPG();
     return this;
   }
 
   @Override
-  public CodeStream DCMPL() {
+  public HxCodeStream DCMPL() {
     codeStream.DCMPL();
     return this;
   }
 
   @Override
-  public CodeStream DCMPG() {
+  public HxCodeStream DCMPG() {
     codeStream.DCMPG();
     return this;
   }
 
   @Override
-  public CodeStream IFEQ(final LABEL label) {
+  public HxCodeStream IFEQ(final LABEL label) {
     codeStream.IFEQ(label);
     return this;
   }
 
   @Override
-  public CodeStream IFNE(final LABEL label) {
+  public HxCodeStream IFNE(final LABEL label) {
     codeStream.IFNE(label);
     return this;
   }
 
   @Override
-  public CodeStream IFLT(final LABEL label) {
+  public HxCodeStream IFLT(final LABEL label) {
     codeStream.IFLT(label);
     return this;
   }
 
   @Override
-  public CodeStream IFGE(final LABEL label) {
+  public HxCodeStream IFGE(final LABEL label) {
     codeStream.IFGE(label);
     return this;
   }
 
   @Override
-  public CodeStream IFGT(final LABEL label) {
+  public HxCodeStream IFGT(final LABEL label) {
     codeStream.IFGT(label);
     return this;
   }
 
   @Override
-  public CodeStream IFLE(final LABEL label) {
+  public HxCodeStream IFLE(final LABEL label) {
     codeStream.IFLE(label);
     return this;
   }
 
   @Override
-  public CodeStream IF_ICMPEQ(final LABEL label) {
+  public HxCodeStream IF_ICMPEQ(final LABEL label) {
     codeStream.IF_ICMPEQ(label);
     return this;
   }
 
   @Override
-  public CodeStream IF_ICMPNE(final LABEL label) {
+  public HxCodeStream IF_ICMPNE(final LABEL label) {
     codeStream.IF_ICMPNE(label);
     return this;
   }
 
   @Override
-  public CodeStream IF_ICMPLT(final LABEL label) {
+  public HxCodeStream IF_ICMPLT(final LABEL label) {
     codeStream.IF_ICMPLT(label);
     return this;
   }
 
   @Override
-  public CodeStream IF_ICMPGE(final LABEL label) {
+  public HxCodeStream IF_ICMPGE(final LABEL label) {
     codeStream.IF_ICMPGE(label);
     return this;
   }
 
   @Override
-  public CodeStream IF_ICMPGT(final LABEL label) {
+  public HxCodeStream IF_ICMPGT(final LABEL label) {
     codeStream.IF_ICMPGT(label);
     return this;
   }
 
   @Override
-  public CodeStream IF_ICMPLE(final LABEL label) {
+  public HxCodeStream IF_ICMPLE(final LABEL label) {
     codeStream.IF_ICMPLE(label);
     return this;
   }
 
   @Override
-  public CodeStream IF_ACMPEQ(final LABEL label) {
+  public HxCodeStream IF_ACMPEQ(final LABEL label) {
     codeStream.IF_ACMPEQ(label);
     return this;
   }
 
   @Override
-  public CodeStream IF_ACMPNE(final LABEL label) {
+  public HxCodeStream IF_ACMPNE(final LABEL label) {
     codeStream.IF_ACMPNE(label);
     return this;
   }
 
   @Override
-  public CodeStream GOTO(final LABEL label) {
+  public HxCodeStream GOTO(final LABEL label) {
     codeStream.GOTO(label);
     return this;
   }
 
   @Override
-  public CodeStream JSR(final LABEL label) {
+  public HxCodeStream JSR(final LABEL label) {
     codeStream.JSR(label);
     return this;
   }
 
   @Override
-  public CodeStream RET(final int var) {
+  public HxCodeStream RET(final int var) {
     codeStream.RET(var);
     return this;
   }
 
   @Override
-  public CodeStream TABLESWITCH(final int min,
-                                final int max,
-                                final LABEL defaultLabel,
-                                final LABEL... labels) {
+  public HxCodeStream TABLESWITCH(final int min,
+                                  final int max,
+                                  final LABEL defaultLabel,
+                                  final LABEL... labels) {
     codeStream.TABLESWITCH(min, max, defaultLabel, labels);
     return this;
   }
 
   @Override
-  public CodeStream LOOKUPSWITCH(final LABEL defaultLabel,
-                                 final int[] keys,
-                                 final LABEL[] labels) {
+  public HxCodeStream LOOKUPSWITCH(final LABEL defaultLabel,
+                                   final int[] keys,
+                                   final LABEL[] labels) {
     codeStream.LOOKUPSWITCH(defaultLabel, keys, labels);
     return this;
   }
 
   @Override
-  public CodeStream IRETURN() {
+  public HxCodeStream IRETURN() {
     codeStream.IRETURN();
     return this;
   }
 
   @Override
-  public CodeStream LRETURN() {
+  public HxCodeStream LRETURN() {
     codeStream.LRETURN();
     return this;
   }
 
   @Override
-  public CodeStream FRETURN() {
+  public HxCodeStream FRETURN() {
     codeStream.FRETURN();
     return this;
   }
 
   @Override
-  public CodeStream DRETURN() {
+  public HxCodeStream DRETURN() {
     codeStream.DRETURN();
     return this;
   }
 
   @Override
-  public CodeStream ARETURN() {
+  public HxCodeStream ARETURN() {
     codeStream.ARETURN();
     return this;
   }
 
   @Override
-  public CodeStream RETURN() {
+  public HxCodeStream RETURN() {
     codeStream.RETURN();
     return this;
   }
 
   @Override
-  public CodeStream GETSTATIC(final String owner,
-                              final String name,
-                              final String desc) {
+  public HxCodeStream GETSTATIC(final String owner,
+                                final String name,
+                                final String desc) {
     codeStream.GETSTATIC(owner, name, desc);
     return this;
   }
 
   @Override
-  public CodeStream PUTSTATIC(final String owner,
-                              final String name,
-                              final String desc) {
+  public HxCodeStream PUTSTATIC(final String owner,
+                                final String name,
+                                final String desc) {
     codeStream.PUTSTATIC(owner, name, desc);
     return this;
   }
 
   @Override
-  public CodeStream GETFIELD(final String owner,
-                             final String name,
-                             final String desc) {
+  public HxCodeStream GETFIELD(final String owner,
+                               final String name,
+                               final String desc) {
     codeStream.GETFIELD(owner, name, desc);
     return this;
   }
 
   @Override
-  public CodeStream PUTFIELD(final String owner,
-                             final String name,
-                             final String desc) {
+  public HxCodeStream PUTFIELD(final String owner,
+                               final String name,
+                               final String desc) {
     codeStream.PUTFIELD(owner, name, desc);
     return this;
   }
 
   @Override
-  public CodeStream INVOKEVIRTUAL(final String owner,
-                                  final String name,
-                                  final String desc) {
+  public HxCodeStream INVOKEVIRTUAL(final String owner,
+                                    final String name,
+                                    final String desc) {
     codeStream.INVOKEVIRTUAL(owner, name, desc);
     return this;
   }
 
   @Override
-  public CodeStream INVOKESPECIAL(final String owner,
-                                  final String name,
-                                  final String desc) {
+  public HxCodeStream INVOKESPECIAL(final String owner,
+                                    final String name,
+                                    final String desc) {
     codeStream.INVOKESPECIAL(owner, name, desc);
     return this;
   }
 
   @Override
-  public CodeStream INVOKESTATIC(final String owner,
-                                 final String name,
-                                 final String desc,
-                                 final boolean isInterface) {
+  public HxCodeStream INVOKESTATIC(final String owner,
+                                   final String name,
+                                   final String desc,
+                                   final boolean isInterface) {
     codeStream.INVOKESTATIC(owner, name, desc, isInterface);
     return this;
   }
 
   @Override
-  public CodeStream INVOKEINTERFACE(final String owner,
-                                    final String name,
-                                    final String desc) {
+  public HxCodeStream INVOKEINTERFACE(final String owner,
+                                      final String name,
+                                      final String desc) {
     codeStream.INVOKEINTERFACE(owner, name, desc);
     return this;
   }
 
   @Override
-  public CodeStream INVOKEDYNAMIC(final String name,
-                                  final String desc,
-                                  final Handle bsm,
-                                  final Object... bsmArgs) {
+  public HxCodeStream INVOKEDYNAMIC(final String name,
+                                    final String desc,
+                                    final HxHandle bsm,
+                                    final Object... bsmArgs) {
     codeStream.INVOKEDYNAMIC(name, desc, bsm, bsmArgs);
     return this;
   }
 
   @Override
-  public CodeStream NEW(final String internalType) {
+  public HxCodeStream NEW(final String internalType) {
     codeStream.NEW(internalType);
     return this;
   }
 
   @Override
-  public CodeStream NEWARRAY(final ArrayType type) {
+  public HxCodeStream NEWARRAY(final HxArrayType type) {
     codeStream.NEWARRAY(type);
     return this;
   }
 
   @Override
-  public CodeStream ANEWARRAY(final String internalType) {
+  public HxCodeStream ANEWARRAY(final String internalType) {
     codeStream.ANEWARRAY(internalType);
     return this;
   }
 
   @Override
-  public CodeStream ARRAYLENGTH() {
+  public HxCodeStream ARRAYLENGTH() {
     codeStream.ARRAYLENGTH();
     return this;
   }
 
   @Override
-  public CodeStream ATHROW() {
+  public HxCodeStream ATHROW() {
     codeStream.ATHROW();
     return this;
   }
 
   @Override
-  public CodeStream CHECKCAST(final String internalType) {
+  public HxCodeStream CHECKCAST(final String internalType) {
     codeStream.CHECKCAST(internalType);
     return this;
   }
 
   @Override
-  public CodeStream INSTANCEOF(final String internalType) {
+  public HxCodeStream INSTANCEOF(final String internalType) {
     codeStream.INSTANCEOF(internalType);
     return this;
   }
 
   @Override
-  public CodeStream MONITORENTER() {
+  public HxCodeStream MONITORENTER() {
     codeStream.MONITORENTER();
     return this;
   }
 
   @Override
-  public CodeStream MONITOREXIT() {
+  public HxCodeStream MONITOREXIT() {
     codeStream.MONITOREXIT();
     return this;
   }
 
   @Override
-  public CodeStream MULTIANEWARRAY(final String internalType,
-                                   final int dims) {
+  public HxCodeStream MULTIANEWARRAY(final String internalType,
+                                     final int dims) {
     codeStream.MULTIANEWARRAY(internalType, dims);
     return this;
   }
 
   @Override
-  public CodeStream IFNULL(final LABEL label) {
+  public HxCodeStream IFNULL(final LABEL label) {
     codeStream.IFNULL(label);
     return this;
   }
 
   @Override
-  public CodeStream IFNONNULL(final LABEL label) {
+  public HxCodeStream IFNONNULL(final LABEL label) {
     codeStream.IFNONNULL(label);
     return this;
   }
 
   @Override
-  public CodeStream LABEL(final LABEL label) {
+  public HxCodeStream LABEL(final LABEL label) {
     codeStream.LABEL(label);
     return this;
   }
 
   @Override
-  public CodeStream TRY_CATCH(final LABEL startLabel,
-                              final LABEL endLabel,
-                              final LABEL handler,
-                              final String type) {
+  public HxCodeStream TRY_CATCH(final LABEL startLabel,
+                                final LABEL endLabel,
+                                final LABEL handler,
+                                final String type) {
     codeStream.TRY_CATCH(startLabel, endLabel, handler, type);
     return this;
   }
 
   @Override
-  public CodeStream FRAME(final Frames type,
-                          final int nLocal,
-                          final Object[] local,
-                          final int nStack,
-                          final Object[] stack) {
+  public HxCodeStream FRAME(final HxFrames type,
+                            final int nLocal,
+                            final Object[] local,
+                            final int nStack,
+                            final Object[] stack) {
     codeStream.FRAME(type, nLocal, local, nStack, stack);
     return this;
   }
 
   @Override
-  public CodeStream LOCAL_VARIABLE(final String name,
-                                   final String desc,
-                                   final String signature,
-                                   final LABEL start,
-                                   final LABEL end,
-                                   final int index) {
+  public HxCodeStream LOCAL_VARIABLE(final String name,
+                                     final String desc,
+                                     final String signature,
+                                     final LABEL start,
+                                     final LABEL end,
+                                     final int index) {
     codeStream.LOCAL_VARIABLE(name, desc, signature, start, end, index);
     return this;
   }
 
   @Override
-  public CodeStream LINE_NUMBER(final int line,
-                                final LABEL start) {
+  public HxCodeStream LINE_NUMBER(final int line,
+                                  final LABEL start) {
     codeStream.LINE_NUMBER(line, start);
     return this;
   }
 
   @Override
-  public CodeStream MAXS(final int maxStack,
-                         final int maxLocals) {
+  public HxCodeStream MAXS(final int maxStack,
+                           final int maxLocals) {
     codeStream.MAXS(maxStack, maxLocals);
     return this;
   }

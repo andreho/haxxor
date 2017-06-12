@@ -1,8 +1,8 @@
 package net.andreho.haxxor.cgen.instr.abstr;
 
-import net.andreho.haxxor.cgen.CodeStream;
-import net.andreho.haxxor.cgen.Context;
-import net.andreho.haxxor.cgen.Instruction;
+import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 
@@ -15,7 +15,7 @@ import java.util.function.Predicate;
  * <br/>Created by a.hofmann on 19.03.2016.<br/>
  */
 public abstract class AbstractPseudoInstruction
-    implements Instruction {
+    implements HxInstruction {
 
   private int index;
 
@@ -35,17 +35,42 @@ public abstract class AbstractPseudoInstruction
   }
 
   @Override
-  public List<Object> apply(final Context context) {
+  public List<Object> apply(final HxComputingContext context) {
     return Collections.emptyList();
   }
 
   @Override
-  public int getStackPopCount() {
+  public int getPushSize() {
     return 0;
   }
 
   @Override
-  public void dumpTo(final Context context, final CodeStream codeStream) {
+  public HxInstruction getPrevious() {
+    return null;
+  }
+
+  @Override
+  public void setPrevious(final HxInstruction previous) {
+
+  }
+
+  @Override
+  public HxInstruction getNext() {
+    return null;
+  }
+
+  @Override
+  public void setNext(final HxInstruction next) {
+
+  }
+
+  @Override
+  public int getPopSize() {
+    return 0;
+  }
+
+  @Override
+  public void dumpTo(final HxComputingContext context, final HxCodeStream codeStream) {
   }
 
   /**
@@ -56,7 +81,7 @@ public abstract class AbstractPseudoInstruction
   }
 
   @Override
-  public Instruction setAnnotations(final Collection<HxAnnotation> annotations) {
+  public HxInstruction setAnnotations(final Collection<HxAnnotation> annotations) {
     return this;
   }
 

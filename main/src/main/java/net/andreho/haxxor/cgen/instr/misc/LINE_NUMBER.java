@@ -1,7 +1,7 @@
 package net.andreho.haxxor.cgen.instr.misc;
 
-import net.andreho.haxxor.cgen.CodeStream;
-import net.andreho.haxxor.cgen.Context;
+import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInstruction;
 
@@ -22,18 +22,31 @@ public class LINE_NUMBER
     this.start = start;
   }
 
+  public int getLine() {
+    return line;
+  }
+
+  public LABEL getStart() {
+    return start;
+  }
+
   @Override
-  public void dumpTo(final Context context, final CodeStream codeStream) {
+  public void dumpTo(final HxComputingContext context, final HxCodeStream codeStream) {
     codeStream.LINE_NUMBER(line, start);
   }
 
   @Override
-  public List<Object> apply(final Context context) {
+  public List<Object> apply(final HxComputingContext context) {
     return NO_STACK_PUSH;
   }
 
   @Override
-  public int getStackPopCount() {
+  public int getPushSize() {
+    return 0;
+  }
+
+  @Override
+  public int getPopSize() {
     return 0;
   }
 

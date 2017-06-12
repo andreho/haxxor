@@ -1,7 +1,7 @@
 package net.andreho.haxxor.spec.impl;
 
-import net.andreho.haxxor.spec.api.HxGeneric;
 import net.andreho.haxxor.spec.api.HxGenericArrayType;
+import net.andreho.haxxor.spec.api.HxGenericElement;
 
 /**
  * <br/>Created by andreho on 3/26/16 at 10:24 PM.<br/>
@@ -9,15 +9,15 @@ import net.andreho.haxxor.spec.api.HxGenericArrayType;
 public class HxGenericArrayTypeImpl
     extends HxAbstractGeneric<HxGenericArrayType>
     implements HxGenericArrayType {
-  private HxGeneric<?> genericComponentType;
+  private HxGenericElement<?> genericComponentType;
 
   @Override
-  public HxGeneric<?> getGenericComponentType() {
+  public HxGenericElement<?> getGenericComponentType() {
     return genericComponentType;
   }
 
   @Override
-  public HxGenericArrayTypeImpl setGenericComponentType(final HxGeneric<?> genericComponentType) {
+  public HxGenericArrayTypeImpl setGenericComponentType(final HxGenericElement<?> genericComponentType) {
     this.genericComponentType = genericComponentType;
     return this;
   }

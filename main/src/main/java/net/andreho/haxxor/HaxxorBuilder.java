@@ -3,11 +3,11 @@ package net.andreho.haxxor;
 import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxTypeReference;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
-import net.andreho.haxxor.spi.HxClassNameSupplier;
+import net.andreho.haxxor.spi.HxClassNameNormalizer;
 import net.andreho.haxxor.spi.HxElementFactory;
 import net.andreho.haxxor.spi.HxTypeInitializer;
 import net.andreho.haxxor.spi.impl.DefaultHxByteCodeLoader;
-import net.andreho.haxxor.spi.impl.DefaultHxClassNameSupplier;
+import net.andreho.haxxor.spi.impl.DefaultHxClassNameNormalizer;
 import net.andreho.haxxor.spi.impl.DefaultHxElementFactory;
 import net.andreho.haxxor.spi.impl.DefaultHxTypeInitializer;
 
@@ -92,7 +92,7 @@ public class HaxxorBuilder {
    * @param haxxor is the requesting instance
    * @return
    */
-  public HxClassNameSupplier createJavaClassNameProvider(Haxxor haxxor) {
-    return new DefaultHxClassNameSupplier();
+  public HxClassNameNormalizer createJavaClassNameProvider(Haxxor haxxor) {
+    return new DefaultHxClassNameNormalizer();
   }
 }

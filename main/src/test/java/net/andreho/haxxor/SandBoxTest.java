@@ -1,13 +1,20 @@
 package net.andreho.haxxor;
 
 
-import net.andreho.haxxor.cgen.Instruction;
+import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.model.AbstractBean;
 import net.andreho.haxxor.model.AnnotatedBeanWithJava8Features;
+import net.andreho.haxxor.model.AnnotationC;
 import net.andreho.haxxor.model.EnumC;
 import net.andreho.haxxor.spec.api.HxType;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -48,7 +55,7 @@ class SandBoxTest {
     System.out.println(HxType.Modifiers.toSet(int[].class.getModifiers()));
     System.out.println(HxType.Modifiers.toSet(int[][].class.getModifiers()));
     System.out.println(HxType.Modifiers.toSet(EnumC.class.getModifiers()));
-    System.out.println(HxType.Modifiers.toSet(Instruction.class.getModifiers()));
+    System.out.println(HxType.Modifiers.toSet(HxInstruction.class.getModifiers()));
     System.out.println(HxType.Modifiers.toSet(AbstractBean.class.getModifiers()));
     System.out.println(HxType.Modifiers.toSet(SandBoxTest.class.getModifiers()));
 
@@ -71,30 +78,22 @@ class SandBoxTest {
     Debugger.trace(AnnotatedBeanWithJava8Features.class.getName());
   }
 
+  static class Testing {
+    static void foo()
+    throws FileNotFoundException {
+      @AnnotationC("x") String name = "";
+      try(@AnnotationC("y") InputStream inputStream = new FileInputStream(new File("."))){
+
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
 
   @Test
   @Disabled
   void cornerCases() {
-//    String string = "hello";
-//    StringBuilder builder = new StringBuilder("hello");
-//    StringBuilder builder2 = new StringBuilder("hello");
-//
-//    System.out.println(((Object) string) == builder);
-//    System.out.println(string.equals(builder));
-//    System.out.println(builder.equals(builder2));
-
-//    System.out.print("Foo.Bar:");
-//    http://www.javapoint.ru
-//    return;
-
-//    work();
-  }
-
-  private static void work() {
-    try {
-      work();
-    } finally {
-      work();
-    }
+    Debugger.trace(Testing.class);
   }
 }

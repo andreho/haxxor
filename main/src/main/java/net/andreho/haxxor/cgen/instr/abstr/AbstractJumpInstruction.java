@@ -1,6 +1,6 @@
 package net.andreho.haxxor.cgen.instr.abstr;
 
-import net.andreho.haxxor.cgen.Context;
+import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.instr.LABEL;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public abstract class AbstractJumpInstruction
   }
 
   @Override
-  public List<Object> apply(final Context context) {
+  public List<Object> apply(final HxComputingContext context) {
     this.label.addReference(this);
     return NO_STACK_PUSH;
   }

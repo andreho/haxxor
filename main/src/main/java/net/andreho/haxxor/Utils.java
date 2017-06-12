@@ -5,7 +5,7 @@ import net.andreho.haxxor.spec.api.HxConstants;
 import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
-import net.andreho.haxxor.spi.HxClassNameSupplier;
+import net.andreho.haxxor.spi.HxClassNameNormalizer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -26,6 +26,13 @@ public abstract class Utils {
   private Utils() {
   }
 
+  /**
+   * Checks the given parameterizable whether it has the given descriptor or not
+   * @param parameterizable to check
+   * @param descriptor to use
+   * @param <P>
+   * @return
+   */
   public static <P extends HxExecutable<P>>
   boolean hasDescriptor(final HxExecutable<P> parameterizable,
                         final String descriptor) {
@@ -204,11 +211,11 @@ public abstract class Utils {
    * @param classes to process
    * @return
    */
-  public static String[] toClassNames(final HxClassNameSupplier classNameProvider,
+  public static String[] toClassNames(final HxClassNameNormalizer classNameProvider,
                                       final Class<?>... classes) {
     final String[] names = new String[classes.length];
     for (int i = 0; i < classes.length; i++) {
-      names[i] = classNameProvider.toJavaClassName(classes[i].getName());
+      names[i] = classNameProvider.toNormalizedClassName(classes[i].getName());
     }
     return names;
   }

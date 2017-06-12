@@ -6,7 +6,7 @@ import java.util.List;
  * <br/>Created by a.hofmann on 11.03.2016.<br/>
  */
 public interface HxParameterizedType
-    extends HxGeneric<HxParameterizedType> {
+    extends HxGenericElement<HxParameterizedType> {
 
   /**
    * @return
@@ -18,16 +18,16 @@ public interface HxParameterizedType
   /**
    * @return
    */
-  HxGeneric<?> getOwnerType();
+  HxGenericElement<?> getOwnerType();
 
-  HxParameterizedType setOwnerType(HxGeneric<?> ownerType);
+  HxParameterizedType setOwnerType(HxGenericElement<?> ownerType);
 
   /**
    * @return
    */
-  List<HxGeneric<?>> getActualTypeArguments();
+  List<HxGenericElement<?>> getActualTypeArguments();
 
-  HxParameterizedType setActualTypeArguments(List<HxGeneric<?>> generics);
+  HxParameterizedType setActualTypeArguments(List<HxGenericElement<?>> generics);
 
-  HxParameterizedType addActualTypeArgument(HxGeneric<?> actualTypeArgument);
+  HxParameterizedType addActualTypeArgument(HxGenericElement<?> actualTypeArgument);
 }

@@ -1,11 +1,8 @@
 package net.andreho.haxxor.cgen.instr.abstr;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.cgen.Context;
+import net.andreho.haxxor.cgen.HxComputingContext;
 
 import java.util.List;
-
-import static net.andreho.asm.org.objectweb.asm.Type.getArgumentsAndReturnSizes;
 
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
@@ -31,13 +28,18 @@ public abstract class AbstractInvokeInstruction
   }
 
   @Override
-  public List<Object> apply(final Context context) {
+  public List<Object> apply(final HxComputingContext context) {
     return Utils.retrieveType(context, this.desc);
   }
 
   @Override
-  public int getStackPopCount() {
-    return (getArgumentsAndReturnSizes(this.desc) >> 2) - ((getOpcode() == Opcodes.INVOKESTATIC) ? 1 : 0);
+  public int getPushSize() {
+    return getInstructionType().getPushSize(desc);
+  }
+
+  @Override
+  public int getPopSize() {
+    return getInstructionType().getPopSize(desc);
   }
 
   public String getOwner() {

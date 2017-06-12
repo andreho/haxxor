@@ -1,7 +1,6 @@
 package net.andreho.haxxor.cgen.instr.abstr;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.cgen.Context;
+import net.andreho.haxxor.cgen.HxComputingContext;
 
 import java.util.List;
 
@@ -15,18 +14,18 @@ public abstract class AbstractArrayStoreInstruction
     super(opcode);
   }
 
-  protected void checkArrayType(Object arrayType, int depth) {
-    if (arrayType.getClass() != String.class ||
-        arrayType.toString()
-                 .charAt(0) != '[') {
+  protected void checkArrayType(Object arrayType,
+                                int depth) {
+    if (arrayType.getClass() != String.class || arrayType.toString()
+                                                         .charAt(0) != '[') {
       throw new IllegalStateException(
           "An array type is expected at stack[stack.length-" + (depth + 1) + "]: " + arrayType);
     }
   }
 
   @Override
-  public List<Object> apply(Context context) {
-    int depth = isTwoOperands() ? 3 : 2;
+  public List<Object> apply(HxComputingContext context) {
+    int depth = getInstructionType().getPopSize();
 
     Object arrayType = context.getStack()
                               .peek(depth);
@@ -34,15 +33,5 @@ public abstract class AbstractArrayStoreInstruction
     checkArrayType(arrayType, depth);
 
     return NO_STACK_PUSH;
-  }
-
-  @Override
-  public int getStackPopCount() {
-    return 1 + 1 + (isTwoOperands() ? 2 : 1);
-  }
-
-  private boolean isTwoOperands() {
-    return this.opcode == Opcodes.LASTORE ||
-           this.opcode == Opcodes.DASTORE;
   }
 }

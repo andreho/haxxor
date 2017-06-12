@@ -5,6 +5,7 @@ import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxField;
+import net.andreho.haxxor.spec.api.HxGenericType;
 import net.andreho.haxxor.spec.api.HxMember;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxModifier;
@@ -378,7 +379,6 @@ public class HxTypeReferenceImpl
     return toType().annotations(predicate, recursive);
   }
 
-
   @Override
   public <M extends HxMember> M getDeclaringMember() {
     return toType().getDeclaringMember();
@@ -387,6 +387,21 @@ public class HxTypeReferenceImpl
   @Override
   public HxType setDeclaringMember(HxMember declaringMember) {
     return toType().getDeclaringMember();
+  }
+
+  @Override
+  public Optional<String> getGenericSignature() {
+    return toType().getGenericSignature();
+  }
+
+  @Override
+  public HxType setGenericSignature(final String genericSignature) {
+    return toType().setGenericSignature(genericSignature);
+  }
+
+  @Override
+  public Optional<HxGenericType> getGenericType() {
+    return toType().getGenericType();
   }
 
   @Override

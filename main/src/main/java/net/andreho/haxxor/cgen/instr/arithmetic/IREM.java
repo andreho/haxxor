@@ -1,8 +1,8 @@
 package net.andreho.haxxor.cgen.instr.arithmetic;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.cgen.CodeStream;
-import net.andreho.haxxor.cgen.Context;
+import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractZeroOperandInstruction;
 
 import java.util.List;
@@ -18,17 +18,12 @@ public class IREM
   }
 
   @Override
-  public void dumpTo(Context context, CodeStream codeStream) {
+  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
     codeStream.IREM();
   }
 
   @Override
-  public List<Object> apply(Context context) {
+  public List<Object> apply(HxComputingContext context) {
     return PUSH_INT;
-  }
-
-  @Override
-  public int getStackPopCount() {
-    return 1 + 1;
   }
 }

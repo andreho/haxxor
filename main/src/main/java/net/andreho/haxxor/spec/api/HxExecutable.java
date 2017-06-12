@@ -2,8 +2,8 @@ package net.andreho.haxxor.spec.api;
 
 
 import net.andreho.haxxor.Utils;
+import net.andreho.haxxor.misc.MappedList;
 import net.andreho.haxxor.spec.impl.HxParameterImpl;
-import net.andreho.haxxor.spec.impl.misc.MappedList;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,15 +12,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Created by a.hofmann on 31.05.2015.
  */
-public interface HxExecutable<P extends HxMember<P> & HxExecutable<P> & HxOwned<P>>
+public interface HxExecutable<P extends HxMember<P> & HxExecutable<P> & HxOwned<P> & HxGeneric<P>>
     extends HxAnnotated<P>,
             HxMember<P>,
             HxOwned<P>,
+            HxGeneric<P>,
             HxIndexed,
             HxProvider {
 
@@ -184,42 +184,6 @@ public interface HxExecutable<P extends HxMember<P> & HxExecutable<P> & HxOwned<
    */
   default Collection<HxExecutable> getOverriddenMembers() {
     return Collections.emptySet();
-  }
-
-  /**
-   * @return <b>true</b> if this parameterizable instance has some generic information
-   */
-  default boolean isGeneric() {
-    return getGenericSignature() != null;
-  }
-
-  /**
-   * @return raw generic signature of this element
-   */
-  default String getGenericSignature() {
-    return null;
-  }
-
-  /**
-   * @param genericSignature new raw generic signature
-   * @return current generic signature of this method as whole including parameters and return type
-   */
-  default P setGenericSignature(String genericSignature) {
-    //NO OP
-    return (P) this;
-  }
-
-  /**
-   * @return
-   * @implSpec
-   */
-  default List<HxGeneric> getGenericParameterTypes() {
-    if (!getGenericSignature().isEmpty()) {
-      //create generic definitions for each parameter
-    }
-    return getParameters().stream()
-                          .map(HxParameter::getType)
-                          .collect(Collectors.toList());
   }
 
   /**

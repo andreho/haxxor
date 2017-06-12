@@ -1,17 +1,17 @@
 package net.andreho.haxxor.spec.api;
 
-import net.andreho.haxxor.cgen.CodeStream;
-import net.andreho.haxxor.cgen.Instruction;
-import net.andreho.haxxor.cgen.InstructionFactory;
-import net.andreho.haxxor.cgen.LocalVariable;
-import net.andreho.haxxor.cgen.TryCatch;
+import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxInstruction;
+import net.andreho.haxxor.cgen.HxInstructionFactory;
+import net.andreho.haxxor.cgen.HxLocalVariable;
+import net.andreho.haxxor.cgen.HxTryCatch;
 
 import java.util.List;
 
 /**
  * <br/>Created by a.hofmann on 18.03.2016.<br/>
  */
-public interface HxCode {
+public interface HxCode extends Iterable<HxInstruction> {
 
   /**
    * Stores this bytecode into a persistent storage and so frees used memory
@@ -45,7 +45,7 @@ public interface HxCode {
   /**
    * @return a code stream that collects the visited instructions into this {@link HxCode code instance}
    */
-  default CodeStream build() {
+  default HxCodeStream build() {
     return build(false);
   }
 
@@ -53,7 +53,7 @@ public interface HxCode {
    * @param rebuild defines whether already collected instructions may be replaced or not
    * @return a code stream that collects the visited instructions into this {@link HxCode code instance}
    */
-  CodeStream build(boolean rebuild);
+  HxCodeStream build(boolean rebuild);
 
   /**
    * @return count of maximal used stack slots
@@ -79,7 +79,7 @@ public interface HxCode {
    * @return a list with available local variables (OPTIONAL and depends on resolution flags of resolving Haxxor
    * instance)
    */
-  List<LocalVariable> getLocalVariables();
+  List<HxLocalVariable> getLocalVariables();
 
   /**
    * @return <b>true</b> if there is some information about local variables, <b>false</b> otherwise.
@@ -91,7 +91,7 @@ public interface HxCode {
   /**
    * @return
    */
-  default LocalVariable getLastLocalVariable() {
+  default HxLocalVariable getLastLocalVariable() {
     return getLocalVariables().get(getLocalVariables().size() - 1);
   }
 
@@ -99,12 +99,12 @@ public interface HxCode {
    * @param localVariable
    * @return
    */
-  HxCode addLocalVariable(LocalVariable localVariable);
+  HxCode addLocalVariable(HxLocalVariable localVariable);
 
   /**
    * @return
    */
-  List<TryCatch> getTryCatches();
+  List<HxTryCatch> getTryCatches();
 
   /**
    * @return
@@ -116,7 +116,7 @@ public interface HxCode {
   /**
    * @return
    */
-  default TryCatch getLastTryCatch() {
+  default HxTryCatch getLastTryCatch() {
     return getTryCatches().get(getTryCatches().size() - 1);
   }
 
@@ -124,15 +124,15 @@ public interface HxCode {
    * @param tryCatch block to add
    * @return
    */
-  HxCode addTryCatch(TryCatch tryCatch);
+  HxCode addTryCatch(HxTryCatch tryCatch);
 
   /**
    * @return factory for instructions
    */
-  InstructionFactory getInstructionFactory();
+  HxInstructionFactory getInstructionFactory();
 
   /**
-   * Recomputes the {@link Instruction#getIndex() index} for each instruction of this code
+   * Recomputes the {@link HxInstruction#getIndex() index} for each instruction of this code
    * @return total count of instructions in this code
    */
   int computeIndex();
@@ -140,15 +140,15 @@ public interface HxCode {
   /**
    * @return the getFirst instruction of associated code
    */
-  Instruction getFirst();
+  HxInstruction getFirst();
 
   /**
    * @return the last added instruction or {@link HxCode#getFirst()} if there isn't any instructions
    */
-  Instruction getCurrent();
+  HxInstruction getCurrent();
 
   /**
    * @return the end instruction of associated code
    */
-  Instruction getLast();
+  HxInstruction getLast();
 }

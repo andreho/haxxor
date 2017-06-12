@@ -1,6 +1,6 @@
 package net.andreho.haxxor.spec.impl;
 
-import net.andreho.haxxor.spec.api.HxGeneric;
+import net.andreho.haxxor.spec.api.HxGenericElement;
 import net.andreho.haxxor.spec.api.HxParameterizedType;
 import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxTypeVariable;
@@ -20,8 +20,8 @@ public class HxParameterizedTypeImpl
     implements HxParameterizedType {
 
   private HxType rawType;
-  private HxGeneric ownerType;
-  private List<HxGeneric<?>> actualTypeArguments = Collections.emptyList();
+  private HxGenericElement ownerType;
+  private List<HxGenericElement<?>> actualTypeArguments = Collections.emptyList();
 
   @Override
   public HxType getRawType() {
@@ -35,29 +35,29 @@ public class HxParameterizedTypeImpl
   }
 
   @Override
-  public HxGeneric<?> getOwnerType() {
+  public HxGenericElement<?> getOwnerType() {
     return ownerType;
   }
 
   @Override
-  public HxParameterizedTypeImpl setOwnerType(HxGeneric<?> ownerType) {
+  public HxParameterizedTypeImpl setOwnerType(HxGenericElement<?> ownerType) {
     this.ownerType = ownerType;
     return this;
   }
 
   @Override
-  public List<HxGeneric<?>> getActualTypeArguments() {
+  public List<HxGenericElement<?>> getActualTypeArguments() {
     return actualTypeArguments;
   }
 
   @Override
-  public HxParameterizedTypeImpl setActualTypeArguments(List<HxGeneric<?>> actualTypeArguments) {
+  public HxParameterizedTypeImpl setActualTypeArguments(List<HxGenericElement<?>> actualTypeArguments) {
     this.actualTypeArguments = actualTypeArguments;
     return this;
   }
 
   @Override
-  public HxParameterizedTypeImpl addActualTypeArgument(final HxGeneric<?> actualTypeArgument) {
+  public HxParameterizedTypeImpl addActualTypeArgument(final HxGenericElement<?> actualTypeArgument) {
     if (isUninitialized(actualTypeArguments)) {
       setActualTypeArguments(new ArrayList<>(1));
     }
@@ -66,7 +66,7 @@ public class HxParameterizedTypeImpl
   }
 
   @Override
-  public HxGeneric<?> minimize() {
+  public HxGenericElement<?> minimize() {
     if(getActualTypeArguments().isEmpty()) {
       return getRawType();
     }
@@ -83,10 +83,10 @@ public class HxParameterizedTypeImpl
 //    }
 
     StringBuilder builder = new StringBuilder().append(component);
-    Iterator<HxGeneric<?>> iterator = getActualTypeArguments().iterator();
+    Iterator<HxGenericElement<?>> iterator = getActualTypeArguments().iterator();
     if(iterator.hasNext()) {
       builder.append('<');
-      HxGeneric<?> hxGeneric = iterator.next();
+      HxGenericElement<?> hxGeneric = iterator.next();
       if(hxGeneric instanceof HxTypeVariable) {
         builder.append(((HxTypeVariable) hxGeneric).getName());
       } else {

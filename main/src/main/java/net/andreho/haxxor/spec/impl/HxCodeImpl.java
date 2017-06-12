@@ -1,11 +1,11 @@
 package net.andreho.haxxor.spec.impl;
 
-import net.andreho.haxxor.cgen.Code;
-import net.andreho.haxxor.cgen.CodeStream;
-import net.andreho.haxxor.cgen.Instruction;
-import net.andreho.haxxor.cgen.InstructionFactory;
-import net.andreho.haxxor.cgen.LocalVariable;
-import net.andreho.haxxor.cgen.TryCatch;
+import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxInstruction;
+import net.andreho.haxxor.cgen.HxInstructionFactory;
+import net.andreho.haxxor.cgen.HxLinkedCode;
+import net.andreho.haxxor.cgen.HxLocalVariable;
+import net.andreho.haxxor.cgen.HxTryCatch;
 import net.andreho.haxxor.cgen.impl.InstructionCodeStream;
 import net.andreho.haxxor.spec.api.HxCode;
 import net.andreho.haxxor.spec.api.HxExecutable;
@@ -19,10 +19,10 @@ import static net.andreho.haxxor.Utils.isUninitialized;
  * <br/>Created by a.hofmann on 18.03.2016.<br/>
  */
 public class HxCodeImpl
-    extends Code
+    extends HxLinkedCode
     implements HxCode {
 
-  private static final InstructionFactory DEFAULT_INSTRUCTION_FACTORY = new InstructionFactory() {
+  private static final HxInstructionFactory DEFAULT_INSTRUCTION_FACTORY = new HxInstructionFactory() {
   };
 
   private final HxExecutable owner;
@@ -48,18 +48,18 @@ public class HxCodeImpl
   }
 
   @Override
-  public HxCode addLocalVariable(final LocalVariable localVariable) {
+  public HxCode addLocalVariable(final HxLocalVariable localVariable) {
     if (isUninitialized(localVariables)) {
-      localVariables = new ArrayList<>();
+      localVariables = new ArrayList<>(2);
     }
     localVariables.add(localVariable);
     return this;
   }
 
   @Override
-  public HxCode addTryCatch(final TryCatch tryCatch) {
+  public HxCode addTryCatch(final HxTryCatch tryCatch) {
     if (isUninitialized(tryCatches)) {
-      tryCatches = new ArrayList<>();
+      tryCatches = new ArrayList<>(2);
     }
     tryCatches.add(tryCatch);
     return this;
@@ -73,19 +73,19 @@ public class HxCodeImpl
   @Override
   public int computeIndex() {
     int i = 0;
-    for(Instruction inst = getFirst().getNext(), end = getLast(); inst != end; inst = inst.getNext()) {
+    for(HxInstruction inst = getFirst().getNext(), end = getLast(); inst != end; inst = inst.getNext()) {
       inst.setIndex(i++);
     }
     return i;
   }
 
   @Override
-  public InstructionFactory getInstructionFactory() {
+  public HxInstructionFactory getInstructionFactory() {
     return DEFAULT_INSTRUCTION_FACTORY;
   }
 
   @Override
-  public CodeStream build(final boolean rebuild) {
+  public HxCodeStream build(final boolean rebuild) {
     if (rebuild) {
       this.getFirst()
           .append(this.getLast());

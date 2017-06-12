@@ -1,7 +1,7 @@
 package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.Haxxor;
-import net.andreho.haxxor.spec.api.HxGeneric;
+import net.andreho.haxxor.spec.api.HxGenericElement;
 import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxWildcardType;
 
@@ -18,24 +18,24 @@ public class HxWildcardTypeImpl
     extends HxAbstractGeneric<HxWildcardType>
     implements HxWildcardType {
 
-  private List<HxGeneric> upperBounds = Collections.emptyList();
-  private List<HxGeneric> lowerBounds = Collections.emptyList();
+  private List<HxGenericElement> upperBounds = Collections.emptyList();
+  private List<HxGenericElement> lowerBounds = Collections.emptyList();
 
   public HxWildcardTypeImpl() {
   }
 
   @Override
-  public List<HxGeneric> getUpperBounds() {
+  public List<HxGenericElement> getUpperBounds() {
     return upperBounds;
   }
 
   @Override
-  public HxWildcardTypeImpl setUpperBounds(final List<HxGeneric> upperBounds) {
+  public HxWildcardTypeImpl setUpperBounds(final List<HxGenericElement> upperBounds) {
     this.upperBounds = upperBounds;
     return this;
   }
 
-  public HxWildcardTypeImpl addUpperBound(HxGeneric<?> bound) {
+  public HxWildcardTypeImpl addUpperBound(HxGenericElement<?> bound) {
     if (isUninitialized(upperBounds)) {
       upperBounds = new ArrayList<>(1);
     }
@@ -44,17 +44,17 @@ public class HxWildcardTypeImpl
   }
 
   @Override
-  public List<HxGeneric> getLowerBounds() {
+  public List<HxGenericElement> getLowerBounds() {
     return lowerBounds;
   }
 
   @Override
-  public HxWildcardTypeImpl setLowerBounds(final List<HxGeneric> lowerBounds) {
+  public HxWildcardTypeImpl setLowerBounds(final List<HxGenericElement> lowerBounds) {
     this.lowerBounds = lowerBounds;
     return this;
   }
 
-  public HxWildcardTypeImpl addLowerBound(HxGeneric<?> bound) {
+  public HxWildcardTypeImpl addLowerBound(HxGenericElement<?> bound) {
     if (isUninitialized(lowerBounds)) {
       lowerBounds = new ArrayList<>(1);
     }
@@ -71,7 +71,7 @@ public class HxWildcardTypeImpl
   @Override
   public String toString() {
     if(getLowerBounds().isEmpty() && getUpperBounds().size() == 1) {
-      HxGeneric hxGeneric = getUpperBounds().get(0);
+      HxGenericElement hxGeneric = getUpperBounds().get(0);
       if(hxGeneric instanceof HxType &&
          "java.lang.Object".equals(((HxType) hxGeneric).getName())) {
         return "?";

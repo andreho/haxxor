@@ -188,7 +188,7 @@ public class HxConstructorReferenceImpl
   }
 
   @Override
-  public String getGenericSignature() {
+  public Optional<String> getGenericSignature() {
     return toConstructor().getGenericSignature();
   }
 

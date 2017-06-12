@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static net.andreho.haxxor.Utils.isUninitialized;
 
@@ -28,7 +29,7 @@ public abstract class HxExecutableImpl<P extends HxExecutable<P>>
 
   protected List<HxParameter<P>> parameters = DEFAULT_EMPTY_PARAMETERS;
   protected List<HxType> exceptions = DEFAULT_EMPTY_EXCEPTIONS;
-  protected String genericSignature;
+  protected Optional<String> genericSignature;
   protected HxCode code;
 
   public HxExecutableImpl() {
@@ -147,13 +148,17 @@ public abstract class HxExecutableImpl<P extends HxExecutable<P>>
   }
 
   @Override
-  public String getGenericSignature() {
+  public Optional<String> getGenericSignature() {
     return genericSignature;
   }
 
   @Override
   public P setGenericSignature(String genericSignature) {
-    this.genericSignature = genericSignature;
+    if(genericSignature == null || genericSignature.isEmpty()) {
+      this.genericSignature = Optional.empty();
+    } else {
+      this.genericSignature = Optional.of(genericSignature);
+    }
     return (P) this;
   }
 

@@ -2,7 +2,7 @@ package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.api.HxGeneric;
+import net.andreho.haxxor.spec.api.HxGenericElement;
 
 import java.util.Collection;
 import java.util.function.Predicate;
@@ -10,7 +10,8 @@ import java.util.function.Predicate;
 /**
  * <br/>Created by andreho on 3/26/16 at 7:17 PM.<br/>
  */
-public abstract class HxAbstractGeneric<A extends HxGeneric<A>> implements HxAnnotated<A>, HxGeneric<A> {
+public abstract class HxAbstractGeneric<A extends HxGenericElement<A>> implements HxAnnotated<A>,
+                                                                                  HxGenericElement<A> {
   private HxAnnotated annotated;
 
   @Override
@@ -53,14 +54,14 @@ public abstract class HxAbstractGeneric<A extends HxGeneric<A>> implements HxAnn
     return null;
   }
 
-  protected HxGeneric<?> minimize(HxGeneric<?> hxGeneric) {
+  protected HxGenericElement<?> minimize(HxGenericElement<?> hxGeneric) {
     if(hxGeneric instanceof HxAbstractGeneric) {
       return ((HxAbstractGeneric) hxGeneric).minimize();
     }
     return hxGeneric;
   }
 
-  protected HxGeneric<?> minimize() {
+  protected HxGenericElement<?> minimize() {
     return this;
   }
 }

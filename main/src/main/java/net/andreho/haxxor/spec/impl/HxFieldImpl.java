@@ -7,6 +7,7 @@ import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Created by a.hofmann on 30.05.2015.
@@ -18,7 +19,7 @@ public class HxFieldImpl
   protected final String name;
   protected HxType type;
   protected Object defaultValue;
-  protected String genericSignature;
+  protected Optional<String> genericSignature = Optional.empty();
 
   public HxFieldImpl(HxType type,
                      String name) {
@@ -118,13 +119,17 @@ public class HxFieldImpl
   }
 
   @Override
-  public String getGenericSignature() {
+  public Optional<String> getGenericSignature() {
     return genericSignature;
   }
 
   @Override
   public HxField setGenericSignature(String genericSignature) {
-    this.genericSignature = genericSignature;
+    if(genericSignature == null || genericSignature.isEmpty()) {
+      this.genericSignature = Optional.empty();
+    } else {
+      this.genericSignature = Optional.of(genericSignature);
+    }
     return this;
   }
 

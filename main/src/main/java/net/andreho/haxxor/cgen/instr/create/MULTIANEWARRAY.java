@@ -1,8 +1,8 @@
 package net.andreho.haxxor.cgen.instr.create;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.cgen.CodeStream;
-import net.andreho.haxxor.cgen.Context;
+import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractStringOperandInstruction;
 
 import java.util.List;
@@ -15,30 +15,20 @@ public class MULTIANEWARRAY
 
   private final int dimension;
 
-  //----------------------------------------------------------------------------------------------------------------
-
-  public MULTIANEWARRAY(String className, int dims) {
+  public MULTIANEWARRAY(String className,
+                        int dims) {
     super(Opcodes.MULTIANEWARRAY, className);
     this.dimension = dims;
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
-  private static String multiply(String str, int times) {
-    StringBuilder builder = new StringBuilder();
-    while (times-- > 0) {
-      builder.append(str);
-    }
-    return builder.toString();
-  }
-
   @Override
-  public void dumpTo(Context context, CodeStream codeStream) {
+  public void dumpTo(HxComputingContext context,
+                     HxCodeStream codeStream) {
     codeStream.MULTIANEWARRAY(getOperand(), this.dimension);
   }
 
   @Override
-  public List<Object> apply(final Context context) {
+  public List<Object> apply(final HxComputingContext context) {
     return context.getStackPush()
                   .prepare()
                   .push(multiply(getOperand(), this.dimension))
@@ -46,14 +36,21 @@ public class MULTIANEWARRAY
   }
 
   @Override
-  public int getStackPopCount() {
+  public int getPopSize() {
     return this.dimension;
   }
-
-  //-----------------------------------------------------------------------------------------------------------------
 
   @Override
   public String toString() {
     return super.toString() + " " + multiply("[", this.dimension) + getOperand();
+  }
+
+  private static String multiply(String str,
+                                 int times) {
+    StringBuilder builder = new StringBuilder();
+    while (times-- > 0) {
+      builder.append(str);
+    }
+    return builder.toString();
   }
 }

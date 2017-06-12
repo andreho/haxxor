@@ -1,16 +1,23 @@
 package net.andreho.haxxor.spec.api;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * <br/>Created by a.hofmann on 08.06.2017 at 00:13.
  */
-public interface HxGenericType {
+public interface HxGenericType extends HxProvider {
 
   /**
-   * @param signature
+   * @return
    */
-  void interpret(String signature);
+  HxType getDeclaringType();
+
+  /**
+   * @param name
+   * @return
+   */
+  Optional<HxTypeVariable> getVariable(String name);
 
   /**
    * @return
@@ -20,10 +27,10 @@ public interface HxGenericType {
   /**
    * @return
    */
-  HxGeneric<?> getSuperType();
+  HxGenericElement<?> getSuperType();
 
   /**
    * @return
    */
-  List<HxGeneric<?>> getInterfaces();
+  List<HxGenericElement<?>> getInterfaces();
 }

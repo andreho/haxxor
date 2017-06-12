@@ -1,6 +1,6 @@
 package net.andreho.haxxor.cgen.instr.abstr;
 
-import net.andreho.haxxor.cgen.Context;
+import net.andreho.haxxor.cgen.HxComputingContext;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public abstract class AbstractArrayLoadInstruction
   }
 
   @Override
-  public List<Object> apply(Context context) {
+  public List<Object> apply(HxComputingContext context) {
     Object arrayType = context.getStack()
                               .peek(1);
 
@@ -33,7 +33,8 @@ public abstract class AbstractArrayLoadInstruction
                                     .substring(1);
 
     if (componentType.length() == 1) {
-      switch (componentType.charAt(0)) {
+      char c = componentType.charAt(0);
+      switch (c) {
         case 'Z':
         case 'B':
         case 'S':
@@ -54,10 +55,5 @@ public abstract class AbstractArrayLoadInstruction
                   .prepare()
                   .push(componentType)
                   .get();
-  }
-
-  @Override
-  public int getStackPopCount() {
-    return 1 + 1;
   }
 }

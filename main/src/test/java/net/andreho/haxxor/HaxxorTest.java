@@ -124,9 +124,9 @@ class HaxxorTest {
 
      assertTrue(list.size() == 3);
 
-     assertEquals(haxxor.toJavaClassName(first), list.get(0).getName());
-     assertEquals(haxxor.toJavaClassName(second), list.get(1).getName());
-     assertEquals(haxxor.toJavaClassName(third), list.get(2).getName());
+     assertEquals(haxxor.toNormalizedClassName(first), list.get(0).getName());
+     assertEquals(haxxor.toNormalizedClassName(second), list.get(1).getName());
+     assertEquals(haxxor.toNormalizedClassName(third), list.get(2).getName());
   }
 
   @Test
@@ -142,16 +142,16 @@ class HaxxorTest {
 
     assertTrue(array.length == 3);
 
-    assertEquals(haxxor.toJavaClassName(first), array[0].getName());
-    assertEquals(haxxor.toJavaClassName(second), array[1].getName());
-    assertEquals(haxxor.toJavaClassName(third), array[2].getName());
+    assertEquals(haxxor.toNormalizedClassName(first), array[0].getName());
+    assertEquals(haxxor.toNormalizedClassName(second), array[1].getName());
+    assertEquals(haxxor.toNormalizedClassName(third), array[2].getName());
   }
 
   @Test
   void resolve() {
     final String typeName = TEST_BEAN_CLASSNAME;
     final HxType type = haxxor.resolve(typeName);
-    assertEquals(haxxor.toJavaClassName(typeName), type.getName());
+    assertEquals(haxxor.toNormalizedClassName(typeName), type.getName());
     assertTrue(haxxor.hasResolved(typeName));
   }
 

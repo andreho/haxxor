@@ -24,6 +24,7 @@ public interface HxType
             HxMember<HxType>,
             HxOwned<HxType>,
             HxGeneric<HxType>,
+            HxGenericElement<HxType>,
             HxProvider {
 
   /**
@@ -661,36 +662,18 @@ public interface HxType
   }
 
   /**
-   * @return whether this type has a generic specification or not
-   */
-  default boolean isGeneric() {
-    return getGenericSignature() != null || !getGenericSignature().isEmpty();
-  }
-
-  /**
-   * @return raw generic signature of this element
-   */
-  String getGenericSignature();
-
-  /**
-   * @param genericSignature new raw generic signature
-   * @return current generic signature of this method as whole including parameters and return type
-   */
-  HxType setGenericSignature(String genericSignature);
-
-  /**
    * @return
    */
   Optional<HxGenericType> getGenericType();
 
   /**
-   * Shortcut for: <code>getName().equals(haxxor.toJavaClassName(className))</code>
+   * Shortcut for: <code>getName().equals(haxxor.toNormalizedClassName(className))</code>
    *
    * @param className to check against
    * @return <b>true</b> if name of this type is equal to the given one, <b>false</b> otherwise.
    */
   default boolean hasName(String className) {
-    return getName().equals(getHaxxor().toJavaClassName(className));
+    return getName().equals(getHaxxor().toNormalizedClassName(className));
   }
 
   /**

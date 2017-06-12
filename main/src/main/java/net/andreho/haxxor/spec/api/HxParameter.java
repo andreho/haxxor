@@ -14,12 +14,17 @@ public interface HxParameter<P extends HxExecutable<P>>
             Cloneable {
 
   /**
+   * @return a new copy of this parameter
+   */
+  HxParameter<P> clone();
+
+  /**
    * @return zero-based index of this parameter in the parameter list of the owning method/constructor
    */
   int getIndex();
 
   /**
-   * @return name of this parameter
+   * @return name of this parameter if any or 'arg'+{@link #getIndex()} of this parameter
    */
   String getName();
 
@@ -28,27 +33,6 @@ public interface HxParameter<P extends HxExecutable<P>>
    * @return this
    */
   HxParameter setName(String name);
-
-  /**
-   * @return <b>true</b> if the parameter has a name according to the class file; returns <b>false</b> otherwise.
-   */
-  boolean isNamePresent();
-
-  /**
-   * @return <b>true</b> if this parameter represents a variable argument list; returns <b>false</b> otherwise.
-   */
-  boolean isVarArgs();
-
-  /**
-   * @return <b>true</b> if this parameter is implicitly declared in source code; returns <b>false</b> otherwise.
-   */
-  boolean isImplicit();
-
-  /**
-   * @return <b>true</b> if this parameter is neither implicitly nor explicitly declared in source code; returns
-   * <b>false</b> otherwise.
-   */
-  boolean isSynthetic();
 
   /**
    * @return type of this parameter
@@ -61,6 +45,27 @@ public interface HxParameter<P extends HxExecutable<P>>
   HxParameter setType(HxType type);
 
   /**
+   * @return <b>true</b> if the parameter has a name according to the class file, <b>false</b> otherwise.
+   */
+  boolean isNamePresent();
+
+  /**
+   * @return <b>true</b> if this parameter represents a variable argument list, <b>false</b> otherwise.
+   */
+  boolean isVarArgs();
+
+  /**
+   * @return <b>true</b> if this parameter is implicitly declared in source code, <b>false</b> otherwise.
+   */
+  boolean isImplicit();
+
+  /**
+   * @return <b>true</b> if this parameter is neither implicitly nor explicitly declared in source code,
+   * <b>false</b> otherwise.
+   */
+  boolean isSynthetic();
+
+  /**
    * @return owning constructor or method instance
    */
   @Override
@@ -71,11 +76,6 @@ public interface HxParameter<P extends HxExecutable<P>>
 
   @Override
   HxParameter<P> setModifiers(int modifiers);
-
-  /**
-   * @return a new copy of this parameter
-   */
-  HxParameter<P> clone();
 
   /**
    *

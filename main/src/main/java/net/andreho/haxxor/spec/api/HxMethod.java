@@ -1,5 +1,6 @@
 package net.andreho.haxxor.spec.api;
 
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -48,6 +49,14 @@ public interface HxMethod
   }
 
   /**
+   * @param returnType
+   * @return
+   */
+  default boolean hasReturnType(HxType returnType) {
+    return hasReturnType(Objects.requireNonNull(returnType).getName());
+  }
+
+  /**
    * @return the return value of this method
    */
   HxType getReturnType();
@@ -90,7 +99,7 @@ public interface HxMethod
   /**
    * @return
    */
-  default HxGeneric getGenericReturnType() {
+  default HxGenericElement getGenericReturnType() {
     return getReturnType();
   }
 

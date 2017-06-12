@@ -1,8 +1,8 @@
 package net.andreho.haxxor.cgen.instr.conversion;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.cgen.CodeStream;
-import net.andreho.haxxor.cgen.Context;
+import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractStringOperandInstruction;
 
 import java.util.List;
@@ -20,21 +20,16 @@ public class CHECKCAST
   //----------------------------------------------------------------------------------------------------------------
 
   @Override
-  public void dumpTo(Context context, CodeStream codeStream) {
+  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
     codeStream.CHECKCAST(getOperand());
   }
 
   @Override
-  public List<Object> apply(final Context context) {
+  public List<Object> apply(final HxComputingContext context) {
     return context.getStackPush()
                   .prepare()
                   .push(getOperand())
                   .get();
-  }
-
-  @Override
-  public int getStackPopCount() {
-    return 1;
   }
 
   @Override

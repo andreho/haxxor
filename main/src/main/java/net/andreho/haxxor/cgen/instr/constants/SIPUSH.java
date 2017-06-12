@@ -1,8 +1,8 @@
 package net.andreho.haxxor.cgen.instr.constants;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.cgen.CodeStream;
-import net.andreho.haxxor.cgen.Context;
+import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractSingleOperandInstruction;
 
 import java.util.List;
@@ -22,18 +22,13 @@ public class SIPUSH
   }
 
   @Override
-  public void dumpTo(Context context, CodeStream codeStream) {
+  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
     codeStream.SIPUSH((short) this.operand);
   }
 
   @Override
-  public List<Object> apply(final Context context) {
+  public List<Object> apply(final HxComputingContext context) {
     return PUSH_INT;
-  }
-
-  @Override
-  public int getStackPopCount() {
-    return 0;
   }
 
   @Override

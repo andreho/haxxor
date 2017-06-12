@@ -259,7 +259,7 @@ class HxTypeTest {
   void getName() {
     for (Class<?> cls : shuffledClasses(CLASSES)) {
       HxType hxType = haxxor.resolve(cls.getName());
-      assertEquals(haxxor.toJavaClassName(cls.getName()), hxType.getName());
+      assertEquals(haxxor.toNormalizedClassName(cls.getName()), hxType.getName());
     }
 
     HxType type1 = haxxor.createType(TEST_CLASS_NAME_1);
@@ -435,7 +435,7 @@ class HxTypeTest {
 
     if (expected.startsWith("[")) {
       expected = hxField.getHaxxor()
-                        .toJavaClassName(expected);
+                        .toNormalizedClassName(expected);
     }
 
     assertEquals(expected, actual);
@@ -582,8 +582,8 @@ class HxTypeTest {
       HxMethod hxMethod = hxMethodOptional.get();
 
       assertEquals(clsMethod.getName(), hxMethod.getName());
-      assertEquals(haxxor.toJavaClassName(clsMethod.getReturnType()
-                                                   .getName()),
+      assertEquals(haxxor.toNormalizedClassName(clsMethod.getReturnType()
+                                                         .getName()),
                    hxMethod.getReturnType()
                            .getName());
 
@@ -652,7 +652,7 @@ class HxTypeTest {
         final String[] parameters = toClassNames(haxxor, method.getParameterTypes());
 
         Optional<HxMethod> hxMethod1 = hxType.findMethod(
-            haxxor.toJavaClassName(returnTypeName),
+            haxxor.toNormalizedClassName(returnTypeName),
             name,
             parameters);
 
@@ -876,7 +876,7 @@ class HxTypeTest {
       while (component.isArray()) {
         assertTrue(hxComponent.isArray());
         assertTrue(hxComponent.getName().endsWith("[]"));
-        assertEquals(haxxor.toJavaClassName(component.getName()),
+        assertEquals(haxxor.toNormalizedClassName(component.getName()),
                      hxComponent.getName());
 
         component = component.getComponentType();
@@ -884,7 +884,7 @@ class HxTypeTest {
         dim++;
       }
 
-      assertEquals(haxxor.toJavaClassName(component.getName()),
+      assertEquals(haxxor.toNormalizedClassName(component.getName()),
                    hxComponent.getName());
     } else {
       assertFalse(hxType.getName().contains("[") || hxType.getName().contains("]"));

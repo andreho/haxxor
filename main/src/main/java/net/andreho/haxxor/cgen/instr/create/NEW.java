@@ -1,8 +1,8 @@
 package net.andreho.haxxor.cgen.instr.create;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.cgen.CodeStream;
-import net.andreho.haxxor.cgen.Context;
+import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractStringOperandInstruction;
 
 import java.util.List;
@@ -18,18 +18,13 @@ public class NEW
   }
 
   @Override
-  public void dumpTo(Context context, CodeStream codeStream) {
+  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
     codeStream.NEW(getOperand());
   }
 
   @Override
-  public List<Object> apply(final Context context) {
+  public List<Object> apply(final HxComputingContext context) {
     return PUSH_UNINITIALIZED_THIS;
-  }
-
-  @Override
-  public int getStackPopCount() {
-    return 0;
   }
 
   @Override

@@ -1,8 +1,8 @@
 package net.andreho.haxxor.cgen.instr.local.store;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.cgen.CodeStream;
-import net.andreho.haxxor.cgen.Context;
+import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractLocalAccessInstruction;
 
 import java.util.List;
@@ -18,12 +18,12 @@ public class ISTORE
   }
 
   @Override
-  public void dumpTo(Context context, CodeStream codeStream) {
+  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
     codeStream.ISTORE(getLocalIndex());
   }
 
   @Override
-  public List<Object> apply(final Context context) {
+  public List<Object> apply(final HxComputingContext context) {
     Object operand = context.getStack()
                             .peek();
     if (operand != Opcodes.INTEGER) {
@@ -33,10 +33,5 @@ public class ISTORE
     context.getLocals()
            .set(getLocalIndex(), operand);
     return NO_STACK_PUSH;
-  }
-
-  @Override
-  public int getStackPopCount() {
-    return 1;
   }
 }

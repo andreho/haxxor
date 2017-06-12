@@ -6,9 +6,8 @@ import net.andreho.asm.org.objectweb.asm.FieldVisitor;
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.spec.api.HxTypeReference;
 import net.andreho.haxxor.spec.impl.HxGenericTypeImpl;
-import net.andreho.haxxor.spec.visitors.HxGenericSignatureReader;
-import net.andreho.haxxor.spec.visitors.HxGenericSignatureVisitor;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -88,17 +87,14 @@ public class HxAbstractGenericTest
                     final String superName,
                     final String[] interfaces) {
     super.visit(version, access, name, signature, superName, interfaces);
-    System.out.println(classname = normalizeClassname(name) + ": " + signature);
+    System.out.println(classname = normalizeClassname(name) + " => " + signature);
 //    System.out.println(target.getName() + ": " + printTypeParameters(target));
     System.out.println();
 
     if (signature != null) {
-      HxGenericSignatureReader reader = new HxGenericSignatureReader(signature);
-      HxGenericTypeImpl genericType = new HxGenericTypeImpl();
-      reader.accept(new HxGenericSignatureVisitor(haxxor, genericType));
-//      System.out.println(genericType.getTypeVariables());
-//      System.out.println(genericType.getSuperType());
-//      System.out.println(genericType.getInterfaces());
+      HxTypeReference reference = haxxor.reference(name);
+      HxGenericTypeImpl genericType = new HxGenericTypeImpl(reference, signature);
+
       System.out.println(genericType);
 
       checkTypes(target.getTypeParameters(), genericType.getTypeVariables());
@@ -125,6 +121,7 @@ public class HxAbstractGenericTest
                                  final String signature,
                                  final Object value) {
     //System.out.println(classname + "." + name +"#" + desc + ": " + signature);
+    System.out.println("Field: "+ signature);
     return super.visitField(access, name, desc, signature, value);
   }
 
