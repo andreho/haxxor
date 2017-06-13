@@ -18,7 +18,7 @@ public class RETURN
   }
 
   @Override
-  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+  public void visit(HxCodeStream codeStream) {
     codeStream.RETURN();
   }
 

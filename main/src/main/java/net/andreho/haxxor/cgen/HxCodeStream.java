@@ -2,6 +2,7 @@ package net.andreho.haxxor.cgen;
 
 
 import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.spec.api.HxType;
 
 /**
  * <br/>Created by a.hofmann on 16.06.2015.<br/>
@@ -17,7 +18,7 @@ public interface HxCodeStream {
 
   /**
    * A do nothing operation or <i>"no operation"</i><br/>
-   * HxLinkedCode: <code>0x00</code><br/>
+   * Code: <code>0x00</code><br/>
    *
    * @return this
    */
@@ -25,7 +26,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes a <b>NULL</b> value on the operand stack.<br/>
-   * HxLinkedCode: <code>0x01</code><br/>
+   * Code: <code>0x01</code><br/>
    *
    * @return this
    */
@@ -33,7 +34,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes an integer <b>-1</b> value on the operand stack.<br/>
-   * HxLinkedCode: <code>0x02</code><br/>
+   * Code: <code>0x02</code><br/>
    *
    * @return this
    */
@@ -41,7 +42,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes an integer <b>0</b> value on the operand stack.<br/>
-   * HxLinkedCode: <code>0x03</code><br/>
+   * Code: <code>0x03</code><br/>
    *
    * @return this
    */
@@ -49,7 +50,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes an integer <b>1</b> value on the operand stack.<br/>
-   * HxLinkedCode: <code>0x04</code><br/>
+   * Code: <code>0x04</code><br/>
    *
    * @return this
    */
@@ -57,7 +58,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes an integer <b>2</b> value on the operand stack.<br/>
-   * HxLinkedCode: <code>0x05</code><br/>
+   * Code: <code>0x05</code><br/>
    *
    * @return this
    */
@@ -65,7 +66,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes an integer <b>3</b> value on the operand stack.<br/>
-   * HxLinkedCode: <code>0x06</code><br/>
+   * Code: <code>0x06</code><br/>
    *
    * @return this
    */
@@ -73,7 +74,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes an integer <b>4</b> value on the operand stack.<br/>
-   * HxLinkedCode: <code>0x07</code><br/>
+   * Code: <code>0x07</code><br/>
    *
    * @return this
    */
@@ -81,7 +82,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes an integer <b>5</b> value on the operand stack.<br/>
-   * HxLinkedCode: <code>0x08</code><br/>
+   * Code: <code>0x08</code><br/>
    *
    * @return this
    */
@@ -89,7 +90,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes a long <b>0</b> value on the operand stack and reserves <b>two stack slots</b>.<br/>
-   * HxLinkedCode: <code>0x09</code><br/>
+   * Code: <code>0x09</code><br/>
    *
    * @return this
    */
@@ -97,7 +98,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes a long <b>1</b> value on the operand stack and reserves <b>two stack slots</b>.<br/>
-   * HxLinkedCode: <code>0x0A</code><br/>
+   * Code: <code>0x0A</code><br/>
    *
    * @return this
    */
@@ -105,7 +106,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes a float <b>0.0f</b> value on the operand stack.<br/>
-   * HxLinkedCode: <code>0x0B</code><br/>
+   * Code: <code>0x0B</code><br/>
    *
    * @return this
    */
@@ -113,7 +114,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes a float <b>1.0f</b> value on the operand stack.<br/>
-   * HxLinkedCode: <code>0x0C</code><br/>
+   * Code: <code>0x0C</code><br/>
    *
    * @return this
    */
@@ -121,7 +122,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes a float <b>2.0f</b> value on the operand stack.<br/>
-   * HxLinkedCode: <code>0x0D</code><br/>
+   * Code: <code>0x0D</code><br/>
    *
    * @return this
    */
@@ -129,7 +130,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes a double <b>0.0d</b> value on the operand stack and reserves <b>two stack slots</b>.<br/>
-   * HxLinkedCode: <code>0x0E</code><br/>
+   * Code: <code>0x0E</code><br/>
    *
    * @return this
    */
@@ -137,7 +138,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes a double <b>1.0d</b> value on the operand stack and reserves <b>two stack slots</b>.<br/>
-   * HxLinkedCode: <code>0x0F</code><br/>
+   * Code: <code>0x0F</code><br/>
    *
    * @return this
    */
@@ -145,7 +146,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes an integer value between <b>-128</b> and <b>127</b> on the operand stack.<br/>
-   * HxLinkedCode: <code>0x10</code><br/>
+   * Code: <code>0x10</code><br/>
    *
    * @param value to push
    * @return this
@@ -154,7 +155,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes an integer value between <b>-32768</b> and <b>32767</b> on the operand stack.<br/>
-   * HxLinkedCode: <code>0x11</code><br/>
+   * Code: <code>0x11</code><br/>
    *
    * @param value to push
    * @return this
@@ -163,7 +164,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes an integer value from constant pool on the operand stack.<br/>
-   * HxLinkedCode: <code>0x12</code><br/>
+   * Code: <code>0x12</code><br/>
    *
    * @param value to push
    * @return this
@@ -172,7 +173,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes a float value from constant pool on the operand stack.<br/>
-   * HxLinkedCode: <code>0x12</code><br/>
+   * Code: <code>0x12</code><br/>
    *
    * @param value to push
    * @return this
@@ -181,7 +182,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes a long value from constant pool on the operand stack and reserves <b>two stack slots</b>.<br/>
-   * HxLinkedCode: <code>0x12</code><br/>
+   * Code: <code>0x12</code><br/>
    *
    * @param value to push
    * @return this
@@ -190,7 +191,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes a double value from constant pool on the operand stack and reserves <b>two stack slots</b>.<br/>
-   * HxLinkedCode: <code>0x12</code><br/>
+   * Code: <code>0x12</code><br/>
    *
    * @param value to push
    * @return this
@@ -199,7 +200,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes a string value from constant pool on the operand stack.<br/>
-   * HxLinkedCode: <code>0x12</code><br/>
+   * Code: <code>0x12</code><br/>
    *
    * @param value to push
    * @return this
@@ -208,7 +209,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes a {@link HxHandle handle} value from constant pool on the operand stack.<br/>
-   * HxLinkedCode: <code>0x12</code><br/>
+   * Code: <code>0x12</code><br/>
    *
    * @param handle to push
    * @return this
@@ -218,17 +219,17 @@ public interface HxCodeStream {
 
   /**
    * Pushes a string value from constant pool on the operand stack.<br/>
-   * HxLinkedCode: <code>0x12</code><br/>
+   * Code: <code>0x12</code><br/>
    *
-   * @param methodDescriptor to push
+   * @param methodType to push
    * @return this
    * @implNote by specification this command called <b>LDC</b> too.
    */
-  HxCodeStream METHOD(String methodDescriptor); //18
+  HxCodeStream METHOD(HxMethodType methodType); //18
 
   /**
    * Pushes a class reference from constant pool on the operand stack.<br/>
-   * HxLinkedCode: <code>0x12</code><br/>
+   * Code: <code>0x12</code><br/>
    *
    * @param internalType to push, represents an internal classname (e.g.: <code>java/lang/String</code>)
    * @return this
@@ -237,8 +238,18 @@ public interface HxCodeStream {
   HxCodeStream TYPE(String internalType); //18
 
   /**
+   * Pushes a class reference from constant pool on the operand stack.<br/>
+   * Code: <code>0x12</code><br/>
+   *
+   * @param type to push
+   * @return this
+   * @implNote by specification this command called <b>LDC</b> too.
+   */
+  HxCodeStream TYPE(HxType type); //18
+
+  /**
    * Pushes an integer value from the slot with given index on the operand stack.<br/>
-   * HxLinkedCode: <code>0x15</code><br/>
+   * Code: <code>0x15</code><br/>
    *
    * @param idx of the variable slot (local variable)
    * @return this
@@ -248,7 +259,7 @@ public interface HxCodeStream {
   /**
    * Pushes a long value from the slot with given index on the operand stack.<br/>
    * The following slot must contain the second part (LSB) of the long value.<br/>
-   * HxLinkedCode: <code>0x16</code><br/>
+   * Code: <code>0x16</code><br/>
    *
    * @param idx of the variable slot containing first 4 bytes (MSB) the long value
    * @return this
@@ -257,7 +268,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes a float value from the slot with given index on the operand stack.<br/>
-   * HxLinkedCode: <code>0x17</code><br/>
+   * Code: <code>0x17</code><br/>
    *
    * @param idx of the variable slot (local variable)
    * @return this
@@ -267,7 +278,7 @@ public interface HxCodeStream {
   /**
    * Pushes a double value from the slot with given index on the operand stack.<br/>
    * The following slot must contain the second part (LSB) of the double value.<br/>
-   * HxLinkedCode: <code>0x18</code><br/>
+   * Code: <code>0x18</code><br/>
    *
    * @param idx of the variable slot containing first 4 bytes (MSB) the double value
    * @return this
@@ -276,7 +287,7 @@ public interface HxCodeStream {
 
   /**
    * Pushes an object reference from the slot with given index on the operand stack..<br/>
-   * HxLinkedCode: <code>0x19</code><br/> and also short versions (aload_0 = 0x2a, aload_1 = 0x2b, aload_2 = 0x2c,  aload_3
+   * Code: <code>0x19</code><br/> and also short versions (aload_0 = 0x2a, aload_1 = 0x2b, aload_2 = 0x2c,  aload_3
    * = 0x2d)
    *
    * @param idx of the variable slot (local variable)
@@ -288,7 +299,7 @@ public interface HxCodeStream {
    * Pushes the <b>this</b> reference from the slot with index <b>0</b> on the operand stack.<br/>
    * This method is a shortcut for {@link #ALOAD(int) ALOAD(0)} and available for (not-static) member methods only
    * .<br/>
-   * HxLinkedCode: see <code>{@link #ALOAD(int)}</code><br/>
+   * Code: see <code>{@link #ALOAD(int)}</code><br/>
    *
    * @return this
    */
@@ -298,7 +309,7 @@ public interface HxCodeStream {
    * Reads from a provided int[] array reference at the given index an integer value and
    * pushes it on the operand stack.<br/>
    * This call expects to have on the stack: <code>[..., arrayref:int[], index:int -> ...]</code><br/>
-   * HxLinkedCode: <code>0x2e</code><br/>
+   * Code: <code>0x2e</code><br/>
    *
    * @return this
    */
@@ -308,7 +319,7 @@ public interface HxCodeStream {
    * Reads from a provided long[] array reference at the given index a long value,
    * then pushes it on the operand stack and reserves <b>two stack slots</b>.<br/>
    * This call expects to have on the stack: <code>[..., arrayref:long[], index:int -> ...]</code><br/>
-   * HxLinkedCode: <code>0x2f</code><br/>
+   * Code: <code>0x2f</code><br/>
    *
    * @return this
    */
@@ -318,7 +329,7 @@ public interface HxCodeStream {
    * Reads from a provided float[] array reference at the given index a float value and
    * pushes it on the operand stack.<br/>
    * This call expects to have on the stack: <code>[..., arrayref:float[], index:int -> ...]</code><br/>
-   * HxLinkedCode: <code>0x30</code><br/>
+   * Code: <code>0x30</code><br/>
    *
    * @return this
    */
@@ -328,7 +339,7 @@ public interface HxCodeStream {
    * Reads from a provided double[] array reference at the given index a double value,
    * then pushes it on the operand stack and reserves <b>two stack slots</b>.<br/>
    * This call expects to have on the stack: <code>[..., arrayref:double[], index:int -> ...]</code><br/>
-   * HxLinkedCode: <code>0x31</code><br/>
+   * Code: <code>0x31</code><br/>
    *
    * @return this
    */
@@ -338,7 +349,7 @@ public interface HxCodeStream {
    * Reads from a provided T[] array reference at the given index an object and
    * pushes it on the operand stack.<br/>
    * This call expects to have on the stack: <code>[..., arrayref:T[], index:int -> ...]</code><br/>
-   * HxLinkedCode: <code>0x32</code><br/>
+   * Code: <code>0x32</code><br/>
    *
    * @return this
    */
@@ -348,7 +359,7 @@ public interface HxCodeStream {
    * Reads from a provided byte[] array reference at the given index a byte value and
    * pushes it on the operand stack reserving one stack slot.<br/>
    * This call expects to have on the stack: <code>[..., arrayref:byte[], index:int -> ...]</code><br/>
-   * HxLinkedCode: <code>0x33</code><br/>
+   * Code: <code>0x33</code><br/>
    *
    * @return this
    */
@@ -358,7 +369,7 @@ public interface HxCodeStream {
    * Reads from a provided char[] array reference at the given index a character value and
    * pushes it on the operand stack reserving one stack slot.<br/>
    * This call expects to have on the stack: <code>[..., arrayref:char[], index:int -> ...]</code><br/>
-   * HxLinkedCode: <code>0x34</code><br/>
+   * Code: <code>0x34</code><br/>
    *
    * @return this
    */
@@ -368,7 +379,7 @@ public interface HxCodeStream {
    * Reads from a provided short[] array reference at the given index a short value and
    * pushes it on the operand stack reserving one stack slot.<br/>
    * This call expects to have on the stack: <code>[..., arrayref:short[], index:int -> ...]</code><br/>
-   * HxLinkedCode: <code>0x35</code><br/>
+   * Code: <code>0x35</code><br/>
    *
    * @return this
    */
@@ -377,7 +388,7 @@ public interface HxCodeStream {
   /**
    * Pops an integer value from stack and stores it into a variable slot with given <code>index</code>.<br/>
    * This call expects to have on the stack: <code>[..., value:int]</code><br/>
-   * HxLinkedCode: <code>0x36</code><br/>
+   * Code: <code>0x36</code><br/>
    *
    * @param idx of variable slot that receives value
    * @return this
@@ -388,19 +399,17 @@ public interface HxCodeStream {
    * Pops a long value from stack (two slots) and stores it into a variable slot with given
    * index reserving two slots at <code>index</code> and <code>index+1</code>.<br/>
    * This call expects to have on the stack: <code>[..., value:long[0], value:long[1]]</code><br/>
-   * HxLinkedCode: <code>0x37</code><br/>
+   * Code: <code>0x37</code><br/>
    *
    * @param idx of variable slot that receives value
    * @return this
    */
   HxCodeStream LSTORE(int idx); //55
 
-  //----------------------------------------------------------------------------------------------------------------
-
   /**
    * Pops a float value from stack and stores it into a variable slot with given <code>index</code><br/>
    * This call expects to have on the stack: <code>[..., value:float]</code><br/>
-   * HxLinkedCode: <code>0x38</code><br/>
+   * Code: <code>0x38</code><br/>
    *
    * @param idx of variable slot that receives value
    * @return this
@@ -411,7 +420,7 @@ public interface HxCodeStream {
    * Pops a double value from stack (two slots) and stores it into a variable slot with given
    * index reserving two slots at <code>index</code> and <code>index+1</code>.<br/>
    * This call expects to have on the stack: <code>[..., value:double[0], value:double[1]]</code><br/>
-   * HxLinkedCode: <code>0x39</code><br/>
+   * Code: <code>0x39</code><br/>
    *
    * @param idx of variable slot that receives value
    * @return this
@@ -421,7 +430,7 @@ public interface HxCodeStream {
   /**
    * Pops a reference value from stack and stores it into a variable slot with given <code>index</code><br/>
    * This call expects to have on the stack: <code>[..., value:T]</code><br/>
-   * HxLinkedCode: <code>0x3a</code><br/>
+   * Code: <code>0x3a</code><br/>
    *
    * @param idx of variable slot that receives value
    * @return this
@@ -431,7 +440,7 @@ public interface HxCodeStream {
   /**
    * Stores an integer at given index into the provided integer array reference.<br/>
    * This call expects to have on the stack: <code>[..., arrayref:int[], index:int, value:int]</code><br/>
-   * HxLinkedCode: <code>0x4f</code><br/>
+   * Code: <code>0x4f</code><br/>
    *
    * @return this
    */
@@ -441,18 +450,16 @@ public interface HxCodeStream {
    * Stores a long value at given index into the provided long array reference.<br/>
    * This call expects to have on the stack: <code>[..., arrayref:long[], index:int, value:long[0],
    * value:long[1]]</code><br/>
-   * HxLinkedCode: <code>0x50</code><br/>
+   * Code: <code>0x50</code><br/>
    *
    * @return this
    */
   HxCodeStream LASTORE(); //80
 
-  //----------------------------------------------------------------------------------------------------------------
-
   /**
    * Stores a float at given index into the provided float array reference.<br/>
    * This call expects to have on the stack: <code>[..., arrayref:float[], index:int, value:float]</code><br/>
-   * HxLinkedCode: <code>0x51</code><br/>
+   * Code: <code>0x51</code><br/>
    *
    * @return this
    */
@@ -462,7 +469,7 @@ public interface HxCodeStream {
    * Stores a double value at given index into the provided double array reference.<br/>
    * This call expects to have on the stack: <code>[..., arrayref:double[], index:int, value:double[0],
    * value:double[1]]</code><br/>
-   * HxLinkedCode: <code>0x52</code><br/>
+   * Code: <code>0x52</code><br/>
    *
    * @return this
    */
@@ -471,7 +478,7 @@ public interface HxCodeStream {
   /**
    * Stores an object reference value at given index into the provided object array reference.<br/>
    * This call expects to have on the stack: <code>[..., arrayref:T[], index:int, value:T]</code><br/>
-   * HxLinkedCode: <code>0x53</code><br/>
+   * Code: <code>0x53</code><br/>
    *
    * @return this
    */
@@ -480,7 +487,7 @@ public interface HxCodeStream {
   /**
    * Stores a byte at given index into the provided byte array reference.<br/>
    * This call expects to have on the stack: <code>[..., arrayref:byte[], index:int, value:byte]</code><br/>
-   * HxLinkedCode: <code>0x54</code><br/>
+   * Code: <code>0x54</code><br/>
    *
    * @return this
    */
@@ -489,7 +496,7 @@ public interface HxCodeStream {
   /**
    * Stores a char at given index into the provided char array reference.<br/>
    * This call expects to have on the stack: <code>[..., arrayref:char[], index:int, value:char]</code><br/>
-   * HxLinkedCode: <code>0x55</code><br/>
+   * Code: <code>0x55</code><br/>
    *
    * @return this
    */
@@ -498,47 +505,116 @@ public interface HxCodeStream {
   /**
    * Stores a short at given index into the provided short array reference.<br/>
    * This call expects to have on the stack: <code>[..., arrayref:short[], index:int, value:short]</code><br/>
-   * HxLinkedCode: <code>0x56</code><br/>
+   * Code: <code>0x56</code><br/>
    *
    * @return this
    */
   HxCodeStream SASTORE(); //86
 
   /**
-   * Pops one stack slot value from the stack (like:).<br/>
+   * Pops the top stack value from the stack
+   * (like: int, float, array or reference, but not double or long).<br/>
    * This call expects to have on the stack: <code>[..., value:*]</code><br/>
-   * HxLinkedCode: <code>0x57</code><br/>
+   * Code: <code>0x57</code><br/>
    *
-   * @return
+   * @return this
    */
   HxCodeStream POP(); //87
 
+  /**
+   * Pop the top one or two operand stack values.<br/>
+   * This call expects to have on the stack: <code>[..., value2, value1 -> ...]</code><br/>
+   * Code: <code>0x58</code><br/>
+   * @return this
+   */
   HxCodeStream POP2(); //88
 
-  //----------------------------------------------------------------------------------------------------------------
-
+  /**
+   * Duplicate the top operand stack value.<br/>
+   * This call expects to have on the stack: <code>[..., value -> ..., value, value]</code><br/>
+   * Code: <code>0x59</code><br/>
+   * @return this
+   */
   HxCodeStream DUP(); //89
 
+  /**
+   * Duplicate the top operand stack value and insert two values down.<br/>
+   * This call expects to have on the stack: <code>[..., value2, value1 -> ..., value1, value2, value1]</code><br/>
+   * Code: <code>0x5a</code><br/>
+   * @return this
+   */
   HxCodeStream DUP_X1(); //90
 
+  /**
+   * Duplicate the top operand stack value and insert two or three values down.<br/>
+   * This call expects to have on the stack: <code>[..., value3, value2, value1 -> ..., value1, value3, value2, value1]</code><br/>
+   * Code: <code>0x5b</code><br/>
+   * @return this
+   */
   HxCodeStream DUP_X2(); //91
 
+  /**
+   * Duplicate the top one or two operand stack values.<br/>
+   * This call expects to have on the stack: <code>[..., value2, value1 -> ..., value2, value1, value2, value1]</code><br/>
+   * Code: <code>0x5c</code><br/>
+   * @return this
+   */
   HxCodeStream DUP2(); //92
 
+  /**
+   * Duplicate the top one or two operand stack values and insert two or three values down. <br/>
+   * This call expects to have on the stack: <code>[..., value3, value2, value1 -> ..., value2, value1, value3, value2, value1]</code><br/>
+   * Code: <code>0x5d</code><br/>
+   * @return this
+   */
   HxCodeStream DUP2_X1(); //93
 
+  /**
+   * Duplicate the top one or two operand stack values and insert two, three, or four values down.<br/>
+   * This call expects to have on the stack: <code>[..., value4, value3, value2, value1 -> ..., value2, value1, value4, value3, value2, value1]</code><br/>
+   * Code: <code>0x5e</code><br/>
+   * @return this
+   */
   HxCodeStream DUP2_X2(); //94
 
+  /**
+   * Swap the top two operand stack values.<br/>
+   * This call expects to have on the stack: <code>[..., value2, value1 -> ..., value1, value2]</code><br/>
+   * Code: <code>0x5f</code><br/>
+   * @return this
+   */
   HxCodeStream SWAP(); //95
 
+  /**
+   * Calculates an addition of two top integers on the stack.<br/>
+   * This call expects to have on the stack: <code>[..., value1, value2 -> ..., result:int]</code><br/>
+   * Code: <code>0x60</code><br/>
+   * @return this
+   */
   HxCodeStream IADD(); //96
 
+  /**
+   * Calculates an addition of two top longs on the stack.<br/>
+   * This call expects to have on the stack: <code>[..., value1, value2 -> ..., result:long]</code><br/>
+   * Code: <code>0x61</code><br/>
+   * @return this
+   */
   HxCodeStream LADD(); //97
 
-  //----------------------------------------------------------------------------------------------------------------
-
+  /**
+   * Calculates an addition of two top floats on the stack.<br/>
+   * This call expects to have on the stack: <code>[..., value1, value2 -> ..., result:float]</code><br/>
+   * Code: <code>0x62</code><br/>
+   * @return this
+   */
   HxCodeStream FADD(); //98
 
+  /**
+   * Calculates an addition of two top doubles on the stack.<br/>
+   * This call expects to have on the stack: <code>[..., value1, value2 -> ..., result:double]</code><br/>
+   * Code: <code>0x63</code><br/>
+   * @return this
+   */
   HxCodeStream DADD(); //99
 
   HxCodeStream ISUB(); //100
@@ -585,8 +661,6 @@ public interface HxCodeStream {
 
   HxCodeStream LSHL(); //121
 
-  //----------------------------------------------------------------------------------------------------------------
-
   HxCodeStream ISHR(); //122
 
   HxCodeStream LSHR(); //123
@@ -606,6 +680,8 @@ public interface HxCodeStream {
   HxCodeStream IXOR(); //130
 
   HxCodeStream LXOR(); //131
+
+  //----------------------------------------------------------------------------------------------------------------
 
   HxCodeStream IINC(int var, int increment); //132
 
@@ -646,8 +722,6 @@ public interface HxCodeStream {
   HxCodeStream LCMP(); //148
 
   HxCodeStream FCMPL(); //149
-
-  //----------------------------------------------------------------------------------------------------------------
 
   HxCodeStream FCMPG(); //150
 
@@ -715,75 +789,172 @@ public interface HxCodeStream {
 
   //----------------------------------------------------------------------------------------------------------------
 
+  /**
+   * Gets static field from class.<br/>
+   * This call expects to have on the stack: <code>[..., -> ..., value]</code><br/>
+   * Code: <code>0xb2</code><br/>
+   * @param owner the internal typename of the owning class
+   * @param name of the static field
+   * @param desc is the descriptor of the field's type
+   *
+   * @return this
+   */
   HxCodeStream GETSTATIC(String owner, String name, String desc); //178
 
+  /**
+   * Set static field in class.<br/>
+   * This call expects to have on the stack: <code>[..., value -> ...]</code><br/>
+   * Code: <code>0xb3</code><br/>
+   * @param owner the internal typename of the owning class
+   * @param name of the static field
+   * @param desc is the descriptor of the field's type
+   *
+   * @return this
+   */
   HxCodeStream PUTSTATIC(String owner, String name, String desc); //179
 
+  /**
+   * Fetch field from object.<br/>
+   * This call expects to have on the stack: <code>[..., objectref -> ..., value]</code><br/>
+   * Code: <code>0xb4</code><br/>
+   * @param owner the internal typename of the owning class
+   * @param name of the member field
+   * @param desc is the descriptor of the field's type
+   *
+   * @return this
+   */
   HxCodeStream GETFIELD(String owner, String name, String desc); //180
 
+  /**
+   * Set field in object.<br/>
+   * This call expects to have on the stack: <code>[..., objectref, value -> ...]</code><br/>
+   * Code: <code>0xb5</code><br/>
+   * @param owner the internal typename of the owning class
+   * @param name of the member field
+   * @param desc is the descriptor of the field's type
+   *
+   * @return this
+   */
   HxCodeStream PUTFIELD(String owner, String name, String desc); //181
 
-  //----------------------------------------------------------------------------------------------------------------
-
   /**
-   * @param owner
-   * @param name
-   * @param desc
-   * @return
+   * Invoke instance method; dispatch based on class (public/protected/package-private access).<br/>
+   * This call expects to have on the stack: <code>[..., objectref,  [arg1, [arg2 ...]] -> ]</code><br/>
+   * Code: <code>0xb6</code><br/>
+   * @param owner is the internal typename of the owning class
+   * @param name of the virtual method
+   * @param desc is the descriptor of the method's signature
+   * @return this
    */
   HxCodeStream INVOKEVIRTUAL(String owner, String name, String desc); //182
 
   /**
-   * @param owner
-   * @param name
-   * @param desc
-   * @return
+   * Invoke instance method; special handling for superclass, private, and instance initialization method invocations.<br/>
+   * This call expects to have on the stack: <code>[..., objectref,  [arg1, [arg2 ...]] -> ]</code><br/>
+   * Code: <code>0xb7</code><br/>
+   * @param owner is the internal typename of the owning class
+   * @param name of the private method or <code>&lt;init&gt;</code> for a constructor call
+   * @param desc is the descriptor of the method's signature
+   * @return this
    */
   HxCodeStream INVOKESPECIAL(String owner, String name, String desc); //183
 
   /**
-   * @param owner       - internal name of a class.
-   * @param name
-   * @param desc
-   * @param isInterface whether the owner is an interface or not
+   * Invoke a class (static) method.<br/>
+   * This call expects to have on the stack: <code>[..., [arg1, [arg2 ...]] -> ]</code><br/>
+   * Code: <code>0xb8</code><br/>
+   * @param owner is the internal typename of the owning class
+   * @param name of the static method
+   * @param desc is the descriptor of the method's signature
+   * @param isInterface whether the owning-class is an interface or not
+   * @return this
    */
   HxCodeStream INVOKESTATIC(String owner, String name, String desc, boolean isInterface); //184
 
   /**
-   * @param owner
-   * @param name
-   * @param desc
-   * @return
+   * Invoke interface method.<br/>
+   * This call expects to have on the stack: <code>[..., objectref,  [arg1, [arg2 ...]] -> ]</code><br/>
+   * Code: <code>0xb9</code><br/>
+   * @param owner is the internal typename of the owning interface
+   * @param name of the interface method
+   * @param desc is the descriptor of the method's signature
+   * @return this
    */
   HxCodeStream INVOKEINTERFACE(String owner, String name, String desc); //185
 
   /**
-   * @param name
-   * @param desc
-   * @param bsm
-   * @param bsmArgs
-   * @return
+   * Invoke dynamic method.<br/>
+   * Code: <code>0xba</code><br/>
+   * @param name of the target method
+   * @param desc is the descriptor of the target method
+   * @param bsm is the handle that references a bootstrap method for dynamic method-linking
+   * @param bsmArgs are the arguments for the referenced bootstrap method
+   * @return this
    */
-  HxCodeStream INVOKEDYNAMIC(String name, String desc, HxHandle bsm, Object... bsmArgs); //186
+  HxCodeStream INVOKEDYNAMIC(String name, String desc, HxHandle bsm, HxArguments bsmArgs); //186
 
-  //----------------------------------------------------------------------------------------------------------------
-
+  /**
+   * Create new object. <br/>
+   * This call expects to have on the stack: <code>[... -> ..., objectref]</code><br/>
+   * Code: <code>0xbb</code><br/>
+   * @param internalType is the internal classname of the referenced class that should be allocated on heap
+   *                     (but without any call to any constructor)
+   * @return this
+   */
   HxCodeStream NEW(String internalType); //187
 
+  /**
+   * Create new array of referenced primitives.<br/>
+   * This call expects to have on the stack: <code>[..., length:int -> ..., arrayref]</code><br/>
+   * Code: <code>0xbc</code><br/>
+   * @param type of a primitive array-type
+   * @return this
+   */
   HxCodeStream NEWARRAY(HxArrayType type); //188
 
-  //----------------------------------------------------------------------------------------------------------------
-
+  /**
+   * Create new array of reference.<br/>
+   * This call expects to have on the stack: <code>[..., length:int -> ..., arrayref]</code><br/>
+   * Code: <code>0xbd</code><br/>
+   * @param internalType is the internal classname of the component's type of constructed array
+   * @return this
+   */
   HxCodeStream ANEWARRAY(String internalType); //189
 
+  /**
+   * Get length of array.<br/>
+   * This call expects to have on the stack: <code>[..., arrayref -> ..., length:int]</code><br/>
+   * Code: <code>0xbe</code><br/>
+   * @return this
+   */
   HxCodeStream ARRAYLENGTH(); //190
 
+  /**
+   * Throw exception or error.<br/>
+   * This call expects to have on the stack: <code>[..., throwable -> throwable]</code><br/>
+   * Code: <code>0xbf</code><br/>
+   * @return this
+   */
   HxCodeStream ATHROW(); //191
 
+  /**
+   * Check whether object is of given type.<br/>
+   * This call expects to have on the stack: <code>[..., objectref -> ..., objectref]</code><br/>
+   * Code: <code>0xc0</code><br/>
+   * @param internalType is the internal classname of a type to check for or
+   *                     if it's an array then a descriptor of this array-type
+   * @return this
+   */
   HxCodeStream CHECKCAST(String internalType); //192
 
-  //----------------------------------------------------------------------------------------------------------------
-
+  /**
+   * Determine if object is of given type.<br/>
+   * This call expects to have on the stack: <code>[..., objectref -> ..., result]</code><br/>
+   * Code: <code>0xc1</code><br/>
+   * @param internalType is the internal classname of a type to check for or
+   *                     if it's an array then a descriptor of this array-type
+   * @return this
+   */
   HxCodeStream INSTANCEOF(String internalType); //193
 
   HxCodeStream MONITORENTER(); //194

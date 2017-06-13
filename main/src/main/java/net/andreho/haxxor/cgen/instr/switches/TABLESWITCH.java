@@ -26,7 +26,7 @@ public class TABLESWITCH
   }
 
   @Override
-  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+  public void visit(HxCodeStream codeStream) {
     codeStream.TABLESWITCH(this.min, this.max, this.label, this.labels);
   }
 

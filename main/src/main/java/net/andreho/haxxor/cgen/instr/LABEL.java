@@ -42,10 +42,14 @@ public class LABEL
   }
 
   @Override
-  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+  public List<Object> apply(final HxComputingContext context) {
     context.getVisitedLabels()
            .putIfAbsent(this, getPrevious());
+    return super.apply(context);
+  }
 
+  @Override
+  public void visit(HxCodeStream codeStream) {
     codeStream.LABEL(this);
   }
 

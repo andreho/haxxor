@@ -22,8 +22,7 @@ public class MULTIANEWARRAY
   }
 
   @Override
-  public void dumpTo(HxComputingContext context,
-                     HxCodeStream codeStream) {
+  public void visit(HxCodeStream codeStream) {
     codeStream.MULTIANEWARRAY(getOperand(), this.dimension);
   }
 

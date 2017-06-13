@@ -1,15 +1,20 @@
 package net.andreho.haxxor.cgen.impl;
 
+import net.andreho.asm.org.objectweb.asm.Handle;
 import net.andreho.asm.org.objectweb.asm.Label;
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.asm.org.objectweb.asm.Type;
+import net.andreho.haxxor.cgen.HxArguments;
 import net.andreho.haxxor.cgen.HxArrayType;
+import net.andreho.haxxor.cgen.HxAsmUtils;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxFrames;
 import net.andreho.haxxor.cgen.HxHandle;
+import net.andreho.haxxor.cgen.HxMethodType;
 import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.spec.api.HxExecutable;
+import net.andreho.haxxor.spec.api.HxType;
 
 /**
  * <br/>Created by a.hofmann on 16.06.2015.<br/>
@@ -37,22 +42,41 @@ public class AsmCodeStream
   }
 
   protected Label toAsmLabel(LABEL label) {
-    return label.getAsmLabel();
+    return HxAsmUtils.toAsmLabel(label);
   }
 
   protected Label[] toAsmLabels(LABEL... labels) {
-    Label[] result = new Label[labels.length];
-
-    for (int i = 0; i < labels.length; i++) {
-      result[i] = toAsmLabel(labels[i]);
-    }
-    return result;
+    return HxAsmUtils.toAsmLabels(labels);
   }
 
-  protected net.andreho.asm.org.objectweb.asm.Handle toAsmHandle(final HxHandle handle) {
-    return new net.andreho.asm.org.objectweb.asm.Handle(
-        handle.getTag().getCode(), handle.getOwner(), handle.getName(), handle.getDescriptor(), handle.isInterface()
-    );
+  protected Type toAsmType(final HxType type) {
+    return Type.getType(type.toDescriptor());
+  }
+
+  protected Handle toAsmHandle(final HxHandle handle) {
+    return HxAsmUtils.toAsmHandle(handle);
+  }
+
+  protected Type toAsmMethodType(final HxMethodType methodType) {
+    return Type.getMethodType(methodType.getSignature());
+  }
+
+  protected Object[] toBootstrapArguments(HxArguments arguments) {
+    final Object[] array = arguments.toArray();
+    for (int i = 0; i < array.length; i++) {
+      Object arg = array[i];
+      Object val = arg;
+
+      if(arg instanceof HxType) {
+        val = Type.getType(((HxType) arg).toDescriptor());
+      } else if(arg instanceof HxHandle) {
+        val = toAsmHandle((HxHandle) arg);
+      } else if(arg instanceof HxMethodType) {
+        val = toAsmMethodType((HxMethodType) arg);
+      }
+      array[i] = val;
+    }
+    return array;
   }
 
   protected HxCodeStream visitCode() {
@@ -76,6 +100,13 @@ public class AsmCodeStream
   }
 
   protected HxCodeStream visitLdcInsn(Object cst) {
+    if(cst instanceof HxHandle) {
+      cst = toAsmHandle((HxHandle) cst);
+    } else if(cst instanceof HxMethodType) {
+      cst = toAsmMethodType((HxMethodType) cst);
+    } else if(cst instanceof HxType) {
+      cst = toAsmType((HxType) cst);
+    }
     this.mv.visitLdcInsn(cst);
     return this;
   }
@@ -110,8 +141,8 @@ public class AsmCodeStream
     return this;
   }
 
-  protected HxCodeStream visitInvokeDynamicInsn(String name, String desc, HxHandle handle, Object[] bsmArgs) {
-    this.mv.visitInvokeDynamicInsn(name, desc, toAsmHandle(handle), bsmArgs);
+  protected HxCodeStream visitInvokeDynamicInsn(String name, String desc, HxHandle handle, HxArguments bsmArgs) {
+    this.mv.visitInvokeDynamicInsn(name, desc, toAsmHandle(handle), toBootstrapArguments(bsmArgs));
     return this;
   }
 
@@ -134,7 +165,6 @@ public class AsmCodeStream
     this.mv.visitTryCatchBlock(toAsmLabel(start), toAsmLabel(end), toAsmLabel(handler), type);
     return this;
   }
-
 
   protected HxCodeStream visitFrame(final HxFrames type,
                                     final int localsCount,
@@ -343,17 +373,22 @@ public class AsmCodeStream
 
   @Override
   public HxCodeStream HANDLE(HxHandle handle) {
-    return visitLdcInsn(toAsmHandle(handle));
+    return visitLdcInsn(handle);
   }
 
   @Override
-  public HxCodeStream METHOD(String methodDescriptor) {
-    return visitLdcInsn(Type.getMethodType(methodDescriptor));
+  public HxCodeStream METHOD(HxMethodType methodType) {
+    return visitLdcInsn(methodType);
   }
 
   @Override
   public HxCodeStream TYPE(String internalType) {
     return visitLdcInsn(Type.getType(internalType));
+  }
+
+  @Override
+  public HxCodeStream TYPE(final HxType type) {
+    return visitLdcInsn(type);
   }
 
   @Override
@@ -982,7 +1017,7 @@ public class AsmCodeStream
   }
 
   @Override
-  public HxCodeStream INVOKEDYNAMIC(String name, String desc, HxHandle bsm, Object... bsmArgs) {
+  public HxCodeStream INVOKEDYNAMIC(String name, String desc, HxHandle bsm, HxArguments bsmArgs) {
     return visitInvokeDynamicInsn(name, toInternalTypeName(desc), bsm, bsmArgs);
   }
 

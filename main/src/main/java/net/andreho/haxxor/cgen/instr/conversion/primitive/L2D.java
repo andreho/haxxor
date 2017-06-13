@@ -18,7 +18,7 @@ public class L2D
   }
 
   @Override
-  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+  public void visit(HxCodeStream codeStream) {
     codeStream.L2D();
   }
 

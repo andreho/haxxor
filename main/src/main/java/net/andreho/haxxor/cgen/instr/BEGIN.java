@@ -23,7 +23,7 @@ public class BEGIN
   }
 
   @Override
-  public void dumpTo(final HxComputingContext context, final HxCodeStream codeStream) {
+  public void visit(final HxCodeStream codeStream) {
     codeStream.BEGIN();
   }
 

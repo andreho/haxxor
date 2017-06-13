@@ -18,7 +18,7 @@ public class ICONST_M1
   }
 
   @Override
-  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+  public void visit(HxCodeStream codeStream) {
     codeStream.ICONST_M1();
   }
 

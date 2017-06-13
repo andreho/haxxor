@@ -177,7 +177,7 @@ public class HxTypeVisitor
       parameterizable.setExceptionTypes(this.haxxor.referencesAsArray(exceptions));
     }
 
-    return new HxParameterizableVisitor(
+    return new HxExecutableVisitor(
         haxxor,
         type,
         parameterizable,

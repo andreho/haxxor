@@ -18,7 +18,7 @@ public class ACONST_NULL
   }
 
   @Override
-  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+  public void visit(HxCodeStream codeStream) {
     codeStream.ACONST_NULL();
   }
 

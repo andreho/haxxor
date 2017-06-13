@@ -18,7 +18,7 @@ public class FCONST_1
   }
 
   @Override
-  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+  public void visit(HxCodeStream codeStream) {
     codeStream.FCONST_1();
   }
 

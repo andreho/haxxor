@@ -2,7 +2,6 @@ package net.andreho.haxxor.cgen.instr.jumps.cond.zero;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
-import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractJumpInstruction;
 
@@ -18,7 +17,7 @@ public class IFLE
   }
 
   @Override
-  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+  public void visit(HxCodeStream codeStream) {
     codeStream.IFLE(this.label);
   }
 }

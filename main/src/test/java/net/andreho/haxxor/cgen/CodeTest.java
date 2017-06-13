@@ -8,7 +8,15 @@ import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.cgen.code_fragments.ArithmeticOperationsFragment;
 import net.andreho.haxxor.cgen.code_fragments.ArrayOperationsFragments;
 import net.andreho.haxxor.cgen.code_fragments.BinaryOperationsFragment;
+import net.andreho.haxxor.cgen.code_fragments.CompareFragment;
+import net.andreho.haxxor.cgen.code_fragments.ConstantsFragment;
+import net.andreho.haxxor.cgen.code_fragments.FieldAccessFragment;
+import net.andreho.haxxor.cgen.code_fragments.InvokeFragment;
+import net.andreho.haxxor.cgen.code_fragments.JumpOperationsFragement;
+import net.andreho.haxxor.cgen.code_fragments.LoadStoreFragment;
 import net.andreho.haxxor.cgen.code_fragments.NewOperationsFragment;
+import net.andreho.haxxor.cgen.code_fragments.SyncFragment;
+import net.andreho.haxxor.cgen.impl.PrintingCodeStream;
 import net.andreho.haxxor.spec.api.HxCode;
 import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxMethod;
@@ -29,7 +37,16 @@ class CodeTest {
   static List<Class<?>> classes() {
     return Arrays.asList(
         ArithmeticOperationsFragment.class,
-        ArrayOperationsFragments.class, BinaryOperationsFragment.class, NewOperationsFragment.class
+        ArrayOperationsFragments.class,
+        BinaryOperationsFragment.class,
+        NewOperationsFragment.class,
+        ConstantsFragment.class,
+        InvokeFragment.class,
+        JumpOperationsFragement.class,
+        LoadStoreFragment.class,
+        FieldAccessFragment.class,
+        CompareFragment.class,
+        SyncFragment.class
     );
   }
 
@@ -60,7 +77,14 @@ class CodeTest {
           code = hxMethod.getCode();
         }
 
-        return new CodeStreamMatcher(code, super.visitMethod(access, name, desc, signature, exceptions));
+        MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
+
+        PrintingCodeStream stream = new PrintingCodeStream(System.out);
+        for(HxInstruction instruction : code) {
+          instruction.visit(stream);
+        }
+
+        return new CodeStreamMatcher(code, mv);
       }
     }, 0);
   }

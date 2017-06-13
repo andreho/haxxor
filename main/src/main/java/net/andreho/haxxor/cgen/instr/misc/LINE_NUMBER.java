@@ -31,7 +31,7 @@ public class LINE_NUMBER
   }
 
   @Override
-  public void dumpTo(final HxComputingContext context, final HxCodeStream codeStream) {
+  public void visit(final HxCodeStream codeStream) {
     codeStream.LINE_NUMBER(line, start);
   }
 

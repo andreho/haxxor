@@ -70,7 +70,7 @@ public abstract class AbstractPseudoInstruction
   }
 
   @Override
-  public void dumpTo(final HxComputingContext context, final HxCodeStream codeStream) {
+  public void visit(final HxCodeStream codeStream) {
   }
 
   /**

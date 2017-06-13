@@ -25,7 +25,7 @@ public class LOOKUPSWITCH
   }
 
   @Override
-  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+  public void visit(HxCodeStream codeStream) {
     codeStream.LOOKUPSWITCH(this.label, this.keys, this.labels);
   }
 

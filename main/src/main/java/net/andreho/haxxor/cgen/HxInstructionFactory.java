@@ -267,12 +267,12 @@ public interface HxInstructionFactory {
     return LDC.of(value);
   }
 
-  default HxInstruction HANDLE(HxHandle value) {
-    return LDC.ofMethodHandle(value);
+  default HxInstruction HANDLE(HxHandle handle) {
+    return LDC.of(handle);
   }
 
-  default HxInstruction METHOD(String value) {
-    return LDC.ofMethodType(value);
+  default HxInstruction METHOD(HxMethodType methodType) {
+    return LDC.of(methodType);
   }
 
   default HxInstruction TYPE(String value) {
@@ -280,7 +280,7 @@ public interface HxInstructionFactory {
   }
 
   default HxInstruction TYPE(HxType value) {
-    return TYPE(value.toInternalName());
+    return TYPE(value.toDescriptor());
   }
 
   default HxInstruction ILOAD(int var) {
@@ -783,7 +783,7 @@ public interface HxInstructionFactory {
     return new INVOKEINTERFACE(type, name, methodDesc);
   }
 
-  default HxInstruction INVOKEDYNAMIC(String name, String methodDesc, HxHandle bootstrapMethod, Object... bsmArgs) {
+  default HxInstruction INVOKEDYNAMIC(String name, String methodDesc, HxHandle bootstrapMethod, HxArguments bsmArgs) {
     return new INVOKEDYNAMIC(name, methodDesc, bootstrapMethod, bsmArgs);
   }
 

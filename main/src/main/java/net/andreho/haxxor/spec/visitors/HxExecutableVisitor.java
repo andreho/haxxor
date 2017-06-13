@@ -3,7 +3,7 @@ package net.andreho.haxxor.spec.visitors;
 import net.andreho.asm.org.objectweb.asm.Attribute;
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.haxxor.Haxxor;
-import net.andreho.haxxor.cgen.impl.AsmMethodVisitor;
+import net.andreho.haxxor.cgen.impl.AsmExecutableMethodVisitor;
 import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxMethod;
@@ -15,21 +15,21 @@ import java.util.Objects;
 /**
  * <br/>Created by a.hofmann on 16.03.2016.<br/>
  */
-public class HxParameterizableVisitor
-    extends AsmMethodVisitor {
+public class HxExecutableVisitor
+    extends AsmExecutableMethodVisitor {
 
   protected final HxType declaringType;
 
-  public HxParameterizableVisitor(final Haxxor haxxor,
-                                  final HxType declaringType,
-                                  final HxExecutable executable) {
+  public HxExecutableVisitor(final Haxxor haxxor,
+                             final HxType declaringType,
+                             final HxExecutable executable) {
     this(haxxor, declaringType, executable, null);
   }
 
-  public HxParameterizableVisitor(final Haxxor haxxor,
-                                  final HxType declaringType,
-                                  final HxExecutable executable,
-                                  final MethodVisitor mv) {
+  public HxExecutableVisitor(final Haxxor haxxor,
+                             final HxType declaringType,
+                             final HxExecutable executable,
+                             final MethodVisitor mv) {
     super(haxxor, executable, mv);
     this.declaringType = Objects.requireNonNull(declaringType, "Declaring type can't be null.");
   }

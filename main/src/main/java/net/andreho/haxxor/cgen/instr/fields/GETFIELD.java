@@ -2,7 +2,6 @@ package net.andreho.haxxor.cgen.instr.fields;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
-import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractFieldInstruction;
 
 /**
@@ -16,7 +15,7 @@ public class GETFIELD
   }
 
   @Override
-  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+  public void visit(HxCodeStream codeStream) {
     codeStream.GETFIELD(this.owner, this.name, this.desc);
   }
 }

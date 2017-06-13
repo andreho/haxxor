@@ -18,7 +18,7 @@ public class LCONST_1
   }
 
   @Override
-  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+  public void visit(HxCodeStream codeStream) {
     codeStream.LCONST_1();
   }
 

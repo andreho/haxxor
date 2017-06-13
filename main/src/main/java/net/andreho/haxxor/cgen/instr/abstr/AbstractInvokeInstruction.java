@@ -50,7 +50,7 @@ public abstract class AbstractInvokeInstruction
     return this.name;
   }
 
-  public String getDesc() {
+  public String getDescriptor() {
     return this.desc;
   }
 

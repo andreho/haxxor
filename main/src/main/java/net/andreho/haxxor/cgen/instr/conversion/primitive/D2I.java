@@ -18,7 +18,7 @@ public class D2I
   }
 
   @Override
-  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+  public void visit(HxCodeStream codeStream) {
     codeStream.D2I();
   }
 

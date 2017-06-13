@@ -1,9 +1,8 @@
 package net.andreho.haxxor.cgen.instr.constants;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.cgen.HxCodeStream;
-import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.HxHandle;
+import net.andreho.haxxor.cgen.HxMethodType;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInstruction;
 import net.andreho.haxxor.cgen.instr.constants.ldc.DoubleLDC;
 import net.andreho.haxxor.cgen.instr.constants.ldc.FloatLDC;
@@ -14,7 +13,6 @@ import net.andreho.haxxor.cgen.instr.constants.ldc.MethodTypeLDC;
 import net.andreho.haxxor.cgen.instr.constants.ldc.StringLDC;
 import net.andreho.haxxor.cgen.instr.constants.ldc.TypeLDC;
 
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -43,16 +41,16 @@ public abstract class LDC<T>
     return new StringLDC(value);
   }
 
-  public static LDC<String> ofType(String value) {
-    return new TypeLDC(value);
+  public static LDC<HxHandle> of(HxHandle value) {
+    return new MethodHandleLDC(value);
   }
 
-  public static LDC<String> ofMethodType(String value) {
+  public static LDC<HxMethodType> of(HxMethodType value) {
     return new MethodTypeLDC(value);
   }
 
-  public static LDC<HxHandle> ofMethodHandle(HxHandle value) {
-    return new MethodHandleLDC(value);
+  public static LDC<String> ofType(String value) {
+    return new TypeLDC(value);
   }
 
   public enum ConstantType {
@@ -82,12 +80,6 @@ public abstract class LDC<T>
   public T getValue() {
     return value;
   }
-
-  @Override
-  public abstract void dumpTo(HxComputingContext context, HxCodeStream codeStream);
-
-  @Override
-  public abstract List<Object> apply(final HxComputingContext context);
 
   @Override
   public int getPopSize() {

@@ -1,11 +1,14 @@
 package net.andreho.haxxor.cgen.impl;
 
+import net.andreho.haxxor.cgen.HxArguments;
 import net.andreho.haxxor.cgen.HxArrayType;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxFrames;
 import net.andreho.haxxor.cgen.HxHandle;
 import net.andreho.haxxor.cgen.HxHandleTag;
+import net.andreho.haxxor.cgen.HxMethodType;
 import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.spec.api.HxType;
 
 import java.io.IOException;
 import java.util.IdentityHashMap;
@@ -21,6 +24,10 @@ public class PrintingCodeStream extends DelegatingCodeStream {
   private final StringBuilder code;
   private final Map<LABEL, String> labelMap;
 
+  public PrintingCodeStream(final Appendable output) {
+    this(null, output);
+  }
+
   public PrintingCodeStream(final HxCodeStream codeStream,
                             final Appendable output) {
     super(codeStream);
@@ -34,11 +41,11 @@ public class PrintingCodeStream extends DelegatingCodeStream {
     return "L"+labelMap.size();
   }
 
-  private String createLabelAlias(final LABEL label) {
+  private String getLabelAlias(final LABEL label) {
     String alias = labelMap.get(label);
     if(alias == null) {
       labelMap.put(label, alias = newLabelAlias());
-      labels.append("LABEL ").append(alias).append(";\n");
+      labels.append("final LABEL ").append(alias).append(" = new LABEL();\n");
     }
     return alias;
   }
@@ -51,6 +58,153 @@ public class PrintingCodeStream extends DelegatingCodeStream {
   private PrintingCodeStream append(String s) {
     code.append(s);
     return this;
+  }
+
+  private PrintingCodeStream append(boolean b) {
+    code.append(b);
+    return this;
+  }
+
+  private PrintingCodeStream append(byte b) {
+    code.append("(byte) ").append(b);
+    return this;
+  }
+
+  private PrintingCodeStream append(short s) {
+    code.append("(short) ").append(s);
+    return this;
+  }
+
+  private PrintingCodeStream append(int i) {
+    code.append(i);
+    return this;
+  }
+
+  private PrintingCodeStream append(float f) {
+    code.append(f).append('f');
+    return this;
+  }
+
+  private PrintingCodeStream append(long l) {
+    code.append(l).append('L');
+    return this;
+  }
+
+  private PrintingCodeStream append(double d) {
+    code.append(d).append('d');
+    return this;
+  }
+
+  private PrintingCodeStream append(HxType type) {
+    code.append("getHaxxor().reference(\"").append(type.getName()).append("\")");
+    return this;
+  }
+
+  private PrintingCodeStream append(HxMethodType methodType) {
+    code.append("new HxMethodType(\"")
+        .append(methodType.getSignature())
+        .append("\")");
+    return this;
+  }
+
+  private PrintingCodeStream append(HxHandle handle) {
+    code.append("new HxHandle(")
+        .append(toHandleTag(handle.getTag()))
+        .append(",\"").append(handle.getOwner())
+        .append("\",\"").append(handle.getName())
+        .append("\",\"").append(handle.getDescriptor())
+        .append("\",").append(handle.isInterface()).append(")");
+    return this;
+  }
+
+  private PrintingCodeStream append(HxArguments arguments) {
+    append("HxArguments.create(")
+        .append(arguments.length()).append(")");
+
+    for (int i = 0, len = arguments.length(); i < len; i++) {
+      append(".add(").appendArgument(arguments.get(0)).append(")");
+    }
+    return this;
+  }
+
+  private PrintingCodeStream appendArgument(Object arg) {
+    if(arg instanceof HxType) {
+      append((HxType) arg);
+    } else if(arg instanceof HxHandle) {
+      append((HxHandle) arg);
+    } else if(arg instanceof String) {
+      append('"').append((String) arg).append('"');
+    } else if(arg instanceof Number) {
+      if(arg instanceof Integer) {
+        append((Integer) arg);
+      } else if(arg instanceof Float) {
+        append((Float) arg);
+      } else if(arg instanceof Long) {
+        append((Long) arg);
+      } else if(arg instanceof Double) {
+        append((Double) arg);
+      }
+    }
+    return this;
+  }
+
+  private PrintingCodeStream append(LABEL label) {
+    code.append(getLabelAlias(label));
+    return this;
+  }
+
+  private PrintingCodeStream append(LABEL[] labels) {
+    code.append("new LABEL[]{");
+    if(labels.length > 0) {
+      append(labels[0]);
+      for (int i = 1; i < labels.length; i++) {
+        append(',').append(labels[i]);
+      }
+    }
+    code.append('}');
+    return this;
+  }
+
+  private PrintingCodeStream append(int[] ints) {
+    code.append("new int[]{");
+    if(ints.length > 0) {
+      append(ints[0]);
+      for (int i = 1; i < ints.length; i++) {
+        append(',').append(ints[i]);
+      }
+    }
+    code.append('}');
+    return this;
+  }
+
+  private String toHandleTag(HxHandleTag tag) {
+    switch (tag) {
+      case GETFIELD: return "HxHandleTag.GETFIELD";
+      case GETSTATIC: return "HxHandleTag.GETSTATIC";
+      case PUTFIELD: return "HxHandleTag.PUTFIELD";
+      case PUTSTATIC: return "HxHandleTag.PUTSTATIC";
+      case INVOKEVIRTUAL: return "HxHandleTag.INVOKEVIRTUAL";
+      case INVOKESTATIC: return "HxHandleTag.INVOKESTATIC";
+      case INVOKESPECIAL: return "HxHandleTag.INVOKESPECIAL";
+      case NEWINVOKESPECIAL: return "HxHandleTag.NEWINVOKESPECIAL";
+      case INVOKEINTERFACE: return "HxHandleTag.INVOKEINTERFACE";
+      default:
+        throw new IllegalStateException("Unknown tag: "+tag);
+    }
+  }
+
+  public void flush()
+  throws IOException {
+    output.append(labels);
+    output.append(code);
+  }
+
+  public StringBuilder getLabels() {
+    return labels;
+  }
+
+  public StringBuilder getCode() {
+    return code;
   }
 
   @Override
@@ -175,42 +329,42 @@ public class PrintingCodeStream extends DelegatingCodeStream {
   @Override
   public HxCodeStream BIPUSH(final byte value) {
     super.BIPUSH(value);
-    append(".BIPUSH((byte) ").append(Byte.toString(value)).append(")\n");
+    append(".BIPUSH(").append(value).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream SIPUSH(final short value) {
     super.SIPUSH(value);
-    append(".SIPUSH((short) ").append(Short.toString(value)).append(")\n");
+    append(".SIPUSH(").append(value).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream LDC(final int value) {
     super.LDC(value);
-    append(".LDC(").append(Integer.toString(value)).append(")\n");
+    append(".LDC(").append(value).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream LDC(final float value) {
     super.LDC(value);
-    append(".LDC(").append(Float.toString(value)).append("f)\n");
+    append(".LDC(").append(value).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream LDC(final long value) {
     super.LDC(value);
-    append(".LDC(").append(Long.toString(value)).append("L)\n");
+    append(".LDC(").append(value).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream LDC(final double value) {
     super.LDC(value);
-    append(".LDC(").append(Double.toString(value)).append("d)\n");
+    append(".LDC(").append(value).append(")\n");
     return this;
   }
 
@@ -221,38 +375,17 @@ public class PrintingCodeStream extends DelegatingCodeStream {
     return this;
   }
 
-  private String toHandleTag(HxHandleTag tag) {
-    switch (tag) {
-      case GETFIELD: return "HxHandleTag.GETFIELD";
-      case GETSTATIC: return "HxHandleTag.GETSTATIC";
-      case PUTFIELD: return "HxHandleTag.PUTFIELD";
-      case PUTSTATIC: return "HxHandleTag.PUTSTATIC";
-      case INVOKEVIRTUAL: return "HxHandleTag.INVOKEVIRTUAL";
-      case INVOKESTATIC: return "HxHandleTag.INVOKESTATIC";
-      case INVOKESPECIAL: return "HxHandleTag.INVOKESPECIAL";
-      case NEWINVOKESPECIAL: return "HxHandleTag.NEWINVOKESPECIAL";
-      case INVOKEINTERFACE: return "HxHandleTag.INVOKEINTERFACE";
-      default:
-        throw new IllegalStateException("Unknown tag: "+tag);
-    }
-  }
-
   @Override
   public HxCodeStream HANDLE(final HxHandle handle) {
     super.HANDLE(handle);
-    append(".HANDLE(new HxHandle(")
-        .append("\"").append(toHandleTag(handle.getTag())).append("\",")
-        .append("\"").append(handle.getOwner()).append("\",")
-        .append("\"").append(handle.getName()).append("\",")
-        .append("\"").append(handle.getDescriptor()).append("\",")
-        .append(handle.isInterface()? "true" : "false").append("))\n");
+    append(".HANDLE(").append(handle).append(")\n");
     return this;
   }
 
   @Override
-  public HxCodeStream METHOD(final String methodDescriptor) {
-    super.METHOD(methodDescriptor);
-    append(".METHOD(").append("\"").append(methodDescriptor).append("\")\n");
+  public HxCodeStream METHOD(final HxMethodType methodType) {
+    super.METHOD(methodType);
+    append(".METHOD(").append(methodType).append(")\n");
     return this;
   }
 
@@ -266,35 +399,35 @@ public class PrintingCodeStream extends DelegatingCodeStream {
   @Override
   public HxCodeStream ILOAD(final int idx) {
     super.ILOAD(idx);
-    append(".ILOAD(").append(Integer.toString(idx)).append(")\n");
+    append(".ILOAD(").append(idx).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream LLOAD(final int idx) {
     super.LLOAD(idx);
-    append(".LLOAD(").append(Integer.toString(idx)).append(")\n");
+    append(".LLOAD(").append(idx).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream FLOAD(final int idx) {
     super.FLOAD(idx);
-    append(".FLOAD(").append(Integer.toString(idx)).append(")\n");
+    append(".FLOAD(").append(idx).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream DLOAD(final int idx) {
     super.DLOAD(idx);
-    append(".DLOAD(").append(Integer.toString(idx)).append(")\n");
+    append(".DLOAD(").append(idx).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream ALOAD(final int idx) {
     super.ALOAD(idx);
-    append(".ALOAD(").append(Integer.toString(idx)).append(")\n");
+    append(".ALOAD(").append(idx).append(")\n");
     return this;
   }
 
@@ -364,35 +497,35 @@ public class PrintingCodeStream extends DelegatingCodeStream {
   @Override
   public HxCodeStream ISTORE(final int idx) {
     super.ISTORE(idx);
-    append(".ISTORE(").append(Integer.toString(idx)).append(")\n");
+    append(".ISTORE(").append(idx).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream LSTORE(final int idx) {
     super.LSTORE(idx);
-    append(".LSTORE(").append(Integer.toString(idx)).append(")\n");
+    append(".LSTORE(").append(idx).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream FSTORE(final int idx) {
     super.FSTORE(idx);
-    append(".FSTORE(").append(Integer.toString(idx)).append(")\n");
+    append(".FSTORE(").append(idx).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream DSTORE(final int idx) {
     super.DSTORE(idx);
-    append(".DSTORE(").append(Integer.toString(idx)).append(")\n");
+    append(".DSTORE(").append(idx).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream ASTORE(final int idx) {
     super.ASTORE(idx);
-    append(".ASTORE(").append(Integer.toString(idx)).append(")\n");
+    append(".ASTORE(").append(idx).append(")\n");
     return this;
   }
 
@@ -771,7 +904,7 @@ public class PrintingCodeStream extends DelegatingCodeStream {
   public HxCodeStream IINC(final int var,
                            final int increment) {
     super.IINC(var, increment);
-    append(".IINC(").append(Integer.toString(var)).append(',').append(Integer.toString(increment)).append(")\n");
+    append(".IINC(").append(var).append(',').append(increment).append(")\n");
     return this;
   }
 
@@ -918,119 +1051,119 @@ public class PrintingCodeStream extends DelegatingCodeStream {
   @Override
   public HxCodeStream IFEQ(final LABEL label) {
     super.IFEQ(label);
-    append(".IFEQ()\n");
+    append(".IFEQ(").append(label).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream IFNE(final LABEL label) {
     super.IFNE(label);
-    append(".IFNE()\n");
+    append(".IFNE(").append(label).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream IFLT(final LABEL label) {
     super.IFLT(label);
-    append(".IFLT()\n");
+    append(".IFLT(").append(label).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream IFGE(final LABEL label) {
     super.IFGE(label);
-    append(".IFGE()");
+    append(".IFGE(").append(label).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream IFGT(final LABEL label) {
     super.IFGT(label);
-    append(".IFGT()");
+    append(".IFGT(").append(label).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream IFLE(final LABEL label) {
     super.IFLE(label);
-    append(".IFLE()");
+    append(".IFLE(").append(label).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream IF_ICMPEQ(final LABEL label) {
     super.IF_ICMPEQ(label);
-    append(".IF_ICMPEQ()");
+    append(".IF_ICMPEQ(").append(label).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream IF_ICMPNE(final LABEL label) {
     super.IF_ICMPNE(label);
-    append(".IF_ICMPNE()");
+    append(".IF_ICMPNE(").append(label).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream IF_ICMPLT(final LABEL label) {
     super.IF_ICMPLT(label);
-    append(".IF_ICMPLT()");
+    append(".IF_ICMPLT(").append(label).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream IF_ICMPGE(final LABEL label) {
     super.IF_ICMPGE(label);
-    append(".IF_ICMPGE()");
+    append(".IF_ICMPGE(").append(label).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream IF_ICMPGT(final LABEL label) {
     super.IF_ICMPGT(label);
-    append(".IF_ICMPGT()");
+    append(".IF_ICMPGT(").append(label).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream IF_ICMPLE(final LABEL label) {
     super.IF_ICMPLE(label);
-    append(".IF_ICMPLE()");
+    append(".IF_ICMPLE(").append(label).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream IF_ACMPEQ(final LABEL label) {
     super.IF_ACMPEQ(label);
-    append(".IF_ACMPEQ()");
+    append(".IF_ACMPEQ(").append(label).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream IF_ACMPNE(final LABEL label) {
     super.IF_ACMPNE(label);
-    append(".IF_ACMPNE()");
+    append(".IF_ACMPNE(").append(label).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream GOTO(final LABEL label) {
     super.GOTO(label);
-    append(".GOTO()");
+    append(".GOTO(").append(label).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream JSR(final LABEL label) {
     super.JSR(label);
-    append(".JSR()");
+    append(".JSR(").append(label).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream RET(final int var) {
     super.RET(var);
-    append(".RET()");
+    append(".RET(").append(var).append(")\n");
     return this;
   }
 
@@ -1040,7 +1173,11 @@ public class PrintingCodeStream extends DelegatingCodeStream {
                                   final LABEL defaultLabel,
                                   final LABEL... labels) {
     super.TABLESWITCH(min, max, defaultLabel, labels);
-    append(".TABLESWITCH()");
+    append(".TABLESWITCH(")
+        .append(min).append(",")
+        .append(max).append(",")
+        .append(defaultLabel).append(",")
+        .append(labels).append(")\n");
     return this;
   }
 
@@ -1049,7 +1186,10 @@ public class PrintingCodeStream extends DelegatingCodeStream {
                                    final int[] keys,
                                    final LABEL[] labels) {
     super.LOOKUPSWITCH(defaultLabel, keys, labels);
-    append(".LOOKUPSWITCH()");
+    append(".TABLESWITCH(")
+        .append(defaultLabel).append(",")
+        .append(keys).append(",")
+        .append(labels).append(")\n");
     return this;
   }
 
@@ -1100,7 +1240,10 @@ public class PrintingCodeStream extends DelegatingCodeStream {
                                 final String name,
                                 final String desc) {
     super.GETSTATIC(owner, name, desc);
-    append(".GETSTATIC()");
+    append(".GETSTATIC(\"")
+        .append(owner).append("\",\"")
+        .append(name).append("\",")
+        .append(desc).append("\")\n");
     return this;
   }
 
@@ -1109,7 +1252,10 @@ public class PrintingCodeStream extends DelegatingCodeStream {
                                 final String name,
                                 final String desc) {
     super.PUTSTATIC(owner, name, desc);
-    append(".PUTSTATIC()");
+    append(".PUTSTATIC(\"")
+        .append(owner).append("\",\"")
+        .append(name).append("\",")
+        .append(desc).append("\")\n");
     return this;
   }
 
@@ -1118,7 +1264,10 @@ public class PrintingCodeStream extends DelegatingCodeStream {
                                final String name,
                                final String desc) {
     super.GETFIELD(owner, name, desc);
-    append(".GETFIELD()");
+    append(".GETFIELD(\"")
+        .append(owner).append("\",\"")
+        .append(name).append("\",")
+        .append(desc).append("\")\n");
     return this;
   }
 
@@ -1127,7 +1276,10 @@ public class PrintingCodeStream extends DelegatingCodeStream {
                                final String name,
                                final String desc) {
     super.PUTFIELD(owner, name, desc);
-    append(".PUTFIELD()");
+    append(".PUTFIELD(\"")
+        .append(owner).append("\",\"")
+        .append(name).append("\",")
+        .append(desc).append("\")\n");
     return this;
   }
 
@@ -1136,7 +1288,10 @@ public class PrintingCodeStream extends DelegatingCodeStream {
                                     final String name,
                                     final String desc) {
     super.INVOKEVIRTUAL(owner, name, desc);
-    append(".INVOKEVIRTUAL()");
+    append(".INVOKEVIRTUAL(\"")
+        .append(owner).append("\",\"")
+        .append(name).append("\",")
+        .append(desc).append("\")\n");
     return this;
   }
 
@@ -1145,7 +1300,10 @@ public class PrintingCodeStream extends DelegatingCodeStream {
                                     final String name,
                                     final String desc) {
     super.INVOKESPECIAL(owner, name, desc);
-    append(".INVOKESPECIAL()");
+    append(".INVOKESPECIAL(\"")
+        .append(owner).append("\",\"")
+        .append(name).append("\",")
+        .append(desc).append("\")\n");
     return this;
   }
 
@@ -1155,7 +1313,11 @@ public class PrintingCodeStream extends DelegatingCodeStream {
                                    final String desc,
                                    final boolean isInterface) {
     super.INVOKESTATIC(owner, name, desc, isInterface);
-    append(".INVOKESTATIC()");
+    append(".INVOKESTATIC(\"")
+        .append(owner).append("\",\"")
+        .append(name).append("\",")
+        .append(desc).append("\",")
+        .append(isInterface).append(")\n");
     return this;
   }
 
@@ -1164,7 +1326,10 @@ public class PrintingCodeStream extends DelegatingCodeStream {
                                       final String name,
                                       final String desc) {
     super.INVOKEINTERFACE(owner, name, desc);
-    append(".INVOKEINTERFACE()");
+    append(".INVOKEINTERFACE(\"")
+        .append(owner).append("\",\"")
+        .append(name).append("\",")
+        .append(desc).append("\")\n");
     return this;
   }
 
@@ -1172,9 +1337,13 @@ public class PrintingCodeStream extends DelegatingCodeStream {
   public HxCodeStream INVOKEDYNAMIC(final String name,
                                     final String desc,
                                     final HxHandle bsm,
-                                    final Object... bsmArgs) {
+                                    final HxArguments bsmArgs) {
     super.INVOKEDYNAMIC(name, desc, bsm, bsmArgs);
-    append(".INVOKEDYNAMIC()");
+    append(".INVOKEDYNAMIC(\"")
+        .append(name).append("\",\"")
+        .append(desc).append("\",")
+        .append(bsm).append(",")
+        .append(bsmArgs).append(")\n");
     return this;
   }
 
@@ -1245,21 +1414,21 @@ public class PrintingCodeStream extends DelegatingCodeStream {
   public HxCodeStream MULTIANEWARRAY(final String internalType,
                                      final int dims) {
     super.MULTIANEWARRAY(internalType, dims);
-    append(".MULTIANEWARRAY(\"").append(internalType).append("\",").append(Integer.toString(dims)).append(")\n");
+    append(".MULTIANEWARRAY(\"").append(internalType).append("\",").append(dims).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream IFNULL(final LABEL label) {
     super.IFNULL(label);
-    append(".IFNULL()");
+    append(".IFNULL(").append(label).append(")\n");
     return this;
   }
 
   @Override
   public HxCodeStream IFNONNULL(final LABEL label) {
     super.IFNONNULL(label);
-    append(".IFNONNULL()\n");
+    append(".IFNONNULL(").append(label).append(")\n");
     return this;
   }
 
@@ -1268,8 +1437,7 @@ public class PrintingCodeStream extends DelegatingCodeStream {
   @Override
   public HxCodeStream LABEL(final LABEL label) {
     super.LABEL(label);
-    final String alias = createLabelAlias(label);
-    append(".LABEL(").append(alias).append(" = new LABEL())\n");
+    append(".LABEL(").append(label).append(")\n");
     return this;
   }
 
@@ -1280,7 +1448,11 @@ public class PrintingCodeStream extends DelegatingCodeStream {
                                 final LABEL handler,
                                 final String type) {
     super.TRY_CATCH(startLabel, endLabel, handler, type);
-    append(".TRY_CATCH()\n");
+    append(".TRY_CATCH(")
+        .append(startLabel).append(",")
+        .append(endLabel).append(",")
+        .append(handler).append(",\"")
+        .append(type).append("\")\n");
     return this;
   }
 
@@ -1303,7 +1475,13 @@ public class PrintingCodeStream extends DelegatingCodeStream {
                                      final LABEL end,
                                      final int index) {
     super.LOCAL_VARIABLE(name, desc, signature, start, end, index);
-    append(".LOCAL_VARIABLE()\n");
+    append(".LOCAL_VARIABLE(\"").append(name)
+                                .append("\",\"").append(desc)
+                                .append("\",\"").append(signature)
+                                .append("\",").append(start)
+                                .append(",").append(end)
+                                .append(",").append(index)
+                                .append(")\n");
     return this;
   }
 
@@ -1311,8 +1489,7 @@ public class PrintingCodeStream extends DelegatingCodeStream {
   public HxCodeStream LINE_NUMBER(final int line,
                                   final LABEL start) {
     super.LINE_NUMBER(line, start);
-    final String alias = createLabelAlias(start);
-    append(".LINE_NUMBER(").append(Integer.toString(line)).append(", ").append(alias).append(")\n");
+    append(".LINE_NUMBER(").append(line).append(", ").append(start).append(")\n");
     return this;
   }
 
@@ -1320,7 +1497,7 @@ public class PrintingCodeStream extends DelegatingCodeStream {
   public HxCodeStream MAXS(final int maxStack,
                            final int maxLocals) {
     super.MAXS(maxStack, maxLocals);
-    append(".MAXS(").append(Integer.toString(maxStack)).append(",").append(Integer.toString(maxLocals)).append(")\n");
+    append(".MAXS(").append(maxStack).append(",").append(maxLocals).append(")\n");
     return this;
   }
 
@@ -1336,5 +1513,10 @@ public class PrintingCodeStream extends DelegatingCodeStream {
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }
+  }
+
+  @Override
+  public String toString() {
+    return labels.toString() + code.toString();
   }
 }

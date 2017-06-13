@@ -18,7 +18,7 @@ public class PUTFIELD
   }
 
   @Override
-  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+  public void visit(HxCodeStream codeStream) {
     codeStream.PUTFIELD(this.owner, this.name, this.desc);
   }
 

@@ -12,4 +12,8 @@ public abstract class AbstractSingleOperandInstruction
     super(opcode);
     this.operand = operand;
   }
+
+  public int getOperand() {
+    return operand;
+  }
 }

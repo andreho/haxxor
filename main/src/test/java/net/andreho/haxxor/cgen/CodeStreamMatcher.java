@@ -1,10 +1,16 @@
 package net.andreho.haxxor.cgen;
 
 import net.andreho.asm.org.objectweb.asm.AnnotationVisitor;
+import net.andreho.asm.org.objectweb.asm.Handle;
 import net.andreho.asm.org.objectweb.asm.Label;
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.asm.org.objectweb.asm.TypePath;
+import net.andreho.haxxor.cgen.instr.abstr.AbstractFieldInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.AbstractInvokeInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.AbstractSingleOperandInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.AbstractStringOperandInstruction;
+import net.andreho.haxxor.cgen.instr.invokes.INVOKEDYNAMIC;
 import net.andreho.haxxor.cgen.instr.misc.LINE_NUMBER;
 import net.andreho.haxxor.spec.api.HxCode;
 
@@ -54,149 +60,50 @@ public class CodeStreamMatcher extends MethodVisitor {
 
   @Override
   public void visitInsn(final int opcode) {
-    super.visitInsn(opcode);
+      checkOpcode(opcode, visitSingleInstruction());
+  }
 
-    switch (opcode) {
-      case Opcodes.NOP:
-      case Opcodes.ACONST_NULL:
-      case Opcodes.ICONST_M1:
-      case Opcodes.ICONST_0:
-      case Opcodes.ICONST_1:
-      case Opcodes.ICONST_2:
-      case Opcodes.ICONST_3:
-      case Opcodes.ICONST_4:
-      case Opcodes.ICONST_5:
-      case Opcodes.LCONST_0:
-      case Opcodes.LCONST_1:
-      case Opcodes.FCONST_0:
-      case Opcodes.FCONST_1:
-      case Opcodes.FCONST_2:
-      case Opcodes.DCONST_0:
-      case Opcodes.DCONST_1:
-      case Opcodes.IALOAD:
-      case Opcodes.LALOAD:
-      case Opcodes.FALOAD:
-      case Opcodes.DALOAD:
-      case Opcodes.AALOAD:
-      case Opcodes.BALOAD:
-      case Opcodes.CALOAD:
-      case Opcodes.SALOAD:
-      case Opcodes.IASTORE:
-      case Opcodes.LASTORE:
-      case Opcodes.FASTORE:
-      case Opcodes.DASTORE:
-      case Opcodes.AASTORE:
-      case Opcodes.BASTORE:
-      case Opcodes.CASTORE:
-      case Opcodes.SASTORE:
-      case Opcodes.POP:
-      case Opcodes.POP2:
-      case Opcodes.DUP:
-      case Opcodes.DUP_X1:
-      case Opcodes.DUP_X2:
-      case Opcodes.DUP2:
-      case Opcodes.DUP2_X1:
-      case Opcodes.DUP2_X2:
-      case Opcodes.SWAP:
-      case Opcodes.IADD:
-      case Opcodes.LADD:
-      case Opcodes.FADD:
-      case Opcodes.DADD:
-      case Opcodes.ISUB:
-      case Opcodes.LSUB:
-      case Opcodes.FSUB:
-      case Opcodes.DSUB:
-      case Opcodes.IMUL:
-      case Opcodes.LMUL:
-      case Opcodes.FMUL:
-      case Opcodes.DMUL:
-      case Opcodes.IDIV:
-      case Opcodes.LDIV:
-      case Opcodes.FDIV:
-      case Opcodes.DDIV:
-      case Opcodes.IREM:
-      case Opcodes.LREM:
-      case Opcodes.FREM:
-      case Opcodes.DREM:
-      case Opcodes.INEG:
-      case Opcodes.LNEG:
-      case Opcodes.FNEG:
-      case Opcodes.DNEG:
-      case Opcodes.ISHL:
-      case Opcodes.LSHL:
-      case Opcodes.ISHR:
-      case Opcodes.LSHR:
-      case Opcodes.IUSHR:
-      case Opcodes.LUSHR:
-      case Opcodes.IAND:
-      case Opcodes.LAND:
-      case Opcodes.IOR:
-      case Opcodes.LOR:
-      case Opcodes.IXOR:
-      case Opcodes.LXOR:
-      case Opcodes.I2L:
-      case Opcodes.I2F:
-      case Opcodes.I2D:
-      case Opcodes.L2I:
-      case Opcodes.L2F:
-      case Opcodes.L2D:
-      case Opcodes.F2I:
-      case Opcodes.F2L:
-      case Opcodes.F2D:
-      case Opcodes.D2I:
-      case Opcodes.D2L:
-      case Opcodes.D2F:
-      case Opcodes.I2B:
-      case Opcodes.I2C:
-      case Opcodes.I2S:
-      case Opcodes.LCMP:
-      case Opcodes.FCMPL:
-      case Opcodes.FCMPG:
-      case Opcodes.DCMPL:
-      case Opcodes.DCMPG:
-      case Opcodes.IRETURN:
-      case Opcodes.LRETURN:
-      case Opcodes.FRETURN:
-      case Opcodes.DRETURN:
-      case Opcodes.ARETURN:
-      case Opcodes.RETURN:
-      case Opcodes.ARRAYLENGTH:
-      case Opcodes.ATHROW:
-      case Opcodes.MONITORENTER:
-      case Opcodes.MONITOREXIT:
-        HxInstruction last = visitSingleInstruction();
-        if(last.getOpcode() != opcode) {
-          System.out.println();
-        }
-
-        assertEquals(opcode, last.getOpcode(),
-                     "Last instruction has unexpected opcode: " + last + "#" + last.getOpcode() + "; " + HxInstructions.fromOpcode(opcode));
-        assertEquals(HxInstructions.fromOpcode(opcode), last.getInstructionType());
-
-        break;
-        default: throw new IllegalStateException();
-    }
+  private void checkOpcode(final int opcode,
+                           final HxInstruction hxInstruction) {
+    assertEquals(opcode, hxInstruction.getOpcode(),
+                 "Current instruction has an unexpected opcode: " + hxInstruction + "#" + hxInstruction.getOpcode() + "; " + HxInstructions.fromOpcode(opcode));
+    assertEquals(HxInstructions.fromOpcode(opcode), hxInstruction.getInstructionType());
+    assertTrue(hxInstruction.hasOpcode(opcode));
   }
 
   @Override
   public void visitIntInsn(final int opcode,
                            final int operand) {
-    HxInstruction hxInstruction = visitSingleInstruction();
     super.visitIntInsn(opcode, operand);
+
+    HxInstruction hxInstruction = visitSingleInstruction();
+    checkOpcode(opcode, hxInstruction);
+
+    AbstractSingleOperandInstruction instruction = (AbstractSingleOperandInstruction) hxInstruction;
+    assertEquals(operand, instruction.getOperand());
   }
 
   @Override
   public void visitVarInsn(final int opcode,
                            final int var) {
-    HxInstruction hxInstruction = visitSingleInstruction();
     super.visitVarInsn(opcode, var);
+    HxInstruction hxInstruction = visitSingleInstruction();
+    checkOpcode(opcode, hxInstruction);
+
+    AbstractSingleOperandInstruction instruction = (AbstractSingleOperandInstruction) hxInstruction;
+    assertEquals(var, instruction.getOperand());
   }
 
   @Override
   public void visitTypeInsn(final int opcode,
                             final String type) {
-    HxInstruction hxInstruction = visitSingleInstruction();
     super.visitTypeInsn(opcode, type);
+
+    HxInstruction hxInstruction = visitSingleInstruction();
+    checkOpcode(opcode, hxInstruction);
+
+    AbstractStringOperandInstruction instruction = (AbstractStringOperandInstruction) hxInstruction;
+    assertEquals(type, instruction.getOperand());
   }
 
   @Override
@@ -204,8 +111,15 @@ public class CodeStreamMatcher extends MethodVisitor {
                              final String owner,
                              final String name,
                              final String desc) {
-    HxInstruction hxInstruction = visitSingleInstruction();
     super.visitFieldInsn(opcode, owner, name, desc);
+
+    HxInstruction hxInstruction = visitSingleInstruction();
+    checkOpcode(opcode, hxInstruction);
+
+    AbstractFieldInstruction instruction = (AbstractFieldInstruction) hxInstruction;
+    assertEquals(owner, instruction.getOwner());
+    assertEquals(name, instruction.getName());
+    assertEquals(desc, instruction.getDescriptor());
   }
 
   @Override
@@ -222,17 +136,30 @@ public class CodeStreamMatcher extends MethodVisitor {
                               final String name,
                               final String desc,
                               final boolean itf) {
-    HxInstruction hxInstruction = visitSingleInstruction();
     super.visitMethodInsn(opcode, owner, name, desc, itf);
+    HxInstruction hxInstruction = visitSingleInstruction();
+    checkOpcode(opcode, hxInstruction);
+
+    AbstractInvokeInstruction instruction = (AbstractInvokeInstruction) hxInstruction;
+    assertEquals(owner, instruction.getOwner());
+    assertEquals(name, instruction.getName());
+    assertEquals(desc, instruction.getDescriptor());
+    assertEquals(itf, instruction.isInterface());
   }
 
   @Override
   public void visitInvokeDynamicInsn(final String name,
                                      final String desc,
-                                     final net.andreho.asm.org.objectweb.asm.Handle bsm,
+                                     final Handle bsm,
                                      final Object... bsmArgs) {
-    HxInstruction hxInstruction = visitSingleInstruction();
     super.visitInvokeDynamicInsn(name, desc, bsm, bsmArgs);
+    HxInstruction hxInstruction = visitSingleInstruction();
+    checkOpcode(Opcodes.INVOKEDYNAMIC, hxInstruction);
+
+    INVOKEDYNAMIC instruction = (INVOKEDYNAMIC) hxInstruction;
+    assertEquals(name, instruction.getName());
+    assertEquals(desc, instruction.getDescriptor());
+    assertEquals(bsm, instruction.getBootstrapMethod());
   }
 
   @Override
@@ -240,6 +167,7 @@ public class CodeStreamMatcher extends MethodVisitor {
                             final Label label) {
     HxInstruction hxInstruction = visitSingleInstruction();
     super.visitJumpInsn(opcode, label);
+    checkOpcode(opcode, hxInstruction);
   }
 
   @Override

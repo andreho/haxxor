@@ -18,7 +18,7 @@ public class I2D
   }
 
   @Override
-  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+  public void visit(HxCodeStream codeStream) {
     codeStream.I2D();
   }
 

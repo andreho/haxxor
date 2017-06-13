@@ -3,7 +3,6 @@ package net.andreho.haxxor.cgen;
 import net.andreho.haxxor.spec.api.HxAnnotated;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -11,8 +10,10 @@ import java.util.Objects;
  * <br/>Created by a.hofmann on 17.11.2015.<br/>
  */
 public interface HxInstruction
-    extends Iterable<HxInstruction>,
-            HxAnnotated<HxInstruction> {
+    extends HxVisitable,
+            HxApplicable,
+            HxAnnotated<HxInstruction>,
+            Iterable<HxInstruction> {
 
   /**
    * @return
@@ -78,11 +79,6 @@ public interface HxInstruction
   default boolean hasInstructionKind(HxInstructionKind kind) {
     return getInstructionType().getKind() == kind;
   }
-
-  /**
-   * @return
-   */
-  List<Object> apply(HxComputingContext context);
 
   /**
    * @return
@@ -218,12 +214,4 @@ public interface HxInstruction
       }
     };
   }
-
-  /**
-   * Dumps this instruction to the given {@link HxCodeStream code stream} using the provided {@link HxComputingContext context}
-   *
-   * @param context    to use
-   * @param codeStream to dump this instruction to
-   */
-  void dumpTo(HxComputingContext context, HxCodeStream codeStream);
 }

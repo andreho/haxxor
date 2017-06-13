@@ -18,7 +18,7 @@ public class F2L
   }
 
   @Override
-  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+  public void visit(HxCodeStream codeStream) {
     codeStream.F2L();
   }
 

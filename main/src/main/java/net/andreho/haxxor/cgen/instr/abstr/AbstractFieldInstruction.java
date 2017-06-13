@@ -24,6 +24,18 @@ public abstract class AbstractFieldInstruction
     this.desc = desc;
   }
 
+  public String getOwner() {
+    return owner;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public String getDescriptor() {
+    return desc;
+  }
+
   @Override
   public List<Object> apply(final HxComputingContext context) {
     return Utils.retrieveType(context, this.desc);

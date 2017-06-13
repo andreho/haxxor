@@ -2,7 +2,6 @@ package net.andreho.haxxor.cgen.instr.invokes;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
-import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInvokeInstruction;
 
 /**
@@ -17,7 +16,7 @@ public class INVOKESTATIC
   }
 
   @Override
-  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+  public void visit(HxCodeStream codeStream) {
     codeStream.INVOKESTATIC(this.owner, this.name, this.desc, this.isInterface);
   }
 }

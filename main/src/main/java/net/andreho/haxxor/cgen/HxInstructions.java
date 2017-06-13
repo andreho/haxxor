@@ -33,7 +33,7 @@ public interface HxInstructions {
 
     @Override
     public HxInstructionKind getKind() {
-      return HxInstructionKind.Access;
+      return HxInstructionKind.Fields;
     }
 
     @Override
@@ -409,7 +409,8 @@ public interface HxInstructions {
     DCONST_1(Opcodes.DCONST_1, 2),
     BIPUSH(Opcodes.BIPUSH, 1),
     SIPUSH(Opcodes.SIPUSH, 1),
-    LDC(Opcodes.LDC, 1);
+    //it can also push doubles and longs
+    LDC(Opcodes.LDC, -1);
 
     private final int opcode;
     private final int push;
@@ -438,6 +439,11 @@ public interface HxInstructions {
     @Override
     public int getPushSize() {
       return push;
+    }
+
+    @Override
+    public int getPushSize(final String desc) {
+      return getTypeSize(desc);
     }
   }
 
@@ -831,7 +837,7 @@ public interface HxInstructions {
   //----------------------------------------------------------------------------------------------------------------
 
   static HxInstructionType fromOpcode(int opcode) {
-    //TODO: evaluate what is faster in that case a SWITCH or an ARRAY?
+    //TODO: evaluate what is faster in this case a SWITCH or an ARRAY?
     switch (opcode) {
       case Opcodes.NOP:
         return Misc.NOP;

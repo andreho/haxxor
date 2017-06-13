@@ -1,5 +1,6 @@
 package net.andreho.haxxor.cgen.impl;
 
+import net.andreho.haxxor.cgen.HxArguments;
 import net.andreho.haxxor.cgen.HxArrayType;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxFrames;
@@ -7,9 +8,11 @@ import net.andreho.haxxor.cgen.HxHandle;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionFactory;
 import net.andreho.haxxor.cgen.HxLocalVariable;
+import net.andreho.haxxor.cgen.HxMethodType;
 import net.andreho.haxxor.cgen.HxTryCatch;
 import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.spec.api.HxCode;
+import net.andreho.haxxor.spec.api.HxType;
 
 /**
  * <br/>Created by a.hofmann on 18.03.2016.<br/>
@@ -185,14 +188,20 @@ public class InstructionCodeStream
   }
 
   @Override
-  public HxCodeStream METHOD(final String methodDescriptor) {
-    current().append(factory.METHOD(methodDescriptor));
+  public HxCodeStream METHOD(final HxMethodType methodType) {
+    current().append(factory.METHOD(methodType));
     return this;
   }
 
   @Override
   public HxCodeStream TYPE(final String internalType) {
     current().append(factory.TYPE(internalType));
+    return this;
+  }
+
+  @Override
+  public HxCodeStream TYPE(final HxType type) {
+    current().append(factory.TYPE(type));
     return this;
   }
 
@@ -953,7 +962,7 @@ public class InstructionCodeStream
   }
 
   @Override
-  public HxCodeStream INVOKEDYNAMIC(final String name, final String desc, final HxHandle bsm, final Object... bsmArgs) {
+  public HxCodeStream INVOKEDYNAMIC(final String name, final String desc, final HxHandle bsm, final HxArguments bsmArgs) {
     current().append(factory.INVOKEDYNAMIC(name, desc, bsm, bsmArgs));
     return this;
   }

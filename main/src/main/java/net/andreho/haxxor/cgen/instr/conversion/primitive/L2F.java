@@ -18,7 +18,7 @@ public class L2F
   }
 
   @Override
-  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+  public void visit(HxCodeStream codeStream) {
     codeStream.L2F();
   }
 

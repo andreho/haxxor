@@ -20,7 +20,7 @@ public class DUP2_X1
   }
 
   @Override
-  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+  public void visit(HxCodeStream codeStream) {
     codeStream.DUP2_X1();
   }
 

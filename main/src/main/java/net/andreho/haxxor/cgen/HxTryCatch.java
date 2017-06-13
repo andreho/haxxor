@@ -13,7 +13,7 @@ import java.util.function.Predicate;
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
 public class HxTryCatch
-    implements HxDumpable,
+    implements HxVisitable,
                HxAnnotated<HxTryCatch> {
 
   private final LABEL startLabel;
@@ -30,7 +30,7 @@ public class HxTryCatch
   }
 
   @Override
-  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+  public void visit(HxCodeStream codeStream) {
     codeStream.TRY_CATCH(this.startLabel, this.endLabel, this.handler, this.type);
   }
 

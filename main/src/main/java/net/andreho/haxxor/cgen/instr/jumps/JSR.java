@@ -19,7 +19,7 @@ public class JSR
   }
 
   @Override
-  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+  public void visit(HxCodeStream codeStream) {
     codeStream.JSR(this.label);
   }
 

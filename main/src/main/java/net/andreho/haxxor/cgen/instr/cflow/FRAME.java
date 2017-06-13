@@ -49,7 +49,7 @@ public class FRAME
   }
 
   @Override
-  public void dumpTo(final HxComputingContext context, final HxCodeStream codeStream) {
+  public void visit(final HxCodeStream codeStream) {
     codeStream.FRAME(this.type, this.nLocal, this.local, this.nStack, this.stack);
   }
 

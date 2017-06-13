@@ -18,7 +18,7 @@ public class FNEG
   }
 
   @Override
-  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+  public void visit(HxCodeStream codeStream) {
     codeStream.FNEG();
   }
 

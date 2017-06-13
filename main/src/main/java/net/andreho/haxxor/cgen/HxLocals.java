@@ -28,11 +28,10 @@ public class HxLocals
     this.length = this.maxLength = 0;
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
   private void ensureCapacity(int index) {
-    if (this.slots.length >= index) {
-      int capacity = this.slots.length * 2;
+    int length = this.slots.length;
+    if (length >= index) {
+      int capacity = Math.max(length + 4, length * 2);
       while (capacity < index) {
         capacity = capacity * 2;
       }

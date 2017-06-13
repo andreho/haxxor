@@ -18,7 +18,7 @@ public class FDIV
   }
 
   @Override
-  public void dumpTo(HxComputingContext context, HxCodeStream codeStream) {
+  public void visit(HxCodeStream codeStream) {
     codeStream.FDIV();
   }
 
