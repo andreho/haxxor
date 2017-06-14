@@ -25,7 +25,7 @@ public interface HxComputingContext {
   HxStack getStack();
 
   /**
-   * @return currently visited labels
+   * @return already visited labels
    */
   Map<LABEL, HxInstruction> getVisitedLabels();
 }

@@ -10,7 +10,7 @@ import net.andreho.haxxor.cgen.HxArrayType;
 import net.andreho.haxxor.cgen.HxAsmUtils;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxFrames;
-import net.andreho.haxxor.cgen.HxHandle;
+import net.andreho.haxxor.cgen.HxMethodHandle;
 import net.andreho.haxxor.cgen.HxMethodType;
 import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.spec.api.HxExecutable;
@@ -53,7 +53,7 @@ public class AsmCodeStream
     return Type.getType(type.toDescriptor());
   }
 
-  protected Handle toAsmHandle(final HxHandle handle) {
+  protected Handle toAsmHandle(final HxMethodHandle handle) {
     return HxAsmUtils.toAsmHandle(handle);
   }
 
@@ -69,8 +69,8 @@ public class AsmCodeStream
 
       if(arg instanceof HxType) {
         val = Type.getType(((HxType) arg).toDescriptor());
-      } else if(arg instanceof HxHandle) {
-        val = toAsmHandle((HxHandle) arg);
+      } else if(arg instanceof HxMethodHandle) {
+        val = toAsmHandle((HxMethodHandle) arg);
       } else if(arg instanceof HxMethodType) {
         val = toAsmMethodType((HxMethodType) arg);
       }
@@ -100,8 +100,8 @@ public class AsmCodeStream
   }
 
   protected HxCodeStream visitLdcInsn(Object cst) {
-    if(cst instanceof HxHandle) {
-      cst = toAsmHandle((HxHandle) cst);
+    if(cst instanceof HxMethodHandle) {
+      cst = toAsmHandle((HxMethodHandle) cst);
     } else if(cst instanceof HxMethodType) {
       cst = toAsmMethodType((HxMethodType) cst);
     } else if(cst instanceof HxType) {
@@ -141,7 +141,7 @@ public class AsmCodeStream
     return this;
   }
 
-  protected HxCodeStream visitInvokeDynamicInsn(String name, String desc, HxHandle handle, HxArguments bsmArgs) {
+  protected HxCodeStream visitInvokeDynamicInsn(String name, String desc, HxMethodHandle handle, HxArguments bsmArgs) {
     this.mv.visitInvokeDynamicInsn(name, desc, toAsmHandle(handle), toBootstrapArguments(bsmArgs));
     return this;
   }
@@ -372,7 +372,7 @@ public class AsmCodeStream
   }
 
   @Override
-  public HxCodeStream HANDLE(HxHandle handle) {
+  public HxCodeStream HANDLE(HxMethodHandle handle) {
     return visitLdcInsn(handle);
   }
 
@@ -1017,7 +1017,7 @@ public class AsmCodeStream
   }
 
   @Override
-  public HxCodeStream INVOKEDYNAMIC(String name, String desc, HxHandle bsm, HxArguments bsmArgs) {
+  public HxCodeStream INVOKEDYNAMIC(String name, String desc, HxMethodHandle bsm, HxArguments bsmArgs) {
     return visitInvokeDynamicInsn(name, toInternalTypeName(desc), bsm, bsmArgs);
   }
 

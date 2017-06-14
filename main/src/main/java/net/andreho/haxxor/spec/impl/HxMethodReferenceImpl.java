@@ -234,7 +234,7 @@ public class HxMethodReferenceImpl
   }
 
   @Override
-  public <M extends HxMember> M getDeclaringMember() {
+  public HxType getDeclaringMember() {
     return toMethod().getDeclaringMember();
   }
 

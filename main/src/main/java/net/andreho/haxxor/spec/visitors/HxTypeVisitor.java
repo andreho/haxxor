@@ -14,9 +14,9 @@ import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
-import net.andreho.haxxor.spec.api.HxType.Part;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import static net.andreho.haxxor.Utils.normalizeReturnType;
 import static net.andreho.haxxor.Utils.normalizeSignature;
@@ -64,7 +64,7 @@ public class HxTypeVisitor
         .setSuperType(superName)
         .setGenericSignature(signature);
 
-    if (interfaces != null) {
+    if (interfaces != null && interfaces.length > 0) {
       this.type.setInterfaces(this.haxxor.referencesAsList(interfaces));
     }
   }
@@ -82,12 +82,12 @@ public class HxTypeVisitor
                               int access) {
     super.visitInnerClass(name, outerName, innerName, access);
 
-    if (Objects.equals(this.name, name)) { //isn't it redundant?
+    if (Objects.equals(this.name, name)) { //is it redundant?
       if (outerName != null) {
         type.setDeclaringMember(haxxor.reference(outerName));
       }
     } else if (Objects.equals(this.name, outerName)) {
-      type.initialize(Part.DECLARED_TYPES)
+      type.initialize(HxType.Part.DECLARED_TYPES)
           .getDeclaredTypes()
           .add(haxxor.reference(name));
     }
@@ -109,8 +109,7 @@ public class HxTypeVisitor
         this.type.setDeclaringMember(methodReference);
       }
     } else {
-      this.type.setDeclaringMember(this.type.getHaxxor()
-                                            .reference(owner));
+      this.type.setDeclaringMember(this.haxxor.reference(owner));
     }
   }
 
@@ -119,9 +118,9 @@ public class HxTypeVisitor
                                            boolean visible) {
     final HxAnnotation hxAnnotation =
         this.haxxor.createAnnotation(desc, visible);
-    this.type.initialize(Part.ANNOTATIONS);
-    return new HxAnnotationVisitor(hxAnnotation, super.visitAnnotation(desc, visible))
-        .consumer(this.type::addAnnotation);
+    this.type.initialize(HxType.Part.ANNOTATIONS);
+    final Consumer consumer = (Consumer<HxAnnotation>) this.type::addAnnotation;
+    return new HxAnnotationVisitor(hxAnnotation, consumer, super.visitAnnotation(desc, visible));
   }
 
   @Override
@@ -144,14 +143,16 @@ public class HxTypeVisitor
                                  String desc,
                                  String signature,
                                  Object value) {
-    this.type.initialize(Part.FIELDS);
+    final FieldVisitor fv = super.visitField(access, name, desc, signature, value);
+
+    this.type.initialize(HxType.Part.FIELDS);
     HxField hxField = this.haxxor
         .createField(toPrimitiveClassname(desc), name)
         .setModifiers(access)
         .setGenericSignature(signature)
         .setDefaultValue(value);
 
-    return new HxFieldVisitor(this.type, hxField, super.visitField(access, name, desc, signature, value));
+    return new HxFieldVisitor(this.type, hxField, fv);
   }
 
   @Override
@@ -160,14 +161,15 @@ public class HxTypeVisitor
                                    String desc,
                                    String signature,
                                    String[] exceptions) {
+    final MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
+
     final String[] parameterTypes = normalizeSignature(desc);
     HxExecutable parameterizable;
 
     if ("<init>".equals(name)) {
       parameterizable = this.haxxor.createConstructor(parameterTypes);
     } else {
-      String returnType = normalizeReturnType(desc);
-      parameterizable = this.haxxor.createMethod(returnType, name, parameterTypes);
+      parameterizable = this.haxxor.createMethod(normalizeReturnType(desc), name, parameterTypes);
     }
 
     parameterizable.setModifiers(access);
@@ -177,12 +179,7 @@ public class HxTypeVisitor
       parameterizable.setExceptionTypes(this.haxxor.referencesAsArray(exceptions));
     }
 
-    return new HxExecutableVisitor(
-        haxxor,
-        type,
-        parameterizable,
-        super.visitMethod(access, name, desc, signature, exceptions)
-    );
+    return new HxExecutableVisitor(haxxor, type, parameterizable, mv);
   }
 
   @Override

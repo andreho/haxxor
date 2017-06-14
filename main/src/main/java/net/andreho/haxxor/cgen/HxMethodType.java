@@ -35,6 +35,6 @@ public class HxMethodType {
 
   @Override
   public String toString() {
-    return signature;
+    return "METHOD_TYPE["+signature+"]";
   }
 }

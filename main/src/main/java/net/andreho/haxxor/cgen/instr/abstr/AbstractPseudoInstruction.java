@@ -7,7 +7,6 @@ import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -35,12 +34,17 @@ public abstract class AbstractPseudoInstruction
   }
 
   @Override
-  public List<Object> apply(final HxComputingContext context) {
-    return Collections.emptyList();
+  public List<Object> getStackPushList(final HxComputingContext context) {
+    return AbstractInstruction.NO_STACK_PUSH;
   }
 
   @Override
-  public int getPushSize() {
+  public int getStackPopSize() {
+    return 0;
+  }
+
+  @Override
+  public int getStackPushSize() {
     return 0;
   }
 
@@ -62,11 +66,6 @@ public abstract class AbstractPseudoInstruction
   @Override
   public void setNext(final HxInstruction next) {
 
-  }
-
-  @Override
-  public int getPopSize() {
-    return 0;
   }
 
   @Override

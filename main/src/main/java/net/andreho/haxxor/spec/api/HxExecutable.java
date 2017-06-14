@@ -16,12 +16,12 @@ import java.util.Objects;
 /**
  * Created by a.hofmann on 31.05.2015.
  */
-public interface HxExecutable<P extends HxMember<P> & HxExecutable<P> & HxOwned<P> & HxGeneric<P>>
-    extends HxAnnotated<P>,
-            HxMember<P>,
-            HxOwned<P>,
-            HxGeneric<P>,
-            HxIndexed,
+public interface HxExecutable<E extends HxMember<E> & HxExecutable<E> & HxOwned<E> & HxGeneric<E>>
+    extends HxAnnotated<E>,
+            HxMember<E>,
+            HxOwned<E>,
+            HxGeneric<E>,
+            HxOrdered,
             HxProvider {
 
 
@@ -85,13 +85,13 @@ public interface HxExecutable<P extends HxMember<P> & HxExecutable<P> & HxOwned<
   /**
    * @return the list with all parameters
    */
-  List<HxParameter<P>> getParameters();
+  List<HxParameter<E>> getParameters();
 
   /**
    * @param parameter
    * @return
    */
-  default P addParameter(HxParameter<P> parameter) {
+  default E addParameter(HxParameter<E> parameter) {
     return addParameterAt(getParametersCount(), parameter);
   }
 
@@ -99,28 +99,28 @@ public interface HxExecutable<P extends HxMember<P> & HxExecutable<P> & HxOwned<
    * @param parameter
    * @return
    */
-  P addParameterAt(int index,
-                   HxParameter<P> parameter);
+  E addParameterAt(int index,
+                   HxParameter<E> parameter);
 
   /**
    * @param index of wanted formal parameter
    * @return a formal parameter at the given index
    */
-  HxParameter<P> getParameterAt(int index);
+  HxParameter<E> getParameterAt(int index);
 
   /**
    * @param index     of parameter to replace
    * @param parameter new parameter at the given index
    * @return this
    */
-  P setParameterAt(int index,
-                   HxParameter<P> parameter);
+  E setParameterAt(int index,
+                   HxParameter<E> parameter);
 
   /**
    * @param type
    * @return
    */
-  default P addParameterType(HxType type) {
+  default E addParameterType(HxType type) {
     Objects.requireNonNull(type, "Parameter's type can't be null.");
     return addParameter(new HxParameterImpl<>(type));
   }
@@ -129,7 +129,7 @@ public interface HxExecutable<P extends HxMember<P> & HxExecutable<P> & HxOwned<
    * @param parameters
    * @return this
    */
-  default P setParameters(HxParameter<P>... parameters) {
+  default E setParameters(HxParameter<E>... parameters) {
     return setParameters(Arrays.asList(parameters));
   }
 
@@ -137,13 +137,13 @@ public interface HxExecutable<P extends HxMember<P> & HxExecutable<P> & HxOwned<
    * @param parameters
    * @return this
    */
-  P setParameters(List<HxParameter<P>> parameters);
+  E setParameters(List<HxParameter<E>> parameters);
 
   /**
    * @param types
    * @return this
    */
-  default P setParameterTypes(HxType... types) {
+  default E setParameterTypes(HxType... types) {
     return setParameterTypes(Arrays.asList(types));
   }
 
@@ -151,8 +151,8 @@ public interface HxExecutable<P extends HxMember<P> & HxExecutable<P> & HxOwned<
    * @param types
    * @return this
    */
-  default P setParameterTypes(List<HxType> types) {
-    final List<HxParameter<P>> parameters = new ArrayList<>(types.size());
+  default E setParameterTypes(List<HxType> types) {
+    final List<HxParameter<E>> parameters = new ArrayList<>(types.size());
     for (HxType type : types) {
       parameters.add(new HxParameterImpl<>(type));
     }
@@ -163,7 +163,7 @@ public interface HxExecutable<P extends HxMember<P> & HxExecutable<P> & HxOwned<
    * @param exceptionTypes exception types that are declared by a <code>throws</code> declaration
    * @return this
    */
-  default P setExceptionTypes(HxType... exceptionTypes) {
+  default E setExceptionTypes(HxType... exceptionTypes) {
     return setExceptionTypes(Arrays.asList(exceptionTypes));
   }
 
@@ -176,8 +176,35 @@ public interface HxExecutable<P extends HxMember<P> & HxExecutable<P> & HxOwned<
    * @param exceptionTypes exception types that are declared by a <code>throws</code> declaration
    * @return this
    */
-  P setExceptionTypes(List<HxType> exceptionTypes);
+  E setExceptionTypes(List<HxType> exceptionTypes);
 
+  /**
+   * @return
+   */
+  default boolean hasCheckedExceptions() {
+    return !getExceptionTypes().isEmpty();
+  }
+
+  /**
+   * @param exceptionType
+   * @return
+   */
+  default boolean hasCheckedException(HxType exceptionType) {
+    return hasCheckedException(exceptionType.getName());
+  }
+
+  /**
+   * @param exceptionClassname
+   * @return
+   */
+  default boolean hasCheckedException(String exceptionClassname) {
+    for(HxType type : getExceptionTypes()) {
+      if(exceptionClassname.equals(type.getName())) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   /**
    * @return a collection with overridden methods or constructors
@@ -234,6 +261,9 @@ public interface HxExecutable<P extends HxMember<P> & HxExecutable<P> & HxOwned<
   default String toDescriptor() {
     return toDescriptor(new StringBuilder()).toString();
   }
+
+  @Override
+  HxType getDeclaringMember();
 
   /**
    * @param builder to use for printing a method descriptor

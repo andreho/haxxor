@@ -5,7 +5,7 @@ import net.andreho.haxxor.spec.api.HxConstants;
 import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
-import net.andreho.haxxor.spi.HxClassNameNormalizer;
+import net.andreho.haxxor.spi.HxClassnameNormalizer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -103,7 +103,7 @@ public abstract class Utils {
         case 'F':
         case 'J':
         case 'D':
-          if (!isTypeWithDimension(type, toPrimitiveClassName(c), dim)) {
+          if (!isTypeWithDimension(type, toPrimitiveClassname(c), dim)) {
             return -1;
           }
           return index + 1;
@@ -127,7 +127,7 @@ public abstract class Utils {
     return -1;
   }
 
-  private static String toPrimitiveClassName(char c) {
+  private static String toPrimitiveClassname(char c) {
     switch (c) {
       case 'V':
         return "void";
@@ -211,11 +211,11 @@ public abstract class Utils {
    * @param classes to process
    * @return
    */
-  public static String[] toClassNames(final HxClassNameNormalizer classNameProvider,
+  public static String[] toClassNames(final HxClassnameNormalizer classNameProvider,
                                       final Class<?>... classes) {
     final String[] names = new String[classes.length];
     for (int i = 0; i < classes.length; i++) {
-      names[i] = classNameProvider.toNormalizedClassName(classes[i].getName());
+      names[i] = classNameProvider.toNormalizedClassname(classes[i].getName());
     }
     return names;
   }
@@ -266,26 +266,27 @@ public abstract class Utils {
     return outputStream.toByteArray();
   }
 
+  /**
+   * Transforms if needed the given descriptor to a normalized classname of corresponding primitive type
+   * @param desc to check and transform
+   * @return possibly transformed classname or the same descriptor if not a primitive
+   */
   public static String toPrimitiveClassname(String desc) {
+    //Both examples like: [I or LI; have length over one.
     if(desc.length() != 1) {
       return desc;
     }
     return toPrimitiveClassname(desc, 0);
   }
+
+  /**
+   * Transforms the given descriptor to a normalized classname of corresponding primitive type
+   * @param desc to check and transform
+   * @param index to look at
+   * @return transformed classname of the given primitive type at the given index
+   */
   public static String toPrimitiveClassname(String desc, int index) {
-    switch (desc.charAt(index)) {
-      case 'V': return "void";
-      case 'Z': return "boolean";
-      case 'B': return "byte";
-      case 'S': return "short";
-      case 'C': return "char";
-      case 'I': return "int";
-      case 'F': return "float";
-      case 'J': return "long";
-      case 'D': return "double";
-      default:
-        throw new IllegalArgumentException("Not valid descriptor: "+desc);
-    }
+    return toPrimitiveClassname(desc.charAt(index));
   }
 
   /**

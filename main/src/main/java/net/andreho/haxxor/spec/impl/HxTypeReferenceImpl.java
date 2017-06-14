@@ -380,13 +380,13 @@ public class HxTypeReferenceImpl
   }
 
   @Override
-  public <M extends HxMember> M getDeclaringMember() {
+  public HxMember getDeclaringMember() {
     return toType().getDeclaringMember();
   }
 
   @Override
   public HxType setDeclaringMember(HxMember declaringMember) {
-    return toType().getDeclaringMember();
+    return toType().setDeclaringMember(declaringMember);
   }
 
   @Override

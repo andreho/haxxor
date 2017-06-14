@@ -14,9 +14,10 @@ import net.andreho.haxxor.spec.impl.HxArrayTypeImpl;
 import net.andreho.haxxor.spec.impl.HxPrimitiveTypeImpl;
 import net.andreho.haxxor.spec.visitors.HxTypeVisitor;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
-import net.andreho.haxxor.spi.HxClassNameNormalizer;
+import net.andreho.haxxor.spi.HxClassnameNormalizer;
 import net.andreho.haxxor.spi.HxElementFactory;
 import net.andreho.haxxor.spi.HxTypeInitializer;
+import net.andreho.haxxor.spi.HxTypeInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,8 +33,9 @@ import java.util.Map.Entry;
  * <br/>Created by a.hofmann on 21.03.2015 at 01:17<br/>
  */
 public class Haxxor
-    implements HxElementFactory,
-               HxClassNameNormalizer {
+    implements Hx,
+               HxElementFactory,
+               HxClassnameNormalizer {
 
   private static final Logger LOG = LoggerFactory.getLogger(Haxxor.class.getName());
 
@@ -42,7 +44,8 @@ public class Haxxor
   private final Map<String, HxType> resolvedCache;
   private final Map<String, HxTypeReference> referenceCache;
   private final WeakReference<ClassLoader> classLoaderWeakReference;
-  private final HxClassNameNormalizer classNameSupplier;
+  private final HxClassnameNormalizer classNameNormalizer;
+  private final HxTypeInterpreter typeInterpreter;
   private final HxElementFactory elementFactory;
   private final HxTypeInitializer typeInitializer;
 
@@ -80,7 +83,8 @@ public class Haxxor
     this.referenceCache = builder.createReferenceCache(this);
     this.typeInitializer = builder.createTypeInitializer(this);
     this.elementFactory = builder.createElementFactory(this);
-    this.classNameSupplier = builder.createJavaClassNameProvider(this);
+    this.typeInterpreter = builder.createTypeInterpreter(this);
+    this.classNameNormalizer = builder.createClassNameNormalizer(this);
 
     initialize();
   }
@@ -88,42 +92,42 @@ public class Haxxor
   protected void initialize() {
     String name = "void";
     HxPrimitiveTypeImpl type =
-        new HxPrimitiveTypeImpl(this, toNormalizedClassName(name));
+        new HxPrimitiveTypeImpl(this, toNormalizedClassname(name));
     resolvedCache.put(name, type);
 
     name = "boolean";
-    type = new HxPrimitiveTypeImpl(this, toNormalizedClassName(name));
+    type = new HxPrimitiveTypeImpl(this, toNormalizedClassname(name));
     resolvedCache.put(name, type);
 
     name = "byte";
-    type = new HxPrimitiveTypeImpl(this, toNormalizedClassName(name));
+    type = new HxPrimitiveTypeImpl(this, toNormalizedClassname(name));
     resolvedCache.put(name, type);
 
     name = "short";
-    type = new HxPrimitiveTypeImpl(this, toNormalizedClassName(name));
+    type = new HxPrimitiveTypeImpl(this, toNormalizedClassname(name));
     resolvedCache.put(name, type);
 
     name = "char";
-    type = new HxPrimitiveTypeImpl(this, toNormalizedClassName(name));
+    type = new HxPrimitiveTypeImpl(this, toNormalizedClassname(name));
     resolvedCache.put(name, type);
 
     name = "int";
-    type = new HxPrimitiveTypeImpl(this, toNormalizedClassName(name));
+    type = new HxPrimitiveTypeImpl(this, toNormalizedClassname(name));
     resolvedCache.put(name, type);
 
     name = "float";
-    type = new HxPrimitiveTypeImpl(this, toNormalizedClassName(name));
+    type = new HxPrimitiveTypeImpl(this, toNormalizedClassname(name));
     resolvedCache.put(name, type);
 
     name = "long";
-    type = new HxPrimitiveTypeImpl(this, toNormalizedClassName(name));
+    type = new HxPrimitiveTypeImpl(this, toNormalizedClassname(name));
     resolvedCache.put(name, type);
 
     name = "double";
-    type = new HxPrimitiveTypeImpl(this, toNormalizedClassName(name));
+    type = new HxPrimitiveTypeImpl(this, toNormalizedClassname(name));
     resolvedCache.put(name, type);
 
-    name = toNormalizedClassName("java.lang.Object");
+    name = toNormalizedClassname("java.lang.Object");
     referenceCache.put(name, createReference(name));
   }
 
@@ -161,8 +165,8 @@ public class Haxxor
   /**
    * @return the associated java classname provider
    */
-  public HxClassNameNormalizer getClassNameSupplier() {
-    return classNameSupplier;
+  public HxClassnameNormalizer getClassNameNormalizer() {
+    return classNameNormalizer;
   }
 
   /**
@@ -170,6 +174,13 @@ public class Haxxor
    */
   public HxElementFactory getElementFactory() {
     return elementFactory;
+  }
+
+  /**
+   * @return the associated type-interpreter
+   */
+  public HxTypeInterpreter getTypeInterpreter() {
+    return typeInterpreter;
   }
 
   /**
@@ -217,7 +228,7 @@ public class Haxxor
    * @return <b>true</b> if there is a reference with given typename in this instance, <b>false</b> otherwise
    */
   public boolean hasReference(String typeName) {
-    typeName = toNormalizedClassName(typeName);
+    typeName = toNormalizedClassname(typeName);
     return this.referenceCache.containsKey(typeName);
   }
 
@@ -228,7 +239,7 @@ public class Haxxor
    * @return <b>true</b> if there is a resolved type with given typename in this instance, <b>false</b> otherwise
    */
   public boolean hasResolved(String typeName) {
-    typeName = toNormalizedClassName(typeName);
+    typeName = toNormalizedClassname(typeName);
     return this.resolvedCache.containsKey(typeName);
   }
 
@@ -241,7 +252,7 @@ public class Haxxor
   public HxTypeReference reference(String typeName) {
     checkClassLoaderAvailability();
 
-    typeName = toNormalizedClassName(typeName);
+    typeName = toNormalizedClassname(typeName);
     HxTypeReference reference = this.referenceCache.get(typeName);
 
     if (reference == null) {
@@ -314,7 +325,7 @@ public class Haxxor
   public HxType resolve(String typeName,
                         int options) {
     checkClassLoaderAvailability();
-    typeName = toNormalizedClassName(typeName);
+    typeName = toNormalizedClassname(typeName);
     HxType type = this.resolvedCache.get(typeName);
 
     if (type == null) {
@@ -340,20 +351,20 @@ public class Haxxor
   }
 
   @Override
-  public String toNormalizedClassName(final String typeName) {
-    return classNameSupplier.toNormalizedClassName(typeName);
+  public String toNormalizedClassname(final String typeName) {
+    return classNameNormalizer.toNormalizedClassname(typeName);
   }
 
   @Override
   public HxType createType(final String className) {
-    HxType type = elementFactory.createType(toNormalizedClassName(className));
+    HxType type = elementFactory.createType(toNormalizedClassname(className));
     getTypeInitializer().initialize(type);
     return type;
   }
 
   @Override
   public HxTypeReference createReference(final String className) {
-    return elementFactory.createReference(toNormalizedClassName(className));
+    return elementFactory.createReference(toNormalizedClassname(className));
   }
 
   @Override
@@ -364,27 +375,27 @@ public class Haxxor
   @Override
   public HxField createField(final String className,
                              final String fieldName) {
-    return elementFactory.createField(toNormalizedClassName(className), fieldName);
+    return elementFactory.createField(toNormalizedClassname(className), fieldName);
   }
 
   @Override
   public HxConstructor createConstructor(final String... parameterTypes) {
-    return elementFactory.createConstructor(toNormalizedClassNames(parameterTypes));
+    return elementFactory.createConstructor(toNormalizedClassnames(parameterTypes));
   }
 
   @Override
   public HxConstructor createConstructorReference(final String declaringType,
                                                   final String... parameterTypes) {
-    return elementFactory.createConstructorReference(toNormalizedClassName(declaringType),
-                                                     toNormalizedClassNames(parameterTypes));
+    return elementFactory.createConstructorReference(toNormalizedClassname(declaringType),
+                                                     toNormalizedClassnames(parameterTypes));
   }
 
   @Override
   public HxMethod createMethod(final String returnType,
                                final String methodName,
                                final String... parameterTypes) {
-    return elementFactory.createMethod(toNormalizedClassName(returnType), methodName,
-                                       toNormalizedClassNames(parameterTypes));
+    return elementFactory.createMethod(toNormalizedClassname(returnType), methodName,
+                                       toNormalizedClassnames(parameterTypes));
   }
 
   @Override
@@ -392,20 +403,20 @@ public class Haxxor
                                         final String returnType,
                                         final String methodName,
                                         final String... parameterTypes) {
-    return elementFactory.createMethodReference(toNormalizedClassName(declaringType),
-                                                toNormalizedClassName(returnType), methodName,
-                                                toNormalizedClassNames(parameterTypes));
+    return elementFactory.createMethodReference(toNormalizedClassname(declaringType),
+                                                toNormalizedClassname(returnType), methodName,
+                                                toNormalizedClassnames(parameterTypes));
   }
 
   @Override
   public HxParameter createParameter(final String className) {
-    return elementFactory.createParameter(toNormalizedClassName(className));
+    return elementFactory.createParameter(toNormalizedClassname(className));
   }
 
   @Override
   public HxAnnotation createAnnotation(final String className,
                                        final boolean visible) {
-    return elementFactory.createAnnotation(toNormalizedClassName(className), visible);
+    return elementFactory.createAnnotation(toNormalizedClassname(className), visible);
   }
 
   @Override

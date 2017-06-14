@@ -10,6 +10,7 @@ import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * <br/>Created by a.hofmann on 16.03.2016.<br/>
@@ -28,20 +29,18 @@ public class HxFieldVisitor
 
   @Override
   public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
-    final HxAnnotation hxAnnotation = this.type.getHaxxor()
-                                               .createAnnotation(desc, visible);
-
-    return new HxAnnotationVisitor(hxAnnotation, super.visitAnnotation(desc, visible))
-        .consumer(this.field::addAnnotation);
+    final Consumer consumer = (Consumer<HxAnnotation>) this.field::addAnnotation;
+    final HxAnnotation hxAnnotation = this.type.getHaxxor().createAnnotation(desc, visible);
+    return new HxAnnotationVisitor(hxAnnotation, consumer, super.visitAnnotation(desc, visible));
   }
 
   @Override
   public AnnotationVisitor visitTypeAnnotation(final int typeRef, final TypePath typePath, final String desc,
                                                final boolean visible) {
-    final HxAnnotation hxAnnotation = this.type.getHaxxor()
-                                               .createAnnotation(desc, visible);
-
-    return new HxAnnotationVisitor(hxAnnotation, super.visitTypeAnnotation(typeRef, typePath, desc, visible));
+//    final Consumer consumer = (Consumer<HxAnnotation>) this.field::addAnnotation;
+//    final HxAnnotation hxAnnotation = this.type.getHaxxor().createAnnotation(desc, visible);
+//    return new HxAnnotationVisitor(hxAnnotation, consumer, super.visitTypeAnnotation(typeRef, typePath, desc, visible));
+    return super.visitTypeAnnotation(typeRef, typePath, desc, false);
   }
 
   @Override

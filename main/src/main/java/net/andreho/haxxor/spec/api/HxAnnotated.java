@@ -12,6 +12,7 @@ import java.util.function.Predicate;
  * Created by a.hofmann on 31.05.2015.
  */
 public interface HxAnnotated<A extends HxAnnotated<A>> {
+
   Collection<HxAnnotation> DEFAULT_ANNOTATION_COLLECTION = Collections.emptySet();
   Collection<HxAnnotated> DEFAULT_SUPER_ANNOTATED_COLLECTION = Collections.emptySet();
 
@@ -46,17 +47,12 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
   Collection<HxAnnotated> getSuperAnnotated();
 
   /**
-   * @param type
-   * @return
-   */
-  Collection<HxAnnotation> getAnnotationsByType(String type);
-
-  /**
    * @param predicate
    * @param recursive
    * @return
    */
-  Collection<HxAnnotation> annotations(Predicate<HxAnnotation> predicate, boolean recursive);
+  Collection<HxAnnotation> annotations(Predicate<HxAnnotation> predicate,
+                                       boolean recursive);
 
   /**
    * @param type
@@ -65,7 +61,6 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
   default boolean isAnnotationPresent(String type) {
     return getAnnotation(type) != null;
   }
-
 
   /**
    * @param type
@@ -105,12 +100,12 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
       setAnnotations(new LinkedHashSet<>());
     }
 
-    if(annotation.getDeclaringMember() != null) {
+    if (annotation.getDeclaringMember() != null) {
       throw new IllegalArgumentException("Given annotation was already bound to another host.");
     }
 
     getAnnotations().add(annotation);
-    if(this instanceof HxMember) {
+    if (this instanceof HxMember) {
       annotation.setDeclaringMember((HxMember) this);
     }
 
@@ -136,10 +131,8 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
    * @return
    */
   default A removeAnnotation(HxAnnotation annotation) {
-    if(equals(annotation.getDeclaringMember())) {
-      throw new IllegalArgumentException(
-          "Given annotation does't belong to this annotated element: "+annotation
-      );
+    if (equals(annotation.getDeclaringMember())) {
+      throw new IllegalArgumentException("Given annotation does't belong to this annotated element: " + annotation);
     }
 
     if (getAnnotations() != DEFAULT_ANNOTATION_COLLECTION) {
@@ -152,11 +145,17 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
   }
 
   /**
-   * @param repeatableAnnotationType
+   * @param type
    * @return
    */
-  default Collection<HxAnnotation> getAnnotationsByType(Class<? extends Annotation> repeatableAnnotationType) {
-    return getAnnotationsByType(repeatableAnnotationType.getName());
+  Collection<HxAnnotation> getAnnotationsByType(String type);
+
+  /**
+   * @param annotationType
+   * @return
+   */
+  default Collection<HxAnnotation> getAnnotationsByType(Class<? extends Annotation> annotationType) {
+    return getAnnotationsByType(annotationType.getName());
   }
 
   /**

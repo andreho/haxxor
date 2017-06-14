@@ -22,8 +22,7 @@ public class BASTORE
   @Override
   protected void checkArrayType(final Object arrayType, final int depth) {
     super.checkArrayType(arrayType, depth);
-    String array = arrayType.toString();
-    if (!"[Z".equals(array) && !"[B".equals(array)) {
+    if (!"[Z".equals(arrayType) && !"[B".equals(arrayType)) {
       throw new IllegalArgumentException("Expected an boolean[] or byte[] array type, but got: " + arrayType);
     }
   }

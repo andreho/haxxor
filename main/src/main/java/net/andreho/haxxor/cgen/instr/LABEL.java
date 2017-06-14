@@ -42,10 +42,10 @@ public class LABEL
   }
 
   @Override
-  public List<Object> apply(final HxComputingContext context) {
+  public List<Object> getStackPushList(final HxComputingContext context) {
     context.getVisitedLabels()
            .putIfAbsent(this, getPrevious());
-    return super.apply(context);
+    return super.getStackPushList(context);
   }
 
   @Override
@@ -57,12 +57,12 @@ public class LABEL
     return this.asmLabel;
   }
 
-  public LABEL addReference(HxInstruction instruction) {
+  public <I extends HxInstruction> I addReference(I instruction) {
     if(isUninitialized(references)) {
       references = new ArrayList<>(1);
     }
     references.add(instruction);
-    return this;
+    return instruction;
   }
 
   @Override

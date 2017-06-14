@@ -67,6 +67,16 @@ public class Debugger {
   }
 
   /**
+   * Prints byte code of the given class to the given printer
+   *
+   * @param cls whose bytecode to trace
+   * @param printer   to output to
+   */
+  public static void trace(Class<?> cls, PrintWriter printer) {
+    trace(cls.getName(), new ASMifier(), printer);
+  }
+
+  /**
    * Prints byte code of the given class using selected printer
    *
    * @param className of class whose bytecode to trace
@@ -151,6 +161,14 @@ public class Debugger {
    */
   public static void trace(byte[] byteCode) {
     trace(byteCode, new ASMifier(), new PrintWriter(System.out));
+  }
+
+  /**
+   * @param byteCode
+   * @param writer
+   */
+  public static void trace(byte[] byteCode, PrintWriter writer) {
+    trace(byteCode, new ASMifier(), writer);
   }
 
   /**

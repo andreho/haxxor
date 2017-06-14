@@ -23,15 +23,14 @@ public class ASTORE
   }
 
   @Override
-  public List<Object> apply(final HxComputingContext context) {
-    Object operand = context.getStack()
-                            .peek();
+  public List<Object> getStackPushList(final HxComputingContext context) {
+    Object operand = context.getStack().pop();
+
     if (operand instanceof Integer) {
       throw new IllegalArgumentException(
           "A object reference is expected at slot's index [" + getLocalIndex() + "], but got: " + operand);
     }
-    context.getLocals()
-           .set(getLocalIndex(), operand);
+    context.getLocals().set(getLocalIndex(), operand);
     return NO_STACK_PUSH;
   }
 }

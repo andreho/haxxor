@@ -28,17 +28,17 @@ public class BEGIN
   }
 
   @Override
-  public List<Object> apply(final HxComputingContext context) {
+  public List<Object> getStackPushList(final HxComputingContext context) {
     return NO_STACK_PUSH;
   }
 
   @Override
-  public int getPushSize() {
+  public int getStackPushSize() {
     return 0;
   }
 
   @Override
-  public int getPopSize() {
+  public int getStackPopSize() {
     return 0;
   }
 

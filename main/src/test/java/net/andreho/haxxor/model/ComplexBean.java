@@ -1,6 +1,11 @@
 package net.andreho.haxxor.model;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,7 +57,7 @@ public class ComplexBean
     return "ok";
   }
 
-  public ComplexBean(final String name) {
+  public ComplexBean(final String name) throws FileNotFoundException, MalformedURLException {
     super(name);
   }
 
@@ -233,7 +238,15 @@ public class ComplexBean
   }
 
   public Map<String, Integer> aMethod(String name) {
-    return null;
+    try {
+      if(name.charAt(0) == 'a' && name.charAt(1) == 'b') {
+        return Collections.emptyMap();
+      }
+    } catch (IndexOutOfBoundsException e) {
+      throw new IllegalStateException(e);
+    }
+
+    return new HashMap<>();
   }
 
   public Map<String, Integer> aMethod(String name, int index) {
@@ -256,7 +269,7 @@ public class ComplexBean
     return null;
   }
 
-  public Map<String, Integer> aMethod(String name, int index, List<InterfaceA> list, EnumC enumC) {
+  public Map<String, Integer> aMethod(String name, int index, List<InterfaceA> list, EnumC enumC) throws IOException {
     return null;
   }
 }

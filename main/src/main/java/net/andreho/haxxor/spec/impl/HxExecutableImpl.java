@@ -6,7 +6,6 @@ import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxMethod.Modifiers;
 import net.andreho.haxxor.spec.api.HxParameter;
-import net.andreho.haxxor.spec.api.HxProvider;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.ArrayList;
@@ -45,7 +44,7 @@ public abstract class HxExecutableImpl<P extends HxExecutable<P>>
 
   @Override
   public Haxxor getHaxxor() {
-    return ((HxProvider) getDeclaringMember()).getHaxxor();
+    return getDeclaringMember().getHaxxor();
   }
 
   @Override
@@ -165,6 +164,11 @@ public abstract class HxExecutableImpl<P extends HxExecutable<P>>
   @Override
   public Collection<HxExecutable> getOverriddenMembers() {
     return Collections.emptySet();
+  }
+
+  @Override
+  public HxType getDeclaringMember() {
+    return (HxType) super.getDeclaringMember();
   }
 
   @Override

@@ -8,7 +8,6 @@ import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
-import net.andreho.haxxor.spec.api.HxType.Part;
 
 import java.util.Objects;
 
@@ -51,10 +50,10 @@ public class HxExecutableVisitor
     final HxType owner = this.declaringType;
 
     if (this.executable instanceof HxMethod) {
-      owner.initialize(Part.METHODS)
+      owner.initialize(HxType.Part.METHODS)
            .addMethod((HxMethod) this.executable);
     } else {
-      owner.initialize(Part.CONSTRUCTORS)
+      owner.initialize(HxType.Part.CONSTRUCTORS)
            .addConstructor((HxConstructor) this.executable);
     }
   }

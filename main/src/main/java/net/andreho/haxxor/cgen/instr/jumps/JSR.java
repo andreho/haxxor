@@ -24,8 +24,8 @@ public class JSR
   }
 
   @Override
-  public List<Object> apply(final HxComputingContext context) {
-    super.apply(context);
+  public List<Object> getStackPushList(final HxComputingContext context) {
+    super.getStackPushList(context);
     return PUSH_INT;
   }
 }

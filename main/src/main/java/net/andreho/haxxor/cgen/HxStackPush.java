@@ -1,21 +1,33 @@
 package net.andreho.haxxor.cgen;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * <br/>Created by a.hofmann on 15.03.2016.<br/>
  */
-public interface HxStackPush {
+public class HxStackPush {
+  private final List<Object> list;
+
+  public HxStackPush() {
+    this(new ArrayList<>(8));
+  }
+
+  public HxStackPush(final List<Object> list) {
+    this.list = list;
+  }
 
   /**
    * @return
    */
-  List<Object> get();
+  public List<Object> get() {
+    return list;
+  }
 
   /**
    * @return
    */
-  default HxStackPush prepare() {
+  public HxStackPush prepare() {
     get().clear();
     return this;
   }
@@ -24,7 +36,7 @@ public interface HxStackPush {
    * @param value
    * @return
    */
-  default HxStackPush push(Object value) {
+  public HxStackPush push(Object value) {
     get().add(value);
     return this;
   }
@@ -34,7 +46,7 @@ public interface HxStackPush {
    * @param value2
    * @return
    */
-  default HxStackPush push(Object value1, Object value2) {
+  public HxStackPush push(Object value1, Object value2) {
     return push(value1).push(value2);
   }
 
@@ -44,9 +56,10 @@ public interface HxStackPush {
    * @param value3
    * @return
    */
-  default HxStackPush push(Object value1, Object value2, Object value3) {
-    return push(value1).push(value2)
-                       .push(value3);
+  public HxStackPush push(Object value1, Object value2, Object value3) {
+    return push(value1)
+          .push(value2)
+          .push(value3);
   }
 
   /**
@@ -56,10 +69,11 @@ public interface HxStackPush {
    * @param value4
    * @return
    */
-  default HxStackPush push(Object value1, Object value2, Object value3, Object value4) {
-    return push(value1).push(value2)
-                       .push(value3)
-                       .push(value4);
+  public HxStackPush push(Object value1, Object value2, Object value3, Object value4) {
+    return push(value1)
+          .push(value2)
+          .push(value3)
+          .push(value4);
   }
 
   /**
@@ -70,11 +84,12 @@ public interface HxStackPush {
    * @param value5
    * @return
    */
-  default HxStackPush push(Object value1, Object value2, Object value3, Object value4, Object value5) {
-    return push(value1).push(value2)
-                       .push(value3)
-                       .push(value4)
-                       .push(value5);
+  public HxStackPush push(Object value1, Object value2, Object value3, Object value4, Object value5) {
+    return push(value1)
+          .push(value2)
+          .push(value3)
+          .push(value4)
+          .push(value5);
   }
 
   /**
@@ -86,11 +101,12 @@ public interface HxStackPush {
    * @param value6
    * @return
    */
-  default HxStackPush push(Object value1, Object value2, Object value3, Object value4, Object value5, Object value6) {
-    return push(value1).push(value2)
-                       .push(value3)
-                       .push(value4)
-                       .push(value5)
-                       .push(value6);
+  public HxStackPush push(Object value1, Object value2, Object value3, Object value4, Object value5, Object value6) {
+    return push(value1)
+          .push(value2)
+          .push(value3)
+          .push(value4)
+          .push(value5)
+          .push(value6);
   }
 }

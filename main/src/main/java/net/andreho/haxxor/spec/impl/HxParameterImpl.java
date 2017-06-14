@@ -121,7 +121,7 @@ public class HxParameterImpl<P extends HxExecutable<P>>
 
   @Override
   public P getDeclaringMember() {
-    return super.getDeclaringMember();
+    return (P) super.getDeclaringMember();
   }
 
   @Override

@@ -2,9 +2,9 @@ package net.andreho.haxxor;
 
 
 import net.andreho.haxxor.cgen.HxInstruction;
-import net.andreho.haxxor.cgen.code_fragments.InvokeFragment;
 import net.andreho.haxxor.model.AbstractBean;
 import net.andreho.haxxor.model.AnnotationC;
+import net.andreho.haxxor.model.CodeAnnotationBean;
 import net.andreho.haxxor.model.EnumC;
 import net.andreho.haxxor.spec.api.HxType;
 import org.junit.jupiter.api.Disabled;
@@ -75,8 +75,7 @@ class SandBoxTest {
   @Test
   @Disabled
   void printDebugCode() {
-    Debugger.trace(InvokeFragment.class.getName());
-    Runnable runnable = new InvokeFragment().INVOKEDYNAMIC_ON_INVOKESPECIAL();
+    Debugger.trace(CodeAnnotationBean.class, Debugger.SKIP_DEBUG);
   }
 
   static class Testing {

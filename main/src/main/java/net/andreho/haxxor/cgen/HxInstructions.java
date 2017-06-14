@@ -525,34 +525,38 @@ public interface HxInstructions {
 
   enum Jump
       implements HxInstructionType {
-    IFEQ(Opcodes.IFEQ, 1),
-    IFNE(Opcodes.IFNE, 1),
-    IFLT(Opcodes.IFLT, 1),
-    IFGE(Opcodes.IFGE, 1),
-    IFGT(Opcodes.IFGT, 1),
-    IFLE(Opcodes.IFLE, 1),
+    IFEQ(Opcodes.IFEQ, 1, 1), //0
+    IFNE(Opcodes.IFNE, 1, 0), //1
+    IFLT(Opcodes.IFLT, 1, 3), //2
+    IFGE(Opcodes.IFGE, 1, 2), //3
+    IFGT(Opcodes.IFGT, 1, 5), //4
+    IFLE(Opcodes.IFLE, 1, 4), //5
 
-    IF_ICMPEQ(Opcodes.IF_ICMPEQ, 1+1),
-    IF_ICMPNE(Opcodes.IF_ICMPNE, 1+1),
-    IF_ICMPLT(Opcodes.IF_ICMPLT, 1+1),
-    IF_ICMPGE(Opcodes.IF_ICMPGE, 1+1),
-    IF_ICMPGT(Opcodes.IF_ICMPGT, 1+1),
-    IF_ICMPLE(Opcodes.IF_ICMPLE, 1+1),
-    IF_ACMPEQ(Opcodes.IF_ACMPEQ, 1+1),
-    IF_ACMPNE(Opcodes.IF_ACMPNE, 1+1),
+    IF_ICMPEQ(Opcodes.IF_ICMPEQ, 1+1, 7), //6
+    IF_ICMPNE(Opcodes.IF_ICMPNE, 1+1, 6), //7
+    IF_ICMPLT(Opcodes.IF_ICMPLT, 1+1, 9), //8
+    IF_ICMPGE(Opcodes.IF_ICMPGE, 1+1, 8), //9
+    IF_ICMPGT(Opcodes.IF_ICMPGT, 1+1, 11), //10
+    IF_ICMPLE(Opcodes.IF_ICMPLE, 1+1, 10), //11
 
-    GOTO(Opcodes.GOTO, 0),
+    IF_ACMPEQ(Opcodes.IF_ACMPEQ, 1+1, 13), //12
+    IF_ACMPNE(Opcodes.IF_ACMPNE, 1+1, 12), //13
 
-    IFNULL(Opcodes.IFNULL, 1),
-    IFNONNULL(Opcodes.IFNONNULL, 1);
+    GOTO(Opcodes.GOTO, 0, 14), //14
+
+    IFNULL(Opcodes.IFNULL, 1, 16), //15
+    IFNONNULL(Opcodes.IFNONNULL, 1, 15); //16
 
     private final int opcode;
     private final int pop;
+    private final int inverse;
+    private volatile Jump inverseJump;
 
     Jump(int opcode,
-         final int pop) {
+         final int pop, final int inverse) {
       this.opcode = opcode;
       this.pop = pop;
+      this.inverse = inverse;
     }
 
     @Override
@@ -568,6 +572,21 @@ public interface HxInstructions {
     @Override
     public int getPushSize() {
       return 0;
+    }
+
+    /**
+     * @return the inverted jump instruction
+     */
+    public Jump inverse() {
+      Jump inverseJump = this.inverseJump;
+      if(inverseJump == null) {
+        this.inverseJump = inverseJump = values()[inverse];
+      }
+      return inverseJump;
+    }
+
+    public boolean isUnconditional() {
+      return this == GOTO;
     }
 
     @Override

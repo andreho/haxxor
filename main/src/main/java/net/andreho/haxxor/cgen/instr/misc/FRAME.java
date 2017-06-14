@@ -1,4 +1,4 @@
-package net.andreho.haxxor.cgen.instr.cflow;
+package net.andreho.haxxor.cgen.instr.misc;
 
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
@@ -54,17 +54,17 @@ public class FRAME
   }
 
   @Override
-  public List<Object> apply(final HxComputingContext context) {
+  public List<Object> getStackPushList(final HxComputingContext context) {
     return NO_STACK_PUSH;
   }
 
   @Override
-  public int getPushSize() {
+  public int getStackPushSize() {
     return 0;
   }
 
   @Override
-  public int getPopSize() {
+  public int getStackPopSize() {
     return 0;
   }
 }

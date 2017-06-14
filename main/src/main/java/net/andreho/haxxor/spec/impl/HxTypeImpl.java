@@ -1,8 +1,6 @@
 package net.andreho.haxxor.spec.impl;
 
-import net.andreho.asm.org.objectweb.asm.ClassWriter;
 import net.andreho.haxxor.Haxxor;
-import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
@@ -39,6 +37,7 @@ public class HxTypeImpl
   protected Map<String, HxField> fieldMap = Collections.emptyMap();
 
   protected List<HxConstructor> constructors = Collections.emptyList();
+
   protected List<HxMethod> methods = Collections.emptyList();
   protected Map<String, Collection<HxMethod>> methodMap = Collections.emptyMap();
 
@@ -555,46 +554,7 @@ public class HxTypeImpl
   }
 
   @Override
-  public byte[] toByteArray() {
-    final ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-
-    writer.visit(getVersion().getCode(),
-                 getModifiers(),
-                 getName(),
-                 getGenericSignature().orElse(null),
-                 getSuperType().get().toInternalName(),
-                 getInterfaces().stream().map(HxType::toInternalName).toArray(String[]::new)
-    );
-
-    for (HxAnnotation annotation : getAnnotations()) {
-      //writer.visitAnnotation()
-    }
-
-    //Outer type
-    if (getDeclaringMember() instanceof HxType) {
-      HxType owner = getDeclaringMember();
-      writer.visitOuterClass(owner.getName(), null, null);
-    } else {
-      if (getDeclaringMember() instanceof HxMethod) {
-        HxMethod owner = getDeclaringMember();
-        writer.visitOuterClass(((HxType) owner.getDeclaringMember()).getName(), owner.getName(),
-                               owner.toDescriptor());
-      } else {
-        HxConstructor owner = getDeclaringMember();
-        writer.visitOuterClass(((HxType) owner.getDeclaringMember()).getName(), "<init>", owner.toDescriptor());
-      }
-    }
-
-    //Inner types
-    for (HxType innerType : getDeclaredTypes()) {
-      HxType owner = innerType.getDeclaringMember();
-      if (isMemberType() && owner != null) {
-        writer.visitInnerClass(innerType.getName(), owner.getName(), innerType.getSimpleName(),
-                               innerType.getModifiers());
-      }
-      writer.visitInnerClass(innerType.getName(), null, innerType.getSimpleName(), innerType.getModifiers());
-    }
-
-    return writer.toByteArray();
+  public byte[] toByteCode() {
+    return getHaxxor().getTypeInterpreter().interpret(this);
   }
 }

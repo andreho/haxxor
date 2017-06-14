@@ -37,17 +37,17 @@ public abstract class AbstractFieldInstruction
   }
 
   @Override
-  public List<Object> apply(final HxComputingContext context) {
+  public List<Object> getStackPushList(final HxComputingContext context) {
     return Utils.retrieveType(context, this.desc);
   }
 
   @Override
-  public int getPushSize() {
+  public int getStackPushSize() {
     return getInstructionType().getPushSize(desc);
   }
 
   @Override
-  public int getPopSize() {
+  public int getStackPopSize() {
     return getInstructionType().getPopSize(desc);
   }
 

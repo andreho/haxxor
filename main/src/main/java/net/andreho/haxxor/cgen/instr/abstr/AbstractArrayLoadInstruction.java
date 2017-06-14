@@ -23,7 +23,7 @@ public abstract class AbstractArrayLoadInstruction
   }
 
   @Override
-  public List<Object> apply(HxComputingContext context) {
+  public List<Object> getStackPushList(HxComputingContext context) {
     Object arrayType = context.getStack()
                               .peek(1);
 

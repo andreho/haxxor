@@ -19,7 +19,7 @@ public interface HxField
             HxMember<HxField>,
             HxOwned<HxField>,
             HxGeneric<HxField>,
-            HxIndexed,
+            HxOrdered,
             HxProvider,
             Cloneable {
 
@@ -165,6 +165,9 @@ public interface HxField
   default boolean isEnum() {
     return hasModifiers(Modifiers.ENUM);
   }
+
+  @Override
+  HxType getDeclaringMember();
 
   /**
    * @return generic type of this field

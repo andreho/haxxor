@@ -23,7 +23,7 @@ public class ACONST_NULL
   }
 
   @Override
-  public List<Object> apply(final HxComputingContext context) {
+  public List<Object> getStackPushList(final HxComputingContext context) {
     return PUSH_NULL;
   }
 }

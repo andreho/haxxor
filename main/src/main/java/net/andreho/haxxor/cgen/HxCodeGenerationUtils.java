@@ -21,10 +21,10 @@ public abstract class HxCodeGenerationUtils {
   }
 
   /**
-   * Computes the size of the arguments.
+   * Computes the size of the argument's list.
    *
-   * @param desc the descriptor of a method.
-   * @return the size of the arguments of the method
+   * @param desc is the signature's descriptor of a method.
+   * @return the expected size of the arguments of the referenced method
    */
   public static int getArgumentsSize(final String desc) {
     int i = 1;
@@ -54,7 +54,7 @@ public abstract class HxCodeGenerationUtils {
 
   /**
    * Computes the size of the returned type.
-   * @param desc the descriptor of a method
+   * @param desc is the signature's descriptor of a method.
    * @return the size of the returned type.
    */
   public static int getReturnSize(final String desc) {

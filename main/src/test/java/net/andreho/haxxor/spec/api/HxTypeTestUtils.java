@@ -124,7 +124,7 @@ public abstract class HxTypeTestUtils {
                                              HxParameterizedType hxParameterizedType) {
     java.lang.reflect.Type rawType = parameterizedType.getRawType();
     HxType hxRawType = hxParameterizedType.getRawType();
-    boolean equalNames = Objects.equals(hxRawType.getHaxxor().toNormalizedClassName(((Class) rawType).getName()), hxRawType.getName());
+    boolean equalNames = Objects.equals(hxRawType.getHaxxor().toNormalizedClassname(((Class) rawType).getName()), hxRawType.getName());
     if(!equalNames) {
       System.out.println("WTF?");
     }
@@ -203,7 +203,7 @@ public abstract class HxTypeTestUtils {
 
   public static void checkMethods(Method method, HxMethod hxMethod) {
     Haxxor haxxor = hxMethod.getHaxxor();
-    assertEquals(haxxor.toNormalizedClassName(method.getReturnType().getName()),
+    assertEquals(haxxor.toNormalizedClassname(method.getReturnType().getName()),
                  hxMethod.getReturnType().getName());
 
     assertEquals(method.getName(), hxMethod.getName(), "Method has invalid name.");
@@ -248,11 +248,13 @@ public abstract class HxTypeTestUtils {
       Parameter parameter = parameters[i];
       HxType hxParameterType = parameterizable.getParameterTypeAt(i);
 
-      assertEquals(haxxor.toNormalizedClassName(parameter.getType().getName()),
+      assertEquals(haxxor.toNormalizedClassname(parameter.getType().getName()),
                    hxParameterType.getName(), "Parameter's type at "+i+" is invalid.");
-      assertEquals(haxxor.toNormalizedClassName(parameterTypes[i].getName()),
+      assertEquals(haxxor.toNormalizedClassname(parameterTypes[i].getName()),
                    hxParameterType.getName(), "Type of parameter at "+i+" is invalid.");
     }
+
+    checkClassArrays(executable.getExceptionTypes(), parameterizable.getExceptionTypes());
   }
 
 
@@ -262,7 +264,7 @@ public abstract class HxTypeTestUtils {
     assertEquals(parameter.getName(), hxParameter.getName(),
                  "Invalid parameter's name.");
 
-    assertEquals(haxxor.toNormalizedClassName(parameter.getType()
+    assertEquals(haxxor.toNormalizedClassname(parameter.getType()
                                                        .getName()), hxParameter.getType()
                                                                          .getName(),
                  "Invalid parameter's type.");

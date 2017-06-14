@@ -23,7 +23,7 @@ public class ANEWARRAY
   }
 
   @Override
-  public List<Object> apply(final HxComputingContext context) {
+  public List<Object> getStackPushList(final HxComputingContext context) {
     return context.getStackPush()
                   .prepare()
                   .push("[" + getOperand())

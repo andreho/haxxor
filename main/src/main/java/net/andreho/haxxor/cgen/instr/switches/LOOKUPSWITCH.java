@@ -30,12 +30,7 @@ public class LOOKUPSWITCH
   }
 
   @Override
-  public List<Object> apply(final HxComputingContext context) {
-    for (LABEL label : getLabels()) {
-      label.addReference(this);
-    }
-
-    getDefaultLabel().addReference(this);
+  public List<Object> getStackPushList(final HxComputingContext context) {
     return NO_STACK_PUSH;
   }
 

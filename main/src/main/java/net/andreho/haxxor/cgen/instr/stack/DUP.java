@@ -23,7 +23,7 @@ public class DUP
   }
 
   @Override
-  public List<Object> apply(final HxComputingContext context) {
+  public List<Object> getStackPushList(final HxComputingContext context) {
     Object value = context.getStack()
                           .peek();
     return context.getStackPush()

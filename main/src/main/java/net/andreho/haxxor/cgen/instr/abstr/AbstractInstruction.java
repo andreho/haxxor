@@ -37,15 +37,11 @@ public abstract class AbstractInstruction
   protected static final List<Object> PUSH_DOUBLE = Collections.unmodifiableList(
       Arrays.asList(Opcodes.DOUBLE, Opcodes.TOP));
 
-  //----------------------------------------------------------------------------------------------------------------
-
   protected final int opcode;
   protected HxInstruction next;
   protected HxInstruction previous;
   protected HxAnnotated annotated;
   private int index = -1;
-
-  //----------------------------------------------------------------------------------------------------------------
 
   public AbstractInstruction(int opcode) {
     this.opcode = opcode;
@@ -74,12 +70,12 @@ public abstract class AbstractInstruction
   }
 
   @Override
-  public int getPopSize() {
+  public int getStackPopSize() {
     return getInstructionType().getPopSize();
   }
 
   @Override
-  public int getPushSize() {
+  public int getStackPushSize() {
     return getInstructionType().getPushSize();
   }
 

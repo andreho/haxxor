@@ -24,12 +24,9 @@ public abstract class HxAsmUtils {
     return result;
   }
 
-  public static Handle toAsmHandle(final HxHandle handle) {
+  public static Handle toAsmHandle(final HxMethodHandle handle) {
     return new Handle(handle.getTag()
-                            .getCode(),
-                      handle.getOwner(),
-                      handle.getName(),
-                      handle.getDescriptor(),
+                            .getCode(), handle.getOwner(), handle.getName(), handle.getDescriptor(),
                       handle.isInterface());
   }
 }

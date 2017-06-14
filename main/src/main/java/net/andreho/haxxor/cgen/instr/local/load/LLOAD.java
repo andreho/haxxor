@@ -23,12 +23,12 @@ public class LLOAD
   }
 
   @Override
-  public List<Object> apply(final HxComputingContext context) {
+  public List<Object> getStackPushList(final HxComputingContext context) {
     Object type = context.getLocals()
                          .get(getLocalIndex());
     if (Opcodes.LONG != type) {
       throw new IllegalArgumentException(
-          "A long operand is expected at slot index [" + getLocalIndex() + "], but got: " + type);
+          "A long operand is expected for the local-variable [" + getLocalIndex() + "], but got: " + type);
     }
     return context.getStackPush()
                   .prepare()

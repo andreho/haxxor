@@ -76,7 +76,7 @@ public class HxArguments {
     return addElement(type);
   }
 
-  public HxArguments add(HxHandle handle) {
+  public HxArguments add(HxMethodHandle handle) {
     return addElement(handle);
   }
 

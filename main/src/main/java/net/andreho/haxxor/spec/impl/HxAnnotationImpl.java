@@ -3,6 +3,7 @@ package net.andreho.haxxor.spec.impl;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxAnnotationAttribute;
+import net.andreho.haxxor.spec.api.HxConstants;
 import net.andreho.haxxor.spec.api.HxEnum;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
@@ -24,6 +25,7 @@ import net.andreho.haxxor.spec.impl.annotation.arrays.ByteArrayAnnotationAttribu
 import net.andreho.haxxor.spec.impl.annotation.arrays.CharacterArrayAnnotationAttribute;
 import net.andreho.haxxor.spec.impl.annotation.arrays.ClassArrayAnnotationAttribute;
 import net.andreho.haxxor.spec.impl.annotation.arrays.DoubleArrayAnnotationAttribute;
+import net.andreho.haxxor.spec.impl.annotation.arrays.EmptyArrayAnnotationAttribute;
 import net.andreho.haxxor.spec.impl.annotation.arrays.EnumArrayAnnotationAttribute;
 import net.andreho.haxxor.spec.impl.annotation.arrays.FloatArrayAnnotationAttribute;
 import net.andreho.haxxor.spec.impl.annotation.arrays.IntegerArrayAnnotationAttribute;
@@ -36,8 +38,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -48,20 +51,22 @@ public class HxAnnotationImpl
     extends HxOwnedImpl<HxAnnotation>
     implements HxAnnotation {
 
+  private static final Class<Target> TARGET_ANNOTATION_TYPE = Target.class;
+
   protected final HxType type;
-  protected final Map<String, HxAnnotationAttribute<?, ?>> values;
   protected boolean visible;
+  protected Map<String, HxAnnotationAttribute<?, ?>> attributeMap;
 
   public HxAnnotationImpl(HxType type,
                           boolean visible) {
-    this(type, visible, new HashMap<>());
+    this(type, visible, Collections.emptyMap());
   }
 
   public HxAnnotationImpl(HxType type,
                           boolean visible,
-                          Map<String, HxAnnotationAttribute<?, ?>> values) {
+                          Map<String, HxAnnotationAttribute<?, ?>> attributeMap) {
     this.type = type;
-    this.values = values;
+    this.attributeMap = attributeMap;
     this.visible = visible;
   }
 
@@ -70,10 +75,13 @@ public class HxAnnotationImpl
 
     this.type = prototype.type;
     this.visible = prototype.visible;
-    this.values = new HashMap<>(prototype.values.size());
-
-    for (HxAnnotationAttribute<?, ?> entry : prototype.values.values()) {
-      set(entry.getName(), entry.clone());
+    if(prototype.attributeMap.isEmpty()) {
+      this.attributeMap = Collections.emptyMap();
+    } else {
+      this.attributeMap = new LinkedHashMap<>(prototype.attributeMap.size());
+      for (HxAnnotationAttribute<?, ?> entry : prototype.attributeMap.values()) {
+        set(entry.getName(), entry.clone());
+      }
     }
   }
 
@@ -87,7 +95,7 @@ public class HxAnnotationImpl
 
   @Override
   public ElementType[] getElementTypes() {
-    Optional<HxAnnotation> targetAnnotation = getType().getAnnotation(Target.class);
+    Optional<HxAnnotation> targetAnnotation = getType().getAnnotation(TARGET_ANNOTATION_TYPE);
     if(targetAnnotation.isPresent()) {
       HxAnnotation annotation = targetAnnotation.get();
       HxEnum[] hxEnums = annotation.attribute("value");
@@ -97,13 +105,18 @@ public class HxAnnotationImpl
   }
 
   @Override
+  public boolean isVisible() {
+    return visible;
+  }
+
+  @Override
   public HxType getType() {
     return type;
   }
 
   @Override
-  public Map<String, HxAnnotationAttribute<?, ?>> getValues() {
-    return values;
+  public Map<String, HxAnnotationAttribute<?, ?>> getAttributeMap() {
+    return attributeMap;
   }
 
   @Override
@@ -113,7 +126,7 @@ public class HxAnnotationImpl
 
   @Override
   public <V> V attribute(String name) {
-    final HxAnnotationAttribute<?, ?> value = values.get(name);
+    final HxAnnotationAttribute<?, ?> value = attributeMap.get(name);
 
     if (value != null) {
       return (V) value.getValue();
@@ -123,8 +136,7 @@ public class HxAnnotationImpl
         getType().findMethod(name)
                  .orElseThrow(() ->
                                   new IllegalArgumentException(
-                                      "Method for annotation's attribute not found: " +
-                                      "" + name
+                                      "Method for annotation's attribute not found: " +name
                                   )
                  );
 
@@ -133,7 +145,11 @@ public class HxAnnotationImpl
 
   private HxAnnotation set(String name,
                            HxAnnotationAttribute<?, ?> entry) {
-    values.put(name, entry);
+    Map<String, HxAnnotationAttribute<?, ?>> attributeMap = this.attributeMap;
+    if(attributeMap == Collections.EMPTY_MAP) {
+      this.attributeMap = attributeMap = new LinkedHashMap<>();
+    }
+    attributeMap.put(name, entry);
     return this;
   }
 
@@ -324,6 +340,12 @@ public class HxAnnotationImpl
   }
 
   @Override
+  public HxAnnotation attribute(final String name,
+                                final HxConstants.EmptyArray value) {
+    return set(name, new EmptyArrayAnnotationAttribute(name, value));
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;
@@ -346,17 +368,14 @@ public class HxAnnotationImpl
     final StringBuilder builder = new StringBuilder(type.getName()).append(" {\n");
 
     for (Iterator<Map.Entry<String, HxAnnotationAttribute<?, ?>>> iterator =
-         getValues().entrySet()
-                    .iterator(); iterator.hasNext(); ) {
+         getAttributeMap().entrySet()
+                          .iterator(); iterator.hasNext(); ) {
 
       final Map.Entry<String, HxAnnotationAttribute<?, ?>> entry = iterator.next();
-      final String key = entry.getKey();
       final HxAnnotationAttribute<?, ?> value = entry.getValue();
 
-      builder.append('"')
-             .append(key)
-             .append("\": ")
-             .append(value.getValue());
+      builder.append(value);
+
       if (iterator.hasNext()) {
         builder.append('\n');
       }

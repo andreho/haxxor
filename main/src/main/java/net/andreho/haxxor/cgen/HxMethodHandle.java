@@ -3,7 +3,7 @@ package net.andreho.haxxor.cgen;
 /**
  * <br/>Created by a.hofmann on 05.06.2017 at 16:33.
  */
-public class HxHandle {
+public class HxMethodHandle {
 
   private final HxHandleTag tag;
   private final String owner;
@@ -18,11 +18,11 @@ public class HxHandle {
    * @param desc
    * @param itf
    */
-  public HxHandle(final HxHandleTag tag,
-                  final String owner,
-                  final String name,
-                  final String desc,
-                  final boolean itf) {
+  public HxMethodHandle(final HxHandleTag tag,
+                        final String owner,
+                        final String name,
+                        final String desc,
+                        final boolean itf) {
     this.tag = tag;
     this.owner = owner;
     this.name = name;
@@ -31,7 +31,7 @@ public class HxHandle {
   }
 
   /**
-   * The kind of field or method designated by this HxHandle.
+   * The kind of field or method designated by this HxMethodHandle.
    */
   public HxHandleTag getTag() {
     return tag;
@@ -64,5 +64,10 @@ public class HxHandle {
    */
   public boolean isInterface() {
     return itf;
+  }
+
+  @Override
+  public String toString() {
+    return "METHOD_HANDLE["+getTag()+","+getOwner()+","+getName()+","+getDescriptor()+","+isInterface()+"]";
   }
 }

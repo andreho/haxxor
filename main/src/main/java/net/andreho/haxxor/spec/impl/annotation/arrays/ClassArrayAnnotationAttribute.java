@@ -2,7 +2,6 @@ package net.andreho.haxxor.spec.impl.annotation.arrays;
 
 import net.andreho.haxxor.spec.api.HxAnnotationAttribute;
 import net.andreho.haxxor.spec.api.HxType;
-import net.andreho.haxxor.spec.impl.annotation.AbstractAnnotationAttribute;
 
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
@@ -11,7 +10,7 @@ import java.lang.ref.SoftReference;
  * Created by a.hofmann on 25.05.2016.
  */
 public class ClassArrayAnnotationAttribute
-    extends AbstractAnnotationAttribute<HxType[], Class<?>[]> {
+    extends AbstractArrayAnnotationAttribute<HxType[], Class<?>[]> {
 
   private static final SoftReference<Class<?>[]> EMPTY_ARRAY = new SoftReference<>(new Class[0]);
   private volatile Reference<Class<?>[]> classReference;

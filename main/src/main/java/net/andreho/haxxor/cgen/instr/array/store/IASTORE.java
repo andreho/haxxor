@@ -22,8 +22,7 @@ public class IASTORE
   @Override
   protected void checkArrayType(final Object arrayType, final int depth) {
     super.checkArrayType(arrayType, depth);
-    String array = arrayType.toString();
-    if (!"[I".equals(array)) {
+    if (!"[I".equals(arrayType)) {
       throw new IllegalArgumentException("Expected an int[] array type, but got: " + arrayType);
     }
   }

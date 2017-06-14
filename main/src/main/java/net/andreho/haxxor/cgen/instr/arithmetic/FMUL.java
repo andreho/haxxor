@@ -23,7 +23,7 @@ public class FMUL
   }
 
   @Override
-  public List<Object> apply(HxComputingContext context) {
+  public List<Object> getStackPushList(HxComputingContext context) {
     return PUSH_FLOAT;
   }
 }

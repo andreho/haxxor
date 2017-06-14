@@ -35,6 +35,21 @@ public interface HxCode extends Iterable<HxInstruction> {
   HxExecutable getOwner();
 
   /**
+   * @return the getFirst instruction of associated code
+   */
+  HxInstruction getFirst();
+
+  /**
+   * @return the last added instruction or {@link HxCode#getFirst()} if there isn't any instructions
+   */
+  HxInstruction getCurrent();
+
+  /**
+   * @return the end instruction of associated code
+   */
+  HxInstruction getLast();
+
+  /**
    * @return
    */
   default boolean isAvailable() {
@@ -136,19 +151,4 @@ public interface HxCode extends Iterable<HxInstruction> {
    * @return total count of instructions in this code
    */
   int computeIndex();
-
-  /**
-   * @return the getFirst instruction of associated code
-   */
-  HxInstruction getFirst();
-
-  /**
-   * @return the last added instruction or {@link HxCode#getFirst()} if there isn't any instructions
-   */
-  HxInstruction getCurrent();
-
-  /**
-   * @return the end instruction of associated code
-   */
-  HxInstruction getLast();
 }

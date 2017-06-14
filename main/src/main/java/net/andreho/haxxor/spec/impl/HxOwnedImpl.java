@@ -19,8 +19,8 @@ public class HxOwnedImpl<O extends HxOwned<O>>
   }
 
   @Override
-  public <M extends HxMember> M getDeclaringMember() {
-    return (M) declaringMember;
+  public HxMember getDeclaringMember() {
+    return declaringMember;
   }
 
   @Override

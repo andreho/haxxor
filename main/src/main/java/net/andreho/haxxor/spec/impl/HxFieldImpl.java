@@ -134,6 +134,11 @@ public class HxFieldImpl
   }
 
   @Override
+  public HxType getDeclaringMember() {
+    return (HxType) super.getDeclaringMember();
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;

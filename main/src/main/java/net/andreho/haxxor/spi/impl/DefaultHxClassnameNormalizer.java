@@ -1,6 +1,6 @@
 package net.andreho.haxxor.spi.impl;
 
-import net.andreho.haxxor.spi.HxClassNameNormalizer;
+import net.andreho.haxxor.spi.HxClassnameNormalizer;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,8 +16,8 @@ import static net.andreho.haxxor.spec.api.HxConstants.JAVA_PACKAGE_SEPARATOR_CHA
 /**
  * <br/>Created by a.hofmann on 30.05.2017 at 12:52.
  */
-public class DefaultHxClassNameNormalizer
-    implements HxClassNameNormalizer {
+public class DefaultHxClassnameNormalizer
+    implements HxClassnameNormalizer {
 
   private static final Map<String, String> PRIMITIVES;
 
@@ -37,7 +37,7 @@ public class DefaultHxClassNameNormalizer
   }
 
   @Override
-  public String toNormalizedClassName(final String typeName) {
+  public String toNormalizedClassname(final String typeName) {
     boolean desc = false;
     int dim = 0;
     int off = 0;

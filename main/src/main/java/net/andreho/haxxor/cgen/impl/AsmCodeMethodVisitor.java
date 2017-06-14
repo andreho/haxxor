@@ -11,8 +11,8 @@ import net.andreho.haxxor.cgen.HxArguments;
 import net.andreho.haxxor.cgen.HxArrayType;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxFrames;
-import net.andreho.haxxor.cgen.HxHandle;
 import net.andreho.haxxor.cgen.HxHandleTag;
+import net.andreho.haxxor.cgen.HxMethodHandle;
 import net.andreho.haxxor.cgen.HxMethodType;
 import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.spec.api.HxType;
@@ -716,8 +716,8 @@ public class AsmCodeMethodVisitor
     return haxxor.reference(type.getDescriptor());
   }
 
-  private HxHandle toHxHandle(Handle h) {
-    return new HxHandle(HxHandleTag.fromCode(h.getTag()), h.getOwner(), h.getName(), h.getDesc(), h.isInterface());
+  private HxMethodHandle toHxHandle(Handle h) {
+    return new HxMethodHandle(HxHandleTag.fromCode(h.getTag()), h.getOwner(), h.getName(), h.getDesc(), h.isInterface());
   }
 
   private HxMethodType toHxMethodType(Type methodType) {

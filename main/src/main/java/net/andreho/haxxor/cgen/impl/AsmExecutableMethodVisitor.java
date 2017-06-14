@@ -7,8 +7,6 @@ import net.andreho.asm.org.objectweb.asm.TypePath;
 import net.andreho.asm.org.objectweb.asm.TypeReference;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.cgen.HxCodeStream;
-import net.andreho.haxxor.cgen.HxLocalVariable;
-import net.andreho.haxxor.cgen.HxTryCatch;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxCode;
 import net.andreho.haxxor.spec.api.HxExecutable;
@@ -16,6 +14,7 @@ import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.visitors.HxAnnotationVisitor;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * <br/>Created by a.hofmann on 12.06.2017 at 04:42.
@@ -66,9 +65,10 @@ public class AsmExecutableMethodVisitor
                                                     final boolean visible) {
     final AnnotationVisitor av = super.visitAnnotation(desc, visible);
     final HxAnnotation annotation = getHaxxor().createAnnotation(desc, visible);
-    return new HxAnnotationVisitor(annotation, av).consumer(
-        (anno) -> this.executable.getParameterAt(parameter)
-                                 .addAnnotation(annotation));
+    final Consumer consumer = (Consumer<HxAnnotation>)
+        (anno) -> this.executable.getParameterAt(parameter).addAnnotation(anno);
+
+    return new HxAnnotationVisitor(annotation, consumer, av);
   }
 
   @Override
@@ -78,7 +78,10 @@ public class AsmExecutableMethodVisitor
     final HxMethod hxMethod = (HxMethod) this.executable;
     final HxAnnotation annotation = getHaxxor().createAnnotation(hxMethod.getReturnType()
                                                                          .getName(), true);
-    return new HxAnnotationVisitor(annotation, av).consumer((anno) -> hxMethod.setDefaultValue(anno));
+    final Consumer consumer = (Consumer<HxAnnotation>)
+        (anno) -> hxMethod.setDefaultValue(anno);
+
+    return new HxAnnotationVisitor(annotation, consumer, av);
   }
 
   @Override
@@ -86,7 +89,10 @@ public class AsmExecutableMethodVisitor
                                            final boolean visible) {
     final AnnotationVisitor av = super.visitAnnotation(desc, visible);
     final HxAnnotation annotation = getHaxxor().createAnnotation(desc, visible);
-    return new HxAnnotationVisitor(annotation, av).consumer((anno) -> this.executable.addAnnotation(anno));
+    final Consumer consumer = (Consumer<HxAnnotation>)
+        (anno) -> this.executable.addAnnotation(anno);
+
+    return new HxAnnotationVisitor(annotation, consumer, av);
   }
 
   @Override
@@ -104,9 +110,10 @@ public class AsmExecutableMethodVisitor
                                                final boolean visible) {
     final AnnotationVisitor av = super.visitInsnAnnotation(typeRef, typePath, desc, visible);
     final HxAnnotation annotation = getHaxxor().createAnnotation(desc, visible);
+    final Consumer consumer = (Consumer<HxAnnotation>)
+        (anno) -> this.code.getCurrent().addAnnotation(anno);
 
-    return new HxAnnotationVisitor(annotation, av).consumer((anno) -> this.code.getCurrent()
-                                                                               .addAnnotation(anno));
+    return new HxAnnotationVisitor(annotation, consumer, av);
   }
 
   @Override
@@ -117,7 +124,6 @@ public class AsmExecutableMethodVisitor
     super.visitTryCatchBlock(start, end, handler, type);
 
     this.codeStream.TRY_CATCH(remap(start), remap(end), remap(handler), type);
-    this.code.addTryCatch(new HxTryCatch(remap(start), remap(end), remap(handler), type));
   }
 
   @Override
@@ -127,9 +133,10 @@ public class AsmExecutableMethodVisitor
                                                    final boolean visible) {
     final AnnotationVisitor av = super.visitTryCatchAnnotation(typeRef, typePath, desc, visible);
     final HxAnnotation annotation = getHaxxor().createAnnotation(desc, visible);
+    final Consumer consumer = (Consumer<HxAnnotation>)
+        (anno) -> this.code.getLastTryCatch().addAnnotation(anno);
 
-    return new HxAnnotationVisitor(annotation, av).consumer((anno) -> this.code.getLastTryCatch()
-                                                                               .addAnnotation(anno));
+    return new HxAnnotationVisitor(annotation, consumer, av);
   }
 
   @Override
@@ -141,7 +148,6 @@ public class AsmExecutableMethodVisitor
                                  final int index) {
     super.visitLocalVariable(name, desc, signature, start, end, index);
     this.codeStream.LOCAL_VARIABLE(name, desc, signature, remap(start), remap(end), index);
-    this.code.addLocalVariable(new HxLocalVariable(index, name, desc, signature, remap(start), remap(end)));
   }
 
   @Override
@@ -157,8 +163,10 @@ public class AsmExecutableMethodVisitor
 
     if (typeRef == TypeReference.LOCAL_VARIABLE && typePath == null) {
       final HxAnnotation annotation = getHaxxor().createAnnotation(desc, visible);
-      return new HxAnnotationVisitor(annotation, av).consumer((anno) -> this.code.getLastLocalVariable()
-                                                                                 .addAnnotation(anno));
+      final Consumer consumer = (Consumer<HxAnnotation>)
+          (anno) -> this.code.getLastLocalVariable().addAnnotation(anno);
+
+      return new HxAnnotationVisitor(annotation, consumer, av);
     }
 
     return av;

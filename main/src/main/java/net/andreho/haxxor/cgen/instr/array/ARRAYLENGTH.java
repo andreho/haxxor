@@ -23,7 +23,7 @@ public class ARRAYLENGTH
   }
 
   @Override
-  public List<Object> apply(HxComputingContext context) {
+  public List<Object> getStackPushList(HxComputingContext context) {
     Object arrayType = context.getStack()
                               .peek();
     if (arrayType.getClass() != String.class ||

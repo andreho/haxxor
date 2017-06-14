@@ -6,10 +6,9 @@ package net.andreho.haxxor.spec.api;
 public interface HxOwned<O extends HxOwned<O>> {
 
   /**
-   * @param <M>
    * @return
    */
-  <M extends HxMember> M getDeclaringMember();
+  HxMember getDeclaringMember();
 
   /**
    * @param declaringMember

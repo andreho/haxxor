@@ -1,5 +1,10 @@
 package net.andreho.haxxor.cgen;
 
+import net.andreho.haxxor.cgen.instr.BEGIN;
+import net.andreho.haxxor.cgen.instr.END;
+import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.cgen.instr.misc.FRAME;
+import net.andreho.haxxor.cgen.instr.misc.LINE_NUMBER;
 import net.andreho.haxxor.spec.api.HxAnnotated;
 
 import java.util.Iterator;
@@ -11,7 +16,7 @@ import java.util.Objects;
  */
 public interface HxInstruction
     extends HxVisitable,
-            HxApplicable,
+            HxStackChangeProvider,
             HxAnnotated<HxInstruction>,
             Iterable<HxInstruction> {
 
@@ -35,6 +40,18 @@ public interface HxInstruction
    */
   default boolean isBegin() {
     return false;
+  }
+
+  /**
+   * @return <b>true</b> if this instruction doesn't exist and serves for internal use-cases, <b>false</b> otherwise.
+   * @see END
+   * @see BEGIN
+   * @see LABEL
+   * @see FRAME
+   * @see LINE_NUMBER
+   */
+  default boolean isPseudoInstruction() {
+    return getOpcode() < 0;
   }
 
   /**
@@ -79,16 +96,6 @@ public interface HxInstruction
   default boolean hasInstructionKind(HxInstructionKind kind) {
     return getInstructionType().getKind() == kind;
   }
-
-  /**
-   * @return
-   */
-  int getPopSize();
-
-  /**
-   * @return
-   */
-  int getPushSize();
 
   /**
    * @return

@@ -22,8 +22,7 @@ public class DASTORE
   @Override
   protected void checkArrayType(final Object arrayType, final int depth) {
     super.checkArrayType(arrayType, depth);
-    String array = arrayType.toString();
-    if (!"[D".equals(array)) {
+    if (!"[D".equals(arrayType)) {
       throw new IllegalArgumentException("Expected an double[] array type, but got: " + arrayType);
     }
   }

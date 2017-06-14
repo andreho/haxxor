@@ -1,7 +1,7 @@
 package net.andreho.haxxor.cgen.instr.constants;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.cgen.HxHandle;
+import net.andreho.haxxor.cgen.HxMethodHandle;
 import net.andreho.haxxor.cgen.HxMethodType;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInstruction;
 import net.andreho.haxxor.cgen.instr.constants.ldc.DoubleLDC;
@@ -41,7 +41,7 @@ public abstract class LDC<T>
     return new StringLDC(value);
   }
 
-  public static LDC<HxHandle> of(HxHandle value) {
+  public static LDC<HxMethodHandle> of(HxMethodHandle value) {
     return new MethodHandleLDC(value);
   }
 
@@ -82,12 +82,12 @@ public abstract class LDC<T>
   }
 
   @Override
-  public int getPopSize() {
+  public int getStackPopSize() {
     return 0;
   }
 
   @Override
-  public int getPushSize() {
+  public int getStackPushSize() {
     return getType() == ConstantType.LONG || getType() == ConstantType.DOUBLE?
            DOUBLE_SLOT_SIZE :
            SINGLE_SLOT_SIZE;

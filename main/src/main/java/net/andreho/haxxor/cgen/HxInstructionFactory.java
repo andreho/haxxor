@@ -58,7 +58,6 @@ import net.andreho.haxxor.cgen.instr.binary.LSHR;
 import net.andreho.haxxor.cgen.instr.binary.LUSHR;
 import net.andreho.haxxor.cgen.instr.binary.LXOR;
 import net.andreho.haxxor.cgen.instr.cflow.ATHROW;
-import net.andreho.haxxor.cgen.instr.cflow.FRAME;
 import net.andreho.haxxor.cgen.instr.cflow.exits.ARETURN;
 import net.andreho.haxxor.cgen.instr.cflow.exits.DRETURN;
 import net.andreho.haxxor.cgen.instr.cflow.exits.FRETURN;
@@ -148,6 +147,7 @@ import net.andreho.haxxor.cgen.instr.local.store.DSTORE;
 import net.andreho.haxxor.cgen.instr.local.store.FSTORE;
 import net.andreho.haxxor.cgen.instr.local.store.ISTORE;
 import net.andreho.haxxor.cgen.instr.local.store.LSTORE;
+import net.andreho.haxxor.cgen.instr.misc.FRAME;
 import net.andreho.haxxor.cgen.instr.misc.LINE_NUMBER;
 import net.andreho.haxxor.cgen.instr.stack.DUP;
 import net.andreho.haxxor.cgen.instr.stack.DUP2;
@@ -267,7 +267,7 @@ public interface HxInstructionFactory {
     return LDC.of(value);
   }
 
-  default HxInstruction HANDLE(HxHandle handle) {
+  default HxInstruction HANDLE(HxMethodHandle handle) {
     return LDC.of(handle);
   }
 
@@ -652,67 +652,68 @@ public interface HxInstructionFactory {
   }
 
   default HxInstruction IFEQ(LABEL label) {
-    return new IFEQ(label);
+    return label.addReference(new IFEQ(label));
   }
 
   default HxInstruction IFNE(LABEL label) {
-    return new IFNE(label);
+    return label.addReference(new IFNE(label));
   }
 
   default HxInstruction IFLT(LABEL label) {
-    return new IFLT(label);
+    return label.addReference(new IFLT(label));
   }
 
   default HxInstruction IFGE(LABEL label) {
-    return new IFGE(label);
+    return label.addReference(new IFGE(label));
   }
 
   default HxInstruction IFGT(LABEL label) {
-    return new IFGT(label);
+    return label.addReference(new IFGT(label));
   }
 
   default HxInstruction IFLE(LABEL label) {
-    return new IFLE(label);
+    return label.addReference(new IFLE(label));
   }
 
   default HxInstruction IF_ICMPEQ(LABEL label) {
-    return new IF_ICMPEQ(label);
+    return label.addReference(new IF_ICMPEQ(label));
   }
 
   default HxInstruction IF_ICMPNE(LABEL label) {
-    return new IF_ICMPNE(label);
+    return label.addReference(new IF_ICMPNE(label));
   }
 
   default HxInstruction IF_ICMPLT(LABEL label) {
-    return new IF_ICMPLT(label);
+    return label.addReference(new IF_ICMPLT(label));
   }
 
   default HxInstruction IF_ICMPGE(LABEL label) {
-    return new IF_ICMPGE(label);
+    return label.addReference(new IF_ICMPGE(label));
   }
 
   default HxInstruction IF_ICMPGT(LABEL label) {
-    return new IF_ICMPGT(label);
+    return label.addReference(new IF_ICMPGT(label));
+
   }
 
   default HxInstruction IF_ICMPLE(LABEL label) {
-    return new IF_ICMPLE(label);
+    return label.addReference(new IF_ICMPLE(label));
   }
 
   default HxInstruction IF_ACMPEQ(LABEL label) {
-    return new IF_ACMPEQ(label);
+    return label.addReference(new IF_ACMPEQ(label));
   }
 
   default HxInstruction IF_ACMPNE(LABEL label) {
-    return new IF_ACMPNE(label);
+    return label.addReference(new IF_ACMPNE(label));
   }
 
   default HxInstruction GOTO(LABEL label) {
-    return new GOTO(label);
+    return label.addReference(new GOTO(label));
   }
 
   default HxInstruction JSR(LABEL label) {
-    return new JSR(label);
+    return label.addReference(new JSR(label));
   }
 
   default HxInstruction RET(int var) {
@@ -720,11 +721,21 @@ public interface HxInstructionFactory {
   }
 
   default HxInstruction TABLESWITCH(int min, int max, LABEL defaultLabel, LABEL... labels) {
-    return new TABLESWITCH(min, max, defaultLabel, labels);
+    TABLESWITCH tableswitch = new TABLESWITCH(min, max, defaultLabel, labels);
+    defaultLabel.addReference(tableswitch);
+    for(LABEL label : labels) {
+      label.addReference(label);
+    }
+    return tableswitch;
   }
 
   default HxInstruction LOOKUPSWITCH(LABEL defaultLabel, int[] keys, LABEL... labels) {
-    return new LOOKUPSWITCH(defaultLabel, keys, labels);
+    LOOKUPSWITCH lookupswitch = new LOOKUPSWITCH(defaultLabel, keys, labels);
+    defaultLabel.addReference(lookupswitch);
+    for(LABEL label : labels) {
+      label.addReference(label);
+    }
+    return lookupswitch;
   }
 
   default HxInstruction IRETURN() {
@@ -783,7 +794,7 @@ public interface HxInstructionFactory {
     return new INVOKEINTERFACE(type, name, methodDesc);
   }
 
-  default HxInstruction INVOKEDYNAMIC(String name, String methodDesc, HxHandle bootstrapMethod, HxArguments bsmArgs) {
+  default HxInstruction INVOKEDYNAMIC(String name, String methodDesc, HxMethodHandle bootstrapMethod, HxArguments bsmArgs) {
     return new INVOKEDYNAMIC(name, methodDesc, bootstrapMethod, bsmArgs);
   }
 
@@ -828,11 +839,11 @@ public interface HxInstructionFactory {
   }
 
   default HxInstruction IFNULL(LABEL label) {
-    return new IFNULL(label);
+    return label.addReference(new IFNULL(label));
   }
 
   default HxInstruction IFNONNULL(LABEL label) {
-    return new IFNONNULL(label);
+    return label.addReference(new IFNONNULL(label));
   }
 
   default HxInstruction FRAME(final HxFrames type, final int nLocal, final Object[] local, final int nStack,
@@ -844,7 +855,7 @@ public interface HxInstructionFactory {
     return new LINE_NUMBER(line, label);
   }
 
-  default HxInstruction LABEL(LABEL label) {
-    return new LABEL(label.getAsmLabel());
+  default HxInstruction LABEL() {
+    return new LABEL();
   }
 }

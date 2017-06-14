@@ -3,13 +3,15 @@ package net.andreho.haxxor;
 import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxTypeReference;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
-import net.andreho.haxxor.spi.HxClassNameNormalizer;
+import net.andreho.haxxor.spi.HxClassnameNormalizer;
 import net.andreho.haxxor.spi.HxElementFactory;
 import net.andreho.haxxor.spi.HxTypeInitializer;
+import net.andreho.haxxor.spi.HxTypeInterpreter;
 import net.andreho.haxxor.spi.impl.DefaultHxByteCodeLoader;
-import net.andreho.haxxor.spi.impl.DefaultHxClassNameNormalizer;
+import net.andreho.haxxor.spi.impl.DefaultHxClassnameNormalizer;
 import net.andreho.haxxor.spi.impl.DefaultHxElementFactory;
 import net.andreho.haxxor.spi.impl.DefaultHxTypeInitializer;
+import net.andreho.haxxor.spi.impl.DefaultHxTypeInterpreter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +33,7 @@ public class HaxxorBuilder {
 
   /**
    * @param haxxor instance that will use provided classloader
-   * @return the classloader to use for byte-code loading and resource location
+   * @return the classloader to use for byte-code loading
    */
   public ClassLoader provideClassLoader(Haxxor haxxor) {
     return classLoader;
@@ -54,6 +56,14 @@ public class HaxxorBuilder {
    */
   public HxElementFactory createElementFactory(Haxxor haxxor) {
     return new DefaultHxElementFactory(haxxor);
+  }
+
+  /**
+   * @param haxxor instance
+   * @return new type interpreter instance
+   */
+  public HxTypeInterpreter createTypeInterpreter(Haxxor haxxor) {
+    return new DefaultHxTypeInterpreter();
   }
 
   /**
@@ -92,7 +102,7 @@ public class HaxxorBuilder {
    * @param haxxor is the requesting instance
    * @return
    */
-  public HxClassNameNormalizer createJavaClassNameProvider(Haxxor haxxor) {
-    return new DefaultHxClassNameNormalizer();
+  public HxClassnameNormalizer createClassNameNormalizer(Haxxor haxxor) {
+    return new DefaultHxClassnameNormalizer();
   }
 }

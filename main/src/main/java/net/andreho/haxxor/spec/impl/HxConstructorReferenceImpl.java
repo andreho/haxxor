@@ -199,9 +199,9 @@ public class HxConstructorReferenceImpl
   }
 
   @Override
-  public <M extends HxMember> M getDeclaringMember() {
+  public HxType getDeclaringMember() {
     if(!isAvailable()) {
-      return (M) this.declaringReference;
+      return this.declaringReference;
     }
     return toConstructor().getDeclaringMember();
   }

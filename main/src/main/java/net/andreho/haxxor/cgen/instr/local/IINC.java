@@ -12,10 +12,7 @@ import java.util.List;
  */
 public class IINC
     extends AbstractLocalAccessInstruction {
-
   protected final int increment;
-
-  //----------------------------------------------------------------------------------------------------------------
 
   public IINC(int variable, int increment) {
     //variable: may be used with WIDE instruction
@@ -23,7 +20,9 @@ public class IINC
     this.increment = increment; //may be used with WIDE instruction
   }
 
-  //----------------------------------------------------------------------------------------------------------------
+  public int getIncrement() {
+    return increment;
+  }
 
   @Override
   public void visit(HxCodeStream codeStream) {
@@ -31,7 +30,7 @@ public class IINC
   }
 
   @Override
-  public List<Object> apply(final HxComputingContext context) {
+  public List<Object> getStackPushList(final HxComputingContext context) {
     return NO_STACK_PUSH;
   }
 

@@ -22,8 +22,7 @@ public class LASTORE
   @Override
   protected void checkArrayType(final Object arrayType, final int depth) {
     super.checkArrayType(arrayType, depth);
-    String array = arrayType.toString();
-    if (!"[J".equals(array)) {
+    if (!"[J".equals(arrayType)) {
       throw new IllegalArgumentException("Expected an long[] array type, but got: " + arrayType);
     }
   }

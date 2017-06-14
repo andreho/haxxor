@@ -422,13 +422,13 @@ public class HxAbstractType
     } else if (getEnclosingConstructor().isPresent()) {
       return Optional.of(getEnclosingConstructor().get().getDeclaringMember());
     }
-    return Optional.ofNullable(getDeclaringMember());
+    return Optional.ofNullable((HxType) getDeclaringMember());
   }
 
   @Override
   public Optional<HxMethod> getEnclosingMethod() {
     if (getDeclaringMember() instanceof HxMethod) {
-      return Optional.of(getDeclaringMember());
+      return Optional.of((HxMethod) getDeclaringMember());
     }
     return Optional.empty();
   }
@@ -436,7 +436,7 @@ public class HxAbstractType
   @Override
   public Optional<HxConstructor> getEnclosingConstructor() {
     if (getDeclaringMember() instanceof HxConstructor) {
-      return Optional.of(getDeclaringMember());
+      return Optional.of((HxConstructor) getDeclaringMember());
     }
     return Optional.empty();
   }
@@ -543,7 +543,7 @@ public class HxAbstractType
   }
 
   @Override
-  public byte[] toByteArray() {
+  public byte[] toByteCode() {
     throw new UnsupportedOperationException();
   }
 

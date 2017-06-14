@@ -4,7 +4,7 @@ import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxArguments;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
-import net.andreho.haxxor.cgen.HxHandle;
+import net.andreho.haxxor.cgen.HxMethodHandle;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInstruction;
 
 import java.util.List;
@@ -17,10 +17,10 @@ public class INVOKEDYNAMIC
 
   private final String name;
   private final String desc;
-  private final HxHandle bootstrapMethod;
+  private final HxMethodHandle bootstrapMethod;
   private final HxArguments bootstrapMethodArguments;
 
-  public INVOKEDYNAMIC(String name, String desc, HxHandle bsm, HxArguments bsmArgs) {
+  public INVOKEDYNAMIC(String name, String desc, HxMethodHandle bsm, HxArguments bsmArgs) {
     super(Opcodes.INVOKEDYNAMIC);
     Utils.checkMethodName(getOpcode(), name);
     this.name = name;
@@ -35,17 +35,17 @@ public class INVOKEDYNAMIC
   }
 
   @Override
-  public List<Object> apply(final HxComputingContext context) {
+  public List<Object> getStackPushList(final HxComputingContext context) {
     return Utils.retrieveType(context, this.desc);
   }
 
   @Override
-  public int getPushSize() {
+  public int getStackPushSize() {
     return getInstructionType().getPushSize(desc);
   }
 
   @Override
-  public int getPopSize() {
+  public int getStackPopSize() {
     return getInstructionType().getPopSize(desc);
   }
 
@@ -57,7 +57,7 @@ public class INVOKEDYNAMIC
     return desc;
   }
 
-  public HxHandle getBootstrapMethod() {
+  public HxMethodHandle getBootstrapMethod() {
     return bootstrapMethod;
   }
 

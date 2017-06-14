@@ -4,10 +4,10 @@ import net.andreho.haxxor.cgen.HxArguments;
 import net.andreho.haxxor.cgen.HxArrayType;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxFrames;
-import net.andreho.haxxor.cgen.HxHandle;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionFactory;
 import net.andreho.haxxor.cgen.HxLocalVariable;
+import net.andreho.haxxor.cgen.HxMethodHandle;
 import net.andreho.haxxor.cgen.HxMethodType;
 import net.andreho.haxxor.cgen.HxTryCatch;
 import net.andreho.haxxor.cgen.instr.LABEL;
@@ -182,7 +182,7 @@ public class InstructionCodeStream
   }
 
   @Override
-  public HxCodeStream HANDLE(final HxHandle handle) {
+  public HxCodeStream HANDLE(final HxMethodHandle handle) {
     current().append(factory.HANDLE(handle));
     return this;
   }
@@ -962,7 +962,7 @@ public class InstructionCodeStream
   }
 
   @Override
-  public HxCodeStream INVOKEDYNAMIC(final String name, final String desc, final HxHandle bsm, final HxArguments bsmArgs) {
+  public HxCodeStream INVOKEDYNAMIC(final String name, final String desc, final HxMethodHandle bsm, final HxArguments bsmArgs) {
     current().append(factory.INVOKEDYNAMIC(name, desc, bsm, bsmArgs));
     return this;
   }
@@ -1041,7 +1041,7 @@ public class InstructionCodeStream
 
   @Override
   public HxCodeStream LABEL(final LABEL label) {
-    current().append(factory.LABEL(label));
+    current().append(label);
     return this;
   }
 
@@ -1061,7 +1061,7 @@ public class InstructionCodeStream
   @Override
   public HxCodeStream LOCAL_VARIABLE(final String name, final String desc, final String signature, final LABEL start,
                                      final LABEL end, final int index) {
-    this.code.addLocalVariable(new HxLocalVariable(index, name, desc, signature, start, end));
+    this.code.addLocalVariable(new HxLocalVariable(name, desc, signature, start, end, index));
     return this;
   }
 

@@ -23,7 +23,7 @@ public class LCONST_1
   }
 
   @Override
-  public List<Object> apply(final HxComputingContext context) {
+  public List<Object> getStackPushList(final HxComputingContext context) {
     return PUSH_LONG;
   }
 }

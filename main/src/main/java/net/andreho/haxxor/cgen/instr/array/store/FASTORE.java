@@ -22,8 +22,7 @@ public class FASTORE
   @Override
   protected void checkArrayType(final Object arrayType, final int depth) {
     super.checkArrayType(arrayType, depth);
-    String array = arrayType.toString();
-    if (!"[F".equals(array)) {
+    if (!"[F".equals(arrayType)) {
       throw new IllegalArgumentException("Expected an float[] array type, but got: " + arrayType);
     }
   }

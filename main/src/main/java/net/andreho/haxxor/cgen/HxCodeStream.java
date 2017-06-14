@@ -208,14 +208,14 @@ public interface HxCodeStream {
   HxCodeStream LDC(String value); //18
 
   /**
-   * Pushes a {@link HxHandle handle} value from constant pool on the operand stack.<br/>
+   * Pushes a {@link HxMethodHandle handle} value from constant pool on the operand stack.<br/>
    * Code: <code>0x12</code><br/>
    *
    * @param handle to push
    * @return this
    * @implNote by specification this command called <b>LDC</b> too.
    */
-  HxCodeStream HANDLE(HxHandle handle); //18
+  HxCodeStream HANDLE(HxMethodHandle handle); //18
 
   /**
    * Pushes a string value from constant pool on the operand stack.<br/>
@@ -891,7 +891,7 @@ public interface HxCodeStream {
    * @param bsmArgs are the arguments for the referenced bootstrap method
    * @return this
    */
-  HxCodeStream INVOKEDYNAMIC(String name, String desc, HxHandle bsm, HxArguments bsmArgs); //186
+  HxCodeStream INVOKEDYNAMIC(String name, String desc, HxMethodHandle bsm, HxArguments bsmArgs); //186
 
   /**
    * Create new object. <br/>

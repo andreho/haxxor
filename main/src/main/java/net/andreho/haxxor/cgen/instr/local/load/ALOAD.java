@@ -23,12 +23,12 @@ public class ALOAD
   }
 
   @Override
-  public List<Object> apply(final HxComputingContext context) {
+  public List<Object> getStackPushList(final HxComputingContext context) {
     Object type = context.getLocals()
                          .get(getLocalIndex());
     if (type instanceof Integer) {
       throw new IllegalArgumentException(
-          "An object reference is expected at slot index [" + getLocalIndex() + "], but got: " + type);
+          "An object reference is expected for the local-variable [" + getLocalIndex() + "], but got: " + type);
     }
     return context.getStackPush()
                   .prepare()

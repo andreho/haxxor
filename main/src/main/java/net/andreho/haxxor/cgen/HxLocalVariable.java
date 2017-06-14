@@ -16,7 +16,7 @@ public class HxLocalVariable
     implements HxAnnotated<HxLocalVariable> {
 
   private final int index;
-  private final String type;
+  private final String descriptor;
   private final String name;
   private final String signature;
 
@@ -25,14 +25,18 @@ public class HxLocalVariable
 
   private HxAnnotated annotated; //lazy init
 
-  public HxLocalVariable(final int index, final String type, final String name,
-                         final String signature, final LABEL start, final LABEL end) {
-    this.index = index;
-    this.type = type;
+  public HxLocalVariable(final String name,
+                         final String descriptor,
+                         final String signature,
+                         final LABEL start,
+                         final LABEL end,
+                         final int index) {
     this.name = name;
+    this.descriptor = descriptor;
     this.signature = signature;
     this.start = start;
     this.end = end;
+    this.index = index;
   }
 
   /**
@@ -43,10 +47,10 @@ public class HxLocalVariable
   }
 
   /**
-   * @return type of this local variable
+   * @return descriptor of this local variable
    */
-  public String getType() {
-    return this.type;
+  public String getDescriptor() {
+    return this.descriptor;
   }
 
   /**
@@ -90,7 +94,7 @@ public class HxLocalVariable
    * @return count of slots that reserved by this local variable (2 for long and double, otherwise 1 always)
    */
   public int size() {
-    final Object type = getType();
+    final Object type = getDescriptor();
 
     if (type == Opcodes.LONG || type == Opcodes.DOUBLE) {
       return 2;

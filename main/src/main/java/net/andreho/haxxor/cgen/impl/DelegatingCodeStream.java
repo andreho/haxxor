@@ -4,7 +4,7 @@ import net.andreho.haxxor.cgen.HxArguments;
 import net.andreho.haxxor.cgen.HxArrayType;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxFrames;
-import net.andreho.haxxor.cgen.HxHandle;
+import net.andreho.haxxor.cgen.HxMethodHandle;
 import net.andreho.haxxor.cgen.HxMethodType;
 import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.spec.api.HxType;
@@ -218,7 +218,7 @@ public class DelegatingCodeStream
   }
 
   @Override
-  public HxCodeStream HANDLE(final HxHandle handle) {
+  public HxCodeStream HANDLE(final HxMethodHandle handle) {
     if (codeStream != null) {
       codeStream.HANDLE(handle);
     }
@@ -1283,7 +1283,7 @@ public class DelegatingCodeStream
   @Override
   public HxCodeStream INVOKEDYNAMIC(final String name,
                                     final String desc,
-                                    final HxHandle bsm,
+                                    final HxMethodHandle bsm,
                                     final HxArguments bsmArgs) {
     if (codeStream != null) {
       codeStream.INVOKEDYNAMIC(name, desc, bsm, bsmArgs);

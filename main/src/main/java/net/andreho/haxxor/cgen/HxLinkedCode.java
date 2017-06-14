@@ -26,12 +26,14 @@ public class HxLinkedCode
     this(new BEGIN(), new END());
   }
 
-  protected HxLinkedCode(final HxInstruction first, final HxInstruction last) {
+  protected HxLinkedCode(final HxInstruction first,
+                         final HxInstruction last) {
     this.localVariables = Collections.emptyList();
     this.tryCatches = Collections.emptyList();
 
     setFirst(first);
     setLast(last);
+
     getFirst().append(getLast());
   }
 

@@ -23,12 +23,12 @@ public class ILOAD
   }
 
   @Override
-  public List<Object> apply(final HxComputingContext context) {
+  public List<Object> getStackPushList(final HxComputingContext context) {
     Object type = context.getLocals()
                          .get(getLocalIndex());
     if (Opcodes.INTEGER != type) {
       throw new IllegalArgumentException(
-          "An int operand is expected at slot index [" + getLocalIndex() + "], but got: " + type);
+          "An int-like operand is expected for the local-variable [" + getLocalIndex() + "], but got: " + type);
     }
     return context.getStackPush()
                   .prepare()

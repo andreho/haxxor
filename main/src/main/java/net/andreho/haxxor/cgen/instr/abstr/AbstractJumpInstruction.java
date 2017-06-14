@@ -19,7 +19,7 @@ public abstract class AbstractJumpInstruction
   }
 
   @Override
-  public List<Object> apply(final HxComputingContext context) {
+  public List<Object> getStackPushList(final HxComputingContext context) {
     this.label.addReference(this);
     return NO_STACK_PUSH;
   }

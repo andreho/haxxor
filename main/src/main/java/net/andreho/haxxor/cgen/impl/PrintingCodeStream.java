@@ -4,8 +4,8 @@ import net.andreho.haxxor.cgen.HxArguments;
 import net.andreho.haxxor.cgen.HxArrayType;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxFrames;
-import net.andreho.haxxor.cgen.HxHandle;
 import net.andreho.haxxor.cgen.HxHandleTag;
+import net.andreho.haxxor.cgen.HxMethodHandle;
 import net.andreho.haxxor.cgen.HxMethodType;
 import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.spec.api.HxType;
@@ -107,8 +107,8 @@ public class PrintingCodeStream extends DelegatingCodeStream {
     return this;
   }
 
-  private PrintingCodeStream append(HxHandle handle) {
-    code.append("new HxHandle(")
+  private PrintingCodeStream append(HxMethodHandle handle) {
+    code.append("new HxMethodHandle(")
         .append(toHandleTag(handle.getTag()))
         .append(",\"").append(handle.getOwner())
         .append("\",\"").append(handle.getName())
@@ -130,8 +130,8 @@ public class PrintingCodeStream extends DelegatingCodeStream {
   private PrintingCodeStream appendArgument(Object arg) {
     if(arg instanceof HxType) {
       append((HxType) arg);
-    } else if(arg instanceof HxHandle) {
-      append((HxHandle) arg);
+    } else if(arg instanceof HxMethodHandle) {
+      append((HxMethodHandle) arg);
     } else if(arg instanceof String) {
       append('"').append((String) arg).append('"');
     } else if(arg instanceof Number) {
@@ -376,7 +376,7 @@ public class PrintingCodeStream extends DelegatingCodeStream {
   }
 
   @Override
-  public HxCodeStream HANDLE(final HxHandle handle) {
+  public HxCodeStream HANDLE(final HxMethodHandle handle) {
     super.HANDLE(handle);
     append(".HANDLE(").append(handle).append(")\n");
     return this;
@@ -1336,7 +1336,7 @@ public class PrintingCodeStream extends DelegatingCodeStream {
   @Override
   public HxCodeStream INVOKEDYNAMIC(final String name,
                                     final String desc,
-                                    final HxHandle bsm,
+                                    final HxMethodHandle bsm,
                                     final HxArguments bsmArgs) {
     super.INVOKEDYNAMIC(name, desc, bsm, bsmArgs);
     append(".INVOKEDYNAMIC(\"")

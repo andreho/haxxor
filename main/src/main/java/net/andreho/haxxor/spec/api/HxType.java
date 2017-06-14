@@ -667,13 +667,13 @@ public interface HxType
   Optional<HxGenericType> getGenericType();
 
   /**
-   * Shortcut for: <code>getName().equals(haxxor.toNormalizedClassName(className))</code>
+   * Shortcut for: <code>getName().equals(haxxor.toNormalizedClassname(className))</code>
    *
    * @param className to check against
    * @return <b>true</b> if name of this type is equal to the given one, <b>false</b> otherwise.
    */
   default boolean hasName(String className) {
-    return getName().equals(getHaxxor().toNormalizedClassName(className));
+    return getName().equals(getHaxxor().toNormalizedClassname(className));
   }
 
   /**
@@ -978,9 +978,9 @@ public interface HxType
   /**
    * Creates bytecode representation of the actual type's state.
    *
-   * @return
+   * @return the actual state of this type as loadable bytecode
    */
-  byte[] toByteArray();
+  byte[] toByteCode();
 
   /**
    */

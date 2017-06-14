@@ -23,15 +23,14 @@ public class FSTORE
   }
 
   @Override
-  public List<Object> apply(final HxComputingContext context) {
-    Object operand = context.getStack()
-                            .peek();
+  public List<Object> getStackPushList(final HxComputingContext context) {
+    Object operand = context.getStack().pop();
+
     if (operand != Opcodes.FLOAT) {
       throw new IllegalArgumentException(
           "A float operand is expected at slot index [" + getLocalIndex() + "], but got: " + operand);
     }
-    context.getLocals()
-           .set(getLocalIndex(), operand);
+    context.getLocals().set(getLocalIndex(), operand);
     return NO_STACK_PUSH;
   }
 }

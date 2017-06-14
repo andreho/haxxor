@@ -13,6 +13,4 @@ public interface HxGenericArrayType
    * {@link HxTypeVariable}
    */
   HxGenericElement<?> getGenericComponentType();
-
-  HxGenericArrayType setGenericComponentType(final HxGenericElement<?> genericComponentType);
 }

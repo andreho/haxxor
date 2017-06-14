@@ -22,8 +22,7 @@ public class SASTORE
   @Override
   protected void checkArrayType(final Object arrayType, final int depth) {
     super.checkArrayType(arrayType, depth);
-    String array = arrayType.toString();
-    if (!"[S".equals(array)) {
+    if (!"[S".equals(arrayType)) {
       throw new IllegalArgumentException("Expected an short[] array type, but got: " + arrayType);
     }
   }

@@ -27,7 +27,7 @@ public class MULTIANEWARRAY
   }
 
   @Override
-  public List<Object> apply(final HxComputingContext context) {
+  public List<Object> getStackPushList(final HxComputingContext context) {
     return context.getStackPush()
                   .prepare()
                   .push(multiply(getOperand(), this.dimension))
@@ -35,7 +35,7 @@ public class MULTIANEWARRAY
   }
 
   @Override
-  public int getPopSize() {
+  public int getStackPopSize() {
     return this.dimension;
   }
 

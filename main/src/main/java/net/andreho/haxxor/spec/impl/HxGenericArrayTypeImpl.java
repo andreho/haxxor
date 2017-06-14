@@ -16,7 +16,6 @@ public class HxGenericArrayTypeImpl
     return genericComponentType;
   }
 
-  @Override
   public HxGenericArrayTypeImpl setGenericComponentType(final HxGenericElement<?> genericComponentType) {
     this.genericComponentType = genericComponentType;
     return this;
