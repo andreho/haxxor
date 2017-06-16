@@ -25,6 +25,7 @@ public interface HxType
             HxOwned<HxType>,
             HxGeneric<HxType>,
             HxGenericElement<HxType>,
+            HxNamed,
             HxProvider {
 
   /**
@@ -485,6 +486,14 @@ public interface HxType
    */
   default boolean hasMethod(Method method) {
     return findMethod(method).isPresent();
+  }
+
+  /**
+   * @param name
+   * @return
+   */
+  default boolean hasMethod(String name) {
+    return findMethod(name).isPresent();
   }
 
   /**

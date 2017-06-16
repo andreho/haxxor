@@ -6,9 +6,9 @@ package net.andreho.aop.spec;
  * <br/>Created by a.hofmann on 18.09.2015.<br/>
  */
 public enum Site {
-   /**
-    * Applies aspect at callee site - direct after the invocation of method/constructor itself
-    */
-   CALLEE,
+  /**
+   * Applies aspect at callee site - direct after the invocation of method/constructor itself
+   */
+  CALLEE,
 //    CALLER //possibly in future implementations
 }

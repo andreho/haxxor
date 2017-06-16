@@ -1,7 +1,7 @@
 package net.andreho.aop.transform;
 
 
-import net.andreho.aop.transform.ordering.OrderUtils;
+import net.andreho.aop.utils.OrderUtils;
 
 import java.lang.instrument.ClassFileTransformer;
 
@@ -10,7 +10,7 @@ import java.lang.instrument.ClassFileTransformer;
  */
 public interface ClassTransformer extends ClassFileTransformer, Comparable<ClassTransformer> {
    /**
-    * @return
+    * @return the name of this class-transformer
     */
    default String getName() {
       return getClass().getName();

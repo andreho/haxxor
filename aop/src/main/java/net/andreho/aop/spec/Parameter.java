@@ -10,13 +10,14 @@ import java.lang.annotation.Target;
 @Target({})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Parameter {
-   /**
-    * @return name of this parameter
-    */
-   String name();
 
-   /**
-    * @return value of this parameter
-    */
-   String[] value() default {};
+  /**
+   * @return name of this parameter
+   */
+  String name();
+
+  /**
+   * @return value of this parameter
+   */
+  String[] value() default {};
 }

@@ -19,6 +19,7 @@ public interface HxField
             HxMember<HxField>,
             HxOwned<HxField>,
             HxGeneric<HxField>,
+            HxNamed,
             HxOrdered,
             HxProvider,
             Cloneable {
@@ -168,6 +169,16 @@ public interface HxField
 
   @Override
   HxType getDeclaringMember();
+
+  /**
+   * @return
+   */
+  default String toDescriptor() {
+    if(getType() != null) {
+      return getType().toDescriptor();
+    }
+    return null;
+  }
 
   /**
    * @return generic type of this field

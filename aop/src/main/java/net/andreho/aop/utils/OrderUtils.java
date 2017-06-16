@@ -1,4 +1,6 @@
-package net.andreho.aop.transform.ordering;
+package net.andreho.aop.utils;
+
+import net.andreho.aop.Order;
 
 import java.util.Comparator;
 import java.util.Objects;
@@ -60,6 +62,6 @@ public class OrderUtils implements Comparator<Object> {
    }
 
    protected int fallback(final Object a, final Object b) {
-      return 0;
+      return a.getClass().getName().compareTo(b.getClass().getName());
    }
 }

@@ -5,13 +5,16 @@ import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxParameter;
+import net.andreho.haxxor.spec.api.HxProvider;
 import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxTypeReference;
+
+import java.lang.annotation.Annotation;
 
 /**
  * <br/>Created by a.hofmann on 08.04.2017 at 08:50.
  */
-public interface HxElementFactory {
+public interface HxElementFactory extends HxProvider {
 
   /**
    * Creates a new modifiable instance with given name
@@ -36,6 +39,17 @@ public interface HxElementFactory {
 
   /**
    * Creates a new unbound field with given type and name
+   * @param cls of new field
+   * @param fieldName of new field
+   * @return a new unbound field instance
+   */
+  default HxField createField(final Class<?> cls,
+                      final String fieldName) {
+    return createField(cls.getName(), fieldName);
+  }
+
+  /**
+   * Creates a new unbound field with given type and name
    * @param className of new field
    * @param fieldName of new field
    * @return a new unbound field instance
@@ -49,6 +63,19 @@ public interface HxElementFactory {
    * @return a new unbound constructor instance
    */
   HxConstructor createConstructor(final String... parameterTypes);
+
+  /**
+   * Creates a new unbound constructor with given parameters
+   * @param parameterTypes of new constructor
+   * @return a new unbound constructor instance
+   */
+  default HxConstructor createConstructor(final Class<?>... parameterTypes) {
+    String[] parameterNames = new String[parameterTypes.length];
+    for (int i = 0; i < parameterTypes.length; i++) {
+      parameterNames[i] = parameterTypes[i].getName();
+    }
+    return createConstructor(parameterNames);
+  }
 
   /**
    * Creates a new unbound constructor-reference with given declaring-type and parameters
@@ -68,6 +95,23 @@ public interface HxElementFactory {
   HxMethod createMethod(final String returnType,
                         final String methodName,
                         final String... parameterTypes);
+
+  /**
+   * Creates a new unbound method with given name, return-type and parameters
+   * @param returnType of new method
+   * @param methodName of new method
+   * @param parameterTypes of new method
+   * @return a new unbound method instance
+   */
+  default HxMethod createMethod(final Class<?> returnType,
+                        final String methodName,
+                        final Class<?>... parameterTypes) {
+    String[] parameterNames = new String[parameterTypes.length];
+    for (int i = 0; i < parameterTypes.length; i++) {
+      parameterNames[i] = parameterTypes[i].getName();
+    }
+    return createMethod(returnType.getName(), methodName, parameterNames);
+  }
 
   /**
    * Creates a new unbound method-reference with given name, return-type and parameters
@@ -90,6 +134,15 @@ public interface HxElementFactory {
   HxParameter createParameter(final String className);
 
   /**
+   * Creates a new unbound parameter with given type
+   * @param cls of new parameter
+   * @return a new unbound parameter instance
+   */
+  default HxParameter createParameter(final Class<?> cls) {
+    return createParameter(cls.getName());
+  }
+
+  /**
    * Creates a new unbound annotation with given type and visibility
    * @param className of new annotation
    * @param visible is the visibility of new annotation
@@ -97,4 +150,15 @@ public interface HxElementFactory {
    */
   HxAnnotation createAnnotation(final String className,
                                 final boolean visible);
+
+  /**
+   * Creates a new unbound annotation with given type and visibility
+   * @param cls of new annotation
+   * @param visible is the visibility of new annotation
+   * @return a new unbound parameter instance
+   */
+  default HxAnnotation createAnnotation(final Class<? extends Annotation> cls,
+                                final boolean visible) {
+    return createAnnotation(cls.getName(), visible);
+  }
 }

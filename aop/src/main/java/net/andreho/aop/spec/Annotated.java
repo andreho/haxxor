@@ -11,18 +11,33 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Annotated {
-   /**
-    * @return
-    */
-   Named[] name() default @Named();
 
-   /**
-    * @return
-    */
-   Class<? extends Annotation> value() default Annotation.class;
+  /**
+   * Selects annotations that are named with specific fully-qualified names
+   *
+   * @return
+   * @implNote defaults to empty {@link Named} annotation and so disables the selection by annotation's classname
+   */
+  Named named() default @Named();
 
-   /**
-    * @return a list of conditions that are evaluated as disjunction, e.g.: <code>(A ∧ B) ∨ (B ∧ ¬C) ∨ ¬D</code>
-    */
-   Where[] criteria() default {};
+  //AND
+
+  /**
+   * @return
+   * @implNote defaults to {@link Annotated} and disables the direct selection annotation's class
+   */
+  Class<? extends Annotation> value() default Annotated.class;
+
+  //AND
+
+  /**
+   * @return a list of conditions that are evaluated as disjunction, e.g.: <code>(A ∧ B) ∨ (B ∧ ¬C) ∨ ¬D</code>
+   */
+  Where[] criteria() default {};
+
+  /**
+   * Allows to inverse this selection
+   * @return <b>true</b> to inverse this selection, <b>false</b> to leave it as it is
+   */
+  boolean negate() default false;
 }

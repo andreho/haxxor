@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.ServiceLoader;
 import java.util.TreeSet;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -26,7 +27,7 @@ final class DelegatingClassFileTransformer
     this(locateClassFileTransformers().toArray(CLASS_FILE_TRANSFORMERS));
   }
 
-  private DelegatingClassFileTransformer(final ClassFileTransformer... transformers) {
+  private DelegatingClassFileTransformer(final ClassFileTransformer[] transformers) {
     this.transformers = transformers;
   }
 
@@ -38,10 +39,8 @@ final class DelegatingClassFileTransformer
       if (transformer instanceof Comparable) {
         comparableCount++;
       }
-
       if (transformers.add(transformer)) {
-        LOG.config("ClassFileTransformer located and added: " + transformer.getClass()
-                                                                           .getName());
+        LOG.config("ClassFileTransformer located and added: " + transformer.getClass().getName());
       }
     }
 
@@ -76,9 +75,8 @@ final class DelegatingClassFileTransformer
           byteCode = transformedByteCode;
         }
       } catch (Throwable t) {
-        LOG.severe("Failed to apply transformation with: " + transformer.getClass()
-                                                                        .getName() + ", because of: " +
-                   t.getMessage());
+        LOG.log(Level.SEVERE, "Failed to apply transformation with: " +
+                         transformer.getClass().getName() + ", because of: " + t.getMessage(), t);
         return null;
       }
     }

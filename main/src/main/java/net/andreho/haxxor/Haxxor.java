@@ -190,6 +190,11 @@ public class Haxxor
     return typeInitializer;
   }
 
+  @Override
+  public Haxxor getHaxxor() {
+    return this;
+  }
+
   /**
    * Checks whether this haxxor instance and its type collection
    * are still available to the associated class-loader.

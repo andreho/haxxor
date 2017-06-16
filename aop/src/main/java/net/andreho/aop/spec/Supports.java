@@ -12,8 +12,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Supports {
-   /**
-    * @return
-    */
-   Class<? extends Annotation>[] value();
+
+  /**
+   * @return
+   */
+  Class<? extends Annotation>[] value();
 }

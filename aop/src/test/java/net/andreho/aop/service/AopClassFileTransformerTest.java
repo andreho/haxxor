@@ -1,7 +1,7 @@
 package net.andreho.aop.service;
 
 import net.andreho.aop.transform.ClassTransformer;
-import net.andreho.aop.transform.ordering.OrderUtils;
+import net.andreho.aop.utils.OrderUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

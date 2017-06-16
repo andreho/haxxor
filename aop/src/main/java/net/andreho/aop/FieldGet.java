@@ -10,8 +10,8 @@ import net.andreho.aop.injectable.Line;
 import net.andreho.aop.injectable.Marker;
 import net.andreho.aop.injectable.Result;
 import net.andreho.aop.injectable.This;
-import net.andreho.aop.spec.FieldRef;
-import net.andreho.aop.spec.MethodRef;
+import net.andreho.aop.spec.Fields;
+import net.andreho.aop.spec.Methods;
 import net.andreho.aop.spec.Supports;
 
 import java.lang.annotation.ElementType;
@@ -20,7 +20,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Allows to intercept reading access to a field
+ * Allows to intercept reading access of a field
  * <br/>Created by a.hofmann on 18.09.2015.<br/>
  */
 @Supports({
@@ -36,18 +36,18 @@ import java.lang.annotation.Target;
    This.class})
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Get {
+public @interface FieldGet {
    /**
     * Which methods, accessing wanted fields, should be processed
     *
     * @return
     */
-   MethodRef[] methods() default {};
+   Methods[] methods() default {};
 
    /**
     * Which fields read-access should be intercepted
     *
     * @return
     */
-   FieldRef[] fields() default {};
+   Fields[] fields() default {};
 }

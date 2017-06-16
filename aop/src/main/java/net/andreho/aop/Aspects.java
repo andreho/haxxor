@@ -8,8 +8,8 @@ import java.lang.annotation.Target;
 /**
  * <br/>Created by a.hofmann on 18.09.2015.<br/>
  */
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
 public @interface Aspects {
    Aspect[] value();
 }

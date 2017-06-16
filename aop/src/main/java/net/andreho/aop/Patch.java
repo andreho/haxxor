@@ -30,11 +30,7 @@ public @interface Patch {
   }
 
   @interface Signature {
-
-    java.lang.Class<?>[] value() default {};
-
-    String[] parameters() default {};
-
+    Class[] parameters() default {};
     Class returns() default @Class;
   }
 

@@ -67,6 +67,29 @@ public interface HxAnnotation
    */
   <V> V attribute(String name);
 
+  /**
+   * @param name
+   * @return
+   */
+  boolean hasAttribute(String name);
+
+  /**
+   * @param name
+   * @return
+   */
+  boolean hasDefaultAttribute(String name);
+
+  /**
+   * @param name
+   * @return
+   */
+  <V> V defaultAttribute(String name);
+
+  /**
+   * @return
+   */
+  int size();
+
   //----------------------------------------------------------------------------------------------------------------
 
   HxAnnotation attribute(final String name, boolean value);

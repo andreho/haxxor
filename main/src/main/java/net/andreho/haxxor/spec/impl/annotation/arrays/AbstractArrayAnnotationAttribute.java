@@ -14,16 +14,20 @@ public abstract class AbstractArrayAnnotationAttribute<V, T> extends AbstractAnn
     super(name, value);
   }
 
+  public boolean isEmpty() {
+    return Array.getLength(getValue()) == 0;
+  }
+
   @Override
   public String toString() {
     final Object value = getValue();
-    final StringBuilder builder = new StringBuilder().append(getName()).append(": ");
+    final StringBuilder builder = new StringBuilder();
 
     if(value == null) {
       return builder.append("null").toString();
     }
     if(value == HxConstants.EmptyArray.INSTANCE) {
-      return builder.append("EMPTY").toString();
+      return builder.append("[]").toString();
     }
 
     builder.append('[');

@@ -4,6 +4,7 @@ import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxAnnotationAttribute;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 
 /**
  * <br/>Created by andreho on 4/4/16 at 11:22 PM.<br/>
@@ -24,6 +25,15 @@ public class SubAnnotationArrayAttribute
 //      }
 //    }
 //    return this.annotations;
+  }
+
+  @Override
+  public boolean hasValue(final Object o) {
+    if(o instanceof HxAnnotation[]) {
+      HxAnnotation[] array = (HxAnnotation[]) o;
+      return Arrays.equals(getValue(), array);
+    }
+    return false;
   }
 
   @Override

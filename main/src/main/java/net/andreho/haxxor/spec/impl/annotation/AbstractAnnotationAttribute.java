@@ -40,10 +40,15 @@ public abstract class AbstractAnnotationAttribute<V, T>
   }
 
   @Override
+  public boolean hasValue(final Object o) {
+    return getValue().equals(o);
+  }
+
+  @Override
   public abstract HxAnnotationAttribute<V, T> clone();
 
   @Override
   public String toString() {
-    return getName() + ": " + getValue();
+    return String.valueOf(getValue());
   }
 }

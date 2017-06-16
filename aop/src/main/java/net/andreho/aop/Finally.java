@@ -9,8 +9,8 @@ import net.andreho.aop.injectable.Line;
 import net.andreho.aop.injectable.Marker;
 import net.andreho.aop.injectable.Result;
 import net.andreho.aop.injectable.This;
-import net.andreho.aop.spec.MethodRef;
-import net.andreho.aop.spec.ParamRef;
+import net.andreho.aop.spec.Methods;
+import net.andreho.aop.spec.Parameters;
 import net.andreho.aop.spec.Supports;
 
 import java.lang.annotation.ElementType;
@@ -39,12 +39,12 @@ public @interface Finally {
     *
     * @return
     */
-   MethodRef[] methods() default {};
+   Methods[] methods() default {};
 
    /**
     * Special parameters (currently none)
     *
     * @return
     */
-   ParamRef[] parameters() default {};
+   Parameters[] parameters() default {};
 }

@@ -39,7 +39,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -126,12 +125,17 @@ public class HxAnnotationImpl
 
   @Override
   public <V> V attribute(String name) {
-    final HxAnnotationAttribute<?, ?> value = attributeMap.get(name);
+    final HxAnnotationAttribute<?, ?> attribute = attributeMap.get(name);
 
-    if (value != null) {
-      return (V) value.getValue();
+    if (attribute != null) {
+      return (V) attribute.getValue();
     }
 
+    return defaultAttribute(name);
+  }
+
+  @Override
+  public <V> V defaultAttribute(final String name) {
     HxMethod method =
         getType().findMethod(name)
                  .orElseThrow(() ->
@@ -139,8 +143,7 @@ public class HxAnnotationImpl
                                       "Method for annotation's attribute not found: " +name
                                   )
                  );
-
-    return (V) method.getDefaultValue();
+    return (V) method.getDeclaringMember();
   }
 
   private HxAnnotation set(String name,
@@ -155,6 +158,21 @@ public class HxAnnotationImpl
 
   private HxTypeReference reference(String classname) {
     return getHaxxor().reference(classname);
+  }
+
+  @Override
+  public int size() {
+    return this.attributeMap.size();
+  }
+
+  @Override
+  public boolean hasAttribute(final String name) {
+    return this.attributeMap.containsKey(name);
+  }
+
+  @Override
+  public boolean hasDefaultAttribute(final String name) {
+    return getType().hasMethod(name);
   }
 
   @Override
@@ -354,8 +372,23 @@ public class HxAnnotationImpl
       return false;
     }
 
-    HxAnnotation that = (HxAnnotation) o;
-    return type.equals(that.getType());
+    final HxAnnotation that = (HxAnnotation) o;
+    return type.equals(that.getType()) && hasEqualAttributes(that);
+  }
+
+  private boolean hasEqualAttributes(HxAnnotation other) {
+    if(this.attributeMap.size() != other.getAttributeMap().size()) {
+      return false;
+    }
+    for (Map.Entry<String, HxAnnotationAttribute<?, ?>> entry : getAttributeMap().entrySet()) {
+      final HxAnnotationAttribute<?, ?> attribute = entry.getValue();
+      if(!other.hasAttribute(attribute.getName()) ||
+         !attribute.hasValue(other.attribute(attribute.getName()))) {
+
+        return false;
+      }
+    }
+    return true;
   }
 
   @Override
@@ -365,23 +398,13 @@ public class HxAnnotationImpl
 
   @Override
   public String toString() {
-    final StringBuilder builder = new StringBuilder(type.getName()).append(" {\n");
+    final StringBuilder builder = new StringBuilder("{\"annotationType\": ").append(getType().getName());
 
-    for (Iterator<Map.Entry<String, HxAnnotationAttribute<?, ?>>> iterator =
-         getAttributeMap().entrySet()
-                          .iterator(); iterator.hasNext(); ) {
-
-      final Map.Entry<String, HxAnnotationAttribute<?, ?>> entry = iterator.next();
-      final HxAnnotationAttribute<?, ?> value = entry.getValue();
-
-      builder.append(value);
-
-      if (iterator.hasNext()) {
-        builder.append('\n');
-      }
+    for (Map.Entry<String, HxAnnotationAttribute<?, ?>> entry : getAttributeMap().entrySet()) {
+      final HxAnnotationAttribute<?, ?> attribute = entry.getValue();
+      builder.append(",\"").append(attribute.getName()).append("\": ").append(attribute);
     }
 
-    return builder.append("\n}")
-                  .toString();
+    return builder.append("\n}").toString();
   }
 }

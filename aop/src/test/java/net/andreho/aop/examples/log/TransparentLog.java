@@ -8,7 +8,8 @@ import java.lang.annotation.Target;
 /**
  * <br/>Created by a.hofmann on 23.03.2017 at 19:35.
  */
-@Target({ElementType.FIELD})
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Log {
+public @interface TransparentLog {
+  String value() default "LOG";
 }

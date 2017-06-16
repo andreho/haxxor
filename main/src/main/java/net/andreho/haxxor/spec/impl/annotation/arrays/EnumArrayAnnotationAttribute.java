@@ -3,6 +3,8 @@ package net.andreho.haxxor.spec.impl.annotation.arrays;
 import net.andreho.haxxor.spec.api.HxAnnotationAttribute;
 import net.andreho.haxxor.spec.api.HxEnum;
 
+import java.util.Arrays;
+
 /**
  * Created by a.hofmann on 25.05.2016.
  */
@@ -19,8 +21,12 @@ public class EnumArrayAnnotationAttribute<E extends Enum<E>>
   }
 
   @Override
-  public void setValue(final HxEnum[] value) {
-    super.setValue(value);
+  public boolean hasValue(final Object o) {
+    if(o instanceof HxEnum[]) {
+      HxEnum[] array = (HxEnum[]) o;
+      return Arrays.equals(getValue(), array);
+    }
+    return false;
   }
 
   @Override

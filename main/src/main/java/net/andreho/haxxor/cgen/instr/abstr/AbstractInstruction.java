@@ -3,6 +3,8 @@ package net.andreho.haxxor.cgen.instr.abstr;
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.HxInstruction;
+import net.andreho.haxxor.cgen.HxInstructionKind;
+import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.impl.HxAnnotatedImpl;
@@ -11,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
@@ -97,6 +100,46 @@ public abstract class AbstractInstruction
   @Override
   public void setPrevious(HxInstruction previous) {
     this.previous = previous;
+  }
+
+  @Override
+  public Optional<HxInstruction> findFirstWithType(final HxInstructionType instructionType) {
+    for(HxInstruction instruction = this; !instruction.isEnd(); instruction = getNext()) {
+      if(instruction.hasInstructionType(instructionType)) {
+        return Optional.of(instruction);
+      }
+    }
+    return Optional.empty();
+  }
+
+  @Override
+  public Optional<HxInstruction> findLastWithType(final HxInstructionType instructionType) {
+    for(HxInstruction instruction = this; !instruction.isBegin(); instruction = getPrevious()) {
+      if(instruction.hasInstructionType(instructionType)) {
+        return Optional.of(instruction);
+      }
+    }
+    return Optional.empty();
+  }
+
+  @Override
+  public Optional<HxInstruction> findFirstWithKind(final HxInstructionKind instructionKind) {
+    for(HxInstruction instruction = this; !instruction.isEnd(); instruction = getNext()) {
+      if(instruction.hasInstructionKind(instructionKind)) {
+        return Optional.of(instruction);
+      }
+    }
+    return Optional.empty();
+  }
+
+  @Override
+  public Optional<HxInstruction> findLastWithKind(final HxInstructionKind instructionKind) {
+    for(HxInstruction instruction = this; !instruction.isBegin(); instruction = getPrevious()) {
+      if(instruction.hasInstructionKind(instructionKind)) {
+        return Optional.of(instruction);
+      }
+    }
+    return Optional.empty();
   }
 
   @Override

@@ -9,8 +9,8 @@ import net.andreho.aop.injectable.Line;
 import net.andreho.aop.injectable.Marker;
 import net.andreho.aop.injectable.Result;
 import net.andreho.aop.injectable.This;
-import net.andreho.aop.spec.MethodRef;
-import net.andreho.aop.spec.ParamRef;
+import net.andreho.aop.spec.Methods;
+import net.andreho.aop.spec.Parameters;
 import net.andreho.aop.spec.Supports;
 
 import java.lang.annotation.ElementType;
@@ -23,37 +23,40 @@ import java.lang.annotation.Target;
  */
 
 @Supports({
-   Arg.class,
-   Args.class,
-   Arity.class,
-   Declaring.class,
-   Intercepted.class,
-   Marker.class,
-   Line.class,
-   Result.class,
-   This.class})
+  Arg.class,
+  Args.class,
+  Arity.class,
+  Declaring.class,
+  Intercepted.class,
+  Marker.class,
+  Line.class,
+  Result.class,
+  This.class})
 @Target({ElementType.METHOD, ElementType.CONSTRUCTOR})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Before {
-   /**
-    * Should we include the call of before-advice inside of a try-(catch)/finally block or not.
-    * Applies only if your aspect defines @Catch and/or @Finally interceptors
-    *
-    * @return
-    */
-   boolean safely() default false;
 
-   /**
-    * Which methods should be processed
-    *
-    * @return
-    */
-   MethodRef[] methods() default {};
+  /**
+   * Should we include the call of before-advice inside of a try-(catch)/finally block or not.
+   * Applies only if your aspect defines @Catch and/or @Finally interceptors
+   *
+   * @return
+   */
+  boolean safely() default false;
 
-   /**
-    * Special parameters (currently none)
-    *
-    * @return
-    */
-   ParamRef[] parameters() default {};
+  /**
+   * Defines a set with methods that should be processed
+   *
+   * @return
+   * @implNote elements are bound via an OR (disjunction)
+   * @implSpec empty array means no selection at all
+   */
+  Methods[] methods() default {};
+
+  /**
+   * Special parameters (currently none)
+   *
+   * @return
+   */
+  Parameters[] parameters() default {};
 }

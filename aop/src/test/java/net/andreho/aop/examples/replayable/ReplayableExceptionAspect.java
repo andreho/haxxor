@@ -10,8 +10,8 @@ import net.andreho.aop.injectable.Intercepted;
 import net.andreho.aop.injectable.Line;
 import net.andreho.aop.injectable.This;
 import net.andreho.aop.spec.Annotated;
-import net.andreho.aop.spec.ClassRef;
-import net.andreho.aop.spec.MethodRef;
+import net.andreho.aop.spec.Classes;
+import net.andreho.aop.spec.Methods;
 import net.andreho.aop.spec.Scope;
 
 import java.lang.reflect.Executable;
@@ -31,11 +31,11 @@ public class ReplayableExceptionAspect {
 
    @Catch(
       methods = {
-         @MethodRef(
-            annotated = @Annotated(Replayable.class)
+         @Methods(
+            annotated = @Annotated(value = Replayable.class)
          ),
-         @MethodRef(
-            declaredBy = @ClassRef(annotated = @Annotated(Replayable.class))
+         @Methods(
+            declaredBy = @Classes(annotated = @Annotated(value = Replayable.class))
          )
       }
    )

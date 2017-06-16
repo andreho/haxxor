@@ -35,6 +35,11 @@ public class DefaultHxElementFactory
   }
 
   @Override
+  public Haxxor getHaxxor() {
+    return haxxor;
+  }
+
+  @Override
   public HxType createType(final String internalTypeName) {
     if(haxxor.hasResolved(internalTypeName)) {
       return haxxor.resolve(internalTypeName);

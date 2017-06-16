@@ -52,7 +52,7 @@ public class Agent {
    * @return an instrumentation instance that was gave to this javaagent.
    * @apiNote potential security breach
    */
-  public static Instrumentation getInstrumentation() {
+  static Instrumentation getInstrumentation() {
     return INSTRUMENTATION;
   }
 
@@ -71,9 +71,10 @@ public class Agent {
    * @throws IllegalStateException if this javaagent wasn't attached to system yet.
    */
   public static long getSizeOf(Object o) {
-    if (INSTRUMENTATION == null) {
+    final Instrumentation instrumentation = INSTRUMENTATION;
+    if (instrumentation == null) {
       throw new IllegalStateException("Please attach javaagent first.");
     }
-    return INSTRUMENTATION.getObjectSize(o);
+    return instrumentation.getObjectSize(o);
   }
 }

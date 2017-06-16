@@ -2,7 +2,6 @@ package transformers;
 
 import net.andreho.aop.transform.ClassTransformer;
 import net.andreho.aop.transform.Transformer;
-import net.andreho.aop.transform.ordering.Order;
 
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
@@ -10,7 +9,7 @@ import java.security.ProtectionDomain;
 /**
  * <br/>Created by a.hofmann on 23.03.2017 at 18:41.
  */
-@Order(0)
+@Transformer.Order(0)
 @Transformer
 public class ClassTransformerC implements ClassTransformer {
    @Override

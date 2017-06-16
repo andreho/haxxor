@@ -1,6 +1,5 @@
 package net.andreho.aop;
 
-import net.andreho.aop.injectable.Caught;
 import net.andreho.aop.injectable.Declaring;
 import net.andreho.aop.injectable.Line;
 import net.andreho.aop.injectable.Marker;
@@ -19,9 +18,9 @@ import java.lang.annotation.Target;
 @Supports({
     Marker.class,
     Declaring.class,
-    Line.class,
-    Caught.class})
+    Line.class})
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ClassInit {
+
 }

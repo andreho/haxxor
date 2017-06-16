@@ -31,6 +31,12 @@ public interface HxAnnotationAttribute<V, T> extends Cloneable {
   T original(Class<?> type);
 
   /**
+   * @param o
+   * @return
+   */
+  boolean hasValue(Object o);
+
+  /**
    * @return a new copy of this annotation's attribute
    */
   HxAnnotationAttribute<V, T> clone();

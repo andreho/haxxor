@@ -13,8 +13,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.CONSTRUCTOR, ElementType.PARAMETER})
 public @interface Disable {
-   /**
-    * @return list with aspect's annotations that need to be disabled for marked element
-    */
-   Class<? extends Annotation>[] value();
+
+  /**
+   * @return list with aspect's annotations that need to be disabled for marked element
+   */
+  Class<? extends Annotation>[] value();
 }

@@ -3,4 +3,5 @@ include 'asm'
 include 'main'
 include 'aop'
 include 'agent'
+include 'resources'
 

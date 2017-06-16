@@ -16,8 +16,9 @@ import java.lang.annotation.Target;
          ElementType.CONSTRUCTOR,
          ElementType.PARAMETER})
 public @interface Changes {
-   /**
-    * @return
-    */
-   Change[] value();
+
+  /**
+   * @return
+   */
+  Change[] value();
 }

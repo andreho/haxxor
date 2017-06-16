@@ -5,6 +5,7 @@ import net.andreho.haxxor.spec.api.HxType;
 
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
+import java.util.Arrays;
 
 /**
  * Created by a.hofmann on 25.05.2016.
@@ -35,6 +36,15 @@ public class ClassArrayAnnotationAttribute
       }
     }
     return reference.get();
+  }
+
+  @Override
+  public boolean hasValue(final Object o) {
+    if(o instanceof HxType[]) {
+      HxType[] array = (HxType[]) o;
+      return Arrays.equals(getValue(), array);
+    }
+    return false;
   }
 
   private Reference<Class<?>[]> findClasses(final ClassLoader classLoader,

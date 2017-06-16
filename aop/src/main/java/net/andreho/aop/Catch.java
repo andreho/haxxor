@@ -9,7 +9,7 @@ import net.andreho.aop.injectable.Intercepted;
 import net.andreho.aop.injectable.Line;
 import net.andreho.aop.injectable.Marker;
 import net.andreho.aop.injectable.This;
-import net.andreho.aop.spec.MethodRef;
+import net.andreho.aop.spec.Methods;
 import net.andreho.aop.spec.Supports;
 
 import java.lang.annotation.ElementType;
@@ -44,5 +44,5 @@ public @interface Catch {
     *
     * @return a set of method-selectors that select matched methods
     */
-   MethodRef[] methods() default {};
+   Methods[] methods() default {};
 }

@@ -4,7 +4,7 @@ import net.andreho.asm.org.objectweb.asm.Label;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.HxInstruction;
-import net.andreho.haxxor.cgen.instr.abstr.AbstractPseudoInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.AbstractInstruction;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,12 +17,10 @@ import static net.andreho.haxxor.Utils.isUninitialized;
  * <br/>Created by a.hofmann on 11.03.2016.<br/>
  */
 public class LABEL
-    extends AbstractPseudoInstruction
+    extends AbstractInstruction
     implements HxInstruction {
 
   private Label asmLabel;
-  private HxInstruction next;
-  private HxInstruction previous;
   private List<HxInstruction> references = Collections.emptyList();
 
   public LABEL() {
@@ -34,7 +32,7 @@ public class LABEL
   }
 
   public LABEL(Label asmLabel, boolean link) {
-    super();
+    super(-1);
     this.asmLabel = asmLabel;
     if(link) {
       this.asmLabel.info = this;
@@ -45,7 +43,7 @@ public class LABEL
   public List<Object> getStackPushList(final HxComputingContext context) {
     context.getVisitedLabels()
            .putIfAbsent(this, getPrevious());
-    return super.getStackPushList(context);
+    return NO_STACK_PUSH;
   }
 
   @Override
@@ -63,26 +61,6 @@ public class LABEL
     }
     references.add(instruction);
     return instruction;
-  }
-
-  @Override
-  public HxInstruction getPrevious() {
-    return previous;
-  }
-
-  @Override
-  public void setPrevious(HxInstruction previous) {
-    this.previous = previous;
-  }
-
-  @Override
-  public HxInstruction getNext() {
-    return next;
-  }
-
-  @Override
-  public void setNext(HxInstruction next) {
-    this.next = next;
   }
 
   @Override

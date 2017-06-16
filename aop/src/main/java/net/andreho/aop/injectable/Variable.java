@@ -7,7 +7,7 @@ import net.andreho.aop.DefineVariable;
  * <br/>Created by a.hofmann on 02.06.2017 at 22:33.
  * @see DefineVariable
  */
-public @interface LocalVariable {
+public @interface Variable {
 
   /**
    * This attribute must define the name of the previously defined local-variable

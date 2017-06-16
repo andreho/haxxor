@@ -15,6 +15,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -90,6 +91,12 @@ class SandBoxTest {
     }
   }
 
+  @Test
+  @Disabled
+  void arrayToString() {
+    System.out.println(Arrays.toString(new String[]{"123", "1234"}));
+    System.out.println(Arrays.toString(new int[]{123, 1234}));
+  }
 
   @Test
   @Disabled

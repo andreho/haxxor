@@ -10,6 +10,7 @@ import net.andreho.haxxor.spec.api.HxAnnotated;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * <br/>Created by a.hofmann on 17.11.2015.<br/>
@@ -130,6 +131,14 @@ public interface HxInstruction
    * @param next
    */
   void setNext(HxInstruction next);
+
+  Optional<HxInstruction> findFirstWithType(final HxInstructionType instructionType);
+
+  Optional<HxInstruction> findLastWithType(final HxInstructionType instructionType);
+
+  Optional<HxInstruction> findFirstWithKind(final HxInstructionKind instructionKind);
+
+  Optional<HxInstruction> findLastWithKind(final HxInstructionKind instructionKind);
 
   /**
    * Shortcut for: <code>this.getPrevious().append(inst);</code>

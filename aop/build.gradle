@@ -4,4 +4,5 @@ version '0.0.1'
 dependencies {
   compile project(':asm')
   compile project(':main')
+  compile project(':resources')
 }

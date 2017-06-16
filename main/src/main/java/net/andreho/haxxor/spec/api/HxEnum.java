@@ -93,7 +93,7 @@ public final class HxEnum {
 
   public <E extends Enum<E>> E loadEnum(ClassLoader classLoader) {
     Enum<?> e = this.fetchedEnum;
-    if (e != null) {
+    if (e != null && e.getClass().getClassLoader() == classLoader) {
       return (E) e;
     }
     try {

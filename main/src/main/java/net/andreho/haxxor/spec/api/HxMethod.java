@@ -8,6 +8,7 @@ import java.util.Set;
  */
 public interface HxMethod
     extends HxExecutable<HxMethod>,
+            HxNamed,
             Cloneable {
 
   /**

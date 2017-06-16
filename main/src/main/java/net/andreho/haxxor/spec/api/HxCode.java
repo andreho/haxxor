@@ -151,4 +151,5 @@ public interface HxCode extends Iterable<HxInstruction> {
    * @return total count of instructions in this code
    */
   int computeIndex();
+
 }

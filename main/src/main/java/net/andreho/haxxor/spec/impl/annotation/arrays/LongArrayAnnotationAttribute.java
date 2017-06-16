@@ -2,6 +2,8 @@ package net.andreho.haxxor.spec.impl.annotation.arrays;
 
 import net.andreho.haxxor.spec.api.HxAnnotationAttribute;
 
+import java.util.Arrays;
+
 /**
  * <br/>Created by andreho on 4/4/16 at 11:22 PM.<br/>
  */
@@ -10,6 +12,15 @@ public class LongArrayAnnotationAttribute
 
   public LongArrayAnnotationAttribute(final String name, final long[] values) {
     super(name, values);
+  }
+
+  @Override
+  public boolean hasValue(final Object o) {
+    if(o instanceof long[]) {
+      long[] array = (long[]) o;
+      return Arrays.equals(getValue(), array);
+    }
+    return false;
   }
 
   @Override
