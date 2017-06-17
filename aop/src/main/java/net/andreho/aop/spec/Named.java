@@ -5,8 +5,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Allows to select elements by their name using either ANT-style for matching or Java
- * {@link java.util.regex.Pattern regexp} syntax.
+ * Allows to select elements by their name using either ANT-like syntax or
+ * Java's {@link java.util.regex.Pattern regexp}-syntax for matching.<br/>
  * Created by a.hofmann on 20.05.2016.
  *
  * @see java.util.regex.Pattern

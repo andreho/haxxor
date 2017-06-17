@@ -1,9 +1,8 @@
 package net.andreho.aop.service;
 
-import net.andreho.aop.transform.ClassTransformer;
-import net.andreho.aop.utils.OrderUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.sandbox.elements.AnyType;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.util.ServiceLoader;
@@ -16,27 +15,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("Test functionality of AopClassFileTransformer")
 class AopClassFileTransformerTest {
 
-   @Test
-   @DisplayName("Find all three class-transformers and check their order")
-   void findTestClassTransformers() {
-      final AopClassFileTransformer delegate = new AopClassFileTransformer();
-      final ClassTransformer[] transformers = delegate.locateClassfileTransformers(getClass().getClassLoader());
+  @Test
+  @DisplayName("The delegating class-file-transformer must be visible from ServiceLoader")
+  void findService() {
+    final ServiceLoader<ClassFileTransformer> loader =
+        ServiceLoader.load(ClassFileTransformer.class, getClass().getClassLoader());
 
-      assertThat(transformers)
-         .hasSize(3)
-         .doesNotContainNull()
-         .hasOnlyElementsOfType(ClassTransformer.class)
-         .isSortedAccordingTo(OrderUtils.comparator());
-   }
+    assertThat(loader)
+        .hasSize(1)
+        .hasOnlyElementsOfType(AopClassFileTransformer.class);
+  }
 
-   @Test
-   @DisplayName("The delegating class-file-transformer must be visible from ServiceLoader")
-   void findService() {
-      final ServiceLoader<ClassFileTransformer> loader =
-         ServiceLoader.load(ClassFileTransformer.class, getClass().getClassLoader());
-
-      assertThat(loader)
-         .hasSize(1)
-         .hasOnlyElementsOfType(AopClassFileTransformer.class);
-   }
+  @Test
+  void checkAgentLoad() {
+    new AnyType();
+  }
 }

@@ -42,7 +42,7 @@ public class HxAnnotationVisitor
 
   private void checkAnnotationSemantic(final String name) {
     if(name == null) {
-      throw new IllegalStateException("Annotation-Visitor must have named attributes: "+name);
+      throw new IllegalStateException("Annotation-Visitor must have named attributes: "+name+", annotation: "+annotation.getType());
     }
   }
 

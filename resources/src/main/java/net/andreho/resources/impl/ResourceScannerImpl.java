@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
@@ -30,30 +31,40 @@ import static net.andreho.resources.impl.Utils.mergeResults;
 public class ResourceScannerImpl
     implements ResourceScanner {
 
+  private final Parallelism parallelism;
   private final ResourceFilter resourceFilter;
   private final ResourceSourceLocator resourceSourceLocator;
   private final ResourceTypeSelector resourceTypeSelector;
   private final ResourceResolver resourceResolver;
 
-  public ResourceScannerImpl(ResourceSourceLocator resourceSourceLocator,
+  public ResourceScannerImpl(Parallelism parallelism,
+                             ResourceSourceLocator resourceSourceLocator,
                              ResourceResolver resourceResolver,
                              ResourceFilter resourceFilter,
                              ResourceType... resourceTypes) {
-    this(resourceSourceLocator,
+    this(parallelism,
+         resourceSourceLocator,
          resourceResolver,
          resourceFilter,
-         ResourceTypeSelector.of(resourceTypes)
+         ResourceTypeSelector.with(resourceTypes)
     );
   }
 
-  public ResourceScannerImpl(ResourceSourceLocator resourceSourceLocator,
+  public ResourceScannerImpl(Parallelism parallelism,
+                             ResourceSourceLocator resourceSourceLocator,
                              ResourceResolver resourceResolver,
                              ResourceFilter resourceFilter,
                              ResourceTypeSelector resourceTypeSelector) {
+    this.parallelism = Objects.requireNonNull(parallelism, "Parallelism can't be null.");
     this.resourceSourceLocator = Objects.requireNonNull(resourceSourceLocator, "resourceSourceLocator");
     this.resourceResolver = Objects.requireNonNull(resourceResolver, "resourceResolver");
     this.resourceFilter = Objects.requireNonNull(resourceFilter, "resourceFilter");
     this.resourceTypeSelector = Objects.requireNonNull(resourceTypeSelector, "resourceTypeSelector");
+  }
+
+  @Override
+  public Parallelism getParallelism() {
+    return parallelism;
   }
 
   @Override
@@ -104,11 +115,15 @@ public class ResourceScannerImpl
   }
 
   protected Future<Optional<Map<String, Resource>>> scanResourceSource(final URL resourceUrl) {
-    final Future<Optional<Map<String, Resource>>> pendingResult =
-        ForkJoinPool.commonPool().submit(
-            () -> getResourceResolver().resolve(resourceUrl, getResourceFilter(), getResourceTypeSelector())
-        );
+    if(getParallelism() == Parallelism.CONCURRENT) {
+      return ForkJoinPool.commonPool().submit(
+          () -> getResourceResolver()
+              .resolve(resourceUrl, getResourceFilter(), getResourceTypeSelector())
+      );
+    }
 
-    return pendingResult;
+    Optional<Map<String, Resource>> resolved = getResourceResolver()
+        .resolve(resourceUrl, getResourceFilter(), getResourceTypeSelector());
+    return CompletableFuture.completedFuture(resolved);
   }
 }

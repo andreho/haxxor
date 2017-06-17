@@ -11,6 +11,7 @@ import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxCode;
 import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxMethod;
+import net.andreho.haxxor.spec.visitors.HxAnnotationDefaultVisitor;
 import net.andreho.haxxor.spec.visitors.HxAnnotationVisitor;
 
 import java.util.Objects;
@@ -76,12 +77,10 @@ public class AsmExecutableMethodVisitor
     final AnnotationVisitor av = super.visitAnnotationDefault();
     //available for methods only :)
     final HxMethod hxMethod = (HxMethod) this.executable;
-    final HxAnnotation annotation = getHaxxor().createAnnotation(hxMethod.getReturnType()
-                                                                         .getName(), true);
-    final Consumer consumer = (Consumer<HxAnnotation>)
-        (anno) -> hxMethod.setDefaultValue(anno);
+    final Consumer consumer = (Consumer<Object>)
+        (defaultValue) -> hxMethod.setDefaultValue(defaultValue);
 
-    return new HxAnnotationVisitor(annotation, consumer, av);
+    return new HxAnnotationDefaultVisitor(haxxor, consumer, av);
   }
 
   @Override

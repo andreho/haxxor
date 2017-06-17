@@ -32,19 +32,19 @@ public @interface Methods {
   //AND
 
   /**
-   * Selection of methods that are annotated with selected annotations
-   *
-   * @return
-   */
-  Annotated[] annotated() default {};
-  //AND
-
-  /**
    * Selection of methods based on their return type
    *
    * @return
    */
   Classes[] returning() default {};
+  //AND
+
+  /**
+   * Selection of methods that are annotated with selected annotations
+   *
+   * @return
+   */
+  Annotated[] annotated() default {};
   //AND
 
   /**

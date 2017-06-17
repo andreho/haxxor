@@ -2,13 +2,11 @@ package net.andreho.aop.impl.search;
 
 import net.andreho.haxxor.spec.api.HxMember;
 
-import java.util.function.Predicate;
-
 /**
  * <br/>Created by a.hofmann on 15.06.2017 at 01:42.
  */
-public class ModifiersFragment
-    implements Predicate<HxMember<?>> {
+public class ModifiersFragment<M extends HxMember<M>>
+    extends AbstractFragment<M> {
 
   private final int mods;
 
@@ -17,8 +15,9 @@ public class ModifiersFragment
   }
 
   @Override
-  public boolean test(final HxMember<?> hxMember) {
+  public boolean test(final M hxMember) {
     final int mods = this.mods;
-    return mods == -1 || (hxMember.getModifiers() & mods) == mods;
+    return mods == -1 ||
+           (hxMember.getModifiers() & mods) == mods;
   }
 }

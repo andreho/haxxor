@@ -29,6 +29,9 @@ public class DefaultHxByteCodeLoader
   public byte[] load(final String className) {
     final ClassLoader classLoader = haxxor.getClassLoader();
     try (InputStream inputStream = classLoader.getResourceAsStream(toFilename(className))) {
+      if(inputStream == null) {
+        throw new IllegalArgumentException("Class wasn't found: "+className);
+      }
       return Utils.toByteArray(inputStream);
     } catch (IOException e) {
       throw new IllegalArgumentException(

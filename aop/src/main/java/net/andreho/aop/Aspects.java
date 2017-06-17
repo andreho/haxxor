@@ -11,5 +11,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Aspects {
-   Aspect[] value();
+
+  /**
+   * @return
+   */
+  Aspect[] value();
 }

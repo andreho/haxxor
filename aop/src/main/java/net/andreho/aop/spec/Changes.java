@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Memorizes a list of changes done due a processing of {@link net.andreho.aop.transform.ClassTransformer}
+ * Memorizes a list of changes done during processing
  * <br/>Created by a.hofmann on 26.09.2015.<br/>
  */
 @Retention(RetentionPolicy.RUNTIME)

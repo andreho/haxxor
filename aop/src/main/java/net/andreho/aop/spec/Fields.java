@@ -4,6 +4,14 @@ package net.andreho.aop.spec;
  * <br/>Created by a.hofmann on 18.09.2015.<br/>
  */
 public @interface Fields {
+  /**
+   * Selection of fields with given modifiers
+   *
+   * @return an array with specific modifiers
+   * @implNote by default matches any modifiers
+   */
+  Modifier[] modifiers() default {};
+  //AND
 
   /**
    * Selects fields that was declared by selected types
@@ -24,30 +32,21 @@ public @interface Fields {
   //AND
 
   /**
-   * Selects fields with matching names
-   *
-   * @return an array with name selectors
-   * @implNote empty array means any names
-   */
-  Named[] named() default {};
-  //AND
-
-  /**
-   * Selection of fields with given modifiers
-   *
-   * @return an array with specific modifiers
-   * @implNote by default matches any modifiers
-   */
-  Modifier[] modifiers() default {};
-  //AND
-
-  /**
    * Selects fields that are annotated with given annotations.<br/>
    *
    * @return an array with annotations
    * @implNote empty array means any or without annotations
    */
   Annotated[] annotated() default {};
+  //AND
+
+  /**
+   * Selects fields with matching names
+   *
+   * @return an array with name selectors
+   * @implNote empty array means any names
+   */
+  Named[] named() default {};
 
   /**
    * Allows to inverse this selection

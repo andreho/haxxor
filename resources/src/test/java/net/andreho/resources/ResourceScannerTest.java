@@ -18,45 +18,49 @@ import static org.junit.jupiter.api.Assertions.fail;
  * Created by a.hofmann on 20.05.2016.
  */
 public class ResourceScannerTest {
-   @Test
-   public void resources_will_be_located() throws Exception {
-      ResourceScanner resourceScanner = createResourceScanner();
-      Map<String, Resource> result = resourceScanner.scan(Thread.currentThread().getContextClassLoader());
-      System.out.println("Count: " + result.size());
-      assertTrue(result.size() > 0);
-   }
 
-   @Test
-   public void each_resource_has_fetchable_content() throws Exception {
-      ResourceScanner resourceScanner = createResourceScanner();
-      Map<String, Resource> result = resourceScanner.scan(Thread.currentThread().getContextClassLoader());
-      long used = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+  @Test
+  public void resources_will_be_located()
+  throws Exception {
+    ResourceScanner resourceScanner = createResourceScanner();
+    Map<String, Resource> result = resourceScanner.scan(Thread.currentThread().getContextClassLoader());
+    System.out.println("Count: " + result.size());
+    assertTrue(result.size() > 0);
+  }
 
-      result.forEach((k, v) -> {
-         assertTrue(v.length() > 0);
-         try {
-            v.cache();
-         } catch (IOException e) {
-            e.printStackTrace();
-            fail(e.getMessage());
-         }
-      });
+  @Test
+  public void each_resource_has_fetchable_content()
+  throws Exception {
+    ResourceScanner resourceScanner = createResourceScanner();
+    Map<String, Resource> result = resourceScanner.scan(Thread.currentThread().getContextClassLoader());
+    long used = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
-      System.out.printf("Used memory: %15.2f Kb\n",
-                        ((ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() - used) / 1024d));
-   }
+    result.forEach((k, v) -> {
+      assertTrue(v.length() > 0);
+      try {
+        v.cache();
+      } catch (IOException e) {
+        e.printStackTrace();
+        fail(e.getMessage());
+      }
+    });
 
-   private ResourceScanner createResourceScanner() {
-      return ResourceScanner.newScanner(
-          ResourceSourceLocator.with(
-              ClassLoaderResourceLocatorImpl.INSTANCE,
-              ClassPathResourceLocatorImpl.INSTANCE
-          ),
-          ResourceResolver.with(new FileResourceResolverImpl(), new JarResourceResolverImpl()),
-          (name, supplier) -> name.startsWith("java/"),
-          ResourceType.CLASS_TYPE,
-          ResourceType.XML_TYPE,
-          ResourceType.PROPERTIES_TYPE,
-          ResourceType.SERVICE_DECLARATION_TYPE);
-   }
+    System.out.printf("Used memory: %15.2f Kb\n",
+                      ((ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() - used) / 1024d));
+  }
+
+  private ResourceScanner createResourceScanner() {
+    return ResourceScanner.newScanner(
+        ResourceScanner.Parallelism.CONCURRENT,
+        ResourceSourceLocator.with(
+            ClassLoaderResourceLocatorImpl.INSTANCE,
+            ClassPathResourceLocatorImpl.INSTANCE
+        ),
+        ResourceResolver.with(new FileResourceResolverImpl(), new JarResourceResolverImpl()),
+        (name, supplier) -> name.startsWith("java/"),
+        ResourceType.CLASS_TYPE,
+        ResourceType.XML_TYPE,
+        ResourceType.PROPERTIES_TYPE,
+        ResourceType.SERVICE_DECLARATION_TYPE);
+  }
 }

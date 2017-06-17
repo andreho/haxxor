@@ -994,6 +994,9 @@ public interface HxType
   /**
    */
   enum Version {
+    V1_5(Opcodes.V1_5),
+    V1_6(Opcodes.V1_6),
+    V1_7(Opcodes.V1_7),
     V1_8(Opcodes.V1_8);
 
     final int code;
@@ -1003,8 +1006,11 @@ public interface HxType
     }
 
     public static Version of(int ver) {
-      if (ver == Opcodes.V1_8) {
-        return V1_8;
+      switch (ver) {
+        case Opcodes.V1_5: return V1_5;
+        case Opcodes.V1_6: return V1_6;
+        case Opcodes.V1_7: return V1_7;
+        case Opcodes.V1_8: return V1_8;
       }
       throw new IllegalArgumentException("Unsupported version: " + ver);
     }

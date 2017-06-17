@@ -10,12 +10,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -29,75 +26,6 @@ public class FileResourceResolverImpl
     extends AbstractResourceResolver {
 
   private static final String FILE_PROTOCOL_NAME = "file";
-
-  private class PathFileVisitor
-      implements FileVisitor<Path> {
-
-    private final URL url;
-    private final Path target;
-    private final ResourceFilter resourceFilter;
-    private final ResourceTypeSelector selector;
-    private final Map<String, Resource> result;
-    private final StringBuilder stack;
-
-    public PathFileVisitor(final URL url,
-                           final Path target,
-                           final ResourceFilter resourceFilter,
-                           final ResourceTypeSelector selector,
-                           final Map<String, Resource> result) {
-      this.target = target;
-      this.resourceFilter = resourceFilter;
-      this.result = result;
-      this.url = url;
-      this.selector = selector;
-      this.stack = new StringBuilder(128);
-    }
-
-    @Override
-    public FileVisitResult preVisitDirectory(Path dir,
-                                             BasicFileAttributes attrs)
-    throws IOException {
-      if (!target.equals(dir)) {
-        stack.append(dir.getFileName().toString()).append('/');
-      }
-      return FileVisitResult.CONTINUE;
-    }
-
-    @Override
-    public FileVisitResult postVisitDirectory(Path dir,
-                                              IOException exc)
-    throws IOException {
-      if (!target.equals(dir)) {
-        stack.setLength(stack.length() - (dir.getFileName().toString().length() + 1));
-      }
-      return FileVisitResult.CONTINUE;
-    }
-
-    @Override
-    public FileVisitResult visitFile(Path file,
-                                     BasicFileAttributes attrs)
-    throws IOException {
-      final String fileName = file.getFileName().toString();
-      final StringBuilder stack = this.stack;
-
-      try {
-        final String resourceName = stack.append(fileName).toString();
-        if (filterFile(file, resourceName, resourceFilter)) {
-          result.put(resourceName, createResource(url, resourceName, file.toFile(), selector));
-        }
-      } finally {
-        stack.setLength(stack.length() - fileName.length());
-      }
-      return FileVisitResult.CONTINUE;
-    }
-
-    @Override
-    public FileVisitResult visitFileFailed(Path file,
-                                           IOException exc)
-    throws IOException {
-      throw exc;
-    }
-  }
 
   @Override
   public Optional<Map<String, Resource>> resolve(final URL url,
@@ -128,9 +56,8 @@ public class FileResourceResolverImpl
 
     final Path targetPath = file.toPath();
     final Map<String, Resource> result = new HashMap<>();
-
     Files.walkFileTree(targetPath,
-                       new PathFileVisitor(url, targetPath, resourceFilter, typeSelector, result)
+                       new FileResourcePathVisitor(this, url, targetPath, resourceFilter, typeSelector, result)
     );
 
     if(isSubJar(url, file.getName())) {

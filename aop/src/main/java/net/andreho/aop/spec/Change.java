@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Memorizes applied {@link net.andreho.aop.transform.ClassTransformer} and
+ * Memorizes applied chagnes and
  * what kind of work was done on the annotated element
  * <br/>Created by a.hofmann on 26.09.2015.<br/>
  */

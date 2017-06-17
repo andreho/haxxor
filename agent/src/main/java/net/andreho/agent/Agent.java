@@ -41,7 +41,7 @@ public class Agent {
    * <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/instrument/package-summary.html">Instrumentation</a>
    */
   public static void agentmain(String args, Instrumentation inst) {
-    Agent.ARGS = Objects.requireNonNull(args, "Arguments are null.");
+    Agent.ARGS = args;
     Agent.INSTRUMENTATION = Objects.requireNonNull(inst, "Instrumentation is null.");
 
     inst.addTransformer(new DelegatingClassFileTransformer(), true);

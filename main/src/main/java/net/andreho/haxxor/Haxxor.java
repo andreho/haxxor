@@ -4,6 +4,7 @@ import net.andreho.asm.org.objectweb.asm.ClassReader;
 import net.andreho.asm.org.objectweb.asm.ClassWriter;
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.haxxor.spec.api.HxAnnotation;
+import net.andreho.haxxor.spec.api.HxConstants;
 import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
@@ -53,6 +54,10 @@ public class Haxxor
     this(0, new HaxxorBuilder(Haxxor.class.getClassLoader()));
   }
 
+  public Haxxor(HaxxorBuilder builder) {
+    this(0, builder);
+  }
+
   /**
    * @param flags
    * @see Haxxor.Flags
@@ -93,42 +98,42 @@ public class Haxxor
     String name = "void";
     HxPrimitiveTypeImpl type =
         new HxPrimitiveTypeImpl(this, toNormalizedClassname(name));
-    resolvedCache.put(name, type);
+    register(name, type);
 
     name = "boolean";
     type = new HxPrimitiveTypeImpl(this, toNormalizedClassname(name));
-    resolvedCache.put(name, type);
+    register(name, type);
 
     name = "byte";
     type = new HxPrimitiveTypeImpl(this, toNormalizedClassname(name));
-    resolvedCache.put(name, type);
+    register(name, type);
 
     name = "short";
     type = new HxPrimitiveTypeImpl(this, toNormalizedClassname(name));
-    resolvedCache.put(name, type);
+    register(name, type);
 
     name = "char";
     type = new HxPrimitiveTypeImpl(this, toNormalizedClassname(name));
-    resolvedCache.put(name, type);
+    register(name, type);
 
     name = "int";
     type = new HxPrimitiveTypeImpl(this, toNormalizedClassname(name));
-    resolvedCache.put(name, type);
+    register(name, type);
 
     name = "float";
     type = new HxPrimitiveTypeImpl(this, toNormalizedClassname(name));
-    resolvedCache.put(name, type);
+    register(name, type);
 
     name = "long";
     type = new HxPrimitiveTypeImpl(this, toNormalizedClassname(name));
-    resolvedCache.put(name, type);
+    register(name, type);
 
     name = "double";
     type = new HxPrimitiveTypeImpl(this, toNormalizedClassname(name));
-    resolvedCache.put(name, type);
+    register(name, type);
 
     name = toNormalizedClassname("java.lang.Object");
-    referenceCache.put(name, createReference(name));
+    register(name, createReference(name));
   }
 
   /**
@@ -139,20 +144,18 @@ public class Haxxor
   }
 
   /**
-   * @param className
    * @return
    */
-  protected HxType readClass(String className,
-                             int opts) {
-    final byte[] content = getByteCodeLoader().load(className);
+  protected HxType readClass(final byte[] byteCode,
+                             final int opts) {
     final HxTypeVisitor visitor = createTypeVisitor();
-    final ClassReader classReader = new ClassReader(content);
+    final ClassReader classReader = new ClassReader(byteCode);
     classReader.accept(visitor, opts);
     return visitor.getType();
   }
 
   protected boolean isArray(final String typeName) {
-    return typeName.endsWith("[]");
+    return typeName.endsWith(HxConstants.ARRAY_DIMENSION);
   }
 
   /**
@@ -327,26 +330,66 @@ public class Haxxor
    * @implNote resolution means that the corresponding <code>*.class</code> file is loaded, parsed according to given
    * options and represented as a {@link HxType}
    */
-  public HxType resolve(String typeName,
-                        int options) {
+  public HxType resolve(String typeName, int options) {
     checkClassLoaderAvailability();
     typeName = toNormalizedClassname(typeName);
     HxType type = this.resolvedCache.get(typeName);
 
-    if (type == null) {
-      if (isArray(typeName)) {
-        type = new HxArrayTypeImpl(this, typeName);
-      } else {
-        type = readClass(typeName, options);
-      }
-
-      this.resolvedCache.put(typeName, type);
-
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("New type: {}", typeName);
-      }
+    if (type != null) {
+      return type;
     }
+
+    if (isArray(typeName)) {
+      type = new HxArrayTypeImpl(this, typeName);
+      register(typeName, type);
+    } else {
+      type = resolveInternally(typeName, options, getByteCodeLoader().load(typeName));
+    }
+
     return type;
+  }
+
+  /**
+   * @param typeName
+   * @param options
+   * @param byteCode
+   * @return
+   */
+  public HxType resolve(String typeName, int options, byte[] byteCode) {
+    checkClassLoaderAvailability();
+    typeName = toNormalizedClassname(typeName);
+    HxType type = this.resolvedCache.get(typeName);
+
+    if (type != null) {
+      return type;
+    }
+
+    return readClass(byteCode, options);
+  }
+
+  private HxType resolveInternally(String typeName, int options, byte[] byteCode) {
+    HxType type = readClass(byteCode, options);
+    register(typeName, type);
+
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("New type: {}", typeName);
+    }
+
+    return type;
+  }
+
+  /**
+   * Registers the given type/reference with the provided typename
+   * @param typeName to use as key
+   * @param type to register
+   */
+  public void register(final String typeName,
+                       final HxType type) {
+    if(type.isReference()) {
+      this.referenceCache.putIfAbsent(typeName, type.toReference());
+    } else {
+      this.resolvedCache.putIfAbsent(typeName, type);
+    }
   }
 
   private void checkClassLoaderAvailability() {

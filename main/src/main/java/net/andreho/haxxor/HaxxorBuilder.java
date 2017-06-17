@@ -7,7 +7,7 @@ import net.andreho.haxxor.spi.HxClassnameNormalizer;
 import net.andreho.haxxor.spi.HxElementFactory;
 import net.andreho.haxxor.spi.HxTypeInitializer;
 import net.andreho.haxxor.spi.HxTypeInterpreter;
-import net.andreho.haxxor.spi.impl.DefaultHxByteCodeLoader;
+import net.andreho.haxxor.spi.impl.CachedHxByteCodeLoader;
 import net.andreho.haxxor.spi.impl.DefaultHxClassnameNormalizer;
 import net.andreho.haxxor.spi.impl.DefaultHxElementFactory;
 import net.andreho.haxxor.spi.impl.DefaultHxTypeInitializer;
@@ -29,6 +29,15 @@ public class HaxxorBuilder {
 
   public HaxxorBuilder(final ClassLoader classLoader) {
     this.classLoader = Objects.requireNonNull(classLoader);
+  }
+
+  /**
+   * Creates new instance of builder with given classloader
+   * @param classLoader to use
+   * @return new builder instance
+   */
+  public static HaxxorBuilder with(ClassLoader classLoader) {
+    return new HaxxorBuilder(classLoader);
   }
 
   /**
@@ -73,7 +82,7 @@ public class HaxxorBuilder {
    * @return new byte-code loader associated with given haxxor instance
    */
   public HxByteCodeLoader createByteCodeLoader(Haxxor haxxor) {
-    return new DefaultHxByteCodeLoader(haxxor);
+    return new CachedHxByteCodeLoader(haxxor);
   }
 
   /**

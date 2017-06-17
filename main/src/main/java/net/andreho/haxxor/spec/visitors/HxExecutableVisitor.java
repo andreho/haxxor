@@ -1,6 +1,5 @@
 package net.andreho.haxxor.spec.visitors;
 
-import net.andreho.asm.org.objectweb.asm.Attribute;
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.cgen.impl.AsmExecutableMethodVisitor;
@@ -31,16 +30,6 @@ public class HxExecutableVisitor
                              final MethodVisitor mv) {
     super(haxxor, executable, mv);
     this.declaringType = Objects.requireNonNull(declaringType, "Declaring type can't be null.");
-  }
-
-  @Override
-  public void visitAttribute(final Attribute attr) {
-    super.visitAttribute(attr);
-  }
-
-  @Override
-  public void visitCode() {
-    super.visitCode();
   }
 
   @Override

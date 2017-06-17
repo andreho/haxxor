@@ -15,8 +15,8 @@ import java.lang.annotation.Target;
  * with {@link Before}, {@link After} or {@link Catch} annotations
  * <br/>Created by a.hofmann on 18.09.2015.<br/>
  */
-@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.FIELD})
 public @interface Redefine {
    /**
     * @return injectable annotation types that should be redefined

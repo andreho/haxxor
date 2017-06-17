@@ -11,6 +11,15 @@ import java.util.concurrent.ExecutionException;
  * Created by a.hofmann on 09.05.2016.
  */
 public interface ResourceScanner {
+  enum Parallelism {
+    SINGLE,
+    CONCURRENT
+  }
+
+  /**
+   * @return whether this resource scanner is concurrent or not
+   */
+  Parallelism getParallelism();
 
   /**
    * @return locator of possible resource sources
@@ -41,32 +50,36 @@ public interface ResourceScanner {
   /**
    * Creates default resource type implementation
    *
+   * @param parallelism of scanner
    * @param sourceLocator to use
    * @param resolver      to use
    * @param filter        to use
    * @param types         to use
    * @return a resource scanner ready for use.
    */
-  static ResourceScanner newScanner(ResourceSourceLocator sourceLocator,
+  static ResourceScanner newScanner(Parallelism parallelism,
+                                    ResourceSourceLocator sourceLocator,
                                     ResourceResolver resolver,
                                     ResourceFilter filter,
                                     ResourceType... types) {
-    return new ResourceScannerImpl(sourceLocator, resolver, filter, types);
+    return new ResourceScannerImpl(parallelism, sourceLocator, resolver, filter, types);
   }
 
   /**
    * Creates default resource type implementation
    *
+   * @param parallelism of scanner
    * @param sourceLocator to use
    * @param resolver      to use
    * @param filter        to use
    * @param typeSelector  to use
    * @return a resource scanner ready for use.
    */
-  static ResourceScanner newScanner(ResourceSourceLocator sourceLocator,
+  static ResourceScanner newScanner(Parallelism parallelism,
+                                    ResourceSourceLocator sourceLocator,
                                     ResourceResolver resolver,
                                     ResourceFilter filter,
                                     ResourceTypeSelector typeSelector) {
-    return new ResourceScannerImpl(sourceLocator, resolver, filter, typeSelector);
+    return new ResourceScannerImpl(parallelism, sourceLocator, resolver, filter, typeSelector);
   }
 }

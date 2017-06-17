@@ -2,11 +2,18 @@ package net.andreho.aop.injectable;
 
 import net.andreho.aop.DefineVariable;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  * This annotation injects the value of previously allocated local variable via {@link DefineVariable}
  * <br/>Created by a.hofmann on 02.06.2017 at 22:33.
  * @see DefineVariable
  */
+@Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface Variable {
 
   /**

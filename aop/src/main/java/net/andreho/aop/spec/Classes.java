@@ -18,7 +18,7 @@ public @interface Classes {
    *
    * @return
    */
-  ClassSelector[] value() default {};
+  ClassWith[] value() default {};
 
   //AND
 
@@ -28,7 +28,7 @@ public @interface Classes {
    * @return array with parent classes
    * @implNote empty array to disable filtering by class hierarchy.
    */
-  ClassSelector[] extending() default {};
+  ClassWith[] extending() default {};
 
   //AND
 
@@ -38,5 +38,5 @@ public @interface Classes {
    * @return array with interface selectors
    * @implNote empty array to disable filtering by class hierarchy.
    */
-  ClassSelector[] implementing() default {};
+  ClassWith[] implementing() default {};
 }

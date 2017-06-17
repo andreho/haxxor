@@ -32,6 +32,11 @@ import java.lang.annotation.Target;
   This.class})
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
+@Order(StandardOrder.FORWARDING)
 public @interface Forwarding {
+
+  /**
+   * @return
+   */
   Methods[] value();
 }

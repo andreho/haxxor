@@ -10,7 +10,6 @@ import net.andreho.aop.injectable.Marker;
 import net.andreho.aop.injectable.Result;
 import net.andreho.aop.injectable.This;
 import net.andreho.aop.spec.Methods;
-import net.andreho.aop.spec.Parameters;
 import net.andreho.aop.spec.Supports;
 
 import java.lang.annotation.ElementType;
@@ -52,11 +51,4 @@ public @interface Before {
    * @implSpec empty array means no selection at all
    */
   Methods[] methods() default {};
-
-  /**
-   * Special parameters (currently none)
-   *
-   * @return
-   */
-  Parameters[] parameters() default {};
 }

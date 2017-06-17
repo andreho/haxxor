@@ -4,7 +4,6 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.ServiceLoader;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -17,36 +16,26 @@ final class DelegatingClassFileTransformer
     implements ClassFileTransformer {
 
   private static final Logger LOG = Logger.getLogger(DelegatingClassFileTransformer.class.getName());
-  private static final ClassFileTransformer[] CLASS_FILE_TRANSFORMERS = new ClassFileTransformer[0];
-  private static final ServiceLoader<ClassFileTransformer> TRANSFORMERS = ServiceLoader.load(
-      ClassFileTransformer.class);
+  private static final ClassFileTransformerService[] CLASS_FILE_TRANSFORMERS = new ClassFileTransformerService[0];
+  private static final ServiceLoader<ClassFileTransformerService> TRANSFORMERS = ServiceLoader.load(
+      ClassFileTransformerService.class);
 
-  private final ClassFileTransformer[] transformers;
+  private final ClassFileTransformerService[] transformers;
 
   public DelegatingClassFileTransformer() {
     this(locateClassFileTransformers().toArray(CLASS_FILE_TRANSFORMERS));
   }
 
-  private DelegatingClassFileTransformer(final ClassFileTransformer[] transformers) {
+  private DelegatingClassFileTransformer(final ClassFileTransformerService[] transformers) {
     this.transformers = transformers;
   }
 
-  private static Collection<ClassFileTransformer> locateClassFileTransformers() {
-    Collection<ClassFileTransformer> transformers = new LinkedHashSet<>();
-    int comparableCount = 0;
+  private static Collection<ClassFileTransformerService> locateClassFileTransformers() {
+    Collection<ClassFileTransformerService> transformers = new TreeSet<>();
 
-    for (final ClassFileTransformer transformer : TRANSFORMERS) {
-      if (transformer instanceof Comparable) {
-        comparableCount++;
-      }
+    for (final ClassFileTransformerService transformer : TRANSFORMERS) {
       if (transformers.add(transformer)) {
         LOG.config("ClassFileTransformer located and added: " + transformer.getClass().getName());
-      }
-    }
-
-    if (!transformers.isEmpty()) {
-      if (comparableCount == transformers.size()) {
-        transformers = new TreeSet<>(transformers);
       }
     }
 

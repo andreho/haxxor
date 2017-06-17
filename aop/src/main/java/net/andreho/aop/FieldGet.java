@@ -45,7 +45,7 @@ public @interface FieldGet {
    Methods[] methods() default {};
 
    /**
-    * Which fields read-access should be intercepted
+    * Which read-access should be intercepted
     *
     * @return
     */

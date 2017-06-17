@@ -22,11 +22,14 @@ public class HxTryCatch
   private final String type;
   private volatile HxAnnotated annotated;
 
-  public HxTryCatch(LABEL startLabel, LABEL endLabel, LABEL handler, String type) {
+  public HxTryCatch(LABEL startLabel,
+                    LABEL endLabel,
+                    LABEL handler,
+                    String type) {
     this.startLabel = Objects.requireNonNull(startLabel);
     this.endLabel = Objects.requireNonNull(endLabel);
     this.handler = Objects.requireNonNull(handler);
-    this.type = Objects.requireNonNull(type);
+    this.type = type;
   }
 
   @Override
@@ -64,14 +67,14 @@ public class HxTryCatch
   }
 
   @Override
-  public HxTryCatch setAnnotations(final Collection<HxAnnotation> annotations) {
-    initAnnotated().setAnnotations(annotations);
-    return this;
+  public Collection<HxAnnotation> getAnnotations() {
+    return initAnnotated().getAnnotations();
   }
 
   @Override
-  public Collection<HxAnnotation> getAnnotations() {
-    return initAnnotated().getAnnotations();
+  public HxTryCatch setAnnotations(final Collection<HxAnnotation> annotations) {
+    initAnnotated().setAnnotations(annotations);
+    return this;
   }
 
   @Override
@@ -85,7 +88,8 @@ public class HxTryCatch
   }
 
   @Override
-  public Collection<HxAnnotation> annotations(final Predicate<HxAnnotation> predicate, final boolean recursive) {
+  public Collection<HxAnnotation> annotations(final Predicate<HxAnnotation> predicate,
+                                              final boolean recursive) {
     return initAnnotated().annotations(predicate, recursive);
   }
 }

@@ -29,7 +29,7 @@ public interface ResourceTypeSelector {
    * @param resourceTypes to use
    * @return a best suitable resource type from given resource types
    */
-  static ResourceTypeSelector of(ResourceType... resourceTypes) {
+  static ResourceTypeSelector with(ResourceType... resourceTypes) {
     return new ResourceTypeSelectorImpl(resourceTypes);
   }
 
@@ -39,7 +39,7 @@ public interface ResourceTypeSelector {
    * @param resourceTypes to use
    * @return a best suitable resource type from given resource types
    */
-  static ResourceTypeSelector of(Collection<ResourceType> resourceTypes) {
+  static ResourceTypeSelector with(Collection<ResourceType> resourceTypes) {
     return new ResourceTypeSelectorImpl(resourceTypes);
   }
 }
