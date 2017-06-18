@@ -22,6 +22,7 @@ public interface HxExecutable<E extends HxMember<E> & HxExecutable<E> & HxOwned<
             HxOwned<E>,
             HxGeneric<E>,
             HxOrdered,
+            HxNamed,
             HxProvider {
 
 
@@ -41,6 +42,14 @@ public interface HxExecutable<E extends HxMember<E> & HxExecutable<E> & HxOwned<
    * @return code of this method or constructor
    */
   HxCode getCode();
+
+  /**
+   * @param index
+   * @return
+   */
+  default boolean hasParameterAt(int index) {
+    return index >= 0 && index < getParametersCount();
+  }
 
   /**
    * @param count

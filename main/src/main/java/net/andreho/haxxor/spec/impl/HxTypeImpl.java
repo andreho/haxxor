@@ -517,8 +517,8 @@ public class HxTypeImpl
     List<HxType> result = new ArrayList<>();
     HxType current = this;
     while (current != null) {
-      for (HxType interfaze : current.getInterfaces()) {
-        if (predicate.test(interfaze)) {
+      for (HxType itf : current.getInterfaces()) {
+        if (predicate.test(itf)) {
           result.add(current);
         }
       }

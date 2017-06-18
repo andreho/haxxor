@@ -12,6 +12,8 @@ import net.andreho.haxxor.spec.api.HxModifier;
 import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxTypeReference;
 
+import java.lang.ref.Reference;
+import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -25,11 +27,11 @@ public class HxTypeReferenceImpl
     extends HxAbstractType
     implements HxTypeReference {
 
-  private volatile HxType type;
+  private volatile Reference<HxType> reference;
 
   public HxTypeReferenceImpl(final Haxxor haxxor, final HxType type) {
-    super(haxxor, Objects.requireNonNull(type, "Referenced type can't be null.").getName());
-    this.type = type;
+    super(haxxor, Objects.requireNonNull(type, "Referenced reference can't be null.").getName());
+    this.reference = new WeakReference<>(type);
   }
 
   public HxTypeReferenceImpl(final Haxxor haxxor, final String name) {
@@ -42,7 +44,12 @@ public class HxTypeReferenceImpl
   }
 
   private boolean isAvailable() {
-    return type != null || getHaxxor().hasResolved(getName());
+    return isPresent() || getHaxxor().hasResolved(getName());
+  }
+
+  private boolean isPresent() {
+    Reference<HxType> reference = this.reference;
+    return reference != null && reference.get() != null;
   }
 
   private boolean hasModifiers() {
@@ -56,10 +63,11 @@ public class HxTypeReferenceImpl
 
   @Override
   public HxType toType() {
-    if(this.type == null) {
-      this.type = getHaxxor().resolve(getName());
+    Reference<HxType> reference = this.reference;
+    if(reference == null || reference.get() == null) {
+      this.reference = reference = new WeakReference<>(getHaxxor().resolve(getName()));
     }
-    return type;
+    return reference.get();
   }
 
   @Override
@@ -422,7 +430,7 @@ public class HxTypeReferenceImpl
   @Override
   public Appendable toDescriptor(final Appendable builder) {
     if(isPrimitive()) {
-      return type.toDescriptor(builder);
+      return reference.get().toDescriptor(builder);
     }
     return super.toDescriptor(builder);
   }

@@ -78,7 +78,8 @@ public class AsmExecutableMethodVisitor
     //available for methods only :)
     final HxMethod hxMethod = (HxMethod) this.executable;
     final Consumer consumer = (Consumer<Object>)
-        (defaultValue) -> hxMethod.setDefaultValue(defaultValue);
+        (defaultValue) ->
+            hxMethod.setDefaultValue(defaultValue);
 
     return new HxAnnotationDefaultVisitor(haxxor, consumer, av);
   }
@@ -89,7 +90,8 @@ public class AsmExecutableMethodVisitor
     final AnnotationVisitor av = super.visitAnnotation(desc, visible);
     final HxAnnotation annotation = getHaxxor().createAnnotation(desc, visible);
     final Consumer consumer = (Consumer<HxAnnotation>)
-        (anno) -> this.executable.addAnnotation(anno);
+        (anno) ->
+            this.executable.addAnnotation(anno);
 
     return new HxAnnotationVisitor(annotation, consumer, av);
   }

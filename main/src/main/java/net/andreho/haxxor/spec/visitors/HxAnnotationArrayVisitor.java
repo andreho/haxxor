@@ -143,6 +143,6 @@ public class HxAnnotationArrayVisitor
       array = list.toArray(Constants.EMPTY_HX_ANNOTATION_ARRAY);
     }
 
-    consumer.accept(array == null? HxConstants.EmptyArray.INSTANCE : array);
+    consumer.accept(array == null? HxConstants.EMPTY_ARRAY : array);
   }
 }

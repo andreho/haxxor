@@ -5,6 +5,7 @@ import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.asm.org.objectweb.asm.Type;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxAnnotation;
+import net.andreho.haxxor.spec.api.HxConstants;
 import net.andreho.haxxor.spec.api.HxEnum;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class HxAnnotationDefaultVisitor
 
   private final Haxxor haxxor;
   private final Consumer consumer;
-  private Object value;
+  private Object value = HxConstants.EMPTY_ARRAY;
 
   public HxAnnotationDefaultVisitor(final Haxxor haxxor,
                                     final Consumer consumer,

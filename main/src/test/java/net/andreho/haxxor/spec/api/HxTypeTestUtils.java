@@ -353,14 +353,14 @@ public abstract class HxTypeTestUtils {
         final String message = "Invalid attribute's value: " + name;
 
         if (value instanceof Enum) {
-          checkEnums((Enum) value, hxAnnotation.attribute(name));
+          checkEnums((Enum) value, hxAnnotation.getAttribute(name));
         } else if (value.getClass()
                         .isArray()) {
           checkArrays(method, value, hxAnnotation, message);
         } else if (value instanceof Annotation) {
-          checkAnnotations((Annotation) value, hxAnnotation.attribute(name));
+          checkAnnotations((Annotation) value, hxAnnotation.getAttribute(name));
         } else {
-          assertEquals(value, hxAnnotation.attribute(name), message);
+          assertEquals(value, hxAnnotation.getAttribute(name), message);
         }
       }
     } catch (Exception e) {
@@ -375,29 +375,29 @@ public abstract class HxTypeTestUtils {
     final String name = method.getName();
 
     if (value instanceof boolean[]) {
-      assertTrue(Arrays.equals((boolean[]) value, annotation.attribute(name)), message);
+      assertTrue(Arrays.equals((boolean[]) value, annotation.getAttribute(name)), message);
     } else if (value instanceof byte[]) {
-      assertTrue(Arrays.equals((byte[]) value, annotation.attribute(name)), message);
+      assertTrue(Arrays.equals((byte[]) value, annotation.getAttribute(name)), message);
     } else if (value instanceof char[]) {
-      assertTrue(Arrays.equals((char[]) value, annotation.attribute(name)), message);
+      assertTrue(Arrays.equals((char[]) value, annotation.getAttribute(name)), message);
     } else if (value instanceof short[]) {
-      assertTrue(Arrays.equals((short[]) value, annotation.attribute(name)), message);
+      assertTrue(Arrays.equals((short[]) value, annotation.getAttribute(name)), message);
     } else if (value instanceof int[]) {
-      assertTrue(Arrays.equals((int[]) value, annotation.attribute(name)), message);
+      assertTrue(Arrays.equals((int[]) value, annotation.getAttribute(name)), message);
     } else if (value instanceof float[]) {
-      assertTrue(Arrays.equals((float[]) value, annotation.attribute(name)), message);
+      assertTrue(Arrays.equals((float[]) value, annotation.getAttribute(name)), message);
     } else if (value instanceof long[]) {
-      assertTrue(Arrays.equals((long[]) value, annotation.attribute(name)), message);
+      assertTrue(Arrays.equals((long[]) value, annotation.getAttribute(name)), message);
     } else if (value instanceof double[]) {
-      assertTrue(Arrays.equals((double[]) value, annotation.attribute(name)), message);
+      assertTrue(Arrays.equals((double[]) value, annotation.getAttribute(name)), message);
     } else if (value instanceof String[]) {
-      assertTrue(Arrays.equals((String[]) value, annotation.attribute(name)), message);
+      assertTrue(Arrays.equals((String[]) value, annotation.getAttribute(name)), message);
     } else if (value instanceof Enum[]) {
-      checkEnumArrays((Enum[]) value, annotation.attribute(name));
+      checkEnumArrays((Enum[]) value, annotation.getAttribute(name));
     } else if (value instanceof Class[]) {
-      checkClassArrays((Class[]) value, (HxType[]) annotation.attribute(name));
+      checkClassArrays((Class[]) value, (HxType[]) annotation.getAttribute(name));
     } else if (value instanceof Annotation[]) {
-      checkAnnotations((Annotation[]) value, annotation.attribute(name));
+      checkAnnotations((Annotation[]) value, annotation.getAttribute(name));
     }
   }
 

@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * <br/>Created by a.hofmann on 04.06.2015.<br/>
  */
-public final class HxEnum {
+public final class HxEnum implements HxNamed, HxTyped, HxOrdered {
   private final HxType type;
   private final String name;
   private volatile Enum<?> fetchedEnum;
@@ -79,10 +79,17 @@ public final class HxEnum {
     return result;
   }
 
+  @Override
+  public int getIndex() {
+    return getType().findField(getName()).map(HxField::getIndex).orElse(-1);
+  }
+
+  @Override
   public HxType getType() {
     return type;
   }
 
+  @Override
   public String getName() {
     return name;
   }

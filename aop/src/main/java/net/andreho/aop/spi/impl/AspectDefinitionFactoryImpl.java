@@ -1,0 +1,108 @@
+package net.andreho.aop.spi.impl;
+
+import net.andreho.aop.spi.AspectDefinition;
+import net.andreho.aop.spi.AspectDefinitionFactory;
+import net.andreho.aop.spi.AspectTypeMatcherFactory;
+import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.spec.api.HxAnnotation;
+import net.andreho.haxxor.spec.api.HxConstructor;
+import net.andreho.haxxor.spec.api.HxExecutable;
+import net.andreho.haxxor.spec.api.HxMethod;
+import net.andreho.haxxor.spec.api.HxType;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+/**
+ * <br/>Created by a.hofmann on 18.06.2017 at 02:41.
+ */
+public class AspectDefinitionFactoryImpl
+    implements AspectDefinitionFactory,
+               Constants {
+
+  private final AspectTypeMatcherFactory aspectTypeMatcherFactory;
+
+  public AspectDefinitionFactoryImpl(final AspectTypeMatcherFactory aspectTypeMatcherFactory) {
+    this.aspectTypeMatcherFactory = aspectTypeMatcherFactory;
+  }
+
+  public AspectTypeMatcherFactory getAspectTypeMatcherFactory() {
+    return aspectTypeMatcherFactory;
+  }
+
+  @Override
+  public AspectDefinition create(final Haxxor haxxor,
+                                 final HxType type) {
+
+    final Optional<HxAnnotation> aspectOptional = type.getAnnotation(ASPECT_ANNOTATION_TYPE);
+    if (!aspectOptional.isPresent()) {
+      return null;
+    }
+
+    final HxAnnotation aspectAnnotation = aspectOptional.get();
+    final Map<String, List<String>> parameters = extractParameters(aspectAnnotation);
+    final Optional<HxExecutable<?>> aspectFactory = findAspectFactory(type);
+    final String prefix = "__"; // aspectAnnotation.getAttribute("prefix", "__$");
+    final String suffix = "__"; // aspectAnnotation.getAttribute("suffix", "$__");
+
+    return new AspectDefinitionImpl(
+        type,
+        prefix,
+        suffix,
+        parameters,
+        getAspectTypeMatcherFactory().create(type),
+        aspectFactory,
+        getAspectTypeMatcherFactory(),
+        Collections.emptyList()
+    );
+  }
+
+  protected Map<String, List<String>> extractParameters(HxAnnotation aspectAnnotation) {
+    final Map<String, List<String>> parameters = new LinkedHashMap<>();
+    final HxAnnotation[] parametersArray = aspectAnnotation.getAttribute("parameters", EMPTY_ANNOTATION_ARRAY);
+
+    for (HxAnnotation parameterAnnotation : parametersArray) {
+      String name = parameterAnnotation.getAttribute("name");
+      String[] value = parameterAnnotation.getAttribute("value", EMPTY_STRING_ARRAY);
+      parameters.computeIfAbsent(name, (key) -> new ArrayList<>()).addAll(Arrays.asList(value));
+    }
+
+    return parameters.isEmpty() ? Collections.emptyMap() : Collections.unmodifiableMap(parameters);
+  }
+
+  protected Optional<HxExecutable<?>> findAspectFactory(final HxType aspectType) {
+    final Collection<HxConstructor> constructorFactories =
+        aspectType.constructors((c) -> c.isAnnotationPresent(ASPECT_FACTORY_ANNOTATION_TYPE));
+    final Collection<HxMethod> methodFactories =
+        aspectType.methods((m) -> m.isAnnotationPresent(ASPECT_FACTORY_ANNOTATION_TYPE));
+
+    if (!constructorFactories.isEmpty()) {
+      if (constructorFactories.size() != 1 || !methodFactories.isEmpty()) {
+        throw new IllegalStateException("There are more than one aspect factory: " + aspectType);
+      }
+      HxConstructor constructor = constructorFactories.iterator().next();
+      if (!constructor.isPublic()) {
+        throw new IllegalStateException("Defined constructor-factory isn't public: " + constructor);
+      }
+      return Optional.of(constructor);
+    }
+
+    if (!methodFactories.isEmpty()) {
+      if (methodFactories.size() != 1) {
+        throw new IllegalStateException("There are more than one aspect factory: " + aspectType);
+      }
+      HxMethod method = methodFactories.iterator().next();
+      if (!method.isPublic() || !method.isStatic()) {
+        throw new IllegalStateException("Defined method-factory isn't public or static: " + method);
+      }
+      return Optional.of(method);
+    }
+    return Optional.empty();
+  }
+}

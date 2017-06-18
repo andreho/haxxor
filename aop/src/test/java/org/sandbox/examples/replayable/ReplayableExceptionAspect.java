@@ -1,17 +1,17 @@
 package org.sandbox.examples.replayable;
 
-import net.andreho.aop.AspectFactory;
-import net.andreho.aop.Catch;
-import net.andreho.aop.Redefine;
-import net.andreho.aop.injectable.Args;
-import net.andreho.aop.injectable.Caught;
-import net.andreho.aop.injectable.Intercepted;
-import net.andreho.aop.injectable.Line;
-import net.andreho.aop.injectable.This;
-import net.andreho.aop.spec.Annotated;
-import net.andreho.aop.spec.ClassWith;
-import net.andreho.aop.spec.Classes;
-import net.andreho.aop.spec.Methods;
+import net.andreho.aop.api.Aspect;
+import net.andreho.aop.api.Catch;
+import net.andreho.aop.api.Redefine;
+import net.andreho.aop.api.injectable.Args;
+import net.andreho.aop.api.injectable.Caught;
+import net.andreho.aop.api.injectable.Intercepted;
+import net.andreho.aop.api.injectable.Line;
+import net.andreho.aop.api.injectable.This;
+import net.andreho.aop.api.spec.Annotated;
+import net.andreho.aop.api.spec.ClassWith;
+import net.andreho.aop.api.spec.Classes;
+import net.andreho.aop.api.spec.Methods;
 
 import java.lang.reflect.Executable;
 
@@ -24,7 +24,7 @@ import java.lang.reflect.Executable;
 //)
 public class ReplayableExceptionAspect {
 
-  @AspectFactory
+  @Aspect.Factory
   public ReplayableExceptionAspect() {
 
   }

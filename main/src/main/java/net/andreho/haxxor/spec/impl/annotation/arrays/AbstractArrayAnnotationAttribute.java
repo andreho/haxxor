@@ -26,7 +26,7 @@ public abstract class AbstractArrayAnnotationAttribute<V, T> extends AbstractAnn
     if(value == null) {
       return builder.append("null").toString();
     }
-    if(value == HxConstants.EmptyArray.INSTANCE) {
+    if(value == HxConstants.EMPTY_ARRAY) {
       return builder.append("[]").toString();
     }
 

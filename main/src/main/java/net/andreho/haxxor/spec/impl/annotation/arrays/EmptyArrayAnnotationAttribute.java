@@ -22,7 +22,7 @@ public class EmptyArrayAnnotationAttribute
 
   @Override
   public boolean hasValue(final Object o) {
-    if(o == HxConstants.EmptyArray.INSTANCE) {
+    if(o == HxConstants.EMPTY_ARRAY) {
       return true;
     }
     if(o != null && o.getClass().isArray()) {
@@ -38,6 +38,9 @@ public class EmptyArrayAnnotationAttribute
 
   @Override
   public Object original(final Class<?> type) {
+    if(type.isArray()) {
+      return original(type.getComponentType());
+    }
     return Array.newInstance(type, 0);
   }
 }

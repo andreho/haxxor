@@ -1,7 +1,7 @@
 package net.andreho.aop.spi.impl;
 
-import net.andreho.aop.Aspect;
-import net.andreho.aop.Aspects;
+import net.andreho.aop.api.Aspect;
+import net.andreho.aop.api.Aspects;
 import net.andreho.asm.org.objectweb.asm.AnnotationVisitor;
 import net.andreho.asm.org.objectweb.asm.ClassVisitor;
 import net.andreho.asm.org.objectweb.asm.Opcodes;

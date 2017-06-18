@@ -707,13 +707,17 @@ public interface HxType
   /**
    * @return
    */
-  Collection<HxField> fields();
+  default Collection<HxField> fields() {
+    return fields((f) -> true);
+  }
 
   /**
    * @param predicate
    * @return
    */
-  Collection<HxField> fields(Predicate<HxField> predicate);
+  default Collection<HxField> fields(Predicate<HxField> predicate) {
+    return fields(predicate, false);
+  }
 
   /**
    * @param predicate
@@ -728,13 +732,17 @@ public interface HxType
   /**
    * @return
    */
-  Collection<HxMethod> methods();
+  default Collection<HxMethod> methods() {
+    return methods((m) -> true);
+  }
 
   /**
    * @param predicate
    * @return
    */
-  Collection<HxMethod> methods(Predicate<HxMethod> predicate);
+  default Collection<HxMethod> methods(Predicate<HxMethod> predicate) {
+    return methods(predicate, false);
+  }
 
   /**
    * @param predicate
@@ -749,13 +757,17 @@ public interface HxType
   /**
    * @return
    */
-  Collection<HxConstructor> constructors();
+  default Collection<HxConstructor> constructors() {
+    return constructors((c) -> true);
+  }
 
   /**
    * @param predicate
    * @return
    */
-  Collection<HxConstructor> constructors(Predicate<HxConstructor> predicate);
+  default Collection<HxConstructor> constructors(Predicate<HxConstructor> predicate) {
+    return constructors(predicate, false);
+  }
 
   /**
    * @param predicate
@@ -770,13 +782,17 @@ public interface HxType
   /**
    * @return
    */
-  Collection<HxType> types();
+  default Collection<HxType> types() {
+    return types((t) -> true);
+  }
 
   /**
    * @param predicate
    * @return
    */
-  Collection<HxType> types(Predicate<HxType> predicate);
+  default Collection<HxType> types(Predicate<HxType> predicate) {
+    return types(predicate, false);
+  }
 
   /**
    * @param predicate
@@ -791,13 +807,17 @@ public interface HxType
   /**
    * @return
    */
-  Collection<HxType> interfaces();
+  default Collection<HxType> interfaces() {
+    return interfaces((i) -> true);
+  }
 
   /**
    * @param predicate
    * @return
    */
-  Collection<HxType> interfaces(Predicate<HxType> predicate);
+  default Collection<HxType> interfaces(Predicate<HxType> predicate) {
+    return interfaces(predicate, false);
+  }
 
   /**
    * @param predicate

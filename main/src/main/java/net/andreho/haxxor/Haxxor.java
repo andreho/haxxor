@@ -28,6 +28,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * This class is <b>NOT THREAD-SAFE.</b>
@@ -41,6 +44,7 @@ public class Haxxor
   private static final Logger LOG = LoggerFactory.getLogger(Haxxor.class.getName());
 
   private final int flags;
+  private final ReadWriteLock readWriteLock;
   private final HxByteCodeLoader byteCodeLoader;
   private final Map<String, HxType> resolvedCache;
   private final Map<String, HxTypeReference> referenceCache;
@@ -49,6 +53,52 @@ public class Haxxor
   private final HxTypeInterpreter typeInterpreter;
   private final HxElementFactory elementFactory;
   private final HxTypeInitializer typeInitializer;
+  private final boolean concurrent;
+
+  /**
+   * <br/>Created by a.hofmann on 30.05.2017 at 12:45.
+   */
+  public static abstract class Flags {
+
+    /**
+     * Flag to skip method code. If this class is set <code>CODE</code>
+     * attribute won't be visited. This can be used, for example, to retrieve
+     * annotations for methods and method parameters.
+     */
+    public static final int SKIP_CODE = 1;
+
+    /**
+     * Flag to skip the debug information in the class. If this flag is set the
+     * debug information of the class is not visited, i.e. the
+     * {@link MethodVisitor#visitLocalVariable visitLocalVariable} and
+     * {@link MethodVisitor#visitLineNumber visitLineNumber} methods will not be
+     * called.
+     */
+    public static final int SKIP_DEBUG = 2;
+
+    /**
+     * Flag to skip the stack map frames in the class. If this flag is set the
+     * stack map frames of the class is not visited, i.e. the
+     * {@link MethodVisitor#visitFrame visitFrame} method will not be called.
+     * This flag is useful when the {@link ClassWriter#COMPUTE_FRAMES} option is
+     * used: it avoids visiting frames that will be ignored and recomputed from
+     * scratch in the class writer.
+     */
+    public static final int SKIP_FRAMES = 4;
+
+//    /**
+//     * Flag to expand the stack map frames. By default stack map frames are
+//     * visited in their original format (i.e. "expanded" for classes whose
+//     * version is less than V1_6, and "compressed" for the other classes). If
+//     * this flag is set, stack map frames are always visited in expanded format
+//     * (this option adds a decompression/recompression step in ClassReader and
+//     * ClassWriter which degrades performances quite a lot).
+//     */
+//    public static final int EXPAND_FRAMES = 8;
+
+    private Flags() {
+    }
+  }
 
   public Haxxor() {
     this(0, new HaxxorBuilder(Haxxor.class.getClassLoader()));
@@ -67,7 +117,6 @@ public class Haxxor
   }
 
   /**
-   *
    * @param flags
    * @param classLoader
    * @see Haxxor.Flags
@@ -90,7 +139,8 @@ public class Haxxor
     this.elementFactory = builder.createElementFactory(this);
     this.typeInterpreter = builder.createTypeInterpreter(this);
     this.classNameNormalizer = builder.createClassNameNormalizer(this);
-
+    this.readWriteLock = new ReentrantReadWriteLock();
+    this.concurrent = builder.isConcurrent();
     initialize();
   }
 
@@ -259,17 +309,14 @@ public class Haxxor
    */
   public HxTypeReference reference(String typeName) {
     checkClassLoaderAvailability();
-
     typeName = toNormalizedClassname(typeName);
-    HxTypeReference reference = this.referenceCache.get(typeName);
+    HxTypeReference reference = fetchSynchronizedReferenceCache(typeName);
 
     if (reference == null) {
-      reference = createReference(typeName);
-      this.referenceCache.put(typeName, reference);
-
       if (LOG.isDebugEnabled()) {
         LOG.debug("New reference: {}", typeName);
       }
+      return storeSynchronizedReference(typeName, createReference(typeName));
     }
 
     return reference;
@@ -330,23 +377,24 @@ public class Haxxor
    * @implNote resolution means that the corresponding <code>*.class</code> file is loaded, parsed according to given
    * options and represented as a {@link HxType}
    */
-  public HxType resolve(String typeName, int options) {
+  public HxType resolve(String typeName,
+                        int options) {
     checkClassLoaderAvailability();
     typeName = toNormalizedClassname(typeName);
-    HxType type = this.resolvedCache.get(typeName);
+    HxType type = fetchSynchronizedResolvedCache(typeName);
 
     if (type != null) {
       return type;
     }
 
     if (isArray(typeName)) {
-      type = new HxArrayTypeImpl(this, typeName);
-      register(typeName, type);
-    } else {
-      type = resolveInternally(typeName, options, getByteCodeLoader().load(typeName));
+      return register(typeName, new HxArrayTypeImpl(this, typeName));
     }
-
-    return type;
+    return resolveInternally(
+            typeName,
+            options,
+            getByteCodeLoader().load(typeName)
+    );
   }
 
   /**
@@ -355,10 +403,12 @@ public class Haxxor
    * @param byteCode
    * @return
    */
-  public HxType resolve(String typeName, int options, byte[] byteCode) {
+  public HxType resolve(String typeName,
+                        int options,
+                        byte[] byteCode) {
     checkClassLoaderAvailability();
     typeName = toNormalizedClassname(typeName);
-    HxType type = this.resolvedCache.get(typeName);
+    HxType type = fetchSynchronizedResolvedCache(typeName);
 
     if (type != null) {
       return type;
@@ -367,29 +417,127 @@ public class Haxxor
     return readClass(byteCode, options);
   }
 
-  private HxType resolveInternally(String typeName, int options, byte[] byteCode) {
-    HxType type = readClass(byteCode, options);
-    register(typeName, type);
+  protected HxType fetchSynchronizedResolvedCache(final String typeName) {
+    if(!concurrent) {
+      return readResolvedCache(typeName);
+    }
 
+    return readResolvedCacheGuarded(typeName);
+  }
+
+  private HxType readResolvedCacheGuarded(final String typeName) {
+    final Lock lock = readWriteLock.readLock();
+    lock.lock();
+    try {
+      return readResolvedCache(typeName);
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  private HxType readResolvedCache(final String typeName) {
+    return this.resolvedCache.get(typeName);
+  }
+
+  protected HxTypeReference fetchSynchronizedReferenceCache(final String typeName) {
+    if(!concurrent) {
+      return readReferenceCache(typeName);
+    }
+
+    return readReferenceCacheGuarded(typeName);
+  }
+
+  private HxTypeReference readReferenceCacheGuarded(final String typeName) {
+    final Lock lock = readWriteLock.readLock();
+    lock.lock();
+    try {
+      return readReferenceCache(typeName);
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  private HxTypeReference readReferenceCache(final String typeName) {
+    return this.referenceCache.get(typeName);
+  }
+
+  private HxType resolveInternally(String typeName,
+                                   int options,
+                                   byte[] byteCode) {
+    HxType type = readClass(byteCode, options);
     if (LOG.isDebugEnabled()) {
       LOG.debug("New type: {}", typeName);
     }
-
-    return type;
+    return register(typeName, type);
   }
 
   /**
    * Registers the given type/reference with the provided typename
+   *
    * @param typeName to use as key
-   * @param type to register
+   * @param type     to register
+   * @return the actually registered type
    */
-  public void register(final String typeName,
-                       final HxType type) {
-    if(type.isReference()) {
-      this.referenceCache.putIfAbsent(typeName, type.toReference());
-    } else {
-      this.resolvedCache.putIfAbsent(typeName, type);
+  public HxType register(final String typeName,
+                         final HxType type) {
+    if (type.isReference()) {
+      return storeSynchronizedReference(typeName, type.toReference());
     }
+    return storeSynchronizedResolved(typeName, type);
+  }
+
+  protected HxTypeReference storeSynchronizedReference(final String typeName,
+                                                       final HxTypeReference reference) {
+    if(!concurrent) {
+      return writeToReferenceCache(typeName, reference);
+    }
+
+    return writeToReferenceCacheGuarded(typeName, reference);
+  }
+
+  private HxTypeReference writeToReferenceCacheGuarded(final String typeName,
+                                                       final HxTypeReference reference) {
+    final Lock lock = readWriteLock.writeLock();
+    lock.lock();
+    try {
+      return writeToReferenceCache(typeName, reference);
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  private static  <T> T notNull(T current, T notNull) {
+    return current == null? notNull : current;
+  }
+
+  private HxTypeReference writeToReferenceCache(final String typeName,
+                                                final HxTypeReference reference) {
+    return notNull(this.referenceCache.putIfAbsent(typeName, reference), reference);
+  }
+
+  protected HxType storeSynchronizedResolved(final String typeName,
+                                             final HxType resolved) {
+    if(!concurrent) {
+      return writeToResolvedCache(typeName, resolved);
+    }
+
+    return writeToResolvedCacheGuarded(typeName, resolved);
+  }
+
+  private HxType writeToResolvedCacheGuarded(final String typeName,
+                                             final HxType resolved) {
+    final Lock lock = readWriteLock.writeLock();
+    lock.lock();
+    try {
+      return writeToResolvedCache(typeName, resolved);
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  private HxType writeToResolvedCache(final String typeName,
+                                      final HxType resolved) {
+    return notNull(this.resolvedCache.putIfAbsent(typeName, resolved), resolved);
   }
 
   private void checkClassLoaderAvailability() {
@@ -477,50 +625,5 @@ public class Haxxor
     }
 
     return builder.toString();
-  }
-
-  /**
-   * <br/>Created by a.hofmann on 30.05.2017 at 12:45.
-   */
-  public static abstract class Flags {
-
-    /**
-     * Flag to skip method code. If this class is set <code>CODE</code>
-     * attribute won't be visited. This can be used, for example, to retrieve
-     * annotations for methods and method parameters.
-     */
-    public static final int SKIP_CODE = 1;
-
-    /**
-     * Flag to skip the debug information in the class. If this flag is set the
-     * debug information of the class is not visited, i.e. the
-     * {@link MethodVisitor#visitLocalVariable visitLocalVariable} and
-     * {@link MethodVisitor#visitLineNumber visitLineNumber} methods will not be
-     * called.
-     */
-    public static final int SKIP_DEBUG = 2;
-
-    /**
-     * Flag to skip the stack map frames in the class. If this flag is set the
-     * stack map frames of the class is not visited, i.e. the
-     * {@link MethodVisitor#visitFrame visitFrame} method will not be called.
-     * This flag is useful when the {@link ClassWriter#COMPUTE_FRAMES} option is
-     * used: it avoids visiting frames that will be ignored and recomputed from
-     * scratch in the class writer.
-     */
-    public static final int SKIP_FRAMES = 4;
-
-//    /**
-//     * Flag to expand the stack map frames. By default stack map frames are
-//     * visited in their original format (i.e. "expanded" for classes whose
-//     * version is less than V1_6, and "compressed" for the other classes). If
-//     * this flag is set, stack map frames are always visited in expanded format
-//     * (this option adds a decompression/recompression step in ClassReader and
-//     * ClassWriter which degrades performances quite a lot).
-//     */
-//    public static final int EXPAND_FRAMES = 8;
-
-    private Flags() {
-    }
   }
 }

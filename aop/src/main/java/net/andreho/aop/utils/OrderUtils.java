@@ -1,6 +1,6 @@
 package net.andreho.aop.utils;
 
-import net.andreho.aop.Order;
+import net.andreho.aop.api.Order;
 
 import java.util.Comparator;
 import java.util.Objects;

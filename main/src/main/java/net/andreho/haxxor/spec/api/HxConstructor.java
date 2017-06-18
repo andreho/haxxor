@@ -14,6 +14,11 @@ public interface HxConstructor
    */
   HxConstructor clone();
 
+  @Override
+  default String getName() {
+    return "<init>";
+  }
+
   /**
    * Modifiers available for a constructor
    */

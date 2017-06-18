@@ -2,6 +2,7 @@ package net.andreho.aop.service;
 
 import net.andreho.agent.ClassFileTransformerService;
 import net.andreho.aop.utils.OrderUtils;
+import net.andreho.asm.org.objectweb.asm.ClassReader;
 
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
@@ -29,13 +30,25 @@ public class AopClassFileTransformer
                           final byte[] classfileBuffer)
   throws IllegalClassFormatException {
 
-    if(loader != null) {
-      AopTypeTransformerEntry entry = initEntry(loader); //.installAspects(loader)
-      if (className != null && isSupportedPackage(className)) {
-        return entry.execute(loader, className, classBeingRedefined, protectionDomain, classfileBuffer);
+    if(loader != null) { //if null => bootstrap loader -> skip
+      //This must be done early on load so we don't have dead-locks.
+      AopTypeTransformerEntry entry = initEntry(loader);
+      String typeName = className;
+
+      if(typeName == null) { //=> anonymous class -> skip or not?
+        typeName = extractClassname(classfileBuffer);
+      }
+
+      if (typeName != null && isSupportedPackage(typeName)) {
+        return entry.execute(loader, typeName, classBeingRedefined, protectionDomain, classfileBuffer);
       }
     }
     return null;
+  }
+
+  private static String extractClassname(final byte[] bytecode) {
+    //This can be very expensive!
+    return new ClassReader(bytecode).getClassName();
   }
 
   private AopTypeTransformerEntry initEntry(final ClassLoader classLoader) {
@@ -44,10 +57,15 @@ public class AopClassFileTransformer
       return entry;
     }
 
-    boolean newEntry = false;
-    final Lock writeLock = getWriteLock();
-    writeLock.lock();
+    return createEntry(classLoader);
+  }
 
+  private AopTypeTransformerEntry createEntry(final ClassLoader classLoader) {
+    final Lock writeLock = getWriteLock();
+    AopTypeTransformerEntry entry;
+    boolean newEntry = false;
+
+    writeLock.lock();
     try {
       entry = getEntry(classLoader);
       if (entry == null) {

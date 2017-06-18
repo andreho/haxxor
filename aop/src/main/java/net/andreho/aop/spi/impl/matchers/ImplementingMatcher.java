@@ -1,0 +1,67 @@
+package net.andreho.aop.spi.impl.matchers;
+
+import net.andreho.aop.spi.AspectMatcher;
+import net.andreho.haxxor.spec.api.HxType;
+
+import java.util.Collection;
+import java.util.List;
+
+/**
+ * <br/>Created by a.hofmann on 17.06.2017 at 01:34.
+ */
+public class ImplementingMatcher
+    extends DisjunctionMatcher<HxType> {
+
+  public ImplementingMatcher(final Collection<AspectMatcher<HxType>> collection) {
+    super(collection);
+  }
+
+  public ImplementingMatcher(final AspectMatcher<HxType>[] array) {
+    super(array);
+  }
+
+  private boolean hasImplementing(final List<HxType> interfaces) {
+    for(HxType itf : interfaces) {
+      if(hasImplementing(itf)) {
+        return true;
+      }
+    }
+
+    for(HxType itf : interfaces) {
+      if(match(itf)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private boolean hasImplementing(final HxType itf) {
+    for(AspectMatcher<HxType> fragment : array) {
+      if(fragment.match(itf)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public boolean match(final HxType type) {
+    HxType current = type;
+    while (true) {
+      if(hasImplementing(current.getInterfaces())) {
+        return true;
+      }
+      if(!current.hasSuperType()) {
+        break;
+      }
+      current = current.getSuperType().get();
+    }
+    return false;
+  }
+
+  @Override
+  public String toString() {
+    return "IMPLEMENTING " + super.toString();
+  }
+}

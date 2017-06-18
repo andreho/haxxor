@@ -98,7 +98,7 @@ public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>
       final Optional<HxAnnotation> optional = repeatableAnnotationType.getAnnotation(REPEATABLE_ANNOTATION_CLASS);
 
       if (optional.isPresent()) {
-        repeatableType = optional.get().attribute("value");
+        repeatableType = optional.get().getAttribute("value");
         break;
       }
     }
@@ -107,7 +107,7 @@ public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>
       final Optional<HxAnnotation> optional = getAnnotation(repeatableType);
 
       if (optional.isPresent()) {
-        HxAnnotation[] annotations = optional.get().attribute("value");
+        HxAnnotation[] annotations = optional.get().getAttribute("value");
         return new ArrayList<>(Arrays.asList(annotations));
       }
     } else {

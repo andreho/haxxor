@@ -1,18 +1,17 @@
 package org.sandbox.examples.log;
 
-import net.andreho.aop.Aspect;
-import net.andreho.aop.Forwarding;
-import net.andreho.aop.Modify;
-import net.andreho.aop.injectable.Arg;
-import net.andreho.aop.injectable.Attribute;
-import net.andreho.aop.spec.Annotated;
-import net.andreho.aop.spec.ClassWith;
-import net.andreho.aop.spec.Classes;
-import net.andreho.aop.spec.Methods;
-import net.andreho.aop.spec.Modifier;
-import net.andreho.aop.spec.Modifiers;
-import net.andreho.aop.spec.Named;
-import net.andreho.aop.spec.Scope;
+import net.andreho.aop.api.Aspect;
+import net.andreho.aop.api.Forwarding;
+import net.andreho.aop.api.Modify;
+import net.andreho.aop.api.injectable.Arg;
+import net.andreho.aop.api.injectable.Attribute;
+import net.andreho.aop.api.spec.Annotated;
+import net.andreho.aop.api.spec.ClassWith;
+import net.andreho.aop.api.spec.Classes;
+import net.andreho.aop.api.spec.Methods;
+import net.andreho.aop.api.spec.Modifier;
+import net.andreho.aop.api.spec.Modifiers;
+import net.andreho.aop.api.spec.Named;
 import net.andreho.asm.org.objectweb.asm.Type;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.cgen.HxInstruction;
@@ -32,7 +31,6 @@ import java.util.Optional;
  * <br/>Created by a.hofmann on 23.03.2017 at 19:34.
  */
 @Aspect(
-    scope = {Scope.TYPE},
     classes = @Classes(
         @ClassWith(
             modifiers = @Modifier(value = Modifiers.ABSTRACT | Modifiers.INTERFACE, negate = true),
@@ -51,7 +49,7 @@ public class LogAspect {
     }
 
     HxAnnotation annotation = optional.get();
-    String logFieldName = annotation.attribute("value");
+    String logFieldName = annotation.getAttribute("value");
 
     if (hxType.hasField(logFieldName)) {
       return false;

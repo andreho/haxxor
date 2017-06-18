@@ -37,6 +37,7 @@ import net.andreho.haxxor.spec.impl.annotation.arrays.SubAnnotationArrayAttribut
 import java.lang.annotation.ElementType;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -53,7 +54,7 @@ public class HxAnnotationImpl
   private static final Class<Target> TARGET_ANNOTATION_TYPE = Target.class;
 
   protected final HxType type;
-  protected boolean visible;
+  protected final boolean visible;
   protected Map<String, HxAnnotationAttribute<?, ?>> attributeMap;
 
   public HxAnnotationImpl(HxType type,
@@ -97,7 +98,7 @@ public class HxAnnotationImpl
     Optional<HxAnnotation> targetAnnotation = getType().getAnnotation(TARGET_ANNOTATION_TYPE);
     if(targetAnnotation.isPresent()) {
       HxAnnotation annotation = targetAnnotation.get();
-      HxEnum[] hxEnums = annotation.attribute("value");
+      HxEnum[] hxEnums = annotation.getAttribute("value");
       return HxEnum.toEnumArray(ElementType.class, hxEnums);
     }
     return new ElementType[0];
@@ -124,18 +125,39 @@ public class HxAnnotationImpl
   }
 
   @Override
-  public <V> V attribute(String name) {
+  public <V> V getAttribute(String name) {
     final HxAnnotationAttribute<?, ?> attribute = attributeMap.get(name);
 
     if (attribute != null) {
       return (V) attribute.getValue();
     }
 
-    return defaultAttribute(name);
+    return getDefaultAttribute(name);
   }
 
   @Override
-  public <V> V defaultAttribute(final String name) {
+  public <V> V getAttribute(final String name,
+                            final V defaultValue) {
+    Object attribute = getAttribute(name);
+    if(attribute == null || attribute == HxConstants.EMPTY_ARRAY) {
+      return defaultValue;
+    }
+    return (V) attribute;
+  }
+
+  @Override
+  public <V> V getAttribute(final String name,
+                            final Class<V> type) {
+    Object attribute = getAttribute(name);
+    //Sometimes possible
+    if(type.isArray() && attribute == HxConstants.EMPTY_ARRAY) {
+      attribute = Array.newInstance(type.getComponentType(), 0);
+    }
+    return type.cast(attribute);
+  }
+
+  @Override
+  public <V> V getDefaultAttribute(final String name) {
     HxMethod method =
         getType().findMethod(name)
                  .orElseThrow(() ->
@@ -143,7 +165,7 @@ public class HxAnnotationImpl
                                       "Method for annotation's attribute not found: " +name
                                   )
                  );
-    return (V) method.getDeclaringMember();
+    return (V) method.getDefaultValue();
   }
 
   private HxAnnotation set(String name,
@@ -359,7 +381,7 @@ public class HxAnnotationImpl
 
   @Override
   public HxAnnotation attribute(final String name,
-                                final HxConstants.EmptyArray value) {
+                                final HxConstants.EmptyArray[] value) {
     return set(name, new EmptyArrayAnnotationAttribute(name, value));
   }
 
@@ -383,7 +405,7 @@ public class HxAnnotationImpl
     for (Map.Entry<String, HxAnnotationAttribute<?, ?>> entry : getAttributeMap().entrySet()) {
       final HxAnnotationAttribute<?, ?> attribute = entry.getValue();
       if(!other.hasAttribute(attribute.getName()) ||
-         !attribute.hasValue(other.attribute(attribute.getName()))) {
+         !attribute.hasValue(other.getAttribute(attribute.getName()))) {
 
         return false;
       }

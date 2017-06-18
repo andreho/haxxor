@@ -336,29 +336,9 @@ public class HxAbstractType
   }
 
   @Override
-  public Collection<HxField> fields() {
-    return fields((f) -> true);
-  }
-
-  @Override
-  public Collection<HxField> fields(Predicate<HxField> predicate) {
-    return fields(predicate, false);
-  }
-
-  @Override
   public Collection<HxField> fields(Predicate<HxField> predicate, boolean recursive) {
     //NO OP
     return Collections.emptySet();
-  }
-
-  @Override
-  public Collection<HxMethod> methods() {
-    return methods((m) -> true);
-  }
-
-  @Override
-  public Collection<HxMethod> methods(Predicate<HxMethod> predicate) {
-    return methods(predicate, false);
   }
 
   @Override
@@ -368,45 +348,15 @@ public class HxAbstractType
   }
 
   @Override
-  public Collection<HxConstructor> constructors() {
-    return constructors((c) -> true);
-  }
-
-  @Override
-  public Collection<HxConstructor> constructors(Predicate<HxConstructor> predicate) {
-    return constructors(predicate, false);
-  }
-
-  @Override
   public Collection<HxConstructor> constructors(Predicate<HxConstructor> predicate, boolean recursive) {
     //NO OP
     return Collections.emptySet();
   }
 
   @Override
-  public Collection<HxType> types() {
-    return types((t) -> true);
-  }
-
-  @Override
-  public Collection<HxType> types(Predicate<HxType> predicate) {
-    return types(predicate, false);
-  }
-
-  @Override
   public Collection<HxType> types(Predicate<HxType> predicate, boolean recursive) {
     //NO OP
     return Collections.emptySet();
-  }
-
-  @Override
-  public Collection<HxType> interfaces() {
-    return interfaces((i) -> true);
-  }
-
-  @Override
-  public Collection<HxType> interfaces(Predicate<HxType> predicate) {
-    return interfaces(predicate, false);
   }
 
   @Override

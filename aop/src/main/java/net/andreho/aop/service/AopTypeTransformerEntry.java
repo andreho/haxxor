@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 /**
@@ -37,7 +36,6 @@ public final class AopTypeTransformerEntry {
   private static final Activator[] EMPTY_ACTIVATORS = {};
   private static final String SERVICE_LOADER_NAME = "java.util.ServiceLoader";
 
-  private final AtomicBoolean installingAspects = new AtomicBoolean();
   private volatile PackageFilter filter;
   private volatile Activator activator;
   private volatile Collection<String> aspects;
@@ -78,30 +76,36 @@ public final class AopTypeTransformerEntry {
       if (!filter(loader, className)) {
         return null;
       }
+
       activator = fetchActivator(loader);
+
+      if (activator == null) {
+        return null;
+      }
     } catch (Exception e) {
       throw new IllegalStateException("Failed at: " + className, e);
     }
 
-    if (activator == null) {
-      return null;
+    if(!activator.wasActivated()) {
+      activator.activate(installAspects(loader));
     }
 
+    //DEBUG
     long start = System.currentTimeMillis();
     long used = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
     final Haxxor haxxor = new Haxxor(HaxxorBuilder.with(loader));
     final HxType hxType = haxxor.resolve(className, 0, classfileBuffer);
 
-    activator.activate(installAspects(loader));
     Optional<HxType> optional = activator.transform(hxType);
 
     if (optional.isPresent()) {
       byte[] bytes = optional.get().toByteCode();
+
+      //DEBUG
       printInfo(className, true, start, used);
       return bytes;
     }
-    printInfo(className, false, start, used);
     return null;
   }
 
@@ -127,7 +131,7 @@ public final class AopTypeTransformerEntry {
     return PackageFilter.with(postProcess(iterable, EMPTY_PACKAGE_FILTERS));
   }
 
-  private <T> T[] postProcess(final Iterable<T> iterable,
+  private <T extends Comparable<T>> T[] postProcess(final Iterable<T> iterable,
                               final T[] arrayPrototype) {
     List<T> foundFilters = new ArrayList<>();
     for (T element : iterable) {

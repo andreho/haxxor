@@ -51,8 +51,8 @@ public class HxAnnotationVisitor
   }
 
   private void addArray(final String name, final Object array) {
-    if(array == HxConstants.EmptyArray.INSTANCE) {
-      annotation.attribute(name, (HxConstants.EmptyArray) array);
+    if(array == HxConstants.EMPTY_ARRAY) {
+      annotation.attribute(name, (HxConstants.EmptyArray[]) array);
       return;
     }
 

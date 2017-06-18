@@ -21,14 +21,25 @@ import java.util.Objects;
  * <br/>Created by a.hofmann on 19.03.2016.<br/>
  */
 public class HaxxorBuilder {
+  private final boolean concurrent;
   private final ClassLoader classLoader;
 
   public HaxxorBuilder() {
-    this(HaxxorBuilder.class.getClassLoader());
+    this(HaxxorBuilder.class.getClassLoader(), false);
   }
 
   public HaxxorBuilder(final ClassLoader classLoader) {
+    this(classLoader, false);
+  }
+
+  public HaxxorBuilder(final boolean concurrent) {
+    this(HaxxorBuilder.class.getClassLoader(), concurrent);
+  }
+
+  public HaxxorBuilder(final ClassLoader classLoader,
+                       final boolean concurrent) {
     this.classLoader = Objects.requireNonNull(classLoader);
+    this.concurrent = concurrent;
   }
 
   /**
@@ -37,7 +48,23 @@ public class HaxxorBuilder {
    * @return new builder instance
    */
   public static HaxxorBuilder with(ClassLoader classLoader) {
-    return new HaxxorBuilder(classLoader);
+    return new HaxxorBuilder(classLoader, false);
+  }
+
+  /**
+   * Creates new instance of builder with given classloader
+   * @param classLoader to use
+   * @return new builder instance
+   */
+  public static HaxxorBuilder withConcurrent(ClassLoader classLoader) {
+    return new HaxxorBuilder(classLoader, true);
+  }
+
+  /**
+   * @return
+   */
+  public boolean isConcurrent() {
+    return concurrent;
   }
 
   /**

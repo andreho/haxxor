@@ -20,6 +20,7 @@ public interface HxField
             HxOwned<HxField>,
             HxGeneric<HxField>,
             HxNamed,
+            HxTyped,
             HxOrdered,
             HxProvider,
             Cloneable {

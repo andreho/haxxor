@@ -1,27 +1,34 @@
 package net.andreho.aop.spi;
 
-import net.andreho.aop.AspectType;
-import net.andreho.aop.utils.OrderUtils;
+import net.andreho.aop.api.AspectType;
 import net.andreho.haxxor.spec.api.HxType;
 
 /**
  * <br/>Created by a.hofmann on 17.06.2017 at 07:06.
  */
 public interface AspectStep
-    extends TypeMatcher, Comparable<AspectStep> {
+    extends AspectMatcher,
+            Comparable<AspectStep> {
 
   /**
    * @return
    */
-  AspectType getAspectType();
+  int getIndex();
 
   /**
    * @return
    */
-  TypeMatcher getTypeMatcher();
+  AspectType getType();
+
+  /**
+   * @return
+   */
+  AspectMatcher getMatcher();
+
 
   boolean apply(AspectDefinition def,
                 HxType hxType);
+
   /**
    * @return
    */
@@ -30,13 +37,8 @@ public interface AspectStep
   }
 
   @Override
-  default boolean match(HxType hxType) {
-    return getTypeMatcher().match(hxType);
-  }
-
-  @Override
   default int compareTo(AspectStep o) {
-    return OrderUtils.order(this, o);
+    return Integer.compare(getIndex(), o.getIndex());
   }
 
 }
