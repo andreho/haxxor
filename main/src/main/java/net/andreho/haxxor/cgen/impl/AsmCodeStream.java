@@ -13,7 +13,7 @@ import net.andreho.haxxor.cgen.HxFrames;
 import net.andreho.haxxor.cgen.HxMethodHandle;
 import net.andreho.haxxor.cgen.HxMethodType;
 import net.andreho.haxxor.cgen.instr.LABEL;
-import net.andreho.haxxor.spec.api.HxExecutable;
+import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 
 /**
@@ -30,11 +30,11 @@ public class AsmCodeStream
 
   protected int lineNumber;
   private final MethodVisitor mv;
-  private final HxExecutable element;
+  private final HxMethod method;
 
-  public AsmCodeStream(HxExecutable element, MethodVisitor mv) {
+  public AsmCodeStream(HxMethod method, MethodVisitor mv) {
     this.mv = mv;
-    this.element = element;
+    this.method = method;
   }
 
   protected String toInternalTypeName(String type) {

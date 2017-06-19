@@ -3,8 +3,6 @@ package net.andreho.haxxor.spec.visitors;
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.cgen.impl.AsmExecutableMethodVisitor;
-import net.andreho.haxxor.spec.api.HxConstructor;
-import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 
@@ -20,15 +18,15 @@ public class HxExecutableVisitor
 
   public HxExecutableVisitor(final Haxxor haxxor,
                              final HxType declaringType,
-                             final HxExecutable executable) {
-    this(haxxor, declaringType, executable, null);
+                             final HxMethod method) {
+    this(haxxor, declaringType, method, null);
   }
 
   public HxExecutableVisitor(final Haxxor haxxor,
                              final HxType declaringType,
-                             final HxExecutable executable,
+                             final HxMethod method,
                              final MethodVisitor mv) {
-    super(haxxor, executable, mv);
+    super(haxxor, method, mv);
     this.declaringType = Objects.requireNonNull(declaringType, "Declaring type can't be null.");
   }
 
@@ -36,14 +34,7 @@ public class HxExecutableVisitor
   public void visitEnd() {
     super.visitEnd();
 
-    final HxType owner = this.declaringType;
-
-    if (this.executable instanceof HxMethod) {
-      owner.initialize(HxType.Part.METHODS)
-           .addMethod((HxMethod) this.executable);
-    } else {
-      owner.initialize(HxType.Part.CONSTRUCTORS)
-           .addConstructor((HxConstructor) this.executable);
-    }
+    final HxType declaringType = this.declaringType;
+    declaringType.initialize(HxType.Part.METHODS).addMethod(this.method);
   }
 }

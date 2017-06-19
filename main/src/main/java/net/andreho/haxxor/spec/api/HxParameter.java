@@ -5,10 +5,10 @@ import java.util.Set;
 /**
  * Created by a.hofmann on 31.05.2015.
  */
-public interface HxParameter<P extends HxExecutable<P>>
-    extends HxAnnotated<HxParameter<P>>,
-            HxMember<HxParameter<P>>,
-            HxOwned<HxParameter<P>>,
+public interface HxParameter
+    extends HxAnnotated<HxParameter>,
+            HxMember<HxParameter>,
+            HxOwned<HxParameter>,
             HxNamed,
             HxTyped,
             HxOrdered,
@@ -18,7 +18,7 @@ public interface HxParameter<P extends HxExecutable<P>>
   /**
    * @return a new copy of this parameter
    */
-  HxParameter<P> clone();
+  HxParameter clone();
 
   /**
    * @return zero-based index of this parameter in the parameter list of the owning method/constructor
@@ -71,13 +71,13 @@ public interface HxParameter<P extends HxExecutable<P>>
    * @return owning constructor or method instance
    */
   @Override
-  HxExecutable getDeclaringMember();
+  HxMethod getDeclaringMember();
 
   @Override
-  HxParameter<P> setModifiers(HxModifier... modifiers);
+  HxParameter setModifiers(HxModifier... modifiers);
 
   @Override
-  HxParameter<P> setModifiers(int modifiers);
+  HxParameter setModifiers(int modifiers);
 
   /**
    *

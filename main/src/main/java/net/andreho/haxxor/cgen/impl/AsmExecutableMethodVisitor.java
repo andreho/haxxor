@@ -9,7 +9,6 @@ import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxCode;
-import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.visitors.HxAnnotationDefaultVisitor;
 import net.andreho.haxxor.spec.visitors.HxAnnotationVisitor;
@@ -24,40 +23,40 @@ public class AsmExecutableMethodVisitor
     extends AsmCodeMethodVisitor {
 
   protected final HxCode code;
-  protected final HxExecutable executable;
+  protected final HxMethod method;
   protected int parameterIndex = 0;
 
   public AsmExecutableMethodVisitor(final Haxxor haxxor,
-                                    final HxExecutable hxExecutable) {
-    this(haxxor, hxExecutable, hxExecutable.getCode(), hxExecutable.getCode().build(), null);
+                                    final HxMethod method) {
+    this(haxxor, method, method.getCode(), method.getCode().build(), null);
   }
 
 
   public AsmExecutableMethodVisitor(final Haxxor haxxor,
-                                    final HxExecutable hxExecutable,
+                                    final HxMethod method,
                                     final MethodVisitor mv) {
-    this(haxxor, hxExecutable, hxExecutable.getCode(), hxExecutable.getCode().build(), mv);
+    this(haxxor, method, method.getCode(), method.getCode().build(), mv);
   }
 
 
   public AsmExecutableMethodVisitor(final Haxxor haxxor,
-                                    final HxExecutable executable,
+                                    final HxMethod method,
                                     final HxCode code,
                                     final HxCodeStream codeStream,
                                     final MethodVisitor mv) {
     super(haxxor, codeStream, mv);
 
     this.code = code;
-    this.executable = Objects.requireNonNull(executable, "Target can't be null.");
+    this.method = Objects.requireNonNull(method, "Target can't be null.");
   }
 
   @Override
   public void visitParameter(final String name,
                              final int access) {
     super.visitParameter(name, access);
-    this.executable.getParameterAt(this.parameterIndex++)
-                   .setModifiers(access)
-                   .setName(name);
+    this.method.getParameterAt(this.parameterIndex++)
+               .setModifiers(access)
+               .setName(name);
   }
 
   @Override
@@ -67,7 +66,7 @@ public class AsmExecutableMethodVisitor
     final AnnotationVisitor av = super.visitAnnotation(desc, visible);
     final HxAnnotation annotation = getHaxxor().createAnnotation(desc, visible);
     final Consumer consumer = (Consumer<HxAnnotation>)
-        (anno) -> this.executable.getParameterAt(parameter).addAnnotation(anno);
+        (anno) -> this.method.getParameterAt(parameter).addAnnotation(anno);
 
     return new HxAnnotationVisitor(annotation, consumer, av);
   }
@@ -76,7 +75,7 @@ public class AsmExecutableMethodVisitor
   public AnnotationVisitor visitAnnotationDefault() {
     final AnnotationVisitor av = super.visitAnnotationDefault();
     //available for methods only :)
-    final HxMethod hxMethod = (HxMethod) this.executable;
+    final HxMethod hxMethod = this.method;
     final Consumer consumer = (Consumer<Object>)
         (defaultValue) ->
             hxMethod.setDefaultValue(defaultValue);
@@ -91,7 +90,7 @@ public class AsmExecutableMethodVisitor
     final HxAnnotation annotation = getHaxxor().createAnnotation(desc, visible);
     final Consumer consumer = (Consumer<HxAnnotation>)
         (anno) ->
-            this.executable.addAnnotation(anno);
+            this.method.addAnnotation(anno);
 
     return new HxAnnotationVisitor(annotation, consumer, av);
   }

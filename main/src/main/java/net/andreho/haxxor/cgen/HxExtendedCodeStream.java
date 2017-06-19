@@ -1,7 +1,6 @@
 package net.andreho.haxxor.cgen;
 
 
-import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 
@@ -27,11 +26,6 @@ public interface HxExtendedCodeStream<Stream extends HxExtendedCodeStream<Stream
   default Stream INVOKESPECIAL(HxMethod method) {
     final HxType type = method.getDeclaringMember();
     return INVOKESPECIAL(type.toInternalName(), method.getName(), method.toDescriptor());
-  }
-
-  default Stream INVOKESPECIAL(HxConstructor constructor) {
-    final HxType type = constructor.getDeclaringMember();
-    return INVOKESPECIAL(type.toInternalName(), constructor.getName(), constructor.toDescriptor());
   }
 
   default Stream INVOKEINTERFACE(HxMethod method) {

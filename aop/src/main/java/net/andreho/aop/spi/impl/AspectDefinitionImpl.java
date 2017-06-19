@@ -6,8 +6,6 @@ import net.andreho.aop.spi.AspectStep;
 import net.andreho.aop.spi.AspectStepType;
 import net.andreho.aop.spi.ElementMatcher;
 import net.andreho.aop.spi.ElementMatcherFactory;
-import net.andreho.haxxor.spec.api.HxConstructor;
-import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
@@ -31,7 +29,7 @@ public class AspectDefinitionImpl implements AspectDefinition {
   private final Collection<AspectStepType> aspectStepTypes;
   private final ElementMatcher<HxType> classMatcher;
   private final Map<String, List<String>> parameters;
-  private final Optional<HxExecutable<?>> aspectFactory;
+  private final HxMethod aspectFactory;
   private final ElementMatcherFactory elementMatcherFactory;
   private final List<AspectStep<?>> aspectSteps;
   private final Map<AspectStep.Kind, List<AspectStep<?>>> aspectStepsMap;
@@ -42,7 +40,7 @@ public class AspectDefinitionImpl implements AspectDefinition {
                               final Collection<AspectStepType> aspectStepTypes,
                               final Map<String, List<String>> parameters,
                               final ElementMatcher<HxType> classMatcher,
-                              final Optional<HxExecutable<?>> aspectFactory,
+                              final HxMethod aspectFactory,
                               final ElementMatcherFactory elementMatcherFactory) {
     this.type = type;
     this.prefix = prefix;
@@ -108,8 +106,9 @@ public class AspectDefinitionImpl implements AspectDefinition {
   }
 
   @Override
-  public Optional<HxExecutable<?>> getAspectFactory() {
-    return aspectFactory;
+  public Optional<HxMethod> getAspectFactory() {
+    HxMethod aspectFactory = this.aspectFactory;
+    return aspectFactory == null? Optional.empty() : Optional.of(aspectFactory);
   }
 
   @Override
@@ -166,7 +165,7 @@ public class AspectDefinitionImpl implements AspectDefinition {
                                               final List<AspectStep<?>> aspectSteps) {
     boolean modified = false;
     if(!aspectSteps.isEmpty()) {
-      for(HxConstructor constructor : type.getConstructors()) {
+      for(HxMethod constructor : type.getConstructors()) {
         for(AspectStep step : aspectSteps) {
           if(step.apply(this, context, constructor)) {
             modified = true;

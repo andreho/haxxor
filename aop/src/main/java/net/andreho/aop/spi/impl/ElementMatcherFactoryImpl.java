@@ -17,9 +17,7 @@ import net.andreho.aop.spi.impl.matchers.SignatureMatcher;
 import net.andreho.aop.spi.impl.matchers.TypedMatcher;
 import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxEnum;
-import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxMember;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxNamed;
@@ -251,7 +249,7 @@ public class ElementMatcherFactoryImpl
     return ElementMatcher.or(methodMatchers);
   }
 
-  private <E extends HxExecutable<E>> ElementMatcher<E> createMethodMatcher(final HxAnnotation methodsAnnotation) {
+  private ElementMatcher<HxMethod> createMethodMatcher(final HxAnnotation methodsAnnotation) {
     final HxAnnotation[] declaredBy = methodsAnnotation.getAttribute("declaredBy", EMPTY_ANNOTATION_ARRAY);
     final HxAnnotation[] modifiers = methodsAnnotation.getAttribute("modifiers", EMPTY_ANNOTATION_ARRAY);
     final HxAnnotation[] named = methodsAnnotation.getAttribute("named", EMPTY_ANNOTATION_ARRAY);
@@ -263,15 +261,15 @@ public class ElementMatcherFactoryImpl
     final boolean negate = methodsAnnotation.getAttribute("negate", false);
 
     final ElementMatcher<HxType> declaredByMatcher = createClassesMatcher(declaredBy);
-    final ElementMatcher<E> modifiersMatcher = createModifiersMatcher(modifiers);
+    final ElementMatcher<HxMethod> modifiersMatcher = createModifiersMatcher(modifiers);
     final ElementMatcher<HxNamed> namedMatcher = createNamedMatcher(named);
     final ElementMatcher<HxType> returningMatcher = createClassesMatcher(returning);
     final ElementMatcher<HxAnnotated> annotatedMatcher = createAnnotatedMatcher(annotated);
     final ElementMatcher<HxType> throwingMatcher = createClassesMatcher(throwing);
-    final ElementMatcher<E> signaturesMatcher = createSignatureMatcher(signatures);
-    final ElementMatcher<E> parametersMatcher = createParameterMatcher(parameters);
+    final ElementMatcher<HxMethod> signaturesMatcher = createSignatureMatcher(signatures);
+    final ElementMatcher<HxMethod> parametersMatcher = createParameterMatcher(parameters);
 
-    return new MethodsMatcher<>(
+    return new MethodsMatcher(
       declaredByMatcher,
       modifiersMatcher,
       namedMatcher,
@@ -283,15 +281,15 @@ public class ElementMatcherFactoryImpl
     ).negateIf(negate);
   }
 
-  private <E extends HxExecutable<E>> ElementMatcher<E> createSignatureMatcher(final HxAnnotation[] signaturesAnnotations) {
-    final List<ElementMatcher<E>> signaturesList = new ArrayList<>();
+  private ElementMatcher<HxMethod> createSignatureMatcher(final HxAnnotation[] signaturesAnnotations) {
+    final List<ElementMatcher<HxMethod>> signaturesList = new ArrayList<>();
     for (HxAnnotation signature : signaturesAnnotations) {
       signaturesList.add(createSignatureMatcher(signature));
     }
     return ElementMatcher.or(signaturesList);
   }
 
-  private <E extends HxExecutable<E>> ElementMatcher<E> createSignatureMatcher(final HxAnnotation signatureAnnotation) {
+  private ElementMatcher<HxMethod> createSignatureMatcher(final HxAnnotation signatureAnnotation) {
     if(signatureAnnotation == null) {
       return ElementMatcher.any();
     }
@@ -301,10 +299,10 @@ public class ElementMatcherFactoryImpl
     final boolean negate = signatureAnnotation.getAttribute("negate", false);
 
     if(classes.length != 0) {
-      return new SignatureMatcher<E>(classes).negateIf(negate);
+      return new SignatureMatcher(classes).negateIf(negate);
     }
     if(values.length != 0) {
-      return new SignatureMatcher<E>(values).negateIf(negate);
+      return new SignatureMatcher(values).negateIf(negate);
     }
 
     return ElementMatcher.any();
@@ -334,15 +332,15 @@ public class ElementMatcherFactoryImpl
     return ElementMatcher.any();
   }
 
-  private <E extends HxExecutable<E>> ElementMatcher<E> createParameterMatcher(final HxAnnotation[] parametersAnnotations) {
-    final List<ElementMatcher<E>> parameters = new ArrayList<>();
+  private ElementMatcher<HxMethod> createParameterMatcher(final HxAnnotation[] parametersAnnotations) {
+    final List<ElementMatcher<HxMethod>> parameters = new ArrayList<>();
     for (HxAnnotation signature : parametersAnnotations) {
       parameters.add(createParameterMatcher(signature));
     }
     return ElementMatcher.or(parameters);
   }
 
-  private <E extends HxExecutable<E>> ElementMatcher<E> createParameterMatcher(final HxAnnotation parameterAnnotation) {
+  private ElementMatcher<HxMethod> createParameterMatcher(final HxAnnotation parameterAnnotation) {
     if(parameterAnnotation == null) {
       return ElementMatcher.any();
     }
@@ -358,16 +356,11 @@ public class ElementMatcherFactoryImpl
     final ElementMatcher<HxAnnotated> annotatedMatcher = createAnnotatedMatcher(annotated);
     final ElementMatcher<HxNamed> namedMatcher = createNamedMatcher(named);
 
-    return new ParametersMatcher<E>(
+    return new ParametersMatcher(
       positionedMatcher,
       typedMatcher,
       annotatedMatcher,
       namedMatcher
     ).negateIf(negate);
-  }
-
-  @Override
-  public ElementMatcher<HxConstructor> create(final HxConstructor aspectConstructor, final HxAnnotation[] methodsAnnotations) {
-    return ElementMatcher.none();
   }
 }

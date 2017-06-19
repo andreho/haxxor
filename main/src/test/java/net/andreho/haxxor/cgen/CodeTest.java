@@ -18,7 +18,6 @@ import net.andreho.haxxor.cgen.code_fragments.NewOperationsFragment;
 import net.andreho.haxxor.cgen.code_fragments.SyncFragment;
 import net.andreho.haxxor.cgen.impl.PrintingCodeStream;
 import net.andreho.haxxor.spec.api.HxCode;
-import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 import org.junit.jupiter.api.DisplayName;
@@ -67,16 +66,9 @@ class CodeTest {
                                        final String desc,
                                        final String signature,
                                        final String[] exceptions) {
-        HxCode code;
-        if("<init>".equals(name)) {
-          HxConstructor hxConstructor = type.findConstructorDirectly(desc)
-                                            .orElseThrow(IllegalStateException::new);
-          code = hxConstructor.getCode();
-        } else {
-          HxMethod hxMethod = type.findMethodDirectly(name, desc).orElseThrow(IllegalStateException::new);
-          code = hxMethod.getCode();
-        }
-
+        HxMethod hxMethod = type.findMethodDirectly(name, desc).orElseThrow(IllegalStateException::new);
+        HxCode code = hxMethod.getCode();
+        
         MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
 
         PrintingCodeStream stream = new PrintingCodeStream(System.out);

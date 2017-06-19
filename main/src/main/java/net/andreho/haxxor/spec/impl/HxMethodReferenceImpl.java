@@ -4,7 +4,6 @@ import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxCode;
-import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxMember;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxModifier;
@@ -27,7 +26,7 @@ public class HxMethodReferenceImpl
   protected String name;
   protected String returnType;
   protected String[] parameterTypes;
-  protected HxMethod target;
+  protected HxMethod method;
 
   public HxMethodReferenceImpl(Haxxor haxxor,
                                String declaringType,
@@ -41,12 +40,31 @@ public class HxMethodReferenceImpl
     this.parameterTypes = parameterTypes;
   }
 
+  private boolean isAvailable() {
+    return this.method != null;
+  }
+
   public HxMethod toMethod() {
-    if (target == null) {
-      target = declaringType.findMethod(returnType, name, parameterTypes)
-                            .orElseThrow(() -> new IllegalStateException("Method not found."));
+    HxMethod method = this.method;
+    if (method == null) {
+      this.method = method =
+        declaringType.findMethod(returnType, name, parameterTypes)
+                     .orElseThrow(this::complainAboutMissingMethod);
     }
-    return target;
+    return method;
+  }
+
+  private IllegalStateException complainAboutMissingMethod() {
+    final StringBuilder builder = new StringBuilder("Method not found: ");
+    builder.append(declaringType).append(".").append(name).append('(');
+
+    if(parameterTypes.length > 0) {
+      builder.append(parameterTypes[0]);
+      for (int i = 1; i < parameterTypes.length; i++) {
+        builder.append(',').append(parameterTypes[i]);
+      }
+    }
+    return new IllegalStateException(builder.append(')').append(returnType).toString());
   }
 
   @Override
@@ -126,12 +144,12 @@ public class HxMethodReferenceImpl
   }
 
   @Override
-  public List<HxParameter<HxMethod>> getParameters() {
+  public List<HxParameter> getParameters() {
     return toMethod().getParameters();
   }
 
   @Override
-  public HxMethod setParameters(final List<HxParameter<HxMethod>> parameters) {
+  public HxMethod setParameters(final List<HxParameter> parameters) {
     toMethod().setParameters(parameters);
     return this;
   }
@@ -148,20 +166,20 @@ public class HxMethodReferenceImpl
   }
 
   @Override
-  public HxMethod setParameterAt(final int index, final HxParameter parameter) {
-    toMethod().setParameterAt(index, parameter);
-    return this;
-  }
-
-  @Override
-  public HxMethod addParameter(final HxParameter<HxMethod> parameter) {
+  public HxMethod addParameter(final HxParameter parameter) {
     toMethod().addParameter(parameter);
     return this;
   }
 
   @Override
-  public HxMethod addParameterAt(final int index, final HxParameter<HxMethod> parameter) {
+  public HxMethod addParameterAt(final int index, final HxParameter parameter) {
     toMethod().addParameterAt(index, parameter);
+    return this;
+  }
+
+  @Override
+  public HxMethod setParameterAt(final int index, final HxParameter parameter) {
+    toMethod().setParameterAt(index, parameter);
     return this;
   }
 
@@ -177,7 +195,7 @@ public class HxMethodReferenceImpl
   }
 
   @Override
-  public Collection<HxExecutable> getOverriddenMembers() {
+  public Collection<HxMethod> getOverriddenMembers() {
     return toMethod().getOverriddenMembers();
   }
 
@@ -236,6 +254,9 @@ public class HxMethodReferenceImpl
 
   @Override
   public HxType getDeclaringMember() {
+    if(!isAvailable()) {
+      return declaringType;
+    }
     return toMethod().getDeclaringMember();
   }
 

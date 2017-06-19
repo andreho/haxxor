@@ -1,15 +1,14 @@
 package net.andreho.aop.spi.impl.matchers;
 
 import net.andreho.aop.spi.ElementMatcher;
-import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 
 /**
  * <br/>Created by a.hofmann on 17.06.2017 at 02:34.
  */
-public class ReturningMatcher<E extends HxExecutable<E>>
-    extends AbstractMatcher<E> {
+public class ReturningMatcher
+    extends AbstractMatcher<HxMethod> {
   private final ElementMatcher<HxType> delegate;
 
   public ReturningMatcher(final ElementMatcher<HxType> delegate) {
@@ -22,11 +21,8 @@ public class ReturningMatcher<E extends HxExecutable<E>>
   }
 
   @Override
-  public boolean match(final E method) {
-    if(method instanceof HxMethod) {
-      return delegate.match(((HxMethod) method).getReturnType());
-    }
-    return false;
+  public boolean match(final HxMethod method) {
+    return delegate.match(method.getReturnType());
   }
 
   @Override

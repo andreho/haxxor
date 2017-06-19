@@ -1,6 +1,6 @@
 package net.andreho.aop.spi;
 
-import net.andreho.haxxor.spec.api.HxExecutable;
+import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Collection;
@@ -26,7 +26,7 @@ public interface AspectDefinition {
   /**
    * @return
    */
-  Optional<HxExecutable<?>> getAspectFactory();
+  Optional<HxMethod> getAspectFactory();
 
   /**
    * @return

@@ -5,7 +5,6 @@ import net.andreho.asm.org.objectweb.asm.ClassWriter;
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxConstants;
-import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxParameter;
@@ -575,12 +574,12 @@ public class Haxxor
   }
 
   @Override
-  public HxConstructor createConstructor(final String... parameterTypes) {
+  public HxMethod createConstructor(final String... parameterTypes) {
     return elementFactory.createConstructor(toNormalizedClassnames(parameterTypes));
   }
 
   @Override
-  public HxConstructor createConstructorReference(final String declaringType,
+  public HxMethod createConstructorReference(final String declaringType,
                                                   final String... parameterTypes) {
     return elementFactory.createConstructorReference(toNormalizedClassname(declaringType),
                                                      toNormalizedClassnames(parameterTypes));
@@ -590,7 +589,8 @@ public class Haxxor
   public HxMethod createMethod(final String returnType,
                                final String methodName,
                                final String... parameterTypes) {
-    return elementFactory.createMethod(toNormalizedClassname(returnType), methodName,
+    return elementFactory.createMethod(toNormalizedClassname(returnType),
+                                       methodName,
                                        toNormalizedClassnames(parameterTypes));
   }
 
@@ -600,7 +600,8 @@ public class Haxxor
                                         final String methodName,
                                         final String... parameterTypes) {
     return elementFactory.createMethodReference(toNormalizedClassname(declaringType),
-                                                toNormalizedClassname(returnType), methodName,
+                                                toNormalizedClassname(returnType),
+                                                methodName,
                                                 toNormalizedClassnames(parameterTypes));
   }
 

@@ -1,6 +1,6 @@
 package net.andreho.aop.spi.impl.matchers;
 
-import net.andreho.haxxor.spec.api.HxExecutable;
+import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Collection;
@@ -9,8 +9,8 @@ import java.util.stream.Stream;
 /**
  * <br/>Created by a.hofmann on 18.06.2017 at 07:08.
  */
-public class SignatureMatcher<E extends HxExecutable<E>>
-    extends AbstractMatcher<E> {
+public class SignatureMatcher
+    extends AbstractMatcher<HxMethod> {
 
   private final String[] signature;
   private final boolean any;
@@ -34,7 +34,7 @@ public class SignatureMatcher<E extends HxExecutable<E>>
   }
 
   @Override
-  public boolean match(final E element) {
+  public boolean match(final HxMethod element) {
     if(isAny()) {
       return true;
     }

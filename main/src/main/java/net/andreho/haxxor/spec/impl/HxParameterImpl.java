@@ -2,7 +2,7 @@ package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxConstants;
-import net.andreho.haxxor.spec.api.HxExecutable;
+import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxType;
 
@@ -11,10 +11,10 @@ import java.util.Objects;
 /**
  * Created by a.hofmann on 30.05.2015.
  */
-public class HxParameterImpl<P extends HxExecutable<P>>
-    extends HxAnnotatedImpl<HxParameter<P>>
+public class HxParameterImpl
+    extends HxAnnotatedImpl<HxParameter>
     implements
-    HxParameter<P> {
+    HxParameter {
 
   private String name;
   private HxType type;
@@ -41,8 +41,8 @@ public class HxParameterImpl<P extends HxExecutable<P>>
   }
 
   @Override
-  public HxParameter<P> clone() {
-    return new HxParameterImpl<>(this);
+  public HxParameter clone() {
+    return new HxParameterImpl(this);
   }
 
   @Override
@@ -56,7 +56,7 @@ public class HxParameterImpl<P extends HxExecutable<P>>
 
   @Override
   public int getIndex() {
-    P declaringMember = getDeclaringMember();
+    HxMethod declaringMember = getDeclaringMember();
     if (declaringMember == null) {
       return -1;
     }
@@ -97,7 +97,7 @@ public class HxParameterImpl<P extends HxExecutable<P>>
 
   @Override
   public boolean isVarArgs() {
-    P declaringMember = getDeclaringMember();
+    HxMethod declaringMember = getDeclaringMember();
     if(declaringMember != null) {
       return declaringMember.isVarArg() &&
              (declaringMember.getParametersCount() - 1) == getIndex();
@@ -120,8 +120,8 @@ public class HxParameterImpl<P extends HxExecutable<P>>
   }
 
   @Override
-  public P getDeclaringMember() {
-    return (P) super.getDeclaringMember();
+  public HxMethod getDeclaringMember() {
+    return (HxMethod) super.getDeclaringMember();
   }
 
   @Override
@@ -129,11 +129,10 @@ public class HxParameterImpl<P extends HxExecutable<P>>
     if (this == o) {
       return true;
     }
-    if (o == null || getClass() != o.getClass()) {
+    if (!(o instanceof HxParameter)) {
       return false;
     }
-
-    final HxParameterImpl<?> other = (HxParameterImpl<?>) o;
+    final HxParameter other = (HxParameter) o;
     return Objects.equals(getType(), other.getType());
   }
 

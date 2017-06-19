@@ -9,7 +9,7 @@ public abstract class HxConstants {
     private static final EmptyArray[] INSTANCE = new EmptyArray[0];
     private EmptyArray() {}
   }
-
+  public static final String CONSTRUCTOR_METHOD_NAME = "<init>";
   public static final EmptyArray[] EMPTY_ARRAY = EmptyArray.INSTANCE;
   public static final String JAVA_LANG_OBJECT = "java.lang.Object";
   public static final char JAVA_PACKAGE_SEPARATOR_CHAR = '.';

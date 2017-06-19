@@ -1,7 +1,6 @@
 package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.Haxxor;
-import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
@@ -36,8 +35,6 @@ public class HxTypeImpl
   protected List<HxField> fields = Collections.emptyList();
   protected Map<String, HxField> fieldMap = Collections.emptyMap();
 
-  protected List<HxConstructor> constructors = Collections.emptyList();
-
   protected List<HxMethod> methods = Collections.emptyList();
   protected Map<String, Collection<HxMethod>> methodMap = Collections.emptyMap();
 
@@ -56,12 +53,6 @@ public class HxTypeImpl
       case ANNOTATIONS: {
         if (isUninitialized(getAnnotations())) {
           this.annotations = new LinkedHashMap<>();
-        }
-      }
-      break;
-      case CONSTRUCTORS: {
-        if (isUninitialized(getConstructors())) {
-          this.constructors = new ArrayList<>();
         }
       }
       break;
@@ -339,7 +330,8 @@ public class HxTypeImpl
       throw new IllegalArgumentException("Given method must exist within this type: " + method);
     }
 
-    Collection<HxMethod> hxMethods = methodMap.get(method.getName());
+    final Collection<HxMethod> hxMethods = methodMap.get(method.getName());
+
     if (!hasMethod(method.getReturnType(), method.getName(), method.getParameterTypes()) ||
         !hxMethods.remove(method)) {
       throw new IllegalArgumentException("Given method must exist within this type: " + method);
@@ -350,77 +342,13 @@ public class HxTypeImpl
     }
 
     int index = indexOf(method);
+
     if(index > -1) {
       methods.remove(index);
     } else {
       throw new IllegalStateException("Removal of given method led to an inconsistent state: " + method);
     }
     method.setDeclaringMember(null);
-
-    return this;
-  }
-
-  @Override
-  public List<HxConstructor> getConstructors() {
-    return constructors;
-  }
-
-  @Override
-  public HxType addConstructorAt(final int index,
-                                 HxConstructor constructor) {
-    initialize(Part.CONSTRUCTORS);
-
-    if (equals(constructor.getDeclaringMember())) {
-      throw new IllegalStateException("Ambiguous constructor: " + constructor);
-    } else if (constructor.getDeclaringMember() != null) {
-      constructor = constructor.clone();
-    }
-    if (constructor.getDeclaringMember() != null || hasConstructor(constructor.getParameterTypes())) {
-      throw new IllegalStateException("Ambiguous constructor: " + constructor);
-    }
-
-    constructors.add(index, constructor);
-    constructor.setDeclaringMember(this);
-
-    return super.addConstructorAt(index, constructor);
-  }
-
-  @Override
-  public HxType setConstructors(List<HxConstructor> constructors) {
-    if (isUninitialized(constructors)) {
-      this.constructors = Collections.emptyList();
-      return this;
-    }
-
-    initialize(Part.CONSTRUCTORS);
-
-    for (int i = this.constructors.size() - 1; i >= 0; i--) {
-      removeConstructor(this.constructors.get(i));
-    }
-
-    if(!this.constructors.isEmpty()) {
-      throw new IllegalStateException("Setting constructors to given value lead to an inconsistent state.");
-    }
-
-    for (HxConstructor constructor : constructors) {
-      addConstructor(constructor);
-    }
-    return this;
-  }
-
-  @Override
-  public HxType removeConstructor(HxConstructor constructor) {
-    if (!equals(constructor.getDeclaringMember())) {
-      throw new IllegalArgumentException("Given constructor must exist within this type: " + constructor);
-    }
-
-    int index = indexOf(constructor);
-    if(index > -1) {
-      constructors.remove(index);
-    } else {
-      throw new IllegalStateException("Removal of given constructor led to an inconsistent state: " + constructor);
-    }
-    constructor.setDeclaringMember(null);
 
     return this;
   }
@@ -493,13 +421,13 @@ public class HxTypeImpl
   }
 
   @Override
-  public Collection<HxConstructor> constructors(Predicate<HxConstructor> predicate, boolean recursive) {
-    List<HxConstructor> result = new ArrayList<>();
+  public Collection<HxMethod> constructors(Predicate<HxMethod> predicate, boolean recursive) {
+    List<HxMethod> result = new ArrayList<>();
 
     HxType current = this;
 
     while (current != null) {
-      for (HxConstructor constructor : current.getConstructors()) {
+      for (HxMethod constructor : current.getConstructors()) {
         if (predicate.test(constructor)) {
           result.add(constructor);
         }

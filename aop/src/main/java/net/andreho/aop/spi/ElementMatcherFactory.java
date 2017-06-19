@@ -1,7 +1,6 @@
 package net.andreho.aop.spi;
 
 import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 
@@ -22,11 +21,4 @@ public interface ElementMatcherFactory {
    * @return
    */
   ElementMatcher<HxMethod> create(HxMethod aspectMethod, HxAnnotation[] methodsAnnotations);
-
-  /**
-   * @param aspectConstructor
-   * @param methodsAnnotations
-   * @return
-   */
-  ElementMatcher<HxConstructor> create(HxConstructor aspectConstructor, HxAnnotation[] methodsAnnotations);
 }

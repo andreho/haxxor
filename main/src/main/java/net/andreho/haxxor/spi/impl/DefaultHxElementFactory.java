@@ -2,7 +2,7 @@ package net.andreho.haxxor.spi.impl;
 
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.api.HxConstructor;
+import net.andreho.haxxor.spec.api.HxConstants;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxParameter;
@@ -10,8 +10,6 @@ import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxTypeReference;
 import net.andreho.haxxor.spec.impl.HxAnnotationImpl;
 import net.andreho.haxxor.spec.impl.HxArrayTypeImpl;
-import net.andreho.haxxor.spec.impl.HxConstructorImpl;
-import net.andreho.haxxor.spec.impl.HxConstructorReferenceImpl;
 import net.andreho.haxxor.spec.impl.HxFieldImpl;
 import net.andreho.haxxor.spec.impl.HxMethodImpl;
 import net.andreho.haxxor.spec.impl.HxMethodReferenceImpl;
@@ -70,13 +68,18 @@ public class DefaultHxElementFactory
   }
 
   @Override
-  public HxConstructor createConstructor(final String... parameterTypes) {
-    return new HxConstructorImpl(haxxor, haxxor.referencesAsArray(parameterTypes));
+  public HxMethod createConstructor(final String... parameterTypes) {
+    return new HxMethodImpl(HxConstants.CONSTRUCTOR_METHOD_NAME,
+                            createReference("void"),
+                            haxxor.referencesAsArray(parameterTypes));
   }
 
   @Override
-  public HxConstructor createConstructorReference(final String declaringType, final String... parameterTypes) {
-    return new HxConstructorReferenceImpl(haxxor, declaringType, parameterTypes);
+  public HxMethod createConstructorReference(final String declaringType, final String... parameterTypes) {
+    return new HxMethodReferenceImpl(haxxor,
+                                     declaringType,
+                                     HxConstants.CONSTRUCTOR_METHOD_NAME,
+                                     "void", parameterTypes);
   }
 
   @Override

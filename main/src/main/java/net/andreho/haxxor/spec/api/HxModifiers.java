@@ -1,5 +1,8 @@
 package net.andreho.haxxor.spec.api;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 /**
  * Created by a.hofmann on 30.05.2015.
  */
@@ -35,5 +38,21 @@ public enum HxModifiers
   @Override
   public int toBit() {
     return bit;
+  }
+
+  /**
+   * Transforms given bit-set to an {@link EnumSet} with appropriate type
+   *
+   * @param modifiers to transform
+   * @return a set with extracted modifiers
+   */
+  /**
+   * Transforms given modifiers to an equal enum-set
+   *
+   * @param modifiers to transform
+   * @return enum-set representation of given field's modifiers
+   */
+  public static Set<HxModifiers> toSet(int modifiers) {
+    return HxModifier.toSet(HxModifiers.class, modifiers);
   }
 }

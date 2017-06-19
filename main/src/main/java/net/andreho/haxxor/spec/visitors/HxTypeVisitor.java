@@ -9,8 +9,6 @@ import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.asm.org.objectweb.asm.TypePath;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.api.HxConstructor;
-import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
@@ -100,14 +98,9 @@ public class HxTypeVisitor
     super.visitOuterClass(owner, name, desc);
 
     if (name != null && desc != null) {
-      if ("<init>".equals(name)) {
-        HxConstructor constructorReference = haxxor.createConstructorReference(owner, normalizeSignature(desc));
-        this.type.setDeclaringMember(constructorReference);
-      } else {
-        final String returnType = desc.substring(desc.lastIndexOf(')') + 1);
-        HxMethod methodReference = haxxor.createMethodReference(owner, returnType, name, normalizeSignature(desc));
-        this.type.setDeclaringMember(methodReference);
-      }
+      final HxMethod methodReference =
+        haxxor.createMethodReference(owner, normalizeReturnType(desc), name, normalizeSignature(desc));
+      this.type.setDeclaringMember(methodReference);
     } else {
       this.type.setDeclaringMember(this.haxxor.reference(owner));
     }
@@ -164,16 +157,12 @@ public class HxTypeVisitor
     final MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
 
     final String[] parameterTypes = normalizeSignature(desc);
-    HxExecutable parameterizable;
-
-    if ("<init>".equals(name)) {
-      parameterizable = this.haxxor.createConstructor(parameterTypes);
-    } else {
-      parameterizable = this.haxxor.createMethod(normalizeReturnType(desc), name, parameterTypes);
-    }
-
-    parameterizable.setModifiers(access);
-    parameterizable.setGenericSignature(signature);
+    final String returnType = normalizeReturnType(desc);
+    final HxMethod parameterizable =
+      this.haxxor
+        .createMethod(returnType, name, parameterTypes)
+        .setModifiers(access)
+        .setGenericSignature(signature);
 
     if (exceptions != null && exceptions.length > 0) {
       parameterizable.setExceptionTypes(this.haxxor.referencesAsArray(exceptions));

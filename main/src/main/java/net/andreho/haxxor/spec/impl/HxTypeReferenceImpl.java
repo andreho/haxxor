@@ -3,7 +3,6 @@ package net.andreho.haxxor.spec.impl;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxGenericType;
 import net.andreho.haxxor.spec.api.HxMember;
@@ -293,17 +292,6 @@ public class HxTypeReferenceImpl
   }
 
   @Override
-  public List<HxConstructor> getConstructors() {
-    return toType().getConstructors();
-  }
-
-  @Override
-  public HxType setConstructors(List<HxConstructor> constructors) {
-    toType().setConstructors(constructors);
-    return this;
-  }
-
-  @Override
   public Collection<HxField> fields(Predicate<HxField> predicate, boolean recursive) {
     return toType().fields(predicate, recursive);
   }
@@ -314,7 +302,7 @@ public class HxTypeReferenceImpl
   }
 
   @Override
-  public Collection<HxConstructor> constructors(Predicate<HxConstructor> predicate, boolean recursive) {
+  public Collection<HxMethod> constructors(Predicate<HxMethod> predicate, boolean recursive) {
     return toType().constructors(predicate, recursive);
   }
 

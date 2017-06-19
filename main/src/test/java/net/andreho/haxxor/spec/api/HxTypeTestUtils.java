@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public abstract class HxTypeTestUtils {
 
   public static void checkTypes(java.lang.reflect.Type type,
-                                 HxGenericElement<?> hxGeneric) {
+                                HxGenericElement<?> hxGeneric) {
     if (type == null) {
       //assertNull(hxGeneric);
       return;
@@ -43,7 +43,7 @@ public abstract class HxTypeTestUtils {
   }
 
   public static void checkTypes(TypeVariable<?>[] typeVariables,
-                                 List<HxTypeVariable> hxTypeVariables) {
+                                List<HxTypeVariable> hxTypeVariables) {
     Set<Object> visited = Collections.newSetFromMap(new IdentityHashMap<>());
     assertEquals(typeVariables.length, hxTypeVariables.size(), "Invalid size of list with HxTypeVariable-s.");
 
@@ -55,7 +55,7 @@ public abstract class HxTypeTestUtils {
   }
 
   public static void checkTypes(java.lang.reflect.Type[] types,
-                                 List<HxGenericElement<?>> hxGenerics) {
+                                List<HxGenericElement<?>> hxGenerics) {
     Set<Object> visited = Collections.newSetFromMap(new IdentityHashMap<>());
     assertEquals(types.length, hxGenerics.size(), "Invalid size of list with HxGeneric-s.");
 
@@ -76,7 +76,7 @@ public abstract class HxTypeTestUtils {
       return;
     }
 
-    System.out.println("-> " +type);
+    System.out.println("-> " + type);
 
     if (type instanceof TypeVariable) {
       assertTrue(hxGeneric instanceof HxTypeVariable, "Expected: HxTypeVariable");
@@ -124,11 +124,12 @@ public abstract class HxTypeTestUtils {
                                              HxParameterizedType hxParameterizedType) {
     java.lang.reflect.Type rawType = parameterizedType.getRawType();
     HxType hxRawType = hxParameterizedType.getRawType();
-    boolean equalNames = Objects.equals(hxRawType.getHaxxor().toNormalizedClassname(((Class) rawType).getName()), hxRawType.getName());
-    if(!equalNames) {
+    boolean equalNames = Objects.equals(hxRawType.getHaxxor().toNormalizedClassname(((Class) rawType).getName()),
+                                        hxRawType.getName());
+    if (!equalNames) {
       System.out.println("WTF?");
     }
-    assertTrue(equalNames, "HxParameterizedType has invalid raw-type: "+hxRawType);
+    assertTrue(equalNames, "HxParameterizedType has invalid raw-type: " + hxRawType);
 
     java.lang.reflect.Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
     List<HxGenericElement<?>> hxActualTypeArguments = hxParameterizedType.getActualTypeArguments();
@@ -188,20 +189,20 @@ public abstract class HxTypeTestUtils {
     checkUnknownType(visited, genericComponentType, hxGenericComponentType);
   }
 
-  public static <P extends HxExecutable<P>>
-  void checkParameters(final Parameter[] parameters,
-                       final List<HxParameter<P>> hxParameters) {
+  public static void checkParameters(final Parameter[] parameters,
+                                     final List<HxParameter> hxParameters) {
     assertEquals(parameters.length, hxParameters.size(), "Invalid parameters length.");
     for (int i = 0; i < parameters.length; i++) {
       final Parameter parameter = parameters[i];
-      final HxParameter<P> hxParameter = hxParameters.get(i);
+      final HxParameter hxParameter = hxParameters.get(i);
       final Haxxor haxxor = hxParameter.getHaxxor();
 
       checkParameter(parameter, hxParameter, haxxor);
     }
   }
 
-  public static void checkMethods(Method method, HxMethod hxMethod) {
+  public static void checkMethods(Method method,
+                                  HxMethod hxMethod) {
     Haxxor haxxor = hxMethod.getHaxxor();
     assertEquals(haxxor.toNormalizedClassname(method.getReturnType().getName()),
                  hxMethod.getReturnType().getName());
@@ -211,13 +212,14 @@ public abstract class HxTypeTestUtils {
     checkExecutable(method, hxMethod, haxxor);
   }
 
-  public static void checkConstructors(Constructor<?> constructor, HxConstructor hxConstructor) {
+  public static void checkConstructors(Constructor<?> constructor,
+                                       HxMethod hxConstructor) {
     Haxxor haxxor = hxConstructor.getHaxxor();
     checkExecutable(constructor, hxConstructor, haxxor);
   }
 
   private static void checkExecutable(final Executable executable,
-                                      final HxExecutable<?> parameterizable,
+                                      final HxMethod parameterizable,
                                       final Haxxor haxxor) {
     assertEquals(executable.getParameterCount(), parameterizable.getParametersCount(),
                  "Parameter's count is wrong.");
@@ -227,7 +229,7 @@ public abstract class HxTypeTestUtils {
                  "Size of list with parameter's types is wrong.");
 
     String givenDescriptor;
-    if(executable instanceof Method) {
+    if (executable instanceof Method) {
       givenDescriptor = Type.getMethodDescriptor((Method) executable);
     } else {
       givenDescriptor = Type.getConstructorDescriptor((Constructor<?>) executable);
@@ -249,24 +251,24 @@ public abstract class HxTypeTestUtils {
       HxType hxParameterType = parameterizable.getParameterTypeAt(i);
 
       assertEquals(haxxor.toNormalizedClassname(parameter.getType().getName()),
-                   hxParameterType.getName(), "Parameter's type at "+i+" is invalid.");
+                   hxParameterType.getName(), "Parameter's type at " + i + " is invalid.");
       assertEquals(haxxor.toNormalizedClassname(parameterTypes[i].getName()),
-                   hxParameterType.getName(), "Type of parameter at "+i+" is invalid.");
+                   hxParameterType.getName(), "Type of parameter at " + i + " is invalid.");
     }
 
     checkClassArrays(executable.getExceptionTypes(), parameterizable.getExceptionTypes());
   }
 
 
-  public static <P extends HxExecutable<P>> void checkParameter(final Parameter parameter,
-                                                                final HxParameter<P> hxParameter,
-                                                                final Haxxor haxxor) {
+  public static void checkParameter(final Parameter parameter,
+                                    final HxParameter hxParameter,
+                                    final Haxxor haxxor) {
     assertEquals(parameter.getName(), hxParameter.getName(),
                  "Invalid parameter's name.");
 
     assertEquals(haxxor.toNormalizedClassname(parameter.getType()
                                                        .getName()), hxParameter.getType()
-                                                                         .getName(),
+                                                                               .getName(),
                  "Invalid parameter's type.");
 
     checkModifiers(parameter.getModifiers(), hxParameter);
@@ -291,7 +293,7 @@ public abstract class HxTypeTestUtils {
   public static void checkClassArrays(final Class<?>[] classes,
                                       final List<HxType> types) {
     assertEquals(classes.length, types
-        .size(), "Collections have different sizes.");
+      .size(), "Collections have different sizes.");
 
     for (int i = 0; i < classes.length; i++) {
       Class<?> originalInterface = classes[i];
@@ -302,8 +304,10 @@ public abstract class HxTypeTestUtils {
 
   public static void checkModifiers(final int modifiers,
                                     final HxMember<?> hxMember) {
-    Set<HxField.Modifiers> givenModifiers = HxField.Modifiers.toSet(modifiers);
-    Set<HxField.Modifiers> hxModifiers = HxField.Modifiers.toSet(hxMember.getModifiers());
+
+    final Set<HxModifiers> givenModifiers = HxModifiers.toSet(modifiers);
+    final Set<HxModifiers> hxModifiers = HxModifiers.toSet(hxMember.getModifiers());
+
     assertTrue(hxModifiers.containsAll(givenModifiers), "Modifiers are invalid: " + givenModifiers);
   }
 

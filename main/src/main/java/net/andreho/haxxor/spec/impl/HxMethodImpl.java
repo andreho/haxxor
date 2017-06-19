@@ -10,7 +10,7 @@ import java.util.Objects;
  * Created by a.hofmann on 30.05.2015.
  */
 public class HxMethodImpl
-    extends HxExecutableImpl<HxMethod>
+    extends HxExecutableImpl
     implements HxMethod {
 
   protected final String name;

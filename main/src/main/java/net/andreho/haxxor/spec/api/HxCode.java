@@ -32,7 +32,7 @@ public interface HxCode extends Iterable<HxInstruction> {
   /**
    * @return owning method or constructor of this code block
    */
-  HxExecutable getOwner();
+  HxMethod getMethod();
 
   /**
    * @return the getFirst instruction of associated code

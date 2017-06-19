@@ -2,10 +2,7 @@ package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxCode;
-import net.andreho.haxxor.spec.api.HxConstructor;
-import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxMethod.Modifiers;
 import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxType;
 
@@ -20,14 +17,14 @@ import static net.andreho.haxxor.Utils.isUninitialized;
 /**
  * Created by a.hofmann on 31.05.2015.
  */
-public abstract class HxExecutableImpl<P extends HxExecutable<P>>
-    extends HxAnnotatedImpl<P>
-    implements HxExecutable<P> {
+public abstract class HxExecutableImpl
+    extends HxAnnotatedImpl<HxMethod>
+    implements HxMethod {
 
   protected static final List DEFAULT_EMPTY_PARAMETERS = Collections.emptyList();
   protected static final List DEFAULT_EMPTY_EXCEPTIONS = Collections.emptyList();
 
-  protected List<HxParameter<P>> parameters = DEFAULT_EMPTY_PARAMETERS;
+  protected List<HxParameter> parameters = DEFAULT_EMPTY_PARAMETERS;
   protected List<HxType> exceptions = DEFAULT_EMPTY_EXCEPTIONS;
   protected Optional<String> genericSignature;
   protected HxCode code;
@@ -37,11 +34,13 @@ public abstract class HxExecutableImpl<P extends HxExecutable<P>>
     this.setModifiers(Modifiers.PUBLIC.toBit());
   }
 
-  protected void cloneParametersTo(HxExecutable<P> other) {
-    for (HxParameter<P> parameter : getParameters()) {
+  protected void cloneParametersTo(HxMethod other) {
+    for (HxParameter parameter : getParameters()) {
       other.addParameter(parameter.clone());
     }
   }
+
+  public abstract HxMethod clone();
 
   @Override
   public Haxxor getHaxxor() {
@@ -54,10 +53,7 @@ public abstract class HxExecutableImpl<P extends HxExecutable<P>>
     if(type == null) {
       return -1;
     }
-    if(this instanceof HxConstructor) {
-      return type.indexOf((HxConstructor) this);
-    }
-    return type.indexOf((HxMethod) this);
+    return type.indexOf(this);
   }
 
   @Override
@@ -74,14 +70,14 @@ public abstract class HxExecutableImpl<P extends HxExecutable<P>>
     return this.code;
   }
 
-  private List<HxParameter<P>> initializeParameters() {
+  private List<HxParameter> initializeParameters() {
     if (isUninitialized(parameters)) {
       parameters = new ArrayList<>();
     }
     return parameters;
   }
 
-  private HxParameter<P> applyParameter(HxParameter<P> parameter) {
+  private HxParameter applyParameter(HxParameter parameter) {
     if (parameter.getDeclaringMember() != null) {
       throw new IllegalArgumentException(
           "Parameter is already in use, please clone it before further usage: " +
@@ -91,8 +87,8 @@ public abstract class HxExecutableImpl<P extends HxExecutable<P>>
     return parameter;
   }
 
-  protected List<HxParameter<P>> applyParameters(List<HxParameter<P>> parameters) {
-    for (HxParameter<P> parameter : parameters) {
+  protected List<HxParameter> applyParameters(List<HxParameter> parameters) {
+    for (HxParameter parameter : parameters) {
       applyParameter(parameter);
     }
     return parameters;
@@ -106,40 +102,40 @@ public abstract class HxExecutableImpl<P extends HxExecutable<P>>
   }
 
   @Override
-  public List<HxParameter<P>> getParameters() {
+  public List<HxParameter> getParameters() {
     return this.parameters;
   }
 
   @Override
-  public P setParameters(final List<HxParameter<P>> parameters) {
+  public HxMethod setParameters(final List<HxParameter> parameters) {
     this.parameters = applyParameters(parameters);
-    return (P) this;
+    return this;
   }
 
   @Override
-  public P setExceptionTypes(List<HxType> exceptionTypes) {
+  public HxMethod setExceptionTypes(List<HxType> exceptionTypes) {
     this.exceptions = exceptionTypes;
-    return (P) this;
+    return this;
   }
 
   @Override
-  public P addParameterAt(int index,
-                          final HxParameter<P> parameter) {
+  public HxMethod addParameterAt(int index,
+                          final HxParameter parameter) {
     initializeParameters().add(index, applyParameter(parameter));
-    return (P) this;
+    return this;
   }
 
   @Override
-  public HxParameter<P> getParameterAt(final int index) {
+  public HxParameter getParameterAt(final int index) {
     return parameters.get(index);
   }
 
   @Override
-  public P setParameterAt(final int index, final HxParameter<P> parameter) {
-    HxParameter<P> oldParameter = getParameterAt(index);
+  public HxMethod setParameterAt(final int index, final HxParameter parameter) {
+    HxParameter oldParameter = getParameterAt(index);
     initializeParameters().set(index, applyParameter(parameter));
     oldParameter.setDeclaringMember(null);
-    return (P) this;
+    return this;
   }
 
   @Override
@@ -153,17 +149,17 @@ public abstract class HxExecutableImpl<P extends HxExecutable<P>>
   }
 
   @Override
-  public P setGenericSignature(String genericSignature) {
+  public HxMethod setGenericSignature(String genericSignature) {
     if(genericSignature == null || genericSignature.isEmpty()) {
       this.genericSignature = Optional.empty();
     } else {
       this.genericSignature = Optional.of(genericSignature);
     }
-    return (P) this;
+    return this;
   }
 
   @Override
-  public Collection<HxExecutable> getOverriddenMembers() {
+  public Collection<HxMethod> getOverriddenMembers() {
     return Collections.emptySet();
   }
 
@@ -177,11 +173,11 @@ public abstract class HxExecutableImpl<P extends HxExecutable<P>>
     if (this == o) {
       return true;
     }
-    if (!(o instanceof HxExecutable)) {
+    if (!(o instanceof HxMethod)) {
       return false;
     }
 
-    final HxExecutable other = (HxExecutable) o;
+    final HxMethod other = (HxMethod) o;
     return getParameters().equals(other.getParameters());
   }
 

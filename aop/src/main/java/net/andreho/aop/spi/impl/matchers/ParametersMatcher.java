@@ -2,7 +2,7 @@ package net.andreho.aop.spi.impl.matchers;
 
 import net.andreho.aop.spi.ElementMatcher;
 import net.andreho.haxxor.spec.api.HxAnnotated;
-import net.andreho.haxxor.spec.api.HxExecutable;
+import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxNamed;
 import net.andreho.haxxor.spec.api.HxOrdered;
 import net.andreho.haxxor.spec.api.HxParameter;
@@ -11,8 +11,8 @@ import net.andreho.haxxor.spec.api.HxTyped;
 /**
  * <br/>Created by a.hofmann on 18.06.2017 at 08:12.
  */
-public class ParametersMatcher<E extends HxExecutable<E>>
-  extends AbstractMatcher<E> {
+public class ParametersMatcher
+  extends AbstractMatcher<HxMethod> {
 
   private final ElementMatcher<HxOrdered> positioned;
   private final ElementMatcher<HxTyped> typed;
@@ -39,12 +39,12 @@ public class ParametersMatcher<E extends HxExecutable<E>>
   }
 
   @Override
-  public boolean match(final E element) {
+  public boolean match(final HxMethod element) {
     if(element.getParametersCount() == 0) {
       return false;
     }
 
-    for(HxParameter<E> parameter : element.getParameters()) {
+    for(HxParameter parameter : element.getParameters()) {
       if(!matchParameter(parameter)) {
         return false;
       }
@@ -52,7 +52,7 @@ public class ParametersMatcher<E extends HxExecutable<E>>
     return true;
   }
 
-  private boolean matchParameter(final HxParameter<E> parameter) {
+  private boolean matchParameter(final HxParameter parameter) {
     return positioned.match(parameter) &&
            typed.match(parameter) &&
            annotated.match(parameter) &&

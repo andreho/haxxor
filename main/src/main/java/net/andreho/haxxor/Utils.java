@@ -2,7 +2,6 @@ package net.andreho.haxxor;
 
 import net.andreho.asm.org.objectweb.asm.Type;
 import net.andreho.haxxor.spec.api.HxConstants;
-import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spi.HxClassnameNormalizer;
@@ -27,17 +26,15 @@ public abstract class Utils {
   }
 
   /**
-   * Checks the given parameterizable whether it has the given descriptor or not
-   * @param parameterizable to check
+   * Checks the given method/constructor whether it has the given descriptor or not
+   * @param method to check
    * @param descriptor to use
-   * @param <P>
    * @return
    */
-  public static <P extends HxExecutable<P>>
-  boolean hasDescriptor(final HxExecutable<P> parameterizable,
+  public static boolean hasDescriptor(final HxMethod method,
                         final String descriptor) {
 
-    final int arity = parameterizable.getParametersCount();
+    final int arity = method.getParametersCount();
     final int returnIndex = descriptor.lastIndexOf(')');
     final int length = descriptor.length();
 
@@ -54,7 +51,7 @@ public abstract class Utils {
         if(parameters >= arity) {
           return false;
         }
-        int result = checkDescriptorsParameters(parameterizable.getParameterTypeAt(parameters), descriptor, i, returnIndex);
+        int result = checkDescriptorsParameters(method.getParameterTypeAt(parameters), descriptor, i, returnIndex);
         if (result < 0) {
           return false;
         } else {
@@ -68,19 +65,7 @@ public abstract class Utils {
       return false;
     }
 
-    if (parameterizable instanceof HxMethod) {
-      if (checkDescriptorsParameters(
-          ((HxMethod) parameterizable).getReturnType(),
-          descriptor,
-          returnIndex + 1,
-          length) < 0) {
-        return false;
-      }
-    } else if (descriptor.charAt(returnIndex + 1) != 'V') {
-      return false;
-    }
-
-    return true;
+    return checkDescriptorsParameters(method.getReturnType(), descriptor, returnIndex + 1, length) >= 0;
   }
 
   private static int checkDescriptorsParameters(final HxType type,

@@ -6,8 +6,6 @@ import net.andreho.aop.spi.AspectStepType;
 import net.andreho.aop.spi.ElementMatcherFactory;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.api.HxConstructor;
-import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 
@@ -49,7 +47,7 @@ public class AspectDefinitionFactoryImpl
 
     final HxAnnotation aspectAnnotation = aspectOptional.get();
     final Map<String, List<String>> parameters = extractParameters(aspectAnnotation);
-    final Optional<HxExecutable<?>> aspectFactory = findAspectFactory(type);
+    final HxMethod aspectFactory = findAspectFactory(type);
     final String prefix = "__"; // aspectAnnotation.getAttribute("prefix", "__$");
     final String suffix = "__"; // aspectAnnotation.getAttribute("suffix", "$__");
 
@@ -77,8 +75,8 @@ public class AspectDefinitionFactoryImpl
     return parameters.isEmpty() ? Collections.emptyMap() : Collections.unmodifiableMap(parameters);
   }
 
-  protected Optional<HxExecutable<?>> findAspectFactory(final HxType aspectType) {
-    final Collection<HxConstructor> constructorFactories =
+  protected HxMethod findAspectFactory(final HxType aspectType) {
+    final Collection<HxMethod> constructorFactories =
         aspectType.constructors(
           (c) -> c.isAnnotationPresent(ASPECT_FACTORY_ANNOTATION_TYPE));
     final Collection<HxMethod> methodFactories =
@@ -89,11 +87,11 @@ public class AspectDefinitionFactoryImpl
       if (constructorFactories.size() != 1 || !methodFactories.isEmpty()) {
         throw new IllegalStateException("There are more than one aspect factory: " + aspectType);
       }
-      HxConstructor constructor = constructorFactories.iterator().next();
+      HxMethod constructor = constructorFactories.iterator().next();
       if (!constructor.isPublic()) {
         throw new IllegalStateException("Defined constructor-factory isn't public: " + constructor);
       }
-      return Optional.of(constructor);
+      return constructor;
     }
 
     if (!methodFactories.isEmpty()) {
@@ -104,8 +102,8 @@ public class AspectDefinitionFactoryImpl
       if (!method.isPublic() || !method.isStatic()) {
         throw new IllegalStateException("Defined method-factory isn't public or static: " + method);
       }
-      return Optional.of(method);
+      return method;
     }
-    return Optional.empty();
+    return null;
   }
 }

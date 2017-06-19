@@ -14,9 +14,7 @@ import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxAnnotationAttribute;
 import net.andreho.haxxor.spec.api.HxCode;
-import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxEnum;
-import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxParameter;
@@ -56,7 +54,6 @@ public class DefaultHxTypeInterpreter
     visitInnerClasses(type, writer);
     visitFields(type, writer);
     HxMethod clinit = visitMethods(type, writer);
-    visitConstructors(type, writer);
     if(clinit != null) {
       visitMethod(writer, clinit);
     }
@@ -93,14 +90,9 @@ public class DefaultHxTypeInterpreter
       HxType owner = (HxType) type.getDeclaringMember();
       writer.visitOuterClass(owner.getName(), null, null);
     } else {
-      if (type.getDeclaringMember() instanceof HxMethod) {
-        HxMethod owner = (HxMethod) type.getDeclaringMember();
-        writer.visitOuterClass((owner.getDeclaringMember()).getName(), owner.getName(),
-                               owner.toDescriptor());
-      } else {
-        HxConstructor owner = (HxConstructor) type.getDeclaringMember();
-        writer.visitOuterClass((owner.getDeclaringMember()).getName(), "<init>", owner.toDescriptor());
-      }
+      HxMethod owner = (HxMethod) type.getDeclaringMember();
+      writer.visitOuterClass((owner.getDeclaringMember()).getName(), owner.getName(),
+                             owner.toDescriptor());
     }
   }
 
@@ -259,34 +251,6 @@ public class DefaultHxTypeInterpreter
  visitTryCatchAnnotation | visitLocalVariable | visitLocalVariableAnnotation | visitLineNumber )* visitMaxs ]
  visitEnd.
    */
-  protected void visitConstructors(final HxType type,
-                                   final ClassWriter cw) {
-    for (HxConstructor constructor : type.getConstructors()) {
-      visitConstructor(cw, constructor).visitEnd();
-    }
-  }
-
-  protected MethodVisitor visitConstructor(final ClassWriter cw,
-                                           final HxConstructor constructor) {
-    final MethodVisitor mv = cw.visitMethod(
-        constructor.getModifiers(),
-        "<init>",
-        constructor.toDescriptor(),
-        constructor.getGenericSignature().orElse(null),
-        constructor.getExceptionTypes().stream().map(HxType::toInternalName).toArray(String[]::new)
-    );
-
-    visitParameters(constructor, mv);
-    visitAnnotations(constructor, mv::visitAnnotation);
-    visitParameterAnnotations(constructor, mv);
-    visitTypeAnnotations(constructor, mv);
-    visitAttributes(constructor, mv);
-    visitCode(constructor, mv);
-
-    mv.visitEnd();
-
-    return mv;
-  }
 
   protected HxMethod visitMethods(final HxType type,
                               final ClassWriter cw) {
@@ -326,15 +290,15 @@ public class DefaultHxTypeInterpreter
     return mv;
   }
 
-  protected void visitParameters(final HxExecutable<?> executable,
+  protected void visitParameters(final HxMethod method,
                                  final MethodVisitor mv) {
-    for (HxParameter<?> parameter : executable.getParameters()) {
+    for (HxParameter parameter : method.getParameters()) {
       visitParameter(mv, parameter);
     }
   }
 
   private void visitParameter(final MethodVisitor mv,
-                              final HxParameter<?> parameter) {
+                              final HxParameter parameter) {
     String name = parameter.isNamePresent() ? parameter.getName() : null;
     mv.visitParameter(name, parameter.getModifiers());
   }
@@ -350,45 +314,45 @@ public class DefaultHxTypeInterpreter
   }
 
 
-  protected void visitParameterAnnotations(final HxParameter<?> parameter,
+  protected void visitParameterAnnotations(final HxParameter parameter,
                                            final int index,
                                            final MethodVisitor mv) {
     visitAnnotations(parameter, (desc, visible) -> mv.visitParameterAnnotation(index, desc, visible));
   }
 
-  protected void visitParameterAnnotations(final HxExecutable<?> executable,
+  protected void visitParameterAnnotations(final HxMethod method,
                                            final MethodVisitor mv) {
     int index = 0;
-    for (final HxParameter<?> parameter : executable.getParameters()) {
+    for (final HxParameter parameter : method.getParameters()) {
       visitParameterAnnotations(parameter, index++, mv);
     }
   }
 
-  protected void visitTypeAnnotations(final HxExecutable<?> executable,
+  protected void visitTypeAnnotations(final HxMethod method,
                                       final MethodVisitor mv) {
 
 
-    if(!executable.isGeneric()) {
+    if(!method.isGeneric()) {
       //TODO: this is still not a filter condition ...
       // because of 'throws' and possible annotations on checked exceptions
     }
 
-    //Annotations of an executable that lie outside of the code itself
+    //Annotations of a method that lie outside of the code itself
 //    mv.visitTypeAnnotation()
   }
 
-  protected void visitAttributes(final HxExecutable<?> executable,
+  protected void visitAttributes(final HxMethod method,
                                  final MethodVisitor mv) {
     //NO OP
   }
 
-  protected void visitCode(final HxExecutable<?> executable,
+  protected void visitCode(final HxMethod method,
                            final MethodVisitor mv) {
-    if (!executable.hasCode()) {
+    if (!method.hasCode()) {
       return;
     }
 
-    visitCode(executable.getCode(), new AsmCodeStream(executable, mv), mv);
+    visitCode(method.getCode(), new AsmCodeStream(method, mv), mv);
   }
 
   protected void visitCode(final HxCode code,

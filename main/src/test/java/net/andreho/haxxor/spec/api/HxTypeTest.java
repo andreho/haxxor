@@ -196,10 +196,6 @@ class HxTypeTest {
           checkInitialization(type, part, () -> type.getAnnotations().values());
         }
         break;
-        case CONSTRUCTORS: {
-          checkInitialization(type, part, type::getConstructors);
-        }
-        break;
         case DECLARED_TYPES: {
           checkInitialization(type, part, type::getDeclaredTypes);
         }
@@ -571,10 +567,12 @@ class HxTypeTest {
   @MethodSource(names = TEST_CLASSES)
   @DisplayName("Getting methods must return a method-list that is equal to the one from Reflection-API")
   void getMethods(final Class<?> cls) {
-    Method[] clsMethods = cls.getDeclaredMethods();
+    final Method[] clsMethods = cls.getDeclaredMethods();
+    final Constructor<?>[] clsConstructors = cls.getDeclaredConstructors();
+
     HxType hxType = haxxor.resolve(cls.getName());
     List<HxMethod> hxMethods = hxType.getMethods();
-    assertEquals(clsMethods.length, hxMethods.size());
+    assertEquals(clsMethods.length + clsConstructors.length, hxMethods.size());
 
     for (int i = 0; i < clsMethods.length; i++) {
       Method clsMethod = clsMethods[i];
@@ -589,6 +587,18 @@ class HxTypeTest {
                            .getName());
 
       checkMethods(clsMethod, hxMethod);
+    }
+
+    for (int i = 0; i < clsConstructors.length; i++) {
+      Constructor<?> clsConstructor = clsConstructors[i];
+      Optional<HxMethod> hxConstructor = hxType.findConstructor(clsConstructor);
+      assertTrue(hxConstructor.isPresent(), "Constructor not found: " + clsConstructor);
+      HxMethod hxMethod = hxConstructor.get();
+
+      assertEquals("<init>", hxMethod.getName());
+      assertEquals("void", hxMethod.getReturnType().getName());
+
+      checkConstructors(clsConstructor, hxMethod);
     }
   }
 
@@ -612,9 +622,10 @@ class HxTypeTest {
 
       assertFalse(hasMethod, "Old method must be removed properly: " + oldMethod);
       assertNull(oldMethod.getDeclaringMember());
+
       assertFalse(type.findMethod(oldMethod.getReturnType(), oldMethodName,
-                                  oldMethod.getParameterTypes())
-                      .isPresent());
+                                  oldMethod.getParameterTypes()).isPresent());
+
       assertFalse(type.getMethods()
                       .contains(oldMethod));
     }
@@ -837,21 +848,21 @@ class HxTypeTest {
     }
 
     Method enclosingMethod = cls.getEnclosingMethod();
+    Constructor<?> enclosingConstructor = cls.getEnclosingConstructor();
     Optional<HxMethod> enclosingHxMethod = hxType.getEnclosingMethod();
 
-    if(enclosingMethod == null) {
-      assertFalse(enclosingHxMethod.isPresent());
+    if(enclosingMethod != null || enclosingConstructor != null) {
+      assertTrue(enclosingHxMethod.isPresent());
     } else {
+      assertFalse(enclosingHxMethod.isPresent());
+    }
+
+    if(enclosingMethod != null) {
       checkMethods(enclosingMethod, enclosingHxMethod.get());
     }
 
-    Constructor<?> enclosingConstructor = cls.getEnclosingConstructor();
-    Optional<HxConstructor> enclosingHxConstructor = hxType.getEnclosingConstructor();
-
-    if(enclosingConstructor == null) {
-      assertFalse(enclosingHxConstructor.isPresent());
-    } else {
-      checkConstructors(enclosingConstructor, enclosingHxConstructor.get());
+    if(enclosingConstructor != null) {
+      checkConstructors(enclosingConstructor, enclosingHxMethod.get());
     }
   }
 

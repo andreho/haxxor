@@ -108,7 +108,7 @@ public class BeforeAspectStep
                                           final HxMethod intercepted,
                                           final HxExtendedCodeStream codeStream) {
 
-    for (HxParameter<?> parameter : interceptor.getParameters()) {
+    for (HxParameter parameter : interceptor.getParameters()) {
 //      if (parameter.isAnnotationPresent(Arg.class)) {
 //        injectArgument(def, intercepted, codeStream, parameter.getAnnotation(Arg.class).get());
 //      } else
@@ -127,14 +127,14 @@ public class BeforeAspectStep
   }
 
   private void injectArguments(final AspectDefinition def,
-                               final HxParameter<?> parameter,
+                               final HxParameter parameter,
                                final HxMethod intercepted,
                                final HxExtendedCodeStream codeStream) {
     HxCgenUtils.packArguments(intercepted.getParameterTypes(), intercepted.isStatic() ? 0 : 1, codeStream);
   }
 
   private void injectArgument(final AspectDefinition def,
-                              final HxParameter<?> parameter,
+                              final HxParameter parameter,
                               final HxMethod intercepted,
                               final HxExtendedCodeStream codeStream,
                               final HxAnnotation argAnnotation) {
@@ -143,21 +143,21 @@ public class BeforeAspectStep
   }
 
   private void injectArity(final AspectDefinition def,
-                           final HxParameter<?> parameter,
+                           final HxParameter parameter,
                            final HxMethod intercepted,
                            final HxExtendedCodeStream codeStream) {
     codeStream.LDC(intercepted.getParametersCount());
   }
 
   private void injectDeclaring(final AspectDefinition def,
-                          final HxParameter<?> parameter,
+                          final HxParameter parameter,
                           final HxMethod intercepted,
                           final HxExtendedCodeStream codeStream) {
     codeStream.TYPE(intercepted.getDeclaringMember());
   }
 
   private void injectThis(final AspectDefinition def,
-                          final HxParameter<?> parameter,
+                          final HxParameter parameter,
                           final HxMethod intercepted,
                           final HxExtendedCodeStream codeStream) {
     if (intercepted.isStatic()) {
@@ -168,7 +168,7 @@ public class BeforeAspectStep
   }
 
   private void injectLine(final AspectDefinition def,
-                          final HxParameter<?> parameter,
+                          final HxParameter parameter,
                           final HxMethod intercepted,
                           final HxExtendedCodeStream codeStream) {
 

@@ -217,11 +217,6 @@ public interface HxType
   Optional<HxMethod> getEnclosingMethod();
 
   /**
-   * @return
-   */
-  Optional<HxConstructor> getEnclosingConstructor();
-
-  /**
    * @param field to search for
    * @return <b>-1</b> if given field doesn't belong to this type,
    * otherwise zero-based position of the given field in the {@link #getFields()} list
@@ -233,25 +228,6 @@ public interface HxType
     int idx = 0;
     for(HxField hxField : getFields()) {
       if(field == hxField || field.equals(hxField)) {
-        return idx;
-      }
-      idx++;
-    }
-    return -1;
-  }
-
-  /**
-   * @param constructor to search for
-   * @return <b>-1</b> if given constructor doesn't belong to this type,
-   * otherwise zero-based position of the given constructor in the {@link #getConstructors()} list
-   */
-  default int indexOf(HxConstructor constructor) {
-    if(!equals(constructor.getDeclaringMember())) {
-      return -1;
-    }
-    int idx = 0;
-    for(HxConstructor hxConstructor : getConstructors()) {
-      if(constructor == hxConstructor || constructor.equals(hxConstructor)) {
         return idx;
       }
       idx++;
@@ -572,22 +548,18 @@ public interface HxType
   }
 
   /**
-   * @return
+   * @return a collection with all defined constructors
    */
-  List<HxConstructor> getConstructors();
-
-  /**
-   * @param constructors
-   * @return
-   */
-  HxType setConstructors(List<HxConstructor> constructors);
+  default Collection<HxMethod> getConstructors() {
+    return getMethods(HxConstants.CONSTRUCTOR_METHOD_NAME);
+  }
 
   /**
    * @param constructor
    * @return
    */
-  default HxType addConstructor(HxConstructor constructor) {
-    return addConstructorAt(getConstructors().size(), constructor);
+  default HxType addConstructor(HxMethod constructor) {
+    return addConstructorAt(getMethods().size(), constructor);
   }
 
   /**
@@ -595,25 +567,35 @@ public interface HxType
    * @param constructor
    * @return
    */
-  HxType addConstructorAt(int index, HxConstructor constructor);
+  default HxType addConstructorAt(int index, HxMethod constructor) {
+    if(!HxConstants.CONSTRUCTOR_METHOD_NAME.equals(constructor)) {
+      throw new IllegalArgumentException("Not a constructor: "+constructor);
+    }
+    return addMethodAt(getMethods().size(), constructor);
+  }
 
   /**
    * @param constructor
    * @return
    */
-  HxType removeConstructor(HxConstructor constructor);
+  default HxType removeConstructor(HxMethod constructor) {
+    if(!HxConstants.CONSTRUCTOR_METHOD_NAME.equals(constructor)) {
+      throw new IllegalArgumentException("Not a constructor: "+constructor);
+    }
+    return removeMethod(constructor);
+  }
 
   /**
    * @param descriptor is signature description of the constructor
    * @return
    */
-  Optional<HxConstructor> findConstructorDirectly(String descriptor);
+  Optional<HxMethod> findConstructorDirectly(String descriptor);
 
   /**
    * @param constructor
    * @return
    */
-  default Optional<HxConstructor> findConstructor(Constructor<?> constructor) {
+  default Optional<HxMethod> findConstructor(Constructor<?> constructor) {
     return findConstructor(Utils.toClassNames(getHaxxor(), constructor.getParameterTypes()));
   }
 
@@ -621,7 +603,7 @@ public interface HxType
    * @param constructor
    * @return
    */
-  default Optional<HxConstructor> findConstructor(HxConstructor constructor) {
+  default Optional<HxMethod> findConstructor(HxMethod constructor) {
     return findConstructor(constructor.getParameterTypes());
   }
 
@@ -629,13 +611,13 @@ public interface HxType
    * @param signature of wanted constructor as list
    * @return
    */
-  Optional<HxConstructor> findConstructor(List<HxType> signature);
+  Optional<HxMethod> findConstructor(List<HxType> signature);
 
   /**
    * @param signature of wanted constructor as a HxType array
    * @return
    */
-  default Optional<HxConstructor> findConstructor(HxType... signature) {
+  default Optional<HxMethod> findConstructor(HxType... signature) {
     return findConstructor(Arrays.asList(signature));
   }
 
@@ -643,7 +625,7 @@ public interface HxType
    * @param signature of wanted constructor as an array of type names
    * @return
    */
-  default Optional<HxConstructor> findConstructor(String... signature) {
+  default Optional<HxMethod> findConstructor(String... signature) {
     return findConstructor(getHaxxor().referencesAsArray(signature));
   }
 
@@ -711,8 +693,6 @@ public interface HxType
    */
   boolean isAssignableFrom(HxType otherType);
 
-  //----------------------------------------------------------------------------------------------------------------
-
   /**
    * @return
    */
@@ -735,8 +715,6 @@ public interface HxType
    */
   Collection<HxField> fields(Predicate<HxField> predicate,
                              boolean recursive);
-
-  //----------------------------------------------------------------------------------------------------------------
 
   /**
    * @return
@@ -761,12 +739,10 @@ public interface HxType
   Collection<HxMethod> methods(Predicate<HxMethod> predicate,
                                boolean recursive);
 
-  //----------------------------------------------------------------------------------------------------------------
-
   /**
    * @return
    */
-  default Collection<HxConstructor> constructors() {
+  default Collection<HxMethod> constructors() {
     return constructors((c) -> true);
   }
 
@@ -774,7 +750,7 @@ public interface HxType
    * @param predicate
    * @return
    */
-  default Collection<HxConstructor> constructors(Predicate<HxConstructor> predicate) {
+  default Collection<HxMethod> constructors(Predicate<HxMethod> predicate) {
     return constructors(predicate, false);
   }
 
@@ -783,10 +759,8 @@ public interface HxType
    * @param recursive
    * @return
    */
-  Collection<HxConstructor> constructors(Predicate<HxConstructor> predicate,
+  Collection<HxMethod> constructors(Predicate<HxMethod> predicate,
                                          boolean recursive);
-
-  //----------------------------------------------------------------------------------------------------------------
 
   /**
    * @return
@@ -811,8 +785,6 @@ public interface HxType
   Collection<HxType> types(Predicate<HxType> predicate,
                            boolean recursive);
 
-  //----------------------------------------------------------------------------------------------------------------
-
   /**
    * @return
    */
@@ -835,8 +807,6 @@ public interface HxType
    */
   Collection<HxType> interfaces(Predicate<HxType> predicate,
                                 boolean recursive);
-
-  //----------------------------------------------------------------------------------------------------------------
 
   /**
    * @return component type of this array type or <b>null</b> if it isn't array type
@@ -1058,7 +1028,6 @@ public interface HxType
     INTERFACES,
     FIELDS,
     METHODS,
-    CONSTRUCTORS,
     DECLARED_TYPES
   }
 

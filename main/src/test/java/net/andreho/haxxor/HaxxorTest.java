@@ -2,7 +2,6 @@ package net.andreho.haxxor;
 
 import net.andreho.haxxor.model.MinimalBean;
 import net.andreho.haxxor.model.ValueBean;
-import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
@@ -192,14 +191,14 @@ class HaxxorTest {
 
   @Test
   void createConstructor() {
-    HxConstructor constructor = haxxor.createConstructor(TEST_BEAN_CLASSNAME);
+    HxMethod constructor = haxxor.createConstructor(TEST_BEAN_CLASSNAME);
     assertNotNull(constructor);
     assertNull(constructor.getDeclaringMember());
   }
 
   @Test
   void createConstructorReference() {
-    HxConstructor constructor = haxxor.createConstructorReference(TEST_BEAN_CLASSNAME, TEST_BEAN_CLASSNAME);
+    HxMethod constructor = haxxor.createConstructorReference(TEST_BEAN_CLASSNAME, TEST_BEAN_CLASSNAME);
     assertNotNull(constructor);
     assertEquals(haxxor.reference(TEST_BEAN_CLASSNAME), constructor.getDeclaringMember());
   }

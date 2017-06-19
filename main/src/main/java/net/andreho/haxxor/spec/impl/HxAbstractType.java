@@ -3,8 +3,6 @@ package net.andreho.haxxor.spec.impl;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxConstants;
-import net.andreho.haxxor.spec.api.HxConstructor;
-import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxGenericType;
 import net.andreho.haxxor.spec.api.HxMethod;
@@ -222,31 +220,20 @@ public class HxAbstractType
   }
 
   @Override
-  public List<HxConstructor> getConstructors() {
-    return Collections.emptyList();
-  }
-
-  @Override
-  public HxType setConstructors(List<HxConstructor> constructors) {
+  public HxType removeConstructor(final HxMethod constructor) {
     //NO OP
     return this;
   }
 
   @Override
-  public HxType removeConstructor(final HxConstructor constructor) {
+  public HxType addConstructorAt(int index, HxMethod constructor) {
     //NO OP
     return this;
   }
 
   @Override
-  public HxType addConstructorAt(int index, HxConstructor constructor) {
-    //NO OP
-    return this;
-  }
-
-  @Override
-  public Optional<HxConstructor> findConstructorDirectly(final String descriptor) {
-    for (HxConstructor constructor : getConstructors()) {
+  public Optional<HxMethod> findConstructorDirectly(final String descriptor) {
+    for (HxMethod constructor : getConstructors()) {
       if (constructor.hasDescriptor(descriptor)) {
         return Optional.of(constructor);
       }
@@ -255,9 +242,9 @@ public class HxAbstractType
   }
 
   @Override
-  public Optional<HxConstructor> findConstructor(final List<HxType> signature) {
+  public Optional<HxMethod> findConstructor(final List<HxType> signature) {
     loop:
-    for (HxConstructor constructor : getConstructors()) {
+    for (HxMethod constructor : getConstructors()) {
       if (signature.size() != constructor.getParametersCount()) {
         continue;
       }
@@ -275,12 +262,12 @@ public class HxAbstractType
   }
 
   @Override
-  public Optional<HxConstructor> findConstructor(HxType... signature) {
+  public Optional<HxMethod> findConstructor(HxType... signature) {
     return findConstructor(Arrays.asList(signature));
   }
 
   @Override
-  public Optional<HxConstructor> findConstructor(String... signature) {
+  public Optional<HxMethod> findConstructor(String... signature) {
     return findConstructor(getHaxxor().referencesAsArray(signature));
   }
 
@@ -337,31 +324,26 @@ public class HxAbstractType
 
   @Override
   public Collection<HxField> fields(Predicate<HxField> predicate, boolean recursive) {
-    //NO OP
     return Collections.emptySet();
   }
 
   @Override
   public Collection<HxMethod> methods(Predicate<HxMethod> predicate, boolean recursive) {
-    //NO OP
     return Collections.emptySet();
   }
 
   @Override
-  public Collection<HxConstructor> constructors(Predicate<HxConstructor> predicate, boolean recursive) {
-    //NO OP
+  public Collection<HxMethod> constructors(Predicate<HxMethod> predicate, boolean recursive) {
     return Collections.emptySet();
   }
 
   @Override
   public Collection<HxType> types(Predicate<HxType> predicate, boolean recursive) {
-    //NO OP
     return Collections.emptySet();
   }
 
   @Override
   public Collection<HxType> interfaces(Predicate<HxType> predicate, boolean recursive) {
-    //NO OP
     return Collections.emptySet();
   }
 
@@ -369,24 +351,17 @@ public class HxAbstractType
   public Optional<HxType> getEnclosingType() {
     if (getEnclosingMethod().isPresent()) {
       return Optional.of(getEnclosingMethod().get().getDeclaringMember());
-    } else if (getEnclosingConstructor().isPresent()) {
-      return Optional.of(getEnclosingConstructor().get().getDeclaringMember());
     }
-    return Optional.ofNullable((HxType) getDeclaringMember());
+    if(getDeclaringMember() != null) {
+      return Optional.of((HxType) getDeclaringMember());
+    }
+    return Optional.empty();
   }
 
   @Override
   public Optional<HxMethod> getEnclosingMethod() {
     if (getDeclaringMember() instanceof HxMethod) {
       return Optional.of((HxMethod) getDeclaringMember());
-    }
-    return Optional.empty();
-  }
-
-  @Override
-  public Optional<HxConstructor> getEnclosingConstructor() {
-    if (getDeclaringMember() instanceof HxConstructor) {
-      return Optional.of((HxConstructor) getDeclaringMember());
     }
     return Optional.empty();
   }
@@ -481,7 +456,7 @@ public class HxAbstractType
   @Override
   public boolean isMemberType() {
     return getSimpleBinaryName() != null &&
-           getDeclaringMember() instanceof HxExecutable;
+           getDeclaringMember() instanceof HxMethod;
   }
 
   @Override

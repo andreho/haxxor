@@ -1,7 +1,6 @@
 package net.andreho.haxxor.spi;
 
 import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxParameter;
@@ -62,14 +61,14 @@ public interface HxElementFactory extends HxProvider {
    * @param parameterTypes of new constructor
    * @return a new unbound constructor instance
    */
-  HxConstructor createConstructor(final String... parameterTypes);
+  HxMethod createConstructor(final String... parameterTypes);
 
   /**
    * Creates a new unbound constructor with given parameters
    * @param parameterTypes of new constructor
    * @return a new unbound constructor instance
    */
-  default HxConstructor createConstructor(final Class<?>... parameterTypes) {
+  default HxMethod createConstructor(final Class<?>... parameterTypes) {
     String[] parameterNames = new String[parameterTypes.length];
     for (int i = 0; i < parameterTypes.length; i++) {
       parameterNames[i] = parameterTypes[i].getName();
@@ -83,7 +82,7 @@ public interface HxElementFactory extends HxProvider {
    * @param parameterTypes of new constructor-reference
    * @return a new constructor-reference instance
    */
-  HxConstructor createConstructorReference(final String declaringType, final String... parameterTypes);
+  HxMethod createConstructorReference(final String declaringType, final String... parameterTypes);
 
   /**
    * Creates a new unbound method with given name, return-type and parameters
