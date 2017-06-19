@@ -1,6 +1,6 @@
 package net.andreho.aop.spi.impl.matchers;
 
-import net.andreho.aop.spi.AspectMatcher;
+import net.andreho.aop.spi.ElementMatcher;
 
 import java.util.Collection;
 
@@ -10,13 +10,13 @@ import java.util.Collection;
 public class DisjunctionMatcher<T>
     extends AbstractMatcher<T> {
 
-  protected final AspectMatcher<T>[] array;
+  protected final ElementMatcher<T>[] array;
 
-  public DisjunctionMatcher(final Collection<AspectMatcher<T>> collection) {
-    this(collection.toArray(new AspectMatcher[0]));
+  public DisjunctionMatcher(final Collection<ElementMatcher<T>> collection) {
+    this(collection.toArray(new ElementMatcher[0]));
   }
 
-  public DisjunctionMatcher(final AspectMatcher<T>... array) {
+  public DisjunctionMatcher(final ElementMatcher<T>... array) {
     this.array = array;
   }
 
@@ -31,7 +31,7 @@ public class DisjunctionMatcher<T>
       return true;
     }
 
-    for (AspectMatcher<T> matcher : array) {
+    for (ElementMatcher<T> matcher : array) {
       if (check(matcher, type)) {
         return true;
       }
@@ -39,7 +39,7 @@ public class DisjunctionMatcher<T>
     return false;
   }
 
-  protected boolean check(final AspectMatcher<T> fragment,
+  protected boolean check(final ElementMatcher<T> fragment,
                           final T element) {
     return fragment.match(element);
   }

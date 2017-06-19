@@ -62,4 +62,34 @@ public enum HxArrayType {
     }
     throw new IllegalArgumentException("Invalid array type code: " + code);
   }
+
+  public static HxArrayType fromName(String name) {
+    switch (name) {
+      case "[Z":
+      case "boolean[]":
+        return BOOLEAN;
+      case "[C":
+      case "char[]":
+        return CHAR;
+      case "[F":
+      case "float[]":
+        return FLOAT;
+      case "[D":
+      case "double[]":
+        return DOUBLE;
+      case "[B":
+      case "byte[]":
+        return BYTE;
+      case "[S":
+      case "short[]":
+        return SHORT;
+      case "[I":
+      case "int[]":
+        return INT;
+      case "[J":
+      case "long[]":
+        return LONG;
+    }
+    throw new IllegalArgumentException("Invalid array type name: " + name);
+  }
 }

@@ -11,6 +11,8 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * <br/>Created by a.hofmann on 17.11.2015.<br/>
@@ -91,11 +93,11 @@ public interface HxInstruction
   }
 
   /**
-   * @param kind
+   * @param sort
    * @return
    */
-  default boolean hasInstructionKind(HxInstructionKind kind) {
-    return getInstructionType().getKind() == kind;
+  default boolean hasInstructionSort(HxInstructionSort sort) {
+    return getInstructionType().getSort() == sort;
   }
 
   /**
@@ -136,9 +138,21 @@ public interface HxInstruction
 
   Optional<HxInstruction> findLastWithType(final HxInstructionType instructionType);
 
-  Optional<HxInstruction> findFirstWithKind(final HxInstructionKind instructionKind);
+  Optional<HxInstruction> findFirstWithKind(final HxInstructionSort instructionSort);
 
-  Optional<HxInstruction> findLastWithKind(final HxInstructionKind instructionKind);
+  Optional<HxInstruction> findLastWithKind(final HxInstructionSort instructionSort);
+
+  Optional<HxInstruction> findFirst(final Predicate<HxInstruction> predicate);
+
+  Optional<HxInstruction> findLast(final Predicate<HxInstruction> predicate);
+
+  void forEachNext(final Consumer<HxInstruction> consumer);
+
+  void forEachNext(final Predicate<HxInstruction> predicate, final Consumer<HxInstruction> consumer);
+
+  void forEachPrevious(final Consumer<HxInstruction> consumer);
+
+  void forEachPrevious(final Predicate<HxInstruction> predicate, final Consumer<HxInstruction> consumer);
 
   /**
    * Shortcut for: <code>this.getPrevious().append(inst);</code>

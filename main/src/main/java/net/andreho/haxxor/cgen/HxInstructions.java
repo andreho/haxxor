@@ -12,7 +12,7 @@ import static net.andreho.haxxor.cgen.HxCodeGenerationUtils.getTypeSize;
 public interface HxInstructions {
 
   enum Access
-      implements HxInstructionType {
+    implements HxInstructionType {
     GETSTATIC(Opcodes.GETSTATIC),
     PUTSTATIC(Opcodes.PUTSTATIC),
     GETFIELD(Opcodes.GETFIELD),
@@ -32,8 +32,8 @@ public interface HxInstructions {
     }
 
     @Override
-    public HxInstructionKind getKind() {
-      return HxInstructionKind.Fields;
+    public HxInstructionSort getSort() {
+      return HxInstructionSort.Fields;
     }
 
     @Override
@@ -72,7 +72,7 @@ public interface HxInstructions {
   //----------------------------------------------------------------------------------------------------------------
 
   enum Allocation
-      implements HxInstructionType {
+    implements HxInstructionType {
     NEW(Opcodes.NEW, 0, 1),
 
     NEWARRAY(Opcodes.NEWARRAY, 1, 1),
@@ -107,8 +107,8 @@ public interface HxInstructions {
     }
 
     @Override
-    public HxInstructionKind getKind() {
-      return HxInstructionKind.Allocation;
+    public HxInstructionSort getSort() {
+      return HxInstructionSort.Allocation;
     }
 
     public boolean isArray() {
@@ -117,7 +117,7 @@ public interface HxInstructions {
   }
 
   enum Arithmetic
-      implements HxInstructionType {
+    implements HxInstructionType {
     IADD(Opcodes.IADD, 1 + 1, 1),
     LADD(Opcodes.LADD, 2 + 2, 2),
     FADD(Opcodes.FADD, 1 + 1, 1),
@@ -161,8 +161,8 @@ public interface HxInstructions {
     }
 
     @Override
-    public HxInstructionKind getKind() {
-      return HxInstructionKind.Arithmetic;
+    public HxInstructionSort getSort() {
+      return HxInstructionSort.Arithmetic;
     }
 
     @Override
@@ -177,7 +177,7 @@ public interface HxInstructions {
   }
 
   enum Array
-      implements HxInstructionType {
+    implements HxInstructionType {
     IALOAD(Opcodes.IALOAD, 1 + 1, 1),
     LALOAD(Opcodes.LALOAD, 1 + 1, 2),
     FALOAD(Opcodes.FALOAD, 1 + 1, 1),
@@ -226,8 +226,8 @@ public interface HxInstructions {
     }
 
     @Override
-    public HxInstructionKind getKind() {
-      return HxInstructionKind.Array;
+    public HxInstructionSort getSort() {
+      return HxInstructionSort.Array;
     }
 
     public boolean isStore() {
@@ -240,7 +240,7 @@ public interface HxInstructions {
   }
 
   enum Binary
-      implements HxInstructionType {
+    implements HxInstructionType {
     ISHL(Opcodes.ISHL, 1 + 1, 1),
     LSHL(Opcodes.LSHL, 2 + 1, 2),
     ISHR(Opcodes.ISHR, 1 + 1, 1),
@@ -282,8 +282,8 @@ public interface HxInstructions {
     }
 
     @Override
-    public HxInstructionKind getKind() {
-      return HxInstructionKind.Binary;
+    public HxInstructionSort getSort() {
+      return HxInstructionSort.Binary;
     }
 
     public boolean is32Bit() {
@@ -296,7 +296,7 @@ public interface HxInstructions {
   }
 
   enum Comparison
-      implements HxInstructionType {
+    implements HxInstructionType {
     LCMP(Opcodes.LCMP, 2 + 2, 1),
     FCMPL(Opcodes.FCMPL, 1 + 1, 1),
     FCMPG(Opcodes.FCMPG, 1 + 1, 1),
@@ -321,8 +321,8 @@ public interface HxInstructions {
     }
 
     @Override
-    public HxInstructionKind getKind() {
-      return HxInstructionKind.Comparison;
+    public HxInstructionSort getSort() {
+      return HxInstructionSort.Comparison;
     }
 
     @Override
@@ -337,7 +337,7 @@ public interface HxInstructions {
   }
 
   enum Conversion
-      implements HxInstructionType {
+    implements HxInstructionType {
     I2L(Opcodes.I2L, 1, 2),
     I2F(Opcodes.I2F, 1, 1),
     I2D(Opcodes.I2D, 1, 2),
@@ -375,8 +375,8 @@ public interface HxInstructions {
     }
 
     @Override
-    public HxInstructionKind getKind() {
-      return HxInstructionKind.Conversion;
+    public HxInstructionSort getSort() {
+      return HxInstructionSort.Conversion;
     }
 
     @Override
@@ -391,7 +391,7 @@ public interface HxInstructions {
   }
 
   enum Constants
-      implements HxInstructionType {
+    implements HxInstructionType {
     ACONST_NULL(Opcodes.ACONST_NULL, 1),
     ICONST_M1(Opcodes.ICONST_M1, 1),
     ICONST_0(Opcodes.ICONST_0, 1),
@@ -427,8 +427,8 @@ public interface HxInstructions {
     }
 
     @Override
-    public HxInstructionKind getKind() {
-      return HxInstructionKind.Constants;
+    public HxInstructionSort getSort() {
+      return HxInstructionSort.Constants;
     }
 
     @Override
@@ -447,39 +447,8 @@ public interface HxInstructions {
     }
   }
 
-  enum Increment
-      implements HxInstructionType {
-    IINC(Opcodes.IINC);
-
-    private final int opcode;
-
-    Increment(int opcode) {
-      this.opcode = opcode;
-    }
-
-    @Override
-    public int getOpcode() {
-      return this.opcode;
-    }
-
-    @Override
-    public HxInstructionKind getKind() {
-      return HxInstructionKind.Increment;
-    }
-
-    @Override
-    public int getPopSize() {
-      return 0;
-    }
-
-    @Override
-    public int getPushSize() {
-      return 0;
-    }
-  }
-
   enum Invocation
-      implements HxInstructionType {
+    implements HxInstructionType {
     INVOKEVIRTUAL(Opcodes.INVOKEVIRTUAL),
     INVOKESPECIAL(Opcodes.INVOKESPECIAL),
     INVOKESTATIC(Opcodes.INVOKESTATIC),
@@ -509,7 +478,7 @@ public interface HxInstructions {
 
     @Override
     public int getPopSize(final String desc) {
-      return (this == INVOKESTATIC? 0 : 1) + getArgumentsSize(desc);
+      return (this == INVOKESTATIC ? 0 : 1) + getArgumentsSize(desc);
     }
 
     @Override
@@ -518,33 +487,49 @@ public interface HxInstructions {
     }
 
     @Override
-    public HxInstructionKind getKind() {
-      return HxInstructionKind.Invocation;
+    public HxInstructionSort getSort() {
+      return HxInstructionSort.Invocation;
     }
   }
 
   enum Jump
-      implements HxInstructionType {
-    IFEQ(Opcodes.IFEQ, 1, 1), //0
-    IFNE(Opcodes.IFNE, 1, 0), //1
-    IFLT(Opcodes.IFLT, 1, 3), //2
-    IFGE(Opcodes.IFGE, 1, 2), //3
-    IFGT(Opcodes.IFGT, 1, 5), //4
-    IFLE(Opcodes.IFLE, 1, 4), //5
+    implements HxInstructionType {
+    IFEQ(Opcodes.IFEQ, 1, 1),
+    //0
+    IFNE(Opcodes.IFNE, 1, 0),
+    //1
+    IFLT(Opcodes.IFLT, 1, 3),
+    //2
+    IFGE(Opcodes.IFGE, 1, 2),
+    //3
+    IFGT(Opcodes.IFGT, 1, 5),
+    //4
+    IFLE(Opcodes.IFLE, 1, 4),
+    //5
 
-    IF_ICMPEQ(Opcodes.IF_ICMPEQ, 1+1, 7), //6
-    IF_ICMPNE(Opcodes.IF_ICMPNE, 1+1, 6), //7
-    IF_ICMPLT(Opcodes.IF_ICMPLT, 1+1, 9), //8
-    IF_ICMPGE(Opcodes.IF_ICMPGE, 1+1, 8), //9
-    IF_ICMPGT(Opcodes.IF_ICMPGT, 1+1, 11), //10
-    IF_ICMPLE(Opcodes.IF_ICMPLE, 1+1, 10), //11
+    IF_ICMPEQ(Opcodes.IF_ICMPEQ, 1 + 1, 7),
+    //6
+    IF_ICMPNE(Opcodes.IF_ICMPNE, 1 + 1, 6),
+    //7
+    IF_ICMPLT(Opcodes.IF_ICMPLT, 1 + 1, 9),
+    //8
+    IF_ICMPGE(Opcodes.IF_ICMPGE, 1 + 1, 8),
+    //9
+    IF_ICMPGT(Opcodes.IF_ICMPGT, 1 + 1, 11),
+    //10
+    IF_ICMPLE(Opcodes.IF_ICMPLE, 1 + 1, 10),
+    //11
 
-    IF_ACMPEQ(Opcodes.IF_ACMPEQ, 1+1, 13), //12
-    IF_ACMPNE(Opcodes.IF_ACMPNE, 1+1, 12), //13
+    IF_ACMPEQ(Opcodes.IF_ACMPEQ, 1 + 1, 13),
+    //12
+    IF_ACMPNE(Opcodes.IF_ACMPNE, 1 + 1, 12),
+    //13
 
-    GOTO(Opcodes.GOTO, 0, 14), //14
+    GOTO(Opcodes.GOTO, 0, 14),
+    //14
 
-    IFNULL(Opcodes.IFNULL, 1, 16), //15
+    IFNULL(Opcodes.IFNULL, 1, 16),
+    //15
     IFNONNULL(Opcodes.IFNONNULL, 1, 15); //16
 
     private final int opcode;
@@ -553,7 +538,8 @@ public interface HxInstructions {
     private volatile Jump inverseJump;
 
     Jump(int opcode,
-         final int pop, final int inverse) {
+         final int pop,
+         final int inverse) {
       this.opcode = opcode;
       this.pop = pop;
       this.inverse = inverse;
@@ -579,7 +565,7 @@ public interface HxInstructions {
      */
     public Jump inverse() {
       Jump inverseJump = this.inverseJump;
-      if(inverseJump == null) {
+      if (inverseJump == null) {
         this.inverseJump = inverseJump = values()[inverse];
       }
       return inverseJump;
@@ -590,13 +576,13 @@ public interface HxInstructions {
     }
 
     @Override
-    public HxInstructionKind getKind() {
-      return HxInstructionKind.Jump;
+    public HxInstructionSort getSort() {
+      return HxInstructionSort.Jump;
     }
   }
 
   enum Switches
-      implements HxInstructionType {
+    implements HxInstructionType {
     TABLESWITCH(Opcodes.TABLESWITCH),
     LOOKUPSWITCH(Opcodes.LOOKUPSWITCH);
 
@@ -622,13 +608,13 @@ public interface HxInstructions {
     }
 
     @Override
-    public HxInstructionKind getKind() {
-      return HxInstructionKind.Switches;
+    public HxInstructionSort getSort() {
+      return HxInstructionSort.Switches;
     }
   }
 
   enum Load
-      implements HxInstructionType {
+    implements HxInstructionType {
     ILOAD(Opcodes.ILOAD, 1),
     LLOAD(Opcodes.LLOAD, 2),
     FLOAD(Opcodes.FLOAD, 1),
@@ -660,18 +646,19 @@ public interface HxInstructions {
     }
 
     @Override
-    public HxInstructionKind getKind() {
-      return HxInstructionKind.Load;
+    public HxInstructionSort getSort() {
+      return HxInstructionSort.Load;
     }
   }
 
   enum Store
-      implements HxInstructionType {
+    implements HxInstructionType {
     ISTORE(Opcodes.ISTORE, 1),
     LSTORE(Opcodes.LSTORE, 2),
     FSTORE(Opcodes.FSTORE, 1),
     DSTORE(Opcodes.DSTORE, 2),
-    ASTORE(Opcodes.ASTORE, 1);
+    ASTORE(Opcodes.ASTORE, 1),
+    IINC(Opcodes.IINC, 0);
 
     private final int opcode;
     private final int pop;
@@ -698,13 +685,13 @@ public interface HxInstructions {
     }
 
     @Override
-    public HxInstructionKind getKind() {
-      return HxInstructionKind.Store;
+    public HxInstructionSort getSort() {
+      return HxInstructionSort.Store;
     }
   }
 
   enum Misc
-      implements HxInstructionType {
+    implements HxInstructionType {
     NOP(Opcodes.NOP),
     JSR(Opcodes.JSR),
     RET(Opcodes.RET);
@@ -727,17 +714,17 @@ public interface HxInstructions {
 
     @Override
     public int getPushSize() {
-      return this == JSR? 1 : 0;
+      return this == JSR ? 1 : 0;
     }
 
     @Override
-    public HxInstructionKind getKind() {
-      return HxInstructionKind.Misc;
+    public HxInstructionSort getSort() {
+      return HxInstructionSort.Misc;
     }
   }
 
   enum Stack
-      implements HxInstructionType {
+    implements HxInstructionType {
     POP(Opcodes.POP, 1, 0),
     POP2(Opcodes.POP2, 2, 0),
     DUP(Opcodes.DUP, 1, 2),
@@ -776,13 +763,13 @@ public interface HxInstructions {
     }
 
     @Override
-    public HxInstructionKind getKind() {
-      return HxInstructionKind.Stack;
+    public HxInstructionSort getSort() {
+      return HxInstructionSort.Stack;
     }
   }
 
   enum Synchronization
-      implements HxInstructionType {
+    implements HxInstructionType {
     MONITORENTER(Opcodes.MONITORENTER),
     MONITOREXIT(Opcodes.MONITOREXIT);
 
@@ -808,13 +795,13 @@ public interface HxInstructions {
     }
 
     @Override
-    public HxInstructionKind getKind() {
-      return HxInstructionKind.Synchronization;
+    public HxInstructionSort getSort() {
+      return HxInstructionSort.Synchronization;
     }
   }
 
   enum Exit
-      implements HxInstructionType {
+    implements HxInstructionType {
     IRETURN(Opcodes.IRETURN, 1),
     LRETURN(Opcodes.LRETURN, 2),
     FRETURN(Opcodes.FRETURN, 1),
@@ -848,14 +835,45 @@ public interface HxInstructions {
     }
 
     @Override
-    public HxInstructionKind getKind() {
-      return HxInstructionKind.Exit;
+    public HxInstructionSort getSort() {
+      return HxInstructionSort.Exit;
+    }
+  }
+
+  enum Special
+    implements HxInstructionType {
+    NOT_INSTRUCTION,
+    LABEL,
+    FRAME,
+    LINE_NUMBER;
+
+    @Override
+    public HxInstructionSort getSort() {
+      return HxInstructionSort.Invalid;
+    }
+
+    @Override
+    public int getOpcode() {
+      return -1;
+    }
+
+    @Override
+    public int getPopSize() {
+      return 0;
+    }
+
+    @Override
+    public int getPushSize() {
+      return 0;
     }
   }
 
   //----------------------------------------------------------------------------------------------------------------
 
   static HxInstructionType fromOpcode(int opcode) {
+    if(opcode < 0) {
+      return Special.NOT_INSTRUCTION;
+    }
     //TODO: evaluate what is faster in this case a SWITCH or an ARRAY?
     switch (opcode) {
       case Opcodes.NOP:
@@ -1039,7 +1057,7 @@ public interface HxInstructions {
       case Opcodes.LXOR:
         return Binary.LXOR;
       case Opcodes.IINC:
-        return Increment.IINC;
+        return Store.IINC;
       case Opcodes.I2L:
         return Conversion.I2L;
       case Opcodes.I2F:

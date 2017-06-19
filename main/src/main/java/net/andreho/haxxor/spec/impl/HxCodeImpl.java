@@ -6,7 +6,7 @@ import net.andreho.haxxor.cgen.HxInstructionFactory;
 import net.andreho.haxxor.cgen.HxLinkedCode;
 import net.andreho.haxxor.cgen.HxLocalVariable;
 import net.andreho.haxxor.cgen.HxTryCatch;
-import net.andreho.haxxor.cgen.impl.InstructionCodeStream;
+import net.andreho.haxxor.cgen.impl.ExtendedInstructionCodeStream;
 import net.andreho.haxxor.spec.api.HxCode;
 import net.andreho.haxxor.spec.api.HxExecutable;
 
@@ -90,6 +90,6 @@ public class HxCodeImpl
       this.getFirst()
           .append(this.getLast());
     }
-    return new InstructionCodeStream(this);
+    return new ExtendedInstructionCodeStream(this);
   }
 }

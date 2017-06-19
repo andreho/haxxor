@@ -7,8 +7,8 @@ package net.andreho.aop.api.spec;
  */
 public enum Site {
   /**
-   * Applies aspect at callee site - direct after the invocation of method/constructor itself
+   * Applies aspect at callee site - direct after the invocation of intercepted method/constructor itself
    */
   CALLEE,
-//    CALLER //possibly in future implementations
+//    CALLER //comes possibly in future
 }

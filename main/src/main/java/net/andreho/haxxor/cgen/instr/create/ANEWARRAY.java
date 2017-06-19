@@ -29,9 +29,4 @@ public class ANEWARRAY
                   .push("[" + getOperand())
                   .get();
   }
-
-  @Override
-  public String toString() {
-    return super.toString() + " " + getOperand();
-  }
 }

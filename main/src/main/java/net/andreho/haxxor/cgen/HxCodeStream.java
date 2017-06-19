@@ -2,19 +2,18 @@ package net.andreho.haxxor.cgen;
 
 
 import net.andreho.haxxor.cgen.instr.LABEL;
-import net.andreho.haxxor.spec.api.HxType;
 
 /**
  * <br/>Created by a.hofmann on 16.06.2015.<br/>
  */
-public interface HxCodeStream {
+public interface HxCodeStream<Stream extends HxCodeStream<Stream>> {
 
   /**
    * Begins code creation
    *
    * @return this
    */
-  HxCodeStream BEGIN();
+  Stream BEGIN();
 
   /**
    * A do nothing operation or <i>"no operation"</i><br/>
@@ -22,7 +21,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream NOP(); //0
+  Stream NOP(); //0
 
   /**
    * Pushes a <b>NULL</b> value on the operand stack.<br/>
@@ -30,7 +29,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream ACONST_NULL(); //1
+  Stream ACONST_NULL(); //1
 
   /**
    * Pushes an integer <b>-1</b> value on the operand stack.<br/>
@@ -38,7 +37,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream ICONST_M1(); //2
+  Stream ICONST_M1(); //2
 
   /**
    * Pushes an integer <b>0</b> value on the operand stack.<br/>
@@ -46,7 +45,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream ICONST_0(); //3
+  Stream ICONST_0(); //3
 
   /**
    * Pushes an integer <b>1</b> value on the operand stack.<br/>
@@ -54,7 +53,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream ICONST_1(); //4
+  Stream ICONST_1(); //4
 
   /**
    * Pushes an integer <b>2</b> value on the operand stack.<br/>
@@ -62,7 +61,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream ICONST_2(); //5
+  Stream ICONST_2(); //5
 
   /**
    * Pushes an integer <b>3</b> value on the operand stack.<br/>
@@ -70,7 +69,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream ICONST_3(); //6
+  Stream ICONST_3(); //6
 
   /**
    * Pushes an integer <b>4</b> value on the operand stack.<br/>
@@ -78,7 +77,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream ICONST_4(); //7
+  Stream ICONST_4(); //7
 
   /**
    * Pushes an integer <b>5</b> value on the operand stack.<br/>
@@ -86,7 +85,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream ICONST_5(); //8
+  Stream ICONST_5(); //8
 
   /**
    * Pushes a long <b>0</b> value on the operand stack and reserves <b>two stack slots</b>.<br/>
@@ -94,7 +93,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream LCONST_0(); //9
+  Stream LCONST_0(); //9
 
   /**
    * Pushes a long <b>1</b> value on the operand stack and reserves <b>two stack slots</b>.<br/>
@@ -102,7 +101,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream LCONST_1(); //10
+  Stream LCONST_1(); //10
 
   /**
    * Pushes a float <b>0.0f</b> value on the operand stack.<br/>
@@ -110,7 +109,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream FCONST_0(); //11
+  Stream FCONST_0(); //11
 
   /**
    * Pushes a float <b>1.0f</b> value on the operand stack.<br/>
@@ -118,7 +117,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream FCONST_1(); //12
+  Stream FCONST_1(); //12
 
   /**
    * Pushes a float <b>2.0f</b> value on the operand stack.<br/>
@@ -126,7 +125,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream FCONST_2(); //13
+  Stream FCONST_2(); //13
 
   /**
    * Pushes a double <b>0.0d</b> value on the operand stack and reserves <b>two stack slots</b>.<br/>
@@ -134,7 +133,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream DCONST_0(); //14
+  Stream DCONST_0(); //14
 
   /**
    * Pushes a double <b>1.0d</b> value on the operand stack and reserves <b>two stack slots</b>.<br/>
@@ -142,7 +141,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream DCONST_1(); //15
+  Stream DCONST_1(); //15
 
   /**
    * Pushes an integer value between <b>-128</b> and <b>127</b> on the operand stack.<br/>
@@ -151,7 +150,7 @@ public interface HxCodeStream {
    * @param value to push
    * @return this
    */
-  HxCodeStream BIPUSH(byte value); //16
+  Stream BIPUSH(byte value); //16
 
   /**
    * Pushes an integer value between <b>-32768</b> and <b>32767</b> on the operand stack.<br/>
@@ -160,7 +159,7 @@ public interface HxCodeStream {
    * @param value to push
    * @return this
    */
-  HxCodeStream SIPUSH(short value); //17
+  Stream SIPUSH(short value); //17
 
   /**
    * Pushes an integer value from constant pool on the operand stack.<br/>
@@ -169,7 +168,7 @@ public interface HxCodeStream {
    * @param value to push
    * @return this
    */
-  HxCodeStream LDC(int value); //18
+  Stream LDC(int value); //18
 
   /**
    * Pushes a float value from constant pool on the operand stack.<br/>
@@ -178,7 +177,7 @@ public interface HxCodeStream {
    * @param value to push
    * @return this
    */
-  HxCodeStream LDC(float value); //18
+  Stream LDC(float value); //18
 
   /**
    * Pushes a long value from constant pool on the operand stack and reserves <b>two stack slots</b>.<br/>
@@ -187,7 +186,7 @@ public interface HxCodeStream {
    * @param value to push
    * @return this
    */
-  HxCodeStream LDC(long value); //18
+  Stream LDC(long value); //18
 
   /**
    * Pushes a double value from constant pool on the operand stack and reserves <b>two stack slots</b>.<br/>
@@ -196,7 +195,7 @@ public interface HxCodeStream {
    * @param value to push
    * @return this
    */
-  HxCodeStream LDC(double value); //18
+  Stream LDC(double value); //18
 
   /**
    * Pushes a string value from constant pool on the operand stack.<br/>
@@ -205,7 +204,7 @@ public interface HxCodeStream {
    * @param value to push
    * @return this
    */
-  HxCodeStream LDC(String value); //18
+  Stream LDC(String value); //18
 
   /**
    * Pushes a {@link HxMethodHandle handle} value from constant pool on the operand stack.<br/>
@@ -215,7 +214,7 @@ public interface HxCodeStream {
    * @return this
    * @implNote by specification this command called <b>LDC</b> too.
    */
-  HxCodeStream HANDLE(HxMethodHandle handle); //18
+  Stream HANDLE(HxMethodHandle handle); //18
 
   /**
    * Pushes a string value from constant pool on the operand stack.<br/>
@@ -225,7 +224,7 @@ public interface HxCodeStream {
    * @return this
    * @implNote by specification this command called <b>LDC</b> too.
    */
-  HxCodeStream METHOD(HxMethodType methodType); //18
+  Stream METHOD(HxMethodType methodType); //18
 
   /**
    * Pushes a class reference from constant pool on the operand stack.<br/>
@@ -235,17 +234,7 @@ public interface HxCodeStream {
    * @return this
    * @implNote by specification this command called <b>LDC</b> too.
    */
-  HxCodeStream TYPE(String internalType); //18
-
-  /**
-   * Pushes a class reference from constant pool on the operand stack.<br/>
-   * Code: <code>0x12</code><br/>
-   *
-   * @param type to push
-   * @return this
-   * @implNote by specification this command called <b>LDC</b> too.
-   */
-  HxCodeStream TYPE(HxType type); //18
+  Stream TYPE(String internalType); //18
 
   /**
    * Pushes an integer value from the slot with given index on the operand stack.<br/>
@@ -254,7 +243,7 @@ public interface HxCodeStream {
    * @param idx of the variable slot (local variable)
    * @return this
    */
-  HxCodeStream ILOAD(int idx); //21
+  Stream ILOAD(int idx); //21
 
   /**
    * Pushes a long value from the slot with given index on the operand stack.<br/>
@@ -264,7 +253,7 @@ public interface HxCodeStream {
    * @param idx of the variable slot containing first 4 bytes (MSB) the long value
    * @return this
    */
-  HxCodeStream LLOAD(int idx); //22
+  Stream LLOAD(int idx); //22
 
   /**
    * Pushes a float value from the slot with given index on the operand stack.<br/>
@@ -273,7 +262,7 @@ public interface HxCodeStream {
    * @param idx of the variable slot (local variable)
    * @return this
    */
-  HxCodeStream FLOAD(int idx); //23
+  Stream FLOAD(int idx); //23
 
   /**
    * Pushes a double value from the slot with given index on the operand stack.<br/>
@@ -283,7 +272,7 @@ public interface HxCodeStream {
    * @param idx of the variable slot containing first 4 bytes (MSB) the double value
    * @return this
    */
-  HxCodeStream DLOAD(int idx); //24
+  Stream DLOAD(int idx); //24
 
   /**
    * Pushes an object reference from the slot with given index on the operand stack..<br/>
@@ -293,7 +282,7 @@ public interface HxCodeStream {
    * @param idx of the variable slot (local variable)
    * @return this
    */
-  HxCodeStream ALOAD(int idx); //25
+  Stream ALOAD(int idx); //25
 
   /**
    * Pushes the <b>this</b> reference from the slot with index <b>0</b> on the operand stack.<br/>
@@ -303,7 +292,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream THIS(); //25
+  Stream THIS(); //25
 
   /**
    * Reads from a provided int[] array reference at the given index an integer value and
@@ -313,7 +302,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream IALOAD(); //46
+  Stream IALOAD(); //46
 
   /**
    * Reads from a provided long[] array reference at the given index a long value,
@@ -323,7 +312,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream LALOAD(); //47
+  Stream LALOAD(); //47
 
   /**
    * Reads from a provided float[] array reference at the given index a float value and
@@ -333,7 +322,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream FALOAD(); //48
+  Stream FALOAD(); //48
 
   /**
    * Reads from a provided double[] array reference at the given index a double value,
@@ -343,7 +332,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream DALOAD(); //49
+  Stream DALOAD(); //49
 
   /**
    * Reads from a provided T[] array reference at the given index an object and
@@ -353,7 +342,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream AALOAD(); //50
+  Stream AALOAD(); //50
 
   /**
    * Reads from a provided byte[] array reference at the given index a byte value and
@@ -363,7 +352,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream BALOAD(); //51
+  Stream BALOAD(); //51
 
   /**
    * Reads from a provided char[] array reference at the given index a character value and
@@ -373,7 +362,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream CALOAD(); //52
+  Stream CALOAD(); //52
 
   /**
    * Reads from a provided short[] array reference at the given index a short value and
@@ -383,7 +372,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream SALOAD(); //53
+  Stream SALOAD(); //53
 
   /**
    * Pops an integer value from stack and stores it into a variable slot with given <code>index</code>.<br/>
@@ -393,7 +382,7 @@ public interface HxCodeStream {
    * @param idx of variable slot that receives value
    * @return this
    */
-  HxCodeStream ISTORE(int idx); //54
+  Stream ISTORE(int idx); //54
 
   /**
    * Pops a long value from stack (two slots) and stores it into a variable slot with given
@@ -404,7 +393,7 @@ public interface HxCodeStream {
    * @param idx of variable slot that receives value
    * @return this
    */
-  HxCodeStream LSTORE(int idx); //55
+  Stream LSTORE(int idx); //55
 
   /**
    * Pops a float value from stack and stores it into a variable slot with given <code>index</code><br/>
@@ -414,7 +403,7 @@ public interface HxCodeStream {
    * @param idx of variable slot that receives value
    * @return this
    */
-  HxCodeStream FSTORE(int idx); //56
+  Stream FSTORE(int idx); //56
 
   /**
    * Pops a double value from stack (two slots) and stores it into a variable slot with given
@@ -425,7 +414,7 @@ public interface HxCodeStream {
    * @param idx of variable slot that receives value
    * @return this
    */
-  HxCodeStream DSTORE(int idx); //57
+  Stream DSTORE(int idx); //57
 
   /**
    * Pops a reference value from stack and stores it into a variable slot with given <code>index</code><br/>
@@ -435,7 +424,7 @@ public interface HxCodeStream {
    * @param idx of variable slot that receives value
    * @return this
    */
-  HxCodeStream ASTORE(int idx); //58
+  Stream ASTORE(int idx); //58
 
   /**
    * Stores an integer at given index into the provided integer array reference.<br/>
@@ -444,7 +433,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream IASTORE(); //79
+  Stream IASTORE(); //79
 
   /**
    * Stores a long value at given index into the provided long array reference.<br/>
@@ -454,7 +443,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream LASTORE(); //80
+  Stream LASTORE(); //80
 
   /**
    * Stores a float at given index into the provided float array reference.<br/>
@@ -463,7 +452,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream FASTORE(); //81
+  Stream FASTORE(); //81
 
   /**
    * Stores a double value at given index into the provided double array reference.<br/>
@@ -473,7 +462,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream DASTORE(); //82
+  Stream DASTORE(); //82
 
   /**
    * Stores an object reference value at given index into the provided object array reference.<br/>
@@ -482,7 +471,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream AASTORE(); //83
+  Stream AASTORE(); //83
 
   /**
    * Stores a byte at given index into the provided byte array reference.<br/>
@@ -491,7 +480,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream BASTORE(); //84
+  Stream BASTORE(); //84
 
   /**
    * Stores a char at given index into the provided char array reference.<br/>
@@ -500,7 +489,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream CASTORE(); //85
+  Stream CASTORE(); //85
 
   /**
    * Stores a short at given index into the provided short array reference.<br/>
@@ -509,7 +498,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream SASTORE(); //86
+  Stream SASTORE(); //86
 
   /**
    * Pops the top stack value from the stack
@@ -519,7 +508,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream POP(); //87
+  Stream POP(); //87
 
   /**
    * Pop the top one or two operand stack values.<br/>
@@ -527,7 +516,7 @@ public interface HxCodeStream {
    * Code: <code>0x58</code><br/>
    * @return this
    */
-  HxCodeStream POP2(); //88
+  Stream POP2(); //88
 
   /**
    * Duplicate the top operand stack value.<br/>
@@ -535,7 +524,7 @@ public interface HxCodeStream {
    * Code: <code>0x59</code><br/>
    * @return this
    */
-  HxCodeStream DUP(); //89
+  Stream DUP(); //89
 
   /**
    * Duplicate the top operand stack value and insert two values down.<br/>
@@ -543,7 +532,7 @@ public interface HxCodeStream {
    * Code: <code>0x5a</code><br/>
    * @return this
    */
-  HxCodeStream DUP_X1(); //90
+  Stream DUP_X1(); //90
 
   /**
    * Duplicate the top operand stack value and insert two or three values down.<br/>
@@ -551,7 +540,7 @@ public interface HxCodeStream {
    * Code: <code>0x5b</code><br/>
    * @return this
    */
-  HxCodeStream DUP_X2(); //91
+  Stream DUP_X2(); //91
 
   /**
    * Duplicate the top one or two operand stack values.<br/>
@@ -559,7 +548,7 @@ public interface HxCodeStream {
    * Code: <code>0x5c</code><br/>
    * @return this
    */
-  HxCodeStream DUP2(); //92
+  Stream DUP2(); //92
 
   /**
    * Duplicate the top one or two operand stack values and insert two or three values down. <br/>
@@ -567,7 +556,7 @@ public interface HxCodeStream {
    * Code: <code>0x5d</code><br/>
    * @return this
    */
-  HxCodeStream DUP2_X1(); //93
+  Stream DUP2_X1(); //93
 
   /**
    * Duplicate the top one or two operand stack values and insert two, three, or four values down.<br/>
@@ -575,7 +564,7 @@ public interface HxCodeStream {
    * Code: <code>0x5e</code><br/>
    * @return this
    */
-  HxCodeStream DUP2_X2(); //94
+  Stream DUP2_X2(); //94
 
   /**
    * Swap the top two operand stack values.<br/>
@@ -583,7 +572,7 @@ public interface HxCodeStream {
    * Code: <code>0x5f</code><br/>
    * @return this
    */
-  HxCodeStream SWAP(); //95
+  Stream SWAP(); //95
 
   /**
    * Calculates an addition of two top integers on the stack.<br/>
@@ -591,7 +580,7 @@ public interface HxCodeStream {
    * Code: <code>0x60</code><br/>
    * @return this
    */
-  HxCodeStream IADD(); //96
+  Stream IADD(); //96
 
   /**
    * Calculates an addition of two top longs on the stack.<br/>
@@ -599,7 +588,7 @@ public interface HxCodeStream {
    * Code: <code>0x61</code><br/>
    * @return this
    */
-  HxCodeStream LADD(); //97
+  Stream LADD(); //97
 
   /**
    * Calculates an addition of two top floats on the stack.<br/>
@@ -607,7 +596,7 @@ public interface HxCodeStream {
    * Code: <code>0x62</code><br/>
    * @return this
    */
-  HxCodeStream FADD(); //98
+  Stream FADD(); //98
 
   /**
    * Calculates an addition of two top doubles on the stack.<br/>
@@ -615,177 +604,177 @@ public interface HxCodeStream {
    * Code: <code>0x63</code><br/>
    * @return this
    */
-  HxCodeStream DADD(); //99
+  Stream DADD(); //99
 
-  HxCodeStream ISUB(); //100
+  Stream ISUB(); //100
 
-  HxCodeStream LSUB(); //101
+  Stream LSUB(); //101
 
-  HxCodeStream FSUB(); //102
+  Stream FSUB(); //102
 
-  HxCodeStream DSUB(); //103
+  Stream DSUB(); //103
 
-  HxCodeStream IMUL(); //104
+  Stream IMUL(); //104
 
-  HxCodeStream LMUL(); //105
+  Stream LMUL(); //105
 
-  HxCodeStream FMUL(); //106
+  Stream FMUL(); //106
 
-  HxCodeStream DMUL(); //107
+  Stream DMUL(); //107
 
-  HxCodeStream IDIV(); //108
+  Stream IDIV(); //108
 
-  HxCodeStream LDIV(); //109
+  Stream LDIV(); //109
 
-  HxCodeStream FDIV(); //110
+  Stream FDIV(); //110
 
-  HxCodeStream DDIV(); //111
+  Stream DDIV(); //111
 
-  HxCodeStream IREM(); //112
+  Stream IREM(); //112
 
-  HxCodeStream LREM(); //113
+  Stream LREM(); //113
 
-  HxCodeStream FREM(); //114
+  Stream FREM(); //114
 
-  HxCodeStream DREM(); //115
+  Stream DREM(); //115
 
-  HxCodeStream INEG(); //116
+  Stream INEG(); //116
 
-  HxCodeStream LNEG(); //117
+  Stream LNEG(); //117
 
-  HxCodeStream FNEG(); //118
+  Stream FNEG(); //118
 
-  HxCodeStream DNEG(); //119
+  Stream DNEG(); //119
 
-  HxCodeStream ISHL(); //120
+  Stream ISHL(); //120
 
-  HxCodeStream LSHL(); //121
+  Stream LSHL(); //121
 
-  HxCodeStream ISHR(); //122
+  Stream ISHR(); //122
 
-  HxCodeStream LSHR(); //123
+  Stream LSHR(); //123
 
-  HxCodeStream IUSHR(); //124
+  Stream IUSHR(); //124
 
-  HxCodeStream LUSHR(); //125
+  Stream LUSHR(); //125
 
-  HxCodeStream IAND(); //126
+  Stream IAND(); //126
 
-  HxCodeStream LAND(); //127
+  Stream LAND(); //127
 
-  HxCodeStream IOR(); //128
+  Stream IOR(); //128
 
-  HxCodeStream LOR(); //129
+  Stream LOR(); //129
 
-  HxCodeStream IXOR(); //130
+  Stream IXOR(); //130
 
-  HxCodeStream LXOR(); //131
-
-  //----------------------------------------------------------------------------------------------------------------
-
-  HxCodeStream IINC(int var, int increment); //132
+  Stream LXOR(); //131
 
   //----------------------------------------------------------------------------------------------------------------
 
-  HxCodeStream I2L(); //133
-
-  HxCodeStream I2F(); //134
-
-  HxCodeStream I2D(); //135
-
-  HxCodeStream L2I(); //136
-
-  HxCodeStream L2F(); //137
-
-  HxCodeStream L2D(); //138
-
-  HxCodeStream F2I(); //139
-
-  HxCodeStream F2L(); //140
-
-  HxCodeStream F2D(); //141
-
-  HxCodeStream D2I(); //142
-
-  HxCodeStream D2L(); //143
-
-  HxCodeStream D2F(); //144
-
-  HxCodeStream I2B(); //145
-
-  HxCodeStream I2C(); //146
-
-  HxCodeStream I2S(); //147
+  Stream IINC(int var, int increment); //132
 
   //----------------------------------------------------------------------------------------------------------------
 
-  HxCodeStream LCMP(); //148
+  Stream I2L(); //133
 
-  HxCodeStream FCMPL(); //149
+  Stream I2F(); //134
 
-  HxCodeStream FCMPG(); //150
+  Stream I2D(); //135
 
-  HxCodeStream DCMPL(); //151
+  Stream L2I(); //136
 
-  HxCodeStream DCMPG(); //152
+  Stream L2F(); //137
 
-  //----------------------------------------------------------------------------------------------------------------
+  Stream L2D(); //138
 
-  HxCodeStream IFEQ(LABEL label); //153
+  Stream F2I(); //139
 
-  HxCodeStream IFNE(LABEL label); //154
+  Stream F2L(); //140
 
-  HxCodeStream IFLT(LABEL label); //155
+  Stream F2D(); //141
 
-  HxCodeStream IFGE(LABEL label); //156
+  Stream D2I(); //142
 
-  HxCodeStream IFGT(LABEL label); //157
+  Stream D2L(); //143
 
-  HxCodeStream IFLE(LABEL label); //158
+  Stream D2F(); //144
 
-  HxCodeStream IF_ICMPEQ(LABEL label); //159
+  Stream I2B(); //145
 
-  HxCodeStream IF_ICMPNE(LABEL label); //160
+  Stream I2C(); //146
 
-  HxCodeStream IF_ICMPLT(LABEL label); //161
-
-  HxCodeStream IF_ICMPGE(LABEL label); //162
-
-  HxCodeStream IF_ICMPGT(LABEL label); //163
-
-  HxCodeStream IF_ICMPLE(LABEL label); //164
-
-  HxCodeStream IF_ACMPEQ(LABEL label); //165
-
-  HxCodeStream IF_ACMPNE(LABEL label); //166
+  Stream I2S(); //147
 
   //----------------------------------------------------------------------------------------------------------------
 
-  HxCodeStream GOTO(LABEL label); //167
+  Stream LCMP(); //148
 
-  HxCodeStream JSR(LABEL label); //168
+  Stream FCMPL(); //149
 
-  HxCodeStream RET(int var); //169
+  Stream FCMPG(); //150
 
-  //----------------------------------------------------------------------------------------------------------------
+  Stream DCMPL(); //151
 
-  HxCodeStream TABLESWITCH(int min, int max, LABEL defaultLabel, LABEL... labels); //170
-
-  HxCodeStream LOOKUPSWITCH(LABEL defaultLabel, int[] keys, LABEL[] labels); //171
+  Stream DCMPG(); //152
 
   //----------------------------------------------------------------------------------------------------------------
 
-  HxCodeStream IRETURN(); //172
+  Stream IFEQ(LABEL label); //153
 
-  HxCodeStream LRETURN(); //173
+  Stream IFNE(LABEL label); //154
 
-  HxCodeStream FRETURN(); //174
+  Stream IFLT(LABEL label); //155
 
-  HxCodeStream DRETURN(); //175
+  Stream IFGE(LABEL label); //156
 
-  HxCodeStream ARETURN(); //176
+  Stream IFGT(LABEL label); //157
 
-  HxCodeStream RETURN(); //177
+  Stream IFLE(LABEL label); //158
+
+  Stream IF_ICMPEQ(LABEL label); //159
+
+  Stream IF_ICMPNE(LABEL label); //160
+
+  Stream IF_ICMPLT(LABEL label); //161
+
+  Stream IF_ICMPGE(LABEL label); //162
+
+  Stream IF_ICMPGT(LABEL label); //163
+
+  Stream IF_ICMPLE(LABEL label); //164
+
+  Stream IF_ACMPEQ(LABEL label); //165
+
+  Stream IF_ACMPNE(LABEL label); //166
+
+  //----------------------------------------------------------------------------------------------------------------
+
+  Stream GOTO(LABEL label); //167
+
+  Stream JSR(LABEL label); //168
+
+  Stream RET(int var); //169
+
+  //----------------------------------------------------------------------------------------------------------------
+
+  Stream TABLESWITCH(int min, int max, LABEL defaultLabel, LABEL... labels); //170
+
+  Stream LOOKUPSWITCH(LABEL defaultLabel, int[] keys, LABEL[] labels); //171
+
+  //----------------------------------------------------------------------------------------------------------------
+
+  Stream IRETURN(); //172
+
+  Stream LRETURN(); //173
+
+  Stream FRETURN(); //174
+
+  Stream DRETURN(); //175
+
+  Stream ARETURN(); //176
+
+  Stream RETURN(); //177
 
   //----------------------------------------------------------------------------------------------------------------
 
@@ -799,7 +788,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream GETSTATIC(String owner, String name, String desc); //178
+  Stream GETSTATIC(String owner, String name, String desc); //178
 
   /**
    * Set static field in class.<br/>
@@ -811,7 +800,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream PUTSTATIC(String owner, String name, String desc); //179
+  Stream PUTSTATIC(String owner, String name, String desc); //179
 
   /**
    * Fetch field from object.<br/>
@@ -823,7 +812,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream GETFIELD(String owner, String name, String desc); //180
+  Stream GETFIELD(String owner, String name, String desc); //180
 
   /**
    * Set field in object.<br/>
@@ -835,7 +824,7 @@ public interface HxCodeStream {
    *
    * @return this
    */
-  HxCodeStream PUTFIELD(String owner, String name, String desc); //181
+  Stream PUTFIELD(String owner, String name, String desc); //181
 
   /**
    * Invoke instance method; dispatch based on class (public/protected/package-private access).<br/>
@@ -846,7 +835,7 @@ public interface HxCodeStream {
    * @param desc is the descriptor of the method's signature
    * @return this
    */
-  HxCodeStream INVOKEVIRTUAL(String owner, String name, String desc); //182
+  Stream INVOKEVIRTUAL(String owner, String name, String desc); //182
 
   /**
    * Invoke instance method; special handling for superclass, private, and instance initialization method invocations.<br/>
@@ -857,7 +846,7 @@ public interface HxCodeStream {
    * @param desc is the descriptor of the method's signature
    * @return this
    */
-  HxCodeStream INVOKESPECIAL(String owner, String name, String desc); //183
+  Stream INVOKESPECIAL(String owner, String name, String desc); //183
 
   /**
    * Invoke a class (static) method.<br/>
@@ -869,7 +858,7 @@ public interface HxCodeStream {
    * @param isInterface whether the owning-class is an interface or not
    * @return this
    */
-  HxCodeStream INVOKESTATIC(String owner, String name, String desc, boolean isInterface); //184
+  Stream INVOKESTATIC(String owner, String name, String desc, boolean isInterface); //184
 
   /**
    * Invoke interface method.<br/>
@@ -880,7 +869,7 @@ public interface HxCodeStream {
    * @param desc is the descriptor of the method's signature
    * @return this
    */
-  HxCodeStream INVOKEINTERFACE(String owner, String name, String desc); //185
+  Stream INVOKEINTERFACE(String owner, String name, String desc); //185
 
   /**
    * Invoke dynamic method.<br/>
@@ -891,7 +880,7 @@ public interface HxCodeStream {
    * @param bsmArgs are the arguments for the referenced bootstrap method
    * @return this
    */
-  HxCodeStream INVOKEDYNAMIC(String name, String desc, HxMethodHandle bsm, HxArguments bsmArgs); //186
+  Stream INVOKEDYNAMIC(String name, String desc, HxMethodHandle bsm, HxArguments bsmArgs); //186
 
   /**
    * Create new object. <br/>
@@ -901,7 +890,7 @@ public interface HxCodeStream {
    *                     (but without any call to any constructor)
    * @return this
    */
-  HxCodeStream NEW(String internalType); //187
+  Stream NEW(String internalType); //187
 
   /**
    * Create new array of referenced primitives.<br/>
@@ -910,7 +899,7 @@ public interface HxCodeStream {
    * @param type of a primitive array-type
    * @return this
    */
-  HxCodeStream NEWARRAY(HxArrayType type); //188
+  Stream NEWARRAY(HxArrayType type); //188
 
   /**
    * Create new array of reference.<br/>
@@ -919,7 +908,7 @@ public interface HxCodeStream {
    * @param internalType is the internal classname of the component's type of constructed array
    * @return this
    */
-  HxCodeStream ANEWARRAY(String internalType); //189
+  Stream ANEWARRAY(String internalType); //189
 
   /**
    * Get length of array.<br/>
@@ -927,7 +916,7 @@ public interface HxCodeStream {
    * Code: <code>0xbe</code><br/>
    * @return this
    */
-  HxCodeStream ARRAYLENGTH(); //190
+  Stream ARRAYLENGTH(); //190
 
   /**
    * Throw exception or error.<br/>
@@ -935,7 +924,7 @@ public interface HxCodeStream {
    * Code: <code>0xbf</code><br/>
    * @return this
    */
-  HxCodeStream ATHROW(); //191
+  Stream ATHROW(); //191
 
   /**
    * Check whether object is of given type.<br/>
@@ -945,7 +934,7 @@ public interface HxCodeStream {
    *                     if it's an array then a descriptor of this array-type
    * @return this
    */
-  HxCodeStream CHECKCAST(String internalType); //192
+  Stream CHECKCAST(String internalType); //192
 
   /**
    * Determine if object is of given type.<br/>
@@ -955,35 +944,35 @@ public interface HxCodeStream {
    *                     if it's an array then a descriptor of this array-type
    * @return this
    */
-  HxCodeStream INSTANCEOF(String internalType); //193
+  Stream INSTANCEOF(String internalType); //193
 
-  HxCodeStream MONITORENTER(); //194
+  Stream MONITORENTER(); //194
 
-  HxCodeStream MONITOREXIT(); //195
-
-  //----------------------------------------------------------------------------------------------------------------
-
-  HxCodeStream MULTIANEWARRAY(String internalType, int dims); //197
+  Stream MONITOREXIT(); //195
 
   //----------------------------------------------------------------------------------------------------------------
 
-  HxCodeStream IFNULL(LABEL label); //198
-
-  HxCodeStream IFNONNULL(LABEL label); //199
+  Stream MULTIANEWARRAY(String internalType, int dims); //197
 
   //----------------------------------------------------------------------------------------------------------------
 
-  HxCodeStream LABEL(LABEL label);
+  Stream IFNULL(LABEL label); //198
 
-  HxCodeStream TRY_CATCH(LABEL startLabel, LABEL endLabel, LABEL handler, String type);
+  Stream IFNONNULL(LABEL label); //199
 
-  HxCodeStream FRAME(HxFrames type, int nLocal, Object[] local, int nStack, Object[] stack);
+  //----------------------------------------------------------------------------------------------------------------
 
-  HxCodeStream LOCAL_VARIABLE(String name, String desc, String signature, LABEL start, LABEL end, int index);
+  Stream LABEL(LABEL label);
 
-  HxCodeStream LINE_NUMBER(int line, LABEL start);
+  Stream TRY_CATCH(LABEL startLabel, LABEL endLabel, LABEL handler, String type);
 
-  HxCodeStream MAXS(int maxStack, int maxLocals);
+  Stream FRAME(HxFrames type, int nLocal, Object[] local, int nStack, Object[] stack);
+
+  Stream LOCAL_VARIABLE(String name, String desc, String signature, LABEL start, LABEL end, int index);
+
+  Stream LINE_NUMBER(int line, LABEL start);
+
+  Stream MAXS(int maxStack, int maxLocals);
 
   void END();
 

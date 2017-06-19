@@ -4,6 +4,8 @@ import net.andreho.asm.org.objectweb.asm.Label;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.HxInstruction;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructions;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInstruction;
 
 import java.util.ArrayList;
@@ -37,6 +39,11 @@ public class LABEL
     if(link) {
       this.asmLabel.info = this;
     }
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructions.Special.LABEL;
   }
 
   @Override

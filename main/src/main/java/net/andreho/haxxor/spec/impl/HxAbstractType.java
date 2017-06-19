@@ -533,12 +533,6 @@ public class HxAbstractType
   }
 
   @Override
-  public HxType replaceAnnotation(HxAnnotation annotation) {
-    super.replaceAnnotation(annotation);
-    return this;
-  }
-
-  @Override
   public HxType setAnnotations(HxAnnotation... annotations) {
     super.setAnnotations(annotations);
     return this;

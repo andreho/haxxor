@@ -15,9 +15,9 @@ import java.lang.annotation.Target;
 public @interface Annotated {
 
   /**
-   * Selects an annotation directly
+   * Selects an annotation directly by its class
    * @return a type of the annotation
-   * @apiNote defaults to {@link Annotated} and disables the direct selection annotation's class
+   * @apiNote defaults to {@link Annotated} and disables the selection by annotation's class
    */
   Class<? extends Annotation> value() default Annotated.class;
   //AND

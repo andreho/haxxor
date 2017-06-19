@@ -16,7 +16,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Arg {
-
   /**
    * @return the allowed indices of the intercepted argument
    * @implNote if anything else is not defined tries to use the parameter's type itself as matching type

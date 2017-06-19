@@ -6,6 +6,7 @@ import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.impl.HxAnnotatedImpl;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -67,7 +68,7 @@ public class HxTryCatch
   }
 
   @Override
-  public Collection<HxAnnotation> getAnnotations() {
+  public Map<String, HxAnnotation> getAnnotations() {
     return initAnnotated().getAnnotations();
   }
 

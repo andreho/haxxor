@@ -8,6 +8,7 @@ import net.andreho.haxxor.spec.api.HxAnnotation;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 /**
@@ -85,8 +86,8 @@ public abstract class AbstractPseudoInstruction
   }
 
   @Override
-  public Collection<HxAnnotation> getAnnotations() {
-    return HxAnnotated.DEFAULT_ANNOTATION_COLLECTION;
+  public Map<String, HxAnnotation> getAnnotations() {
+    return HxAnnotated.DEFAULT_ANNOTATION_MAP;
   }
 
   @Override

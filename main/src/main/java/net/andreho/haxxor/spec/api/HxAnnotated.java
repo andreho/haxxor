@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -13,6 +14,7 @@ import java.util.function.Predicate;
  */
 public interface HxAnnotated<A extends HxAnnotated<A>> {
 
+  Map<String, HxAnnotation> DEFAULT_ANNOTATION_MAP = Collections.emptyMap();
   Collection<HxAnnotation> DEFAULT_ANNOTATION_COLLECTION = Collections.emptySet();
   Collection<HxAnnotated> DEFAULT_SUPER_ANNOTATED_COLLECTION = Collections.emptySet();
 
@@ -25,9 +27,19 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
   A setAnnotations(Collection<HxAnnotation> annotations);
 
   /**
+   * Replaces all annotations with given annotation map
+   *
+   * @param annotations
    * @return
    */
-  Collection<HxAnnotation> getAnnotations();
+  default A setAnnotations(Map<String, HxAnnotation> annotations) {
+    return setAnnotations(annotations.values());
+  }
+
+  /**
+   * @return
+   */
+  Map<String, HxAnnotation> getAnnotations();
 
   /**
    * Replaces all current annotations with given annotation list
@@ -36,7 +48,7 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
    * @return
    */
   default A setAnnotations(HxAnnotation... annotations) {
-    return setAnnotations(new LinkedHashSet<>(Arrays.asList(annotations)));
+    return setAnnotations(Arrays.asList(annotations));
   }
 
   /**
@@ -59,7 +71,7 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
    * @return
    */
   default boolean isAnnotationPresent(String type) {
-    return getAnnotation(type) != null;
+    return getAnnotation(type).isPresent();
   }
 
   /**
@@ -83,10 +95,9 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
    * @return
    */
   default Optional<HxAnnotation> getAnnotation(String type) {
-    for (HxAnnotation annotation : getAnnotations()) {
-      if (annotation.getType().hasName(type)) {
-        return Optional.of(annotation);
-      }
+    final HxAnnotation annotation = getAnnotations().get(type);
+    if(annotation != null) {
+      return Optional.of(annotation);
     }
     return Optional.empty();
   }
@@ -96,15 +107,14 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
    * @return
    */
   default A addAnnotation(HxAnnotation annotation) {
-    if (getAnnotations() == DEFAULT_ANNOTATION_COLLECTION) {
+    if (getAnnotations() == DEFAULT_ANNOTATION_MAP) {
       setAnnotations(new LinkedHashSet<>());
     }
-
     if (annotation.getDeclaringMember() != null) {
       throw new IllegalArgumentException("Given annotation was already bound to another host.");
     }
+    getAnnotations().putIfAbsent(annotation.getType().getName(), annotation);
 
-    getAnnotations().add(annotation);
     if (this instanceof HxMember) {
       annotation.setDeclaringMember((HxMember) this);
     }
@@ -116,27 +126,13 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
    * @param annotation
    * @return
    */
-  default A replaceAnnotation(HxAnnotation annotation) {
-    if (getAnnotations() != DEFAULT_ANNOTATION_COLLECTION) {
-      Optional<HxAnnotation> optional = getAnnotation(annotation.getType());
-      if (optional.isPresent() && getAnnotations().remove(optional.get())) {
-        return addAnnotation(annotation);
-      }
-    }
-    return (A) this;
-  }
-
-  /**
-   * @param annotation
-   * @return
-   */
   default A removeAnnotation(HxAnnotation annotation) {
     if (equals(annotation.getDeclaringMember())) {
       throw new IllegalArgumentException("Given annotation does't belong to this annotated element: " + annotation);
     }
-
-    if (getAnnotations() != DEFAULT_ANNOTATION_COLLECTION) {
-      if (getAnnotations().remove(annotation)) {
+    String annotationTypename = annotation.getType().getName();
+    if (getAnnotations() != DEFAULT_ANNOTATION_MAP) {
+      if (null != getAnnotations().remove(annotationTypename)) {
         annotation.setDeclaringMember(null);
       }
     }

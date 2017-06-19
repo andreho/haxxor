@@ -1,6 +1,6 @@
 package net.andreho.aop.spi.impl.matchers;
 
-import net.andreho.aop.spi.AspectMatcher;
+import net.andreho.aop.spi.ElementMatcher;
 import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxNamed;
@@ -14,27 +14,27 @@ import java.util.List;
 public class MethodsMatcher<E extends HxExecutable<E>>
   extends AbstractMatcher<E> {
 
-  private final AspectMatcher<E> declaredBy;
-  private final AspectMatcher<E> modifiers;
-  private final AspectMatcher<HxNamed> named;
-  private final AspectMatcher<E> returning;
-  private final AspectMatcher<HxAnnotated> annotated;
-  private final AspectMatcher<HxType> throwing;
-  private final AspectMatcher<E> signatures;
-  private final AspectMatcher<E> parameters;
+  private final ElementMatcher<E> declaredBy;
+  private final ElementMatcher<E> modifiers;
+  private final ElementMatcher<HxNamed> named;
+  private final ElementMatcher<E> returning;
+  private final ElementMatcher<HxAnnotated> annotated;
+  private final ElementMatcher<HxType> throwing;
+  private final ElementMatcher<E> signatures;
+  private final ElementMatcher<E> parameters;
 
-  public MethodsMatcher(final AspectMatcher<HxType> declaredBy,
-                        final AspectMatcher<E> modifiers,
-                        final AspectMatcher<HxNamed> named,
-                        final AspectMatcher<HxType> returning,
-                        final AspectMatcher<HxAnnotated> annotated,
-                        final AspectMatcher<HxType> throwing,
-                        final AspectMatcher<E> signatures,
-                        final AspectMatcher<E> parameters) {
-    this.declaredBy = declaredBy.isAny() ? AspectMatcher.any() : new DeclaredByMatcher<>(declaredBy);
+  public MethodsMatcher(final ElementMatcher<HxType> declaredBy,
+                        final ElementMatcher<E> modifiers,
+                        final ElementMatcher<HxNamed> named,
+                        final ElementMatcher<HxType> returning,
+                        final ElementMatcher<HxAnnotated> annotated,
+                        final ElementMatcher<HxType> throwing,
+                        final ElementMatcher<E> signatures,
+                        final ElementMatcher<E> parameters) {
+    this.declaredBy = declaredBy.isAny() ? ElementMatcher.any() : new DeclaredByMatcher<>(declaredBy);
     this.modifiers = modifiers;
     this.named = named;
-    this.returning = returning.isAny() ? AspectMatcher.any() : new ReturningMatcher<>(returning);
+    this.returning = returning.isAny() ? ElementMatcher.any() : new ReturningMatcher<>(returning);
     this.annotated = annotated;
     this.throwing = throwing;
     this.signatures = signatures;

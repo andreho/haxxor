@@ -16,6 +16,7 @@ import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -345,7 +346,7 @@ public class HxTypeReferenceImpl
   }
 
   @Override
-  public Collection<HxAnnotation> getAnnotations() {
+  public Map<String, HxAnnotation> getAnnotations() {
     return toType().getAnnotations();
   }
 
@@ -357,12 +358,6 @@ public class HxTypeReferenceImpl
   @Override
   public Optional<HxAnnotation> getAnnotation(String type) {
     return toType().getAnnotation(type);
-  }
-
-  @Override
-  public HxType replaceAnnotation(HxAnnotation annotation) {
-    toType().replaceAnnotation(annotation);
-    return this;
   }
 
   @Override

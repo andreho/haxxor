@@ -1,6 +1,6 @@
 package net.andreho.aop.spi.impl.matchers;
 
-import net.andreho.aop.spi.AspectMatcher;
+import net.andreho.aop.spi.ElementMatcher;
 import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMember;
@@ -13,17 +13,17 @@ import net.andreho.haxxor.spec.api.HxType;
 public class FieldsMatcher
     extends AbstractMatcher<HxField> {
 
-  private final AspectMatcher<HxMember> modifiers;
-  private final AspectMatcher<HxField> declaredBy;
-  private final AspectMatcher<HxType> typed;
-  private final AspectMatcher<HxNamed> named;
-  private final AspectMatcher<HxAnnotated> annotated;
+  private final ElementMatcher<HxMember> modifiers;
+  private final ElementMatcher<HxField> declaredBy;
+  private final ElementMatcher<HxType> typed;
+  private final ElementMatcher<HxNamed> named;
+  private final ElementMatcher<HxAnnotated> annotated;
 
-  public FieldsMatcher(final AspectMatcher<HxMember> modifiers,
-                       final AspectMatcher<HxField> declaredBy,
-                       final AspectMatcher<HxType> typed,
-                       final AspectMatcher<HxNamed> named,
-                       final AspectMatcher<HxAnnotated> annotated) {
+  public FieldsMatcher(final ElementMatcher<HxMember> modifiers,
+                       final ElementMatcher<HxField> declaredBy,
+                       final ElementMatcher<HxType> typed,
+                       final ElementMatcher<HxNamed> named,
+                       final ElementMatcher<HxAnnotated> annotated) {
     this.declaredBy = declaredBy;
     this.typed = typed;
     this.named = named;

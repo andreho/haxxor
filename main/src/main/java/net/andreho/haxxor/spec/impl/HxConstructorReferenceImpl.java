@@ -14,6 +14,7 @@ import net.andreho.haxxor.spec.api.HxTypeReference;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -163,7 +164,7 @@ public class HxConstructorReferenceImpl
   }
 
   @Override
-  public Collection<HxAnnotation> getAnnotations() {
+  public Map<String, HxAnnotation> getAnnotations() {
     return toConstructor().getAnnotations();
   }
 

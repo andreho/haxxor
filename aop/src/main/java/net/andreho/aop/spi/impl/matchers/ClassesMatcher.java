@@ -1,6 +1,6 @@
 package net.andreho.aop.spi.impl.matchers;
 
-import net.andreho.aop.spi.AspectMatcher;
+import net.andreho.aop.spi.ElementMatcher;
 import net.andreho.haxxor.spec.api.HxType;
 
 /**
@@ -9,13 +9,13 @@ import net.andreho.haxxor.spec.api.HxType;
 public class ClassesMatcher
     extends AbstractMatcher<HxType> {
 
-  private final AspectMatcher<HxType> value;
-  private final AspectMatcher<HxType> extending;
-  private final AspectMatcher<HxType> implementing;
+  private final ElementMatcher<HxType> value;
+  private final ElementMatcher<HxType> extending;
+  private final ElementMatcher<HxType> implementing;
 
-  public ClassesMatcher(final AspectMatcher<HxType> value,
-                        final AspectMatcher<HxType> extending,
-                        final AspectMatcher<HxType> implementing) {
+  public ClassesMatcher(final ElementMatcher<HxType> value,
+                        final ElementMatcher<HxType> extending,
+                        final ElementMatcher<HxType> implementing) {
     this.value = value;
     this.extending = extending;
     this.implementing = implementing;

@@ -21,7 +21,7 @@ import net.andreho.haxxor.spec.api.HxType;
  * <br/>Created by a.hofmann on 12.06.2017 at 04:42.
  */
 public class AsmCodeMethodVisitor
-    extends MethodVisitor {
+  extends MethodVisitor {
 
   protected final Haxxor haxxor;
   protected final HxCodeStream codeStream;
@@ -717,7 +717,8 @@ public class AsmCodeMethodVisitor
   }
 
   private HxMethodHandle toHxHandle(Handle h) {
-    return new HxMethodHandle(HxHandleTag.fromCode(h.getTag()), h.getOwner(), h.getName(), h.getDesc(), h.isInterface());
+    return new HxMethodHandle(HxHandleTag.fromCode(h.getTag()), h.getOwner(), h.getName(), h.getDesc(),
+                              h.isInterface());
   }
 
   private HxMethodType toHxMethodType(Type methodType) {
@@ -861,10 +862,8 @@ public class AsmCodeMethodVisitor
     } else if (cst instanceof Type) {
       Type type = (Type) cst;
       int sort = type.getSort();
-      if (sort == Type.OBJECT) {
-        cs.TYPE(toHxType(type));
-      } else if (sort == Type.ARRAY) {
-        cs.TYPE(toHxType(type));
+      if (sort == Type.OBJECT || sort == Type.ARRAY) {
+        cs.TYPE(sort == Type.OBJECT ? type.getInternalName() : type.getDescriptor());
       } else if (sort == Type.METHOD) {
         cs.METHOD(new HxMethodType(type.getDescriptor()));
       } else {

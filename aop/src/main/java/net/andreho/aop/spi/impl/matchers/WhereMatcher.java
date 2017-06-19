@@ -1,6 +1,6 @@
 package net.andreho.aop.spi.impl.matchers;
 
-import net.andreho.aop.spi.AspectMatcher;
+import net.andreho.aop.spi.ElementMatcher;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 
 import java.util.Collection;
@@ -11,11 +11,11 @@ import java.util.Collection;
 public class WhereMatcher
     extends ConjunctionMatcher<HxAnnotation> {
 
-  public WhereMatcher(final Collection<AspectMatcher<HxAnnotation>> collection) {
+  public WhereMatcher(final Collection<ElementMatcher<HxAnnotation>> collection) {
     super(collection);
   }
 
-  public WhereMatcher(final AspectMatcher<HxAnnotation> ... array) {
+  public WhereMatcher(final ElementMatcher<HxAnnotation>... array) {
     super(array);
   }
 }

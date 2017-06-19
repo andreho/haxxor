@@ -8,34 +8,45 @@ public interface HxInstructionType {
   /**
    * @return
    */
-  HxInstructionKind getKind();
+  HxInstructionSort getSort();
 
   /**
-   * @return
+   * @return opcode of the instruction's type
    */
   int getOpcode();
 
   /**
-   * @return
+   * @return number of consumed operands from stack
    */
   int getPopSize();
 
   /**
-   * @return
+   * @return number of pushed operands onto stack
    */
   int getPushSize();
 
   /**
-   * @return
+   * @param desc
+   * @return number of consumed operands from stack considering given descriptor
    */
   default int getPopSize(String desc) {
     return getPopSize();
   }
 
   /**
-   * @return
+   * @param desc
+   * @return number of pushed operands onto stack considering given descriptor
    */
   default int getPushSize(String desc) {
     return getPushSize();
+  }
+
+  /**
+   * @param type
+   * @param <T>
+   * @return
+   */
+  default <T extends Enum<T> & HxInstructionType> T toType(Class<T> type) {
+    return (T) this;
   }
 }

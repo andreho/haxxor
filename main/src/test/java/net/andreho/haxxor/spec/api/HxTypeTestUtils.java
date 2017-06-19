@@ -324,7 +324,7 @@ public abstract class HxTypeTestUtils {
   public static void checkAnnotated(final AnnotatedElement annotated,
                                     final HxAnnotated hxAnnotated) {
     final Annotation[] declaredAnnotations = annotated.getDeclaredAnnotations();
-    final Collection<HxAnnotation> hxAnnotations = hxAnnotated.getAnnotations();
+    final Collection<HxAnnotation> hxAnnotations = hxAnnotated.getAnnotations().values();
     try {
       checkAnnotations(declaredAnnotations, hxAnnotations.toArray(new HxAnnotation[0]));
     } catch (Exception e) {

@@ -13,6 +13,7 @@ import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -198,7 +199,7 @@ public class HxMethodReferenceImpl
   }
 
   @Override
-  public Collection<HxAnnotation> getAnnotations() {
+  public Map<String, HxAnnotation> getAnnotations() {
     return toMethod().getAnnotations();
   }
 

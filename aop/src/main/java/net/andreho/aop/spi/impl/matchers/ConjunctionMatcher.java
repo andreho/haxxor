@@ -1,6 +1,6 @@
 package net.andreho.aop.spi.impl.matchers;
 
-import net.andreho.aop.spi.AspectMatcher;
+import net.andreho.aop.spi.ElementMatcher;
 
 import java.util.Collection;
 
@@ -10,19 +10,19 @@ import java.util.Collection;
 public class ConjunctionMatcher<T>
     extends AbstractMatcher<T> {
 
-  protected final AspectMatcher<T>[] array;
+  protected final ElementMatcher<T>[] array;
 
-  public ConjunctionMatcher(final Collection<AspectMatcher<T>> collection) {
-    this(collection.toArray(new AspectMatcher[0]));
+  public ConjunctionMatcher(final Collection<ElementMatcher<T>> collection) {
+    this(collection.toArray(new ElementMatcher[0]));
   }
 
-  public ConjunctionMatcher(final AspectMatcher<T>... array) {
+  public ConjunctionMatcher(final ElementMatcher<T>... array) {
     this.array = array;
   }
 
   @Override
   public boolean match(final T type) {
-    for (AspectMatcher<T> matcher : array) {
+    for (ElementMatcher<T> matcher : array) {
       if (!check(matcher, type)) {
         return false;
       }
@@ -30,7 +30,7 @@ public class ConjunctionMatcher<T>
     return true;
   }
 
-  protected boolean check(final AspectMatcher<T> fragment,
+  protected boolean check(final ElementMatcher<T> fragment,
                           final T element) {
     return fragment.match(element);
   }

@@ -13,8 +13,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+@Target({})
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface Modify {
 
   /**
@@ -26,6 +26,11 @@ public @interface Modify {
   @Retention(RetentionPolicy.RUNTIME)
   @Order(StandardOrder.MODIFY_TYPE)
   @interface Type {
+    /**
+     * @return an unique name of a globally available profile
+     */
+    String profile() default "";
+
     /**
      * Selection of classes that need to be processed
      * @return
@@ -43,6 +48,11 @@ public @interface Modify {
   @Order(StandardOrder.MODIFY_FIELD)
   @interface Field {
     /**
+     * @return an unique name of a globally available profile
+     */
+    String profile() default "";
+
+    /**
      * Selection of fields that need to be processed
      * @return
      */
@@ -58,6 +68,11 @@ public @interface Modify {
   @Retention(RetentionPolicy.RUNTIME)
   @Order(StandardOrder.MODIFY_METHOD)
   @interface Method {
+    /**
+     * @return an unique name of a globally available profile
+     */
+    String profile() default "";
+
     /**
      * Selection of methods/constructors that need to be processed
      * @return

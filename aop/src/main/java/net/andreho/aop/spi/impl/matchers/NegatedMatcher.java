@@ -1,15 +1,15 @@
 package net.andreho.aop.spi.impl.matchers;
 
-import net.andreho.aop.spi.AspectMatcher;
+import net.andreho.aop.spi.ElementMatcher;
 
 /**
  * <br/>Created by a.hofmann on 16.06.2017 at 22:09.
  */
 public final class NegatedMatcher<T> extends AbstractMatcher<T> {
 
-  private final AspectMatcher<T> matcher;
+  private final ElementMatcher<T> matcher;
 
-  public NegatedMatcher(final AspectMatcher<T> matcher) {
+  public NegatedMatcher(final ElementMatcher<T> matcher) {
     this.matcher = matcher;
   }
 

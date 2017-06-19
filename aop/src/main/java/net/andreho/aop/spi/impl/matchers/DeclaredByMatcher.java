@@ -1,6 +1,6 @@
 package net.andreho.aop.spi.impl.matchers;
 
-import net.andreho.aop.spi.AspectMatcher;
+import net.andreho.aop.spi.ElementMatcher;
 import net.andreho.haxxor.spec.api.HxOwned;
 import net.andreho.haxxor.spec.api.HxType;
 
@@ -9,9 +9,9 @@ import net.andreho.haxxor.spec.api.HxType;
  */
 public class DeclaredByMatcher<O extends HxOwned<O>>
   extends AbstractMatcher<O> {
-  private final AspectMatcher<HxType> delegate;
+  private final ElementMatcher<HxType> delegate;
 
-  public DeclaredByMatcher(final AspectMatcher<HxType> delegate) {
+  public DeclaredByMatcher(final ElementMatcher<HxType> delegate) {
     this.delegate = delegate;
   }
 

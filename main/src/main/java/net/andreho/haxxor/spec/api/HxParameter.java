@@ -9,6 +9,7 @@ public interface HxParameter<P extends HxExecutable<P>>
     extends HxAnnotated<HxParameter<P>>,
             HxMember<HxParameter<P>>,
             HxOwned<HxParameter<P>>,
+            HxNamed,
             HxTyped,
             HxOrdered,
             HxProvider,

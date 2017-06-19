@@ -2,6 +2,7 @@ package net.andreho.haxxor.spec.api;
 
 import net.andreho.asm.org.objectweb.asm.Type;
 import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.Utils;
 import net.andreho.haxxor.model.AnnotatedBeanWithJava8Features;
 import net.andreho.haxxor.model.ComplexBean;
 import net.andreho.haxxor.model.EmbeddingClassesBean;
@@ -192,7 +193,7 @@ class HxTypeTest {
           continue loop;
         }
         case ANNOTATIONS: {
-          checkInitialization(type, part, type::getAnnotations);
+          checkInitialization(type, part, () -> type.getAnnotations().values());
         }
         break;
         case CONSTRUCTORS: {
@@ -224,10 +225,10 @@ class HxTypeTest {
   private <E, T extends Collection<E>> void checkInitialization(final HxType type,
                                                                 final HxType.Part part,
                                                                 final Supplier<T> supplier) {
-    assertTrue(net.andreho.haxxor.Utils.isUninitialized(supplier.get()));
+    assertTrue(Utils.isUninitialized(supplier.get()));
     type.initialize(part);
     Collection<E> annotations = supplier.get();
-    assertFalse(net.andreho.haxxor.Utils.isUninitialized(annotations));
+    assertFalse(Utils.isUninitialized(annotations));
     type.initialize(part);
     assertTrue(annotations == supplier.get());
   }

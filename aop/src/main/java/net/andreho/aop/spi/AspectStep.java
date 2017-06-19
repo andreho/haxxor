@@ -1,14 +1,19 @@
 package net.andreho.aop.spi;
 
-import net.andreho.aop.api.AspectType;
-import net.andreho.haxxor.spec.api.HxType;
+import java.util.Optional;
 
 /**
  * <br/>Created by a.hofmann on 17.06.2017 at 07:06.
  */
-public interface AspectStep
-    extends AspectMatcher,
-            Comparable<AspectStep> {
+public interface AspectStep<T>
+    extends Comparable<AspectStep> {
+
+  enum Kind {
+    TYPE,
+    FIELD,
+    METHOD,
+    CONSTRUCTOR
+  }
 
   /**
    * @return
@@ -18,16 +23,42 @@ public interface AspectStep
   /**
    * @return
    */
-  AspectType getType();
+  boolean hasKind(Kind kind);
 
   /**
    * @return
    */
-  AspectMatcher getMatcher();
+  AspectStepType getType();
 
+  /**
+   * @return
+   */
+  ElementMatcher<T> getMatcher();
 
-  boolean apply(AspectDefinition def,
-                HxType hxType);
+  /**
+   * @return
+   */
+  Object getInterceptor();
+
+  /**
+   * @return
+   */
+  boolean needsAspectFactory();
+
+  /**
+   * @return
+   */
+  Optional<String> getProfileName();
+
+  /**
+   * @param def
+   * @param ctx
+   * @param element
+   * @return
+   */
+  boolean apply(final AspectDefinition def,
+                final AspectApplicationContext ctx,
+                final T element);
 
   /**
    * @return
@@ -40,5 +71,4 @@ public interface AspectStep
   default int compareTo(AspectStep o) {
     return Integer.compare(getIndex(), o.getIndex());
   }
-
 }

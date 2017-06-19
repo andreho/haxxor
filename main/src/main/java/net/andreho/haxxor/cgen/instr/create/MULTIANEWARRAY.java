@@ -41,7 +41,7 @@ public class MULTIANEWARRAY
 
   @Override
   public String toString() {
-    return super.toString() + " " + multiply("[", this.dimension) + getOperand();
+    return "MULTIANEWARRAY ("+getOperand()+", "+dimension+")";
   }
 
   private static String multiply(String str,

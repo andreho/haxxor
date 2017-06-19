@@ -11,6 +11,7 @@ public @interface Methods {
 
   /**
    * @return a selector for possible declaring classes or interfaces
+   * @apiNote elements are bound via an OR (disjunction)
    */
   Classes[] declaredBy() default {}; //(... OR ...)
   //AND
@@ -19,6 +20,7 @@ public @interface Methods {
    * Selection of methods with given modifiers
    *
    * @return
+   * @apiNote elements are bound via an OR (disjunction)
    */
   Modifier[] modifiers() default {}; //(... OR ...)
   //AND
@@ -27,6 +29,7 @@ public @interface Methods {
    * Selects methods with matching name
    *
    * @return selection patterns for match methods by their name
+   * @apiNote elements are bound via an OR (disjunction)
    */
   Named[] named() default {}; //(... OR ...)
   //AND
@@ -35,6 +38,7 @@ public @interface Methods {
    * Selection of methods based on their return type
    *
    * @return
+   * @apiNote elements are bound via an OR (disjunction)
    */
   Classes[] returning() default {}; //(... OR ...)
   //AND
@@ -43,6 +47,7 @@ public @interface Methods {
    * Selection of methods that are annotated with selected annotations
    *
    * @return
+   * @apiNote elements are bound via an OR (disjunction)
    */
   Annotated[] annotated() default {}; //(... OR ...)
   //AND
@@ -51,6 +56,7 @@ public @interface Methods {
    * Selection of methods based on their thrown exceptions
    *
    * @return
+   * @apiNote elements are bound via an OR (disjunction)
    */
   Classes[] throwing() default {}; //(... OR ...)
   //AND
@@ -59,6 +65,7 @@ public @interface Methods {
    * Selection of methods that have exactly provided signatures
    *
    * @return
+   * @apiNote elements are bound via an OR (disjunction)
    */
   Signatures[] signatures() default {}; //(... OR ...)
   //AND
@@ -67,6 +74,7 @@ public @interface Methods {
    * Selection of methods that await any of selected parameter's references
    *
    * @return
+   * @apiNote elements are bound via an OR (disjunction)
    */
   Parameters[] parameters() default {}; //(... OR ...)
 

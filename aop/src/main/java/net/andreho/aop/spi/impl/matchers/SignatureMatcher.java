@@ -38,8 +38,8 @@ public class SignatureMatcher<E extends HxExecutable<E>>
     if(isAny()) {
       return true;
     }
-    final String[] signature = this.signature;
 
+    final String[] signature = this.signature;
     if(signature.length != element.getParametersCount()) {
       return false;
     }

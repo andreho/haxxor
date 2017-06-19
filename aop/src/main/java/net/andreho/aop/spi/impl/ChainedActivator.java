@@ -1,10 +1,13 @@
 package net.andreho.aop.spi.impl;
 
 import net.andreho.aop.spi.Activator;
+import net.andreho.aop.spi.AspectStepType;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * <br/>Created by a.hofmann on 17.06.2017 at 21:19.
@@ -18,6 +21,15 @@ public class ChainedActivator implements Activator {
 
   public ChainedActivator(final Activator[] activators) {
     this.activators = activators;
+  }
+
+  @Override
+  public Collection<AspectStepType> getAspectStepTypes() {
+    final Set<AspectStepType> aspectStepTypes = new LinkedHashSet<>();
+    for(Activator activator : activators) {
+      aspectStepTypes.addAll(activator.getAspectStepTypes());
+    }
+    return aspectStepTypes;
   }
 
   @Override

@@ -12,9 +12,10 @@ public @interface Classes {
 
   /**
    * Selects the main set of classes that are merged with other conditions
-   * (having annotations, extending/implementing interfaces, etc.)
+   * (having types, annotations, modifiers, names, etc.)
    *
    * @return
+   * @apiNote elements are bound via an OR (disjunction)
    */
   ClassWith[] value() default {}; //(... OR ...)
 
@@ -24,7 +25,8 @@ public @interface Classes {
    * Selects classes that extend given classes.
    *
    * @return array with parent classes
-   * @apiNote empty array to disable filtering by class hierarchy.
+   * @apiNote empty array to disable filtering by class hierarchy;
+   * elements are bound via an OR (disjunction)
    * @implNote this operation may be expensive
    */
   ClassWith[] extending() default {}; //(... OR ...)
@@ -35,7 +37,8 @@ public @interface Classes {
    * Selects classes that implement given interfaces. It only handles available for current runtime interfaces.
    *
    * @return array with interface selectors
-   * @apiNote empty array to disable filtering by class hierarchy.
+   * @apiNote empty array to disable filtering by class hierarchy;
+   * elements are bound via an OR (disjunction)
    * @implNote this operation may be expensive
    */
   ClassWith[] implementing() default {}; //(... OR ...)

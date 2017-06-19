@@ -7,7 +7,6 @@ import net.andreho.haxxor.cgen.HxFrames;
 import net.andreho.haxxor.cgen.HxMethodHandle;
 import net.andreho.haxxor.cgen.HxMethodType;
 import net.andreho.haxxor.cgen.instr.LABEL;
-import net.andreho.haxxor.spec.api.HxType;
 
 /**
  * <br/>Created by a.hofmann on 05.06.2017 at 07:05.
@@ -237,14 +236,6 @@ public class DelegatingCodeStream
   public HxCodeStream TYPE(final String internalType) {
     if (codeStream != null) {
       codeStream.TYPE(internalType);
-    }
-    return this;
-  }
-
-  @Override
-  public HxCodeStream TYPE(final HxType type) {
-    if (codeStream != null) {
-      codeStream.TYPE(type);
     }
     return this;
   }

@@ -35,7 +35,6 @@ public class NEWARRAY
 
   @Override
   public String toString() {
-    return super.toString() + " " + HxArrayType.fromCode(this.operand)
-                                               .getClassName();
+    return "NEWARRAY (" + HxArrayType.fromCode(this.operand).getClassName() + ")";
   }
 }

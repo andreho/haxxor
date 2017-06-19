@@ -15,7 +15,8 @@ public @interface ClassWith {
    * Selects classes having given modifiers.
    *
    * @return array with supported class modifiers
-   * @implSpec defaults to an empty array and so disables the selection by modifiers
+   * @apiNote defaults to an empty array and so disables the selection by modifiers;
+   * elements are bound via an OR (disjunction)
    */
   Modifier[] modifiers() default {}; //(... OR ...)
 
@@ -25,9 +26,10 @@ public @interface ClassWith {
    * Selects classes by their fully qualified classnames
    *
    * @return a list with name selectors to filter classes by their fully qualified type names
-   * @implNote a fully qualified binary classname can be for example: <code>java.lang.String</code> or
-   * <code>int[]</code>
-   * @implSpec defaults to an empty array and so disables the selection by classname
+   * @implNote a fully qualified binary classname can be for example: <code>double</code>, <code>java.lang.String</code> or
+   * <code>int[]</code> etc.
+   * @apiNote defaults to an empty array and so disables the selection by classname;
+   * elements are bound via an OR (disjunction)
    * @see Named
    */
   Named[] named() default {}; //(... OR ...)
@@ -38,7 +40,8 @@ public @interface ClassWith {
    * Selects given classes explicitly.
    *
    * @return array with explicit classes
-   * @implSpec defaults to an empty array and so disables the explicit class selection
+   * @apiNote defaults to an empty array and so disables the explicit class selection;
+   * elements are bound via an OR (disjunction)
    */
   Class<?>[] value() default {}; //(... OR ...)
 
@@ -48,8 +51,9 @@ public @interface ClassWith {
    * Selects classes that are annotated with the given annotations.
    * It only handles known annotation types.
    * Empty array to disable filtering by annotations.
-   *
    * @return array with annotations
+   * @apiNote defaults to an empty array and so disables the selection by annotation;
+   * elements are bound via an OR (disjunction)
    */
   Annotated[] annotated() default {}; //(... OR ...)
 

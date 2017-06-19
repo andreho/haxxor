@@ -1,6 +1,6 @@
 package net.andreho.aop.spi.impl.matchers;
 
-import net.andreho.aop.spi.AspectMatcher;
+import net.andreho.aop.spi.ElementMatcher;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Collection;
@@ -11,11 +11,11 @@ import java.util.Collection;
 public class ExtendingMatcher
     extends DisjunctionMatcher<HxType> {
 
-  public ExtendingMatcher(final Collection<AspectMatcher<HxType>> collection) {
+  public ExtendingMatcher(final Collection<ElementMatcher<HxType>> collection) {
     super(collection);
   }
 
-  public ExtendingMatcher(final AspectMatcher<HxType>[] array) {
+  public ExtendingMatcher(final ElementMatcher<HxType>[] array) {
     super(array);
   }
 

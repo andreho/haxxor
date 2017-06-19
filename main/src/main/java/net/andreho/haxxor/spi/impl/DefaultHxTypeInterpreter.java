@@ -106,7 +106,7 @@ public class DefaultHxTypeInterpreter
 
   protected void visitAnnotations(final HxAnnotated<?> annotated,
                                   final BiFunction<String, Boolean, AnnotationVisitor> visitAnnotation) {
-    for (HxAnnotation annotation : annotated.getAnnotations()) {
+    for (HxAnnotation annotation : annotated.getAnnotations().values()) {
       visitAnnotation(annotation,
                       visitAnnotation.apply(
                           annotation.getType().toDescriptor(),

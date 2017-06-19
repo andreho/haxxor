@@ -7,12 +7,13 @@ import net.andreho.aop.spi.impl.matchers.NegatedMatcher;
 import net.andreho.aop.spi.impl.matchers.NoneMatcher;
 
 import java.util.Collection;
+import java.util.stream.Stream;
 
 /**
  * <br/>Created by a.hofmann on 17.06.2017 at 03:14.
  */
 @FunctionalInterface
-public interface AspectMatcher<T> {
+public interface ElementMatcher<T> {
 
   /**
    * @param element
@@ -23,7 +24,7 @@ public interface AspectMatcher<T> {
   /**
    * @return
    */
-  default AspectMatcher<T> negate() {
+  default ElementMatcher<T> negate() {
     return new NegatedMatcher<>(this);
   }
 
@@ -31,7 +32,7 @@ public interface AspectMatcher<T> {
    * @param condition to check; if positive then negate.
    * @return
    */
-  default AspectMatcher<T> negateIf(boolean condition) {
+  default ElementMatcher<T> negateIf(boolean condition) {
     return condition? new NegatedMatcher<>(this) : this;
   }
 
@@ -39,7 +40,7 @@ public interface AspectMatcher<T> {
    * @param other
    * @return
    */
-  default AspectMatcher<T> or(AspectMatcher<T> other) {
+  default ElementMatcher<T> or(ElementMatcher<T> other) {
     return or(this, other);
   }
 
@@ -47,7 +48,7 @@ public interface AspectMatcher<T> {
    * @param other
    * @return
    */
-  default AspectMatcher<T> and(AspectMatcher<T> other) {
+  default ElementMatcher<T> and(ElementMatcher<T> other) {
     return and(this, other);
   }
 
@@ -55,27 +56,27 @@ public interface AspectMatcher<T> {
    * @return
    */
   default boolean isAny() {
-    return this == AnyMatcher.INSTANCE;
+    return this == any();
   }
 
   /**
    * @return
    */
   default boolean isNone() {
-    return this == NoneMatcher.INSTANCE;
+    return this == none();
   }
 
   /**
    * @return
    */
-  static <T> AspectMatcher<T> none() {
+  static <T> ElementMatcher<T> none() {
     return NoneMatcher.INSTANCE;
   }
 
   /**
    * @return
    */
-  static <T> AspectMatcher<T> any() {
+  static <T> ElementMatcher<T> any() {
     return AnyMatcher.INSTANCE;
   }
 
@@ -83,37 +84,37 @@ public interface AspectMatcher<T> {
    * @param collection
    * @return
    */
-  static <T> AspectMatcher<T> or(Collection<AspectMatcher<T>> collection) {
-    return or(collection.toArray(new AspectMatcher[0]));
+  static <T> ElementMatcher<T> or(Collection<ElementMatcher<T>> collection) {
+    return or(collection.toArray(new ElementMatcher[0]));
   }
 
   /**
    * @param array
    * @return
    */
-  static <T> AspectMatcher<T> or(final AspectMatcher<T>... array) {
+  static <T> ElementMatcher<T> or(final ElementMatcher<T>... array) {
     if(array.length == 0) {
       return any();
     }
-    return new DisjunctionMatcher<>(array);
+    return new DisjunctionMatcher<>(Stream.of(array).filter(m -> !m.isAny()).toArray(ElementMatcher[]::new));
   }
 
   /**
    * @param collection
    * @return
    */
-  static <T> AspectMatcher<T> and(Collection<AspectMatcher<T>> collection) {
-    return and(collection.toArray(new AspectMatcher[0]));
+  static <T> ElementMatcher<T> and(Collection<ElementMatcher<T>> collection) {
+    return and(collection.toArray(new ElementMatcher[0]));
   }
 
   /**
    * @param array
    * @return
    */
-  static <T> AspectMatcher<T> and(final AspectMatcher<T>... array) {
+  static <T> ElementMatcher<T> and(final ElementMatcher<T>... array) {
     if(array.length == 0) {
       return any();
     }
-    return new ConjunctionMatcher<>(array);
+    return new ConjunctionMatcher<>(Stream.of(array).filter(m -> !m.isAny()).toArray(ElementMatcher[]::new));
   }
 }

@@ -17,9 +17,9 @@ public @interface Positioned {
    */
   boolean asRange() default false;
 
-//  /**
-//   * @return <b>true</b> if user want to ignore not existing parameters at given positions or
-//   * <b>false</b> to fail through matching on missing parameters.
-//   */
-//  boolean allowMissingPosition() default false;
+  /**
+   * Allows to inverse this selection
+   * @return <b>true</b> to inverse this selection, <b>false</b> to leave it as it is
+   */
+  boolean negate() default false;
 }

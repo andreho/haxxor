@@ -11,8 +11,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -22,9 +23,8 @@ import java.util.function.Predicate;
 public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>>
     extends HxMemberImpl<A>
     implements HxAnnotated<A> {
-
   private static final Class<Repeatable> REPEATABLE_ANNOTATION_CLASS = Repeatable.class;
-  protected Collection<HxAnnotation> annotations = DEFAULT_ANNOTATION_COLLECTION;
+  protected Map<String, HxAnnotation> annotations = DEFAULT_ANNOTATION_MAP;
 
   public HxAnnotatedImpl() {
     super();
@@ -32,22 +32,31 @@ public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>
 
   protected void cloneAnnotationsTo(HxAnnotatedImpl<A> other) {
     if(!getAnnotations().isEmpty()) {
-      for(HxAnnotation annotation : other.getAnnotations()) {
+      for(HxAnnotation annotation : other.getAnnotations().values()) {
         other.addAnnotation(annotation.clone());
       }
     } else {
-      other.annotations = DEFAULT_ANNOTATION_COLLECTION;
+      other.annotations = DEFAULT_ANNOTATION_MAP;
     }
   }
 
   @Override
+  public A setAnnotations(final Map<String, HxAnnotation> annotations) {
+    return setAnnotations(annotations.values());
+  }
+
+  @Override
   public A setAnnotations(Collection<HxAnnotation> annotations) {
-    if (this.annotations == DEFAULT_ANNOTATION_COLLECTION) {
-      this.annotations = new LinkedHashSet<>();
+    Map<String, HxAnnotation> annotationsMap = this.annotations;
+    if (annotationsMap == DEFAULT_ANNOTATION_MAP) {
+      this.annotations = annotationsMap = new LinkedHashMap<>();
     }
 
-    this.annotations.clear();
-    this.annotations.addAll(annotations);
+    annotationsMap.clear();
+
+    for(HxAnnotation annotation : annotations) {
+      annotationsMap.putIfAbsent(annotation.getType().getName(), annotation);
+    }
 
     return (A) this;
   }
@@ -58,15 +67,24 @@ public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>
   }
 
   @Override
-  public Collection<HxAnnotation> getAnnotations() {
+  public Map<String, HxAnnotation> getAnnotations() {
     return this.annotations;
+  }
+
+  @Override
+  public Optional<HxAnnotation> getAnnotation(final String type) {
+    final HxAnnotation annotation = this.annotations.get(type);
+    if(annotation != null) {
+      return Optional.of(annotation);
+    }
+    return Optional.empty();
   }
 
   @Override
   public Collection<HxAnnotation> annotations(final Predicate<HxAnnotation> predicate, boolean recursive) {
     final List<HxAnnotation> annotationList = new ArrayList<>(this.annotations.size());
 
-    for (HxAnnotation annotation : getAnnotations()) {
+    for (HxAnnotation annotation : getAnnotations().values()) {
       if (predicate.test(annotation)) {
         annotationList.add(annotation);
       }
@@ -89,7 +107,7 @@ public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>
     HxType repeatableAnnotationType = null;
     HxType repeatableType = null;
 
-    for (HxAnnotation annotation : getAnnotations()) {
+    for (HxAnnotation annotation : getAnnotations().values()) {
       repeatableAnnotationType = repeatableAnnotationType != null ?
                                  repeatableAnnotationType :
                                  annotation.getHaxxor()

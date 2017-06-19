@@ -3,7 +3,7 @@ package net.andreho.haxxor.cgen.instr.abstr;
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.HxInstruction;
-import net.andreho.haxxor.cgen.HxInstructionKind;
+import net.andreho.haxxor.cgen.HxInstructionSort;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxAnnotation;
@@ -13,7 +13,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
@@ -104,18 +107,31 @@ public abstract class AbstractInstruction
 
   @Override
   public Optional<HxInstruction> findFirstWithType(final HxInstructionType instructionType) {
-    for(HxInstruction instruction = this; !instruction.isEnd(); instruction = getNext()) {
-      if(instruction.hasInstructionType(instructionType)) {
-        return Optional.of(instruction);
-      }
-    }
-    return Optional.empty();
+    return findFirst(i -> i.hasInstructionType(instructionType));
   }
 
   @Override
   public Optional<HxInstruction> findLastWithType(final HxInstructionType instructionType) {
-    for(HxInstruction instruction = this; !instruction.isBegin(); instruction = getPrevious()) {
-      if(instruction.hasInstructionType(instructionType)) {
+    return findLast(i -> i.hasInstructionType(instructionType));
+  }
+
+  @Override
+  public Optional<HxInstruction> findFirstWithKind(final HxInstructionSort instructionSort) {
+    return findFirst(i -> i.hasInstructionSort(instructionSort));
+  }
+
+  @Override
+  public Optional<HxInstruction> findLastWithKind(final HxInstructionSort instructionSort) {
+    return findLast(i -> i.hasInstructionSort(instructionSort));
+  }
+
+  @Override
+  public Optional<HxInstruction> findFirst(final Predicate<HxInstruction> predicate) {
+    Objects.requireNonNull(predicate, "Predicate can't be null.");
+    for(HxInstruction instruction = this;
+        !instruction.isEnd();
+        instruction = instruction.getNext()) {
+      if(predicate.test(instruction)) {
         return Optional.of(instruction);
       }
     }
@@ -123,9 +139,12 @@ public abstract class AbstractInstruction
   }
 
   @Override
-  public Optional<HxInstruction> findFirstWithKind(final HxInstructionKind instructionKind) {
-    for(HxInstruction instruction = this; !instruction.isEnd(); instruction = getNext()) {
-      if(instruction.hasInstructionKind(instructionKind)) {
+  public Optional<HxInstruction> findLast(final Predicate<HxInstruction> predicate) {
+    Objects.requireNonNull(predicate, "Predicate can't be null.");
+    for(HxInstruction instruction = this;
+        !instruction.isBegin();
+        instruction = instruction.getPrevious()) {
+      if(predicate.test(instruction)) {
         return Optional.of(instruction);
       }
     }
@@ -133,13 +152,51 @@ public abstract class AbstractInstruction
   }
 
   @Override
-  public Optional<HxInstruction> findLastWithKind(final HxInstructionKind instructionKind) {
-    for(HxInstruction instruction = this; !instruction.isBegin(); instruction = getPrevious()) {
-      if(instruction.hasInstructionKind(instructionKind)) {
-        return Optional.of(instruction);
+  public void forEachNext(final Consumer<HxInstruction> consumer) {
+    Objects.requireNonNull(consumer, "Consumer can't be null.");
+    for(HxInstruction instruction = this;
+        !instruction.isEnd();
+        instruction = instruction.getNext()) {
+      consumer.accept(instruction);
+    }
+  }
+
+  @Override
+  public void forEachNext(final Predicate<HxInstruction> predicate,
+                          final Consumer<HxInstruction> consumer) {
+    Objects.requireNonNull(predicate, "Predicate can't be null.");
+    Objects.requireNonNull(consumer, "Consumer can't be null.");
+    for(HxInstruction instruction = this;
+        !instruction.isEnd();
+        instruction = instruction.getNext()) {
+      if(predicate.test(instruction)) {
+        consumer.accept(instruction);
       }
     }
-    return Optional.empty();
+  }
+
+  @Override
+  public void forEachPrevious(final Consumer<HxInstruction> consumer) {
+    Objects.requireNonNull(consumer, "Consumer can't be null.");
+    for(HxInstruction instruction = this;
+        !instruction.isBegin();
+        instruction = instruction.getPrevious()) {
+      consumer.accept(instruction);
+    }
+  }
+
+  @Override
+  public void forEachPrevious(final Predicate<HxInstruction> predicate,
+                              final Consumer<HxInstruction> consumer) {
+    Objects.requireNonNull(predicate, "Predicate can't be null.");
+    Objects.requireNonNull(consumer, "Consumer can't be null.");
+    for(HxInstruction instruction = this;
+        !instruction.isBegin();
+        instruction = instruction.getPrevious()) {
+      if(predicate.test(instruction)) {
+        consumer.accept(instruction);
+      }
+    }
   }
 
   @Override
@@ -161,7 +218,7 @@ public abstract class AbstractInstruction
   }
 
   @Override
-  public Collection<HxAnnotation> getAnnotations() {
+  public Map<String, HxAnnotation> getAnnotations() {
     return initAnnotated().getAnnotations();
   }
 

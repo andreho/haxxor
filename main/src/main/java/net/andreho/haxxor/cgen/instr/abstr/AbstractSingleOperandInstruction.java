@@ -6,7 +6,7 @@ package net.andreho.haxxor.cgen.instr.abstr;
 public abstract class AbstractSingleOperandInstruction
     extends AbstractInstruction {
 
-  protected final int operand;
+  protected int operand;
 
   public AbstractSingleOperandInstruction(int opcode, int operand) {
     super(opcode);
@@ -15,5 +15,9 @@ public abstract class AbstractSingleOperandInstruction
 
   public int getOperand() {
     return operand;
+  }
+
+  public void setOperand(final int operand) {
+    this.operand = operand;
   }
 }

@@ -55,7 +55,7 @@ public class HxTypeImpl
       break;
       case ANNOTATIONS: {
         if (isUninitialized(getAnnotations())) {
-          this.annotations = new LinkedHashSet<>();
+          this.annotations = new LinkedHashMap<>();
         }
       }
       break;
@@ -471,6 +471,10 @@ public class HxTypeImpl
     }
 
     current = this;
+
+    if(!recursive) {
+      return result;
+    }
 
     while (current != null) {
       for (HxType itf : current.getInterfaces()) {

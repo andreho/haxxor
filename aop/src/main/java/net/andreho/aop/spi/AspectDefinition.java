@@ -3,6 +3,7 @@ package net.andreho.aop.spi;
 import net.andreho.haxxor.spec.api.HxExecutable;
 import net.andreho.haxxor.spec.api.HxType;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,12 +21,17 @@ public interface AspectDefinition {
   /**
    * @return
    */
+  Map<String, List<String>> getParameters();
+
+  /**
+   * @return
+   */
   Optional<HxExecutable<?>> getAspectFactory();
 
   /**
    * @return
    */
-  Map<String, List<String>> getParameters();
+  Collection<AspectStepType> getAspectStepTypes();
 
   /**
    * @return
@@ -40,17 +46,23 @@ public interface AspectDefinition {
   /**
    * @return
    */
-  AspectMatcher getClassMatcher();
+  ElementMatcher<HxType> getTypeMatcher();
 
   /**
    * @return
    */
-  AspectTypeMatcherFactory getTypeMatcherFactory();
+  ElementMatcherFactory getElementMatcherFactory();
 
   /**
    * @return
    */
-  List<AspectStep> getDefinedAspects();
+  List<AspectStep<?>> getAspectSteps();
+
+  /**
+   * @param profileName
+   * @return
+   */
+  Optional<AspectStep<?>> getProfiledAspectStep(String profileName);
 
   /**
    * @param type

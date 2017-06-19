@@ -778,6 +778,46 @@ public interface HxInstructionFactory {
     return new PUTFIELD(type, name, fieldDesc);
   }
 
+//  default HxInstruction INVOKEVIRTUAL(HxMethod method) {
+//    final HxType type = method.getDeclaringMember();
+//    return INVOKEVIRTUAL(type.toInternalName(), method.getName(), method.toDescriptor());
+//  }
+//
+//  default HxInstruction INVOKESTATIC(HxMethod method) {
+//    if(!method.isStatic()) {
+//      throw new IllegalStateException("Not a static method: "+method);
+//    }
+//    final HxType type = method.getDeclaringMember();
+//    return INVOKESTATIC(type.toInternalName(), method.getName(), method.toDescriptor(), type.isInterface());
+//  }
+//
+//  default HxInstruction INVOKESPECIAL(HxMethod method) {
+//    final HxType type = method.getDeclaringMember();
+//    return INVOKESPECIAL(type.toInternalName(), method.getName(), method.toDescriptor());
+//  }
+//
+//  default HxInstruction INVOKESPECIAL(HxConstructor constructor) {
+//    final HxType type = constructor.getDeclaringMember();
+//    return INVOKESPECIAL(type.toInternalName(), constructor.getName(), constructor.toDescriptor());
+//  }
+//
+//  default HxInstruction INVOKEINTERFACE(HxMethod method) {
+//    final HxType type = method.getDeclaringMember();
+//    return INVOKEINTERFACE(type.toInternalName(), method.getName(), method.toDescriptor());
+//  }
+//  default HxInstruction NEW(HxType type) {
+//    if(type.isArray()) {
+//      if(type.getComponentType().get().isPrimitive()) {
+//        return NEWARRAY(HxArrayType.fromName(type.getName()));
+//      }
+//      if(type.getDimension() > 1) {
+//        return MULTIANEWARRAY(type.toInternalName(), type.getDimension());
+//      }
+//      return ANEWARRAY(type.toInternalName());
+//    }
+//    return new NEW(type.toInternalName());
+//  }
+
   default HxInstruction INVOKEVIRTUAL(String type, String name, String methodDesc) {
     return new INVOKEVIRTUAL(type, name, methodDesc);
   }

@@ -72,6 +72,13 @@ public interface HxType
   String getSimpleName();
 
   /**
+   * @return
+   */
+  default HxSort getSort() {
+    return HxSort.fromName(getName());
+  }
+
+  /**
    * @return package of this type
    */
   default String getPackageName() {
@@ -175,7 +182,9 @@ public interface HxType
    * @implSpec <code>long</code> and <code>double</code> take two slots and all other only one
    */
   default int getSlotsCount() {
-    return ("long".equals(getName()) || "double".equals(getName()))? 2 : 1;
+    final String name = getName();
+    return "void".equals(name) ? 0 :
+           ("long".equals(name) || "double".equals(name)) ? 2 : 1;
   }
 
   /**
@@ -223,7 +232,7 @@ public interface HxType
     }
     int idx = 0;
     for(HxField hxField : getFields()) {
-      if(field == hxField) {
+      if(field == hxField || field.equals(hxField)) {
         return idx;
       }
       idx++;
@@ -242,7 +251,7 @@ public interface HxType
     }
     int idx = 0;
     for(HxConstructor hxConstructor : getConstructors()) {
-      if(constructor == hxConstructor) {
+      if(constructor == hxConstructor || constructor.equals(hxConstructor)) {
         return idx;
       }
       idx++;
@@ -261,7 +270,7 @@ public interface HxType
     }
     int idx = 0;
     for(HxMethod hxMethod : getMethods()) {
-      if(method == hxMethod) {
+      if(method == hxMethod || method.equals(hxMethod)) {
         return idx;
       }
       idx++;

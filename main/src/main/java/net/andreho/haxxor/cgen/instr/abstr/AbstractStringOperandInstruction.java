@@ -16,4 +16,9 @@ public abstract class AbstractStringOperandInstruction
   public String getOperand() {
     return operand;
   }
+
+  @Override
+  public String toString() {
+    return super.toString() + " (" + getOperand() + ")";
+  }
 }

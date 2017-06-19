@@ -387,11 +387,6 @@ public class AsmCodeStream
   }
 
   @Override
-  public HxCodeStream TYPE(final HxType type) {
-    return visitLdcInsn(type);
-  }
-
-  @Override
   public HxCodeStream ILOAD(int var) {
     return visitVarInsn(Opcodes.ILOAD, var);
   }

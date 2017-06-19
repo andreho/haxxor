@@ -26,9 +26,4 @@ public class NEW
   public List<Object> getStackPushList(final HxComputingContext context) {
     return PUSH_UNINITIALIZED_THIS;
   }
-
-  @Override
-  public String toString() {
-    return super.toString() + " " + getOperand();
-  }
 }

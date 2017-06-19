@@ -1,6 +1,6 @@
 package net.andreho.aop.spi.impl.matchers;
 
-import net.andreho.aop.spi.AspectMatcher;
+import net.andreho.aop.spi.ElementMatcher;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Collection;
@@ -12,11 +12,11 @@ import java.util.List;
 public class ImplementingMatcher
     extends DisjunctionMatcher<HxType> {
 
-  public ImplementingMatcher(final Collection<AspectMatcher<HxType>> collection) {
+  public ImplementingMatcher(final Collection<ElementMatcher<HxType>> collection) {
     super(collection);
   }
 
-  public ImplementingMatcher(final AspectMatcher<HxType>[] array) {
+  public ImplementingMatcher(final ElementMatcher<HxType>[] array) {
     super(array);
   }
 
@@ -37,7 +37,7 @@ public class ImplementingMatcher
   }
 
   private boolean hasImplementing(final HxType itf) {
-    for(AspectMatcher<HxType> fragment : array) {
+    for(ElementMatcher<HxType> fragment : array) {
       if(fragment.match(itf)) {
         return true;
       }

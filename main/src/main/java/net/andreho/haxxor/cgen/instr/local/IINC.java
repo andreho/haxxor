@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class IINC
     extends AbstractLocalAccessInstruction {
-  protected final int increment;
+  protected int increment;
 
   public IINC(int variable, int increment) {
     //variable: may be used with WIDE instruction
@@ -22,6 +22,10 @@ public class IINC
 
   public int getIncrement() {
     return increment;
+  }
+
+  public void setIncrement(final int increment) {
+    this.increment = increment;
   }
 
   @Override

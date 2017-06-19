@@ -1,6 +1,6 @@
 package net.andreho.aop.spi.impl.matchers;
 
-import net.andreho.aop.spi.AspectMatcher;
+import net.andreho.aop.spi.ElementMatcher;
 import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxNamed;
@@ -12,13 +12,13 @@ import net.andreho.haxxor.spec.api.HxType;
 public class AnnotatedMatcher<A extends HxAnnotated<A> & HxNamed>
     extends AbstractMatcher<A> {
 
-  private final AspectMatcher<HxNamed> value;
-  private final AspectMatcher<HxNamed> named;
-  private final AspectMatcher<HxAnnotation> where;
+  private final ElementMatcher<HxNamed> value;
+  private final ElementMatcher<HxNamed> named;
+  private final ElementMatcher<HxAnnotation> where;
 
-  public AnnotatedMatcher(final AspectMatcher<HxNamed> value,
-                          final AspectMatcher<HxNamed> named,
-                          final AspectMatcher<HxAnnotation> where) {
+  public AnnotatedMatcher(final ElementMatcher<HxNamed> value,
+                          final ElementMatcher<HxNamed> named,
+                          final ElementMatcher<HxAnnotation> where) {
     this.named = named;
     this.value = value;
     this.where = where;
@@ -26,7 +26,7 @@ public class AnnotatedMatcher<A extends HxAnnotated<A> & HxNamed>
 
   @Override
   public boolean match(final A annotated) {
-    for(HxAnnotation annotation : annotated.getAnnotations()) {
+    for(HxAnnotation annotation : annotated.getAnnotations().values()) {
       final HxType hxType = annotation.getType();
 
       if(value.match(hxType) &&

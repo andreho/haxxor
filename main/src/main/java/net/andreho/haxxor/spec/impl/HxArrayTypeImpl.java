@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -75,17 +76,12 @@ public class HxArrayTypeImpl
   }
 
   @Override
-  public Collection<HxAnnotation> getAnnotations() {
-    return DEFAULT_ANNOTATION_COLLECTION;
+  public Map<String, HxAnnotation> getAnnotations() {
+    return DEFAULT_ANNOTATION_MAP;
   }
 
   @Override
   public HxType addAnnotation(HxAnnotation annotation) {
-    return this;
-  }
-
-  @Override
-  public HxType replaceAnnotation(HxAnnotation annotation) {
     return this;
   }
 

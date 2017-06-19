@@ -5,6 +5,7 @@ import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxGenericElement;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.function.Predicate;
 
 /**
@@ -15,17 +16,19 @@ public abstract class HxAbstractGeneric<A extends HxGenericElement<A>> implement
   private HxAnnotated annotated;
 
   @Override
-  public Collection<HxAnnotation> getAnnotations() {
+  public Map<String, HxAnnotation> getAnnotations() {
+    final HxAnnotated annotated = this.annotated;
     if(annotated == null) {
-      return HxAnnotated.DEFAULT_ANNOTATION_COLLECTION;
+      return HxAnnotated.DEFAULT_ANNOTATION_MAP;
     }
     return annotated.getAnnotations();
   }
 
   @Override
   public A setAnnotations(final Collection<HxAnnotation> collection) {
+    HxAnnotated annotated = this.annotated;
     if(annotated == null) {
-      annotated = new HxAnnotatedImpl();
+      this.annotated = annotated = new HxAnnotatedImpl();
     }
     annotated.setAnnotations(collection);
     return (A) this;
@@ -38,6 +41,7 @@ public abstract class HxAbstractGeneric<A extends HxGenericElement<A>> implement
 
   @Override
   public Collection<HxAnnotation> getAnnotationsByType(final String type) {
+    final HxAnnotated annotated = this.annotated;
     if(annotated == null) {
       return HxAnnotated.DEFAULT_ANNOTATION_COLLECTION;
     }
@@ -51,7 +55,7 @@ public abstract class HxAbstractGeneric<A extends HxGenericElement<A>> implement
       return HxAnnotated.DEFAULT_ANNOTATION_COLLECTION;
     }
 
-    return null;
+    return annotated.annotations(predicate, recursive);
   }
 
   protected HxGenericElement<?> minimize(HxGenericElement<?> hxGeneric) {

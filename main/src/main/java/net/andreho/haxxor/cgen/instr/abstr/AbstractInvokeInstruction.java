@@ -60,6 +60,6 @@ public abstract class AbstractInvokeInstruction
 
   @Override
   public String toString() {
-    return super.toString() + " " + this.owner + "." + this.name + " " + this.desc;
+    return super.toString() + " (" + this.owner + ", " + this.name + ", " + this.desc + ")";
   }
 }

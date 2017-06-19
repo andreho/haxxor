@@ -8,25 +8,25 @@ import net.andreho.haxxor.spec.api.HxType;
 /**
  * <br/>Created by a.hofmann on 17.06.2017 at 03:14.
  */
-public interface AspectTypeMatcherFactory {
+public interface ElementMatcherFactory {
 
   /**
    * @param aspectType
    * @return
    */
-  AspectMatcher<HxType> create(HxType aspectType);
+  ElementMatcher<HxType> create(HxType aspectType);
 
   /**
    * @param aspectMethod
-   * @param aspectAnnotation
+   * @param methodsAnnotations
    * @return
    */
-  AspectMatcher<HxMethod> create(HxMethod aspectMethod, HxAnnotation aspectAnnotation);
+  ElementMatcher<HxMethod> create(HxMethod aspectMethod, HxAnnotation[] methodsAnnotations);
 
   /**
    * @param aspectConstructor
-   * @param aspectAnnotation
+   * @param methodsAnnotations
    * @return
    */
-  AspectMatcher<HxConstructor> create(HxConstructor aspectConstructor, HxAnnotation aspectAnnotation);
+  ElementMatcher<HxConstructor> create(HxConstructor aspectConstructor, HxAnnotation[] methodsAnnotations);
 }

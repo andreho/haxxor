@@ -76,6 +76,17 @@ public interface HxExecutable<E extends HxMember<E> & HxExecutable<E> & HxOwned<
   }
 
   /**
+   * @return
+   */
+  default int getParametersSlots() {
+    int slots = 0;
+    for (HxParameter<E> parameter : getParameters()) {
+      slots += parameter.getType().getSlotsCount();
+    }
+    return slots;
+  }
+
+  /**
    * @param index of a parameter to take
    * @return a parameter at the given index
    */

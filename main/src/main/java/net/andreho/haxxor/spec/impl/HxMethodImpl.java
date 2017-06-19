@@ -114,9 +114,9 @@ public class HxMethodImpl
 
   @Override
   public int hashCode() {
-    return 31 * Objects.hashCode(getName()) +
+    return Objects.hashCode(getName()) +
            31 * Objects.hashCode(getReturnType()) +
-           super.hashCode();
+           31 * super.hashCode();
   }
 
   @Override

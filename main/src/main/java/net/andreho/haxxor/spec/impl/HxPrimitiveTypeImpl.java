@@ -1,6 +1,7 @@
 package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxMember;
 import net.andreho.haxxor.spec.api.HxType;
@@ -8,7 +9,7 @@ import net.andreho.haxxor.spec.api.HxTypeReference;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Map;
 
 /**
  * Created by a.hofmann on 31.05.2015.
@@ -44,8 +45,8 @@ public class HxPrimitiveTypeImpl
   }
 
   @Override
-  public Collection<HxAnnotation> getAnnotations() {
-    return Collections.emptySet();
+  public Map<String, HxAnnotation> getAnnotations() {
+    return HxAnnotated.DEFAULT_ANNOTATION_MAP;
   }
 
   @Override
@@ -55,11 +56,6 @@ public class HxPrimitiveTypeImpl
 
   @Override
   public HxType addAnnotation(HxAnnotation annotation) {
-    return this;
-  }
-
-  @Override
-  public HxType replaceAnnotation(HxAnnotation annotation) {
     return this;
   }
 

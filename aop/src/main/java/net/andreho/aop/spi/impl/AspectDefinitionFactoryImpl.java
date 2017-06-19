@@ -2,7 +2,8 @@ package net.andreho.aop.spi.impl;
 
 import net.andreho.aop.spi.AspectDefinition;
 import net.andreho.aop.spi.AspectDefinitionFactory;
-import net.andreho.aop.spi.AspectTypeMatcherFactory;
+import net.andreho.aop.spi.AspectStepType;
+import net.andreho.aop.spi.ElementMatcherFactory;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxConstructor;
@@ -26,19 +27,20 @@ public class AspectDefinitionFactoryImpl
     implements AspectDefinitionFactory,
                Constants {
 
-  private final AspectTypeMatcherFactory aspectTypeMatcherFactory;
+  private final ElementMatcherFactory elementMatcherFactory;
 
-  public AspectDefinitionFactoryImpl(final AspectTypeMatcherFactory aspectTypeMatcherFactory) {
-    this.aspectTypeMatcherFactory = aspectTypeMatcherFactory;
+  public AspectDefinitionFactoryImpl(final ElementMatcherFactory elementMatcherFactory) {
+    this.elementMatcherFactory = elementMatcherFactory;
   }
 
-  public AspectTypeMatcherFactory getAspectTypeMatcherFactory() {
-    return aspectTypeMatcherFactory;
+  public ElementMatcherFactory getElementMatcherFactory() {
+    return elementMatcherFactory;
   }
 
   @Override
   public AspectDefinition create(final Haxxor haxxor,
-                                 final HxType type) {
+                                 final HxType type,
+                                 final Collection<AspectStepType> aspectStepTypes) {
 
     final Optional<HxAnnotation> aspectOptional = type.getAnnotation(ASPECT_ANNOTATION_TYPE);
     if (!aspectOptional.isPresent()) {
@@ -52,14 +54,13 @@ public class AspectDefinitionFactoryImpl
     final String suffix = "__"; // aspectAnnotation.getAttribute("suffix", "$__");
 
     return new AspectDefinitionImpl(
-        type,
-        prefix,
-        suffix,
-        parameters,
-        getAspectTypeMatcherFactory().create(type),
-        aspectFactory,
-        getAspectTypeMatcherFactory(),
-        Collections.emptyList()
+      type,
+      prefix,
+      suffix,
+      aspectStepTypes, parameters,
+      getElementMatcherFactory().create(type),
+      aspectFactory,
+      getElementMatcherFactory()
     );
   }
 
@@ -78,9 +79,11 @@ public class AspectDefinitionFactoryImpl
 
   protected Optional<HxExecutable<?>> findAspectFactory(final HxType aspectType) {
     final Collection<HxConstructor> constructorFactories =
-        aspectType.constructors((c) -> c.isAnnotationPresent(ASPECT_FACTORY_ANNOTATION_TYPE));
+        aspectType.constructors(
+          (c) -> c.isAnnotationPresent(ASPECT_FACTORY_ANNOTATION_TYPE));
     final Collection<HxMethod> methodFactories =
-        aspectType.methods((m) -> m.isAnnotationPresent(ASPECT_FACTORY_ANNOTATION_TYPE));
+        aspectType.methods(
+          (m) -> m.isAnnotationPresent(ASPECT_FACTORY_ANNOTATION_TYPE));
 
     if (!constructorFactories.isEmpty()) {
       if (constructorFactories.size() != 1 || !methodFactories.isEmpty()) {

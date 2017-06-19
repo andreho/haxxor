@@ -4,6 +4,7 @@ import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxCode;
 import net.andreho.haxxor.spec.api.HxConstructor;
 import net.andreho.haxxor.spec.api.HxExecutable;
+import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxMethod.Modifiers;
 import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxType;
@@ -56,7 +57,7 @@ public abstract class HxExecutableImpl<P extends HxExecutable<P>>
     if(this instanceof HxConstructor) {
       return type.indexOf((HxConstructor) this);
     }
-    return type.indexOf((HxConstructor) this);
+    return type.indexOf((HxMethod) this);
   }
 
   @Override

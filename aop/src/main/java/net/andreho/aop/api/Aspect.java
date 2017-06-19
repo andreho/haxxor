@@ -65,6 +65,7 @@ public @interface Aspect {
    *
    * @return
    * @implNote this should speed-up the overall performance
+   * @apiNote elements are bound via an OR (disjunction)
    */
   Classes[] classes() default {}; //(... OR ...)
 
