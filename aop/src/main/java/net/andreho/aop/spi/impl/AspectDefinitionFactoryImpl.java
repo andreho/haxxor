@@ -2,6 +2,7 @@ package net.andreho.aop.spi.impl;
 
 import net.andreho.aop.spi.AspectDefinition;
 import net.andreho.aop.spi.AspectDefinitionFactory;
+import net.andreho.aop.spi.AspectProfile;
 import net.andreho.aop.spi.AspectStepType;
 import net.andreho.aop.spi.ElementMatcherFactory;
 import net.andreho.haxxor.Haxxor;
@@ -17,6 +18,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * <br/>Created by a.hofmann on 18.06.2017 at 02:41.
@@ -28,7 +33,7 @@ public class AspectDefinitionFactoryImpl
   private final ElementMatcherFactory elementMatcherFactory;
 
   public AspectDefinitionFactoryImpl(final ElementMatcherFactory elementMatcherFactory) {
-    this.elementMatcherFactory = elementMatcherFactory;
+    this.elementMatcherFactory = requireNonNull(elementMatcherFactory);
   }
 
   public ElementMatcherFactory getElementMatcherFactory() {
@@ -38,6 +43,7 @@ public class AspectDefinitionFactoryImpl
   @Override
   public AspectDefinition create(final Haxxor haxxor,
                                  final HxType type,
+                                 final Collection<AspectProfile> aspectProfiles,
                                  final Collection<AspectStepType> aspectStepTypes) {
 
     final Optional<HxAnnotation> aspectOptional = type.getAnnotation(ASPECT_ANNOTATION_TYPE);
@@ -55,10 +61,12 @@ public class AspectDefinitionFactoryImpl
       type,
       prefix,
       suffix,
-      aspectStepTypes, parameters,
-      getElementMatcherFactory().create(type),
-      aspectFactory,
-      getElementMatcherFactory()
+      aspectStepTypes,
+      parameters,
+      getElementMatcherFactory().createClassesFilter(type),
+      getElementMatcherFactory(),
+      aspectProfiles.stream().collect(Collectors.toMap(AspectProfile::getName, Function.identity())),
+      aspectFactory
     );
   }
 

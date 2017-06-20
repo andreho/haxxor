@@ -10,7 +10,6 @@ import net.andreho.aop.api.injectable.Intercepted;
 import net.andreho.aop.api.injectable.Line;
 import net.andreho.aop.api.injectable.Result;
 import net.andreho.aop.api.injectable.This;
-import net.andreho.aop.api.injectable.Variable;
 import net.andreho.aop.api.spec.CanInject;
 import net.andreho.aop.api.spec.Fields;
 import net.andreho.aop.api.spec.Methods;
@@ -39,7 +38,6 @@ public @interface Field {
                Declaring.class,
                Intercepted.class,
                Attribute.class,
-               Variable.class,
                Line.class,
                Result.class,
                This.class})
@@ -48,6 +46,7 @@ public @interface Field {
   @interface Get {
     /**
      * @return an unique name of a globally available profile
+     * @see Profile
      */
     String profile() default "";
 
@@ -78,7 +77,6 @@ public @interface Field {
                Declaring.class,
                Intercepted.class,
                Attribute.class,
-               Variable.class,
                Line.class,
                Result.class,
                This.class})
@@ -87,6 +85,7 @@ public @interface Field {
   @interface Set {
     /**
      * @return an unique name of a globally available profile
+     * @see Profile
      */
     String profile() default "";
 

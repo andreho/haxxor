@@ -4,8 +4,12 @@ import net.andreho.aop.api.Order;
 import net.andreho.aop.spi.Activator;
 import net.andreho.aop.spi.AspectDefinition;
 import net.andreho.aop.spi.AspectDefinitionFactory;
+import net.andreho.aop.spi.AspectProfile;
+import net.andreho.aop.spi.AspectProfileFactory;
 import net.andreho.aop.spi.AspectStepType;
+import net.andreho.aop.spi.ElementMatcherFactory;
 import net.andreho.aop.spi.impl.AspectDefinitionFactoryImpl;
+import net.andreho.aop.spi.impl.AspectProfileFactoryImpl;
 import net.andreho.aop.spi.impl.ElementMatcherFactoryImpl;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxType;
@@ -13,6 +17,7 @@ import net.andreho.haxxor.spec.api.HxType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -25,19 +30,45 @@ public class AspectActivator
     implements Activator {
 
   private final AtomicBoolean activated = new AtomicBoolean();
+
+  private final ElementMatcherFactory elementMatcherFactory;
   private final AspectDefinitionFactory aspectDefinitionFactory;
+  private final AspectProfileFactory aspectProfileFactory;
+
   private volatile List<AspectDefinition> aspectDefinitions;
 
   public AspectActivator() {
-    this(new AspectDefinitionFactoryImpl(new ElementMatcherFactoryImpl()));
+    this(new ElementMatcherFactoryImpl());
   }
 
-  public AspectActivator(final AspectDefinitionFactory aspectDefinitionFactory) {
-    this.aspectDefinitionFactory = aspectDefinitionFactory;
+  public AspectActivator(final ElementMatcherFactory elementMatcherFactory) {
+    this.elementMatcherFactory = elementMatcherFactory;
+    this.aspectDefinitionFactory = createDefinitionFactory(elementMatcherFactory);
+    this.aspectProfileFactory = createAspectProfileFactory(elementMatcherFactory);
+  }
+
+  protected AspectDefinitionFactoryImpl createDefinitionFactory(final ElementMatcherFactory elementMatcherFactory) {
+    return new AspectDefinitionFactoryImpl(elementMatcherFactory);
+  }
+
+  protected AspectProfileFactory createAspectProfileFactory(final ElementMatcherFactory elementMatcherFactory) {
+    return new AspectProfileFactoryImpl(elementMatcherFactory);
   }
 
   public List<AspectDefinition> getAspectDefinitions() {
     return aspectDefinitions;
+  }
+
+  public ElementMatcherFactory getElementMatcherFactory() {
+    return elementMatcherFactory;
+  }
+
+  public AspectDefinitionFactory getAspectDefinitionFactory() {
+    return aspectDefinitionFactory;
+  }
+
+  public AspectProfileFactory getAspectProfileFactory() {
+    return aspectProfileFactory;
   }
 
   @Override
@@ -52,22 +83,40 @@ public class AspectActivator
     }
 
     final Collection<AspectStepType> aspectStepTypes = Collections.unmodifiableCollection(getAspectStepTypes());
+    final AspectProfileFactory aspectProfileFactory = getAspectProfileFactory();
+
     final Haxxor haxxor = new Haxxor(Haxxor.Flags.SKIP_CODE);
-    final List<AspectDefinition> aspectDefinitions = new ArrayList<>(aspects.size());
+    final Collection<HxType> aspectTypes = new ArrayList<>(aspects.size());
+    final Collection<AspectProfile> aspectProfiles = new LinkedHashSet<>();
 
     for(String aspectClassname : aspects) {
-      AspectDefinition aspectDefinition = doActivation(haxxor, aspectClassname, aspectStepTypes);
+      final HxType aspectType = haxxor.resolve(aspectClassname);
+      aspectProfiles.addAll(aspectProfileFactory.create(aspectType));
+      aspectTypes.add(aspectType);
+    }
+
+    final List<AspectDefinition> aspectDefinitions = new ArrayList<>(aspects.size());
+
+    for(HxType aspectType : aspectTypes) {
+      final AspectDefinition aspectDefinition = doActivation(aspectType, aspectProfiles, aspectStepTypes);
       aspectDefinitions.add(aspectDefinition);
     }
+
     this.aspectDefinitions = aspectDefinitions;
   }
 
-  protected AspectDefinition doActivation(final Haxxor haxxor,
-                                          final String aspectClassname,
+  protected AspectDefinition doActivation(final HxType aspectType,
+                                          final Collection<AspectProfile> aspectProfiles,
                                           final Collection<AspectStepType> aspectStepTypes) {
 
-    System.out.println("Activating: " + aspectClassname);
-    return aspectDefinitionFactory.create(haxxor, haxxor.resolve(aspectClassname), aspectStepTypes);
+    System.out.println("Activating: " + aspectType);
+
+    return aspectDefinitionFactory.create(
+      aspectType.getHaxxor(),
+      aspectType,
+      aspectProfiles,
+      aspectStepTypes
+    );
   }
 
   private boolean needsActivation() {

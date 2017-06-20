@@ -25,8 +25,7 @@ public class BeforeAspectStepType
   }
 
   @Override
-  public Collection<AspectStep<?>> buildSteps(final AspectDefinition def,
-                                              final HxType type) {
+  public Collection<AspectStep<?>> buildSteps(final AspectDefinition def, final HxType type) {
     final Collection<HxMethod> beforeJoinPoints =
       type.methods(m ->
                      m.isPublic() &&
@@ -43,13 +42,11 @@ public class BeforeAspectStepType
 
       final HxAnnotation beforeAnnotation = beforeJp.getAnnotation(Constants.BEFORE_ANNOTATION_TYPE).get();
       final String profileName = beforeAnnotation.getAttribute("profile", "");
+
       final HxAnnotation[] methods = beforeAnnotation.getAttribute("methods", Constants.EMPTY_ANNOTATION_ARRAY);
-      final ElementMatcher<HxMethod> affectedMethodsMatcher =
-        def.getElementMatcherFactory().create(beforeJp, methods);
-
-      steps.add(new BeforeAspectStep(index, this, affectedMethodsMatcher, profileName, beforeJp));
+      final ElementMatcher<HxMethod> affectedMethodsMatcher = obtainElementMatcher(def, profileName, methods);
+      steps.add(new BeforeAspectStep(index, profileName, this, affectedMethodsMatcher, beforeJp));
     }
-
     return steps;
   }
 }

@@ -9,7 +9,7 @@ import static net.andreho.haxxor.cgen.HxCodeGenerationUtils.getTypeSize;
 /**
  * <br/>Created by a.hofmann on 19.03.2016.<br/>
  */
-public interface HxInstructions {
+public interface HxInstructionsType {
 
   enum Access
     implements HxInstructionType {

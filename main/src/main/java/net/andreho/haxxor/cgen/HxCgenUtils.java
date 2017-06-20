@@ -96,7 +96,7 @@ public abstract class HxCgenUtils {
         .DUP()
         .LDC(i);
 
-      loadSlot(type, slot, stream);
+      genericLoadSlot(type, slot, stream);
       wrapIfNeeded(type, stream);
       objectArrayStore(stream);
 
@@ -160,9 +160,9 @@ public abstract class HxCgenUtils {
     }
   }
 
-  public static <S extends HxCodeStream<S>> S loadSlot(final HxType type,
-                                                       final int slotId,
-                                                       final S stream) {
+  public static <S extends HxCodeStream<S>> S genericLoadSlot(final HxType type,
+                                                              final int slotId,
+                                                              final S stream) {
     switch (type.getSort()) {
       case VOID:
         throw new IllegalArgumentException("Invalid parameter: " + type);
@@ -184,9 +184,9 @@ public abstract class HxCgenUtils {
     }
   }
 
-  public static <S extends HxCodeStream<S>> S storeSlot(final HxType type,
-                                                       final int slotId,
-                                                       final S stream) {
+  public static <S extends HxCodeStream<S>> S genericStoreSlot(final HxType type,
+                                                               final int slotId,
+                                                               final S stream) {
     switch (type.getSort()) {
       case VOID:
         throw new IllegalArgumentException("Invalid parameter: " + type);

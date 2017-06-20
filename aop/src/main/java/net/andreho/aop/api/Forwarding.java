@@ -21,15 +21,15 @@ import java.lang.annotation.Target;
  * <br/>Created by a.hofmann on 16.06.2017 at 04:12.
  */
 @CanInject({
-  Arg.class,
-  Args.class,
-  Arity.class,
-  Declaring.class,
-  Intercepted.class,
-  Marker.class,
-  Line.class,
-  Result.class,
-  This.class})
+             Arg.class,
+             Args.class,
+             Arity.class,
+             Declaring.class,
+             Intercepted.class,
+             Marker.class,
+             Line.class,
+             Result.class,
+             This.class})
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Order(StandardOrder.FORWARDING)

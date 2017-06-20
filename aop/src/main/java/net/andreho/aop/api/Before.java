@@ -26,7 +26,6 @@ import java.lang.annotation.Target;
             Arity.class,
             Declaring.class,
             Intercepted.class,
-            DefineVariable.class,
             Attribute.class,
             Line.class,
             This.class})
@@ -35,6 +34,7 @@ import java.lang.annotation.Target;
 public @interface Before {
   /**
    * @return an unique name of a globally available profile
+   * @see Profile
    */
   String profile() default "";
 
@@ -56,8 +56,8 @@ public @interface Before {
    * Defines a set with methods that should be processed
    *
    * @return
-   * @apiNote elements are bound via an OR (disjunction)
-   * @implSpec empty array means no selection at all
+   * @apiNote elements are bound via an OR (disjunction);
+   * empty array means that any method will be selected.
    */
   Methods[] methods() default {};
 }

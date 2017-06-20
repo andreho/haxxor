@@ -117,7 +117,10 @@ public class Debugger {
    *
    * @param className to print
    * @param printer   to output to
-   * @param flags
+   * @param flags to decide what to trace
+   * @see Debugger#SKIP_CODE
+   * @see Debugger#SKIP_DEBUG
+   * @see Debugger#SKIP_FRAMES
    */
   public static void trace(String className, Printer printer, int flags) {
     trace(className, printer, new PrintWriter(System.out), flags);
@@ -138,7 +141,10 @@ public class Debugger {
    * @param className
    * @param printer
    * @param printWriter
-   * @param flags
+   * @param flags to decide what to trace
+   * @see Debugger#SKIP_CODE
+   * @see Debugger#SKIP_DEBUG
+   * @see Debugger#SKIP_FRAMES
    */
   public static void trace(String className, Printer printer, PrintWriter printWriter, int flags) {
     className = className.replace('.', '/') + ".class";
@@ -161,6 +167,17 @@ public class Debugger {
    */
   public static void trace(byte[] byteCode) {
     trace(byteCode, new ASMifier(), new PrintWriter(System.out));
+  }
+
+  /**
+   * @param byteCode
+   * @param flags to decide what to trace
+   * @see Debugger#SKIP_CODE
+   * @see Debugger#SKIP_DEBUG
+   * @see Debugger#SKIP_FRAMES
+   */
+  public static void trace(byte[] byteCode, int flags) {
+    trace(byteCode, new ASMifier(), new PrintWriter(System.out), flags);
   }
 
   /**

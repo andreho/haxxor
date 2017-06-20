@@ -40,13 +40,4 @@ public interface HxInstructionType {
   default int getPushSize(String desc) {
     return getPushSize();
   }
-
-  /**
-   * @param type
-   * @param <T>
-   * @return
-   */
-  default <T extends Enum<T> & HxInstructionType> T toType(Class<T> type) {
-    return (T) this;
-  }
 }

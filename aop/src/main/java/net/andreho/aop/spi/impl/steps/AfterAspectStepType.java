@@ -39,14 +39,13 @@ public class AfterAspectStepType
 
     for (HxMethod afterJp : afterJoinPoints) {
       final int index = getOrder(afterJp);
+
       final HxAnnotation afterAnnotation = afterJp.getAnnotation(Constants.AFTER_ANNOTATION_TYPE).get();
       final String profileName = afterAnnotation.getAttribute("profile", "");
+
       final HxAnnotation[] methods = afterAnnotation.getAttribute("methods", Constants.EMPTY_ANNOTATION_ARRAY);
-
-      final ElementMatcher<HxMethod> affectedMethodsMatcher =
-        def.getElementMatcherFactory().create(afterJp, methods);
-
-      steps.add(new AfterAspectStep(index, this, affectedMethodsMatcher, profileName, afterJp));
+      final ElementMatcher<HxMethod> affectedMethodsMatcher = obtainElementMatcher(def, profileName, methods);
+      steps.add(new AfterAspectStep(index, this, profileName, affectedMethodsMatcher, afterJp));
     }
     return steps;
   }

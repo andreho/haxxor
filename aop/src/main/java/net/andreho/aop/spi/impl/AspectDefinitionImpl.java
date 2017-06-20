@@ -2,6 +2,7 @@ package net.andreho.aop.spi.impl;
 
 import net.andreho.aop.spi.AspectApplicationContext;
 import net.andreho.aop.spi.AspectDefinition;
+import net.andreho.aop.spi.AspectProfile;
 import net.andreho.aop.spi.AspectStep;
 import net.andreho.aop.spi.AspectStepType;
 import net.andreho.aop.spi.ElementMatcher;
@@ -31,8 +32,9 @@ public class AspectDefinitionImpl implements AspectDefinition {
   private final Map<String, List<String>> parameters;
   private final HxMethod aspectFactory;
   private final ElementMatcherFactory elementMatcherFactory;
-  private final List<AspectStep<?>> aspectSteps;
   private final Map<AspectStep.Kind, List<AspectStep<?>>> aspectStepsMap;
+  private final List<AspectStep<?>> aspectSteps;
+  private final Map<String, AspectProfile> aspectProfileMap;
 
   public AspectDefinitionImpl(final HxType type,
                               final String prefix,
@@ -40,8 +42,9 @@ public class AspectDefinitionImpl implements AspectDefinition {
                               final Collection<AspectStepType> aspectStepTypes,
                               final Map<String, List<String>> parameters,
                               final ElementMatcher<HxType> classMatcher,
-                              final HxMethod aspectFactory,
-                              final ElementMatcherFactory elementMatcherFactory) {
+                              final ElementMatcherFactory elementMatcherFactory,
+                              final Map<String, AspectProfile> aspectProfileMap,
+                              final HxMethod aspectFactory) {
     this.type = type;
     this.prefix = prefix;
     this.suffix = suffix;
@@ -50,6 +53,7 @@ public class AspectDefinitionImpl implements AspectDefinition {
     this.parameters = parameters;
     this.aspectFactory = aspectFactory;
     this.elementMatcherFactory = elementMatcherFactory;
+    this.aspectProfileMap = aspectProfileMap;
 
     this.aspectSteps = collectAspectSteps(type);
     this.aspectStepsMap = collectSupportedKinds(aspectSteps);
@@ -137,8 +141,8 @@ public class AspectDefinitionImpl implements AspectDefinition {
   }
 
   @Override
-  public Optional<AspectStep<?>> getProfiledAspectStep(final String profileName) {
-    return Optional.empty();
+  public Optional<AspectProfile> getAspectProfile(final String profileName) {
+    return Optional.ofNullable(this.aspectProfileMap.get(profileName));
   }
 
   private List<AspectStep<?>> aspectStepsFor(AspectStep.Kind kind) {
@@ -150,7 +154,7 @@ public class AspectDefinitionImpl implements AspectDefinition {
     if(!getTypeMatcher().match(type)) {
       return false;
     }
-    final AspectApplicationContext context = new AspectApplicationContextImpl();
+    final AspectApplicationContext context = new AspectApplicationContextImpl(this);
 
     boolean typesModified = applyAspectsForTypes(type, context, aspectStepsFor(AspectStep.Kind.TYPE));
     boolean fieldsModified = applyAspectsForFields(type, context, aspectStepsFor(AspectStep.Kind.FIELD));
@@ -166,8 +170,10 @@ public class AspectDefinitionImpl implements AspectDefinition {
     boolean modified = false;
     if(!aspectSteps.isEmpty()) {
       for(HxMethod constructor : type.getConstructors()) {
+        context.enterConstructor(constructor);
+
         for(AspectStep step : aspectSteps) {
-          if(step.apply(this, context, constructor)) {
+          if(step.apply(context, constructor)) {
             modified = true;
           }
         }
@@ -182,9 +188,13 @@ public class AspectDefinitionImpl implements AspectDefinition {
     boolean modified = false;
     if(!aspectSteps.isEmpty()) {
       for(HxMethod method : type.getMethods()) {
-        for(AspectStep step : aspectSteps) {
-          if(step.apply(this, context, method)) {
-            modified = true;
+        if(!method.isConstructor()) {
+          context.enterMethod(method);
+
+          for(AspectStep step : aspectSteps) {
+            if(step.apply(context, method)) {
+              modified = true;
+            }
           }
         }
       }
@@ -198,8 +208,10 @@ public class AspectDefinitionImpl implements AspectDefinition {
     boolean modified = false;
     if(!aspectSteps.isEmpty()) {
       for(HxField field : type.getFields()) {
+        context.enterField(field);
+
         for(AspectStep step : aspectSteps) {
-          if(step.apply(this, context, field)) {
+          if(step.apply(context, field)) {
             modified = true;
           }
         }
@@ -213,8 +225,10 @@ public class AspectDefinitionImpl implements AspectDefinition {
                                        final List<AspectStep<?>> aspectSteps) {
     boolean modified = false;
     if(!aspectSteps.isEmpty()) {
+      context.enterType(type);
+
       for(AspectStep step : aspectSteps) {
-        if(step.apply(this, context, type)) {
+        if(step.apply(context, type)) {
           modified = true;
         }
       }

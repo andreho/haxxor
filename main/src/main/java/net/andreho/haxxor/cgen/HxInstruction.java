@@ -12,6 +12,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -81,23 +82,31 @@ public interface HxInstruction
    * @return
    */
   default HxInstructionType getInstructionType() {
-    return HxInstructions.fromOpcode(getOpcode());
-  }
-
-  /**
-   * @param type
-   * @return
-   */
-  default boolean hasInstructionType(HxInstructionType type) {
-    return getInstructionType() == type;
+    return HxInstructionsType.fromOpcode(getOpcode());
   }
 
   /**
    * @param sort
    * @return
    */
-  default boolean hasInstructionSort(HxInstructionSort sort) {
+  default boolean has(HxInstructionSort sort) {
     return getInstructionType().getSort() == sort;
+  }
+
+  /**
+   * @param type
+   * @return
+   */
+  default boolean has(HxInstructionType type) {
+    return getInstructionType() == type;
+  }
+
+  /**
+   * @param type
+   * @return
+   */
+  default boolean hasNot(HxInstructionType type) {
+    return getInstructionType() != type;
   }
 
   /**
@@ -133,26 +142,6 @@ public interface HxInstruction
    * @param next
    */
   void setNext(HxInstruction next);
-
-  Optional<HxInstruction> findFirstWithType(final HxInstructionType instructionType);
-
-  Optional<HxInstruction> findLastWithType(final HxInstructionType instructionType);
-
-  Optional<HxInstruction> findFirstWithKind(final HxInstructionSort instructionSort);
-
-  Optional<HxInstruction> findLastWithKind(final HxInstructionSort instructionSort);
-
-  Optional<HxInstruction> findFirst(final Predicate<HxInstruction> predicate);
-
-  Optional<HxInstruction> findLast(final Predicate<HxInstruction> predicate);
-
-  void forEachNext(final Consumer<HxInstruction> consumer);
-
-  void forEachNext(final Predicate<HxInstruction> predicate, final Consumer<HxInstruction> consumer);
-
-  void forEachPrevious(final Consumer<HxInstruction> consumer);
-
-  void forEachPrevious(final Predicate<HxInstruction> predicate, final Consumer<HxInstruction> consumer);
 
   /**
    * Shortcut for: <code>this.getPrevious().append(inst);</code>
@@ -244,4 +233,29 @@ public interface HxInstruction
       }
     };
   }
+
+  Optional<HxInstruction> findFirstWithType(final HxInstructionType instructionType);
+
+  Optional<HxInstruction> findLastWithType(final HxInstructionType instructionType);
+
+  Optional<HxInstruction> findFirstWithKind(final HxInstructionSort instructionSort);
+
+  Optional<HxInstruction> findLastWithKind(final HxInstructionSort instructionSort);
+
+  Optional<HxInstruction> findFirst(final Predicate<HxInstruction> predicate);
+
+  Optional<HxInstruction> findLast(final Predicate<HxInstruction> predicate);
+
+  void forEachNext(final Consumer<HxInstruction> consumer);
+
+  void forEachNext(final Predicate<HxInstruction> predicate, final Consumer<HxInstruction> consumer);
+
+  void forEachPrevious(final Consumer<HxInstruction> consumer);
+
+  void forEachPrevious(final Predicate<HxInstruction> predicate, final Consumer<HxInstruction> consumer);
+
+  default <S extends HxCodeStream<S>> S asStream(Function<HxInstruction, S> factory) {
+    return factory.apply(this);
+  }
+
 }

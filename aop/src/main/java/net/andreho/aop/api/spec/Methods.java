@@ -10,6 +10,12 @@ import java.lang.annotation.RetentionPolicy;
 public @interface Methods {
 
   /**
+   * @return
+   */
+  MethodsType type() default MethodsType.METHODS;
+  //AND
+
+  /**
    * @return a selector for possible declaring classes or interfaces
    * @apiNote elements are bound via an OR (disjunction)
    */

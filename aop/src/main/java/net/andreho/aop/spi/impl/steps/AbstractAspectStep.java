@@ -1,7 +1,6 @@
 package net.andreho.aop.spi.impl.steps;
 
 import net.andreho.aop.spi.AspectApplicationContext;
-import net.andreho.aop.spi.AspectDefinition;
 import net.andreho.aop.spi.AspectStep;
 import net.andreho.aop.spi.AspectStepType;
 import net.andreho.aop.spi.ElementMatcher;
@@ -50,8 +49,7 @@ public abstract class AbstractAspectStep<T>
   }
 
   @Override
-  public boolean apply(final AspectDefinition def,
-                       final AspectApplicationContext ctx,
+  public boolean apply(final AspectApplicationContext ctx,
                        final T element) {
     return false;
   }

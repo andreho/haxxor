@@ -9,7 +9,6 @@ import net.andreho.aop.api.injectable.Intercepted;
 import net.andreho.aop.api.injectable.Line;
 import net.andreho.aop.api.injectable.Result;
 import net.andreho.aop.api.injectable.This;
-import net.andreho.aop.api.injectable.Variable;
 import net.andreho.aop.api.spec.CanInject;
 import net.andreho.aop.api.spec.Methods;
 import net.andreho.aop.api.spec.Site;
@@ -29,8 +28,6 @@ import java.lang.annotation.Target;
             Intercepted.class,
             Caught.class,
             Attribute.class,
-            Variable.class,
-//            Marker.class,
             Line.class,
             Result.class,
             This.class})
@@ -39,6 +36,7 @@ import java.lang.annotation.Target;
 public @interface Finally {
   /**
    * @return an unique name of a globally available profile
+   * @see Profile
    */
   String profile() default "";
 
@@ -50,7 +48,8 @@ public @interface Finally {
   /**
    * Which methods should be processed
    * @return
-   * @apiNote elements are bound via an OR (disjunction)
+   * @apiNote elements are bound via an OR (disjunction);
+   * empty array means any field will be selected
    */
   Methods[] methods() default {};
 }

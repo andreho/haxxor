@@ -51,13 +51,11 @@ public interface AspectStep<T>
   Optional<String> getProfileName();
 
   /**
-   * @param def
    * @param ctx
    * @param element
    * @return
    */
-  boolean apply(final AspectDefinition def,
-                final AspectApplicationContext ctx,
+  boolean apply(final AspectApplicationContext ctx,
                 final T element);
 
   /**

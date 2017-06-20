@@ -69,6 +69,20 @@ public interface ElementMatcher<T> {
   /**
    * @return
    */
+  default ElementMatcher<T> minimize() {
+    return minimize(this);
+  }
+
+  /**
+   * @return
+   */
+  default ElementMatcher<T> minimize(ElementMatcher<T> alternative) {
+    return isAny()? any() : alternative;
+  }
+
+  /**
+   * @return
+   */
   static <T> ElementMatcher<T> none() {
     return NoneMatcher.INSTANCE;
   }

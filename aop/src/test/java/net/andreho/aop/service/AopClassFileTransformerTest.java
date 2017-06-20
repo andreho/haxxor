@@ -9,7 +9,9 @@ import org.sandbox.elements.AnyType;
  */
 @DisplayName("Test functionality of AopClassFileTransformer")
 class AopClassFileTransformerTest {
-
+/*
+  -javaagent:C:/Workspace/java/haxxor/agent/build/libs/agent-1.0.0.jar
+*/
   @Test
   void checkAgentLoad() {
     AnyType.controllableMethod(42);

@@ -1,13 +1,12 @@
 package net.andreho.aop.spi.impl.steps;
 
-import net.andreho.aop.api.DefineVariable;
 import net.andreho.aop.api.injectable.Args;
 import net.andreho.aop.api.injectable.Arity;
+import net.andreho.aop.api.injectable.Attribute;
 import net.andreho.aop.api.injectable.Declaring;
 import net.andreho.aop.api.injectable.Line;
 import net.andreho.aop.api.injectable.This;
 import net.andreho.aop.spi.AspectApplicationContext;
-import net.andreho.aop.spi.AspectDefinition;
 import net.andreho.aop.spi.AspectStepType;
 import net.andreho.aop.spi.ElementMatcher;
 import net.andreho.haxxor.cgen.HxCgenUtils;
@@ -33,9 +32,9 @@ public class BeforeAspectStep
   extends AbstractCallingAspectStep<HxMethod> {
 
   public BeforeAspectStep(final int index,
+                          final String profileName,
                           final AspectStepType type,
                           final ElementMatcher<HxMethod> elementMatcher,
-                          final String profileName,
                           final HxMethod interceptor) {
     super(index, type, elementMatcher, profileName, interceptor);
   }
@@ -46,8 +45,7 @@ public class BeforeAspectStep
   }
 
   @Override
-  public boolean apply(final AspectDefinition def,
-                       final AspectApplicationContext ctx,
+  public boolean apply(final AspectApplicationContext ctx,
                        final HxMethod intercepted) {
     if (!match(intercepted) || !intercepted.hasCode()) {
       return false;
@@ -60,50 +58,78 @@ public class BeforeAspectStep
     final HxInstructionFactory instructionFactory = code.getInstructionFactory();
     final InstructionCodeStream codeStream = new InstructionCodeStream<>(code.getFirst(), instructionFactory);
 
-    handleInjectableParameters(def, interceptor, intercepted, codeStream);
+    handleInjectableParameters(ctx, interceptor, intercepted, codeStream);
 
     codeStream.INVOKESTATIC(interceptor);
 
-    handleReturnValue(def, interceptor, intercepted, codeStream);
+    handleReturnValue(ctx, interceptor, intercepted, codeStream);
 
     return true;
   }
 
-  private void handleReturnValue(final AspectDefinition def,
+  private void handleReturnValue(final AspectApplicationContext context,
                                  final HxMethod interceptor,
                                  final HxMethod intercepted,
                                  final InstructionCodeStream codeStream) {
 
     final HxType returnType = interceptor.getReturnType();
-    if(!interceptor.isAnnotationPresent(DefineVariable.class)) {
-      switch (returnType.getSlotsCount()) {
-        case 1:
-          codeStream.POP();
-          break;
-        case 2:
-          codeStream.POP2();
-          break;
+    if (storeAttribute(context, interceptor, intercepted, codeStream, returnType)) {
+      return;
+    }
+
+    switch (returnType.getSlotsCount()) {
+      case 1:
+        codeStream.POP();
+        break;
+      case 2:
+        codeStream.POP2();
+        break;
+    }
+  }
+
+  private boolean storeAttribute(final AspectApplicationContext context,
+                                 final HxMethod interceptor,
+                                 final HxMethod intercepted,
+                                 final InstructionCodeStream codeStream,
+                                 final HxType returnType) {
+    if(interceptor.isAnnotationPresent(Attribute.class)) {
+      final HxAnnotation attributeAnnotation = interceptor.getAnnotation(Attribute.class).get();
+      final String attributeName = attributeAnnotation.getAttribute("value", "");
+      final boolean inheritable = attributeAnnotation.getAttribute("inheritable", false);
+
+      if(attributeName.isEmpty()) {
+        return false;
       }
-    } else {
+
+      if(context.hasLocalAttribute(attributeName)) {
+        System.out.println("Local-Attribute was already declared: "+attributeName);
+        return false;
+      }
+
       final int slotOffset = intercepted.getParametersSlots() + (intercepted.isStatic()? 0 : 1);
       final int variableSize = returnType.getSlotsCount();
       codeStream.getCurrent().forEachNext(
-        ins -> ins.hasInstructionSort(HxInstructionSort.Load) || ins.hasInstructionSort(HxInstructionSort.Store),
+        ins -> ins.has(HxInstructionSort.Load) || ins.has(HxInstructionSort.Store),
         ins -> expandAccessToLocalVariables(ins, slotOffset, variableSize)
       );
-      HxCgenUtils.storeSlot(returnType, slotOffset, codeStream);
+
+      context.createLocalAttribute(attributeName, returnType, slotOffset);
+      HxCgenUtils.genericStoreSlot(returnType, slotOffset, codeStream);
+
+      return true;
     }
+    return false;
   }
 
   private void expandAccessToLocalVariables(HxInstruction instruction, int parametersOffset, int offsetAddition) {
     AbstractLocalAccessInstruction accessInstruction = (AbstractLocalAccessInstruction) instruction;
     int slotIndex = accessInstruction.getOperand();
-    if(slotIndex > parametersOffset) {
+    if(slotIndex >= parametersOffset) {
       accessInstruction.setOperand(slotIndex + offsetAddition);
     }
   }
 
-  private void handleInjectableParameters(final AspectDefinition def,
+  private void handleInjectableParameters(final AspectApplicationContext context,
                                           final HxMethod interceptor,
                                           final HxMethod intercepted,
                                           final HxExtendedCodeStream codeStream) {
@@ -113,27 +139,27 @@ public class BeforeAspectStep
 //        injectArgument(def, intercepted, codeStream, parameter.getAnnotation(Arg.class).get());
 //      } else
       if (parameter.isAnnotationPresent(Args.class)) {
-        injectArguments(def, parameter, intercepted, codeStream);
+        injectArguments(context, parameter, intercepted, codeStream);
       } else if (parameter.isAnnotationPresent(Arity.class)) {
-        injectArity(def, parameter, intercepted, codeStream);
+        injectArity(context, parameter, intercepted, codeStream);
       } else if (parameter.isAnnotationPresent(This.class)) {
-        injectThis(def, parameter, intercepted, codeStream);
+        injectThis(context, parameter, intercepted, codeStream);
       } else if (parameter.isAnnotationPresent(Line.class)) {
-        injectLine(def, parameter, intercepted, codeStream);
+        injectLine(context, parameter, intercepted, codeStream);
       } else if (parameter.isAnnotationPresent(Declaring.class)) {
-        injectDeclaring(def, parameter, intercepted, codeStream);
+        injectDeclaring(context, parameter, intercepted, codeStream);
       }
     }
   }
 
-  private void injectArguments(final AspectDefinition def,
+  private void injectArguments(final AspectApplicationContext context,
                                final HxParameter parameter,
                                final HxMethod intercepted,
                                final HxExtendedCodeStream codeStream) {
     HxCgenUtils.packArguments(intercepted.getParameterTypes(), intercepted.isStatic() ? 0 : 1, codeStream);
   }
 
-  private void injectArgument(final AspectDefinition def,
+  private void injectArgument(final AspectApplicationContext context,
                               final HxParameter parameter,
                               final HxMethod intercepted,
                               final HxExtendedCodeStream codeStream,
@@ -142,21 +168,21 @@ public class BeforeAspectStep
     HxCgenUtils.packArguments(intercepted.getParameterTypes(), intercepted.isStatic() ? 0 : 1, codeStream);
   }
 
-  private void injectArity(final AspectDefinition def,
+  private void injectArity(final AspectApplicationContext context,
                            final HxParameter parameter,
                            final HxMethod intercepted,
                            final HxExtendedCodeStream codeStream) {
     codeStream.LDC(intercepted.getParametersCount());
   }
 
-  private void injectDeclaring(final AspectDefinition def,
+  private void injectDeclaring(final AspectApplicationContext context,
                           final HxParameter parameter,
                           final HxMethod intercepted,
                           final HxExtendedCodeStream codeStream) {
     codeStream.TYPE(intercepted.getDeclaringMember());
   }
 
-  private void injectThis(final AspectDefinition def,
+  private void injectThis(final AspectApplicationContext context,
                           final HxParameter parameter,
                           final HxMethod intercepted,
                           final HxExtendedCodeStream codeStream) {
@@ -167,7 +193,7 @@ public class BeforeAspectStep
     }
   }
 
-  private void injectLine(final AspectDefinition def,
+  private void injectLine(final AspectApplicationContext context,
                           final HxParameter parameter,
                           final HxMethod intercepted,
                           final HxExtendedCodeStream codeStream) {

@@ -14,6 +14,7 @@ import java.util.List;
 public class MethodsMatcher
   extends AbstractMatcher<HxMethod> {
 
+  private final ElementMatcher<HxMethod> type;
   private final ElementMatcher<HxMethod> declaredBy;
   private final ElementMatcher<HxMethod> modifiers;
   private final ElementMatcher<HxNamed> named;
@@ -23,7 +24,8 @@ public class MethodsMatcher
   private final ElementMatcher<HxMethod> signatures;
   private final ElementMatcher<HxMethod> parameters;
 
-  public MethodsMatcher(final ElementMatcher<HxType> declaredBy,
+  public MethodsMatcher(final ElementMatcher<HxMethod> type,
+                        final ElementMatcher<HxType> declaredBy,
                         final ElementMatcher<HxMethod> modifiers,
                         final ElementMatcher<HxNamed> named,
                         final ElementMatcher<HxType> returning,
@@ -31,10 +33,11 @@ public class MethodsMatcher
                         final ElementMatcher<HxType> throwing,
                         final ElementMatcher<HxMethod> signatures,
                         final ElementMatcher<HxMethod> parameters) {
-    this.declaredBy = declaredBy.isAny() ? ElementMatcher.any() : new DeclaredByMatcher<>(declaredBy);
+    this.type = type.minimize();
+    this.declaredBy = new DeclaredByMatcher<HxMethod>(declaredBy).minimize();
     this.modifiers = modifiers;
     this.named = named;
-    this.returning = returning.isAny() ? ElementMatcher.any() : new ReturningMatcher(returning);
+    this.returning = new ReturningMatcher(returning).minimize();
     this.annotated = annotated;
     this.throwing = throwing;
     this.signatures = signatures;

@@ -62,7 +62,7 @@ public interface AspectDefinition {
    * @param profileName
    * @return
    */
-  Optional<AspectStep<?>> getProfiledAspectStep(String profileName);
+  Optional<AspectProfile> getAspectProfile(String profileName);
 
   /**
    * @param type

@@ -1,5 +1,6 @@
 package net.andreho.aop.spi.impl;
 
+import net.andreho.aop.api.spec.MethodsType;
 import net.andreho.aop.api.spec.query.Operator;
 import net.andreho.aop.spi.ElementMatcher;
 import net.andreho.aop.spi.ElementMatcherFactory;
@@ -18,6 +19,7 @@ import net.andreho.aop.spi.impl.matchers.TypedMatcher;
 import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxEnum;
+import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMember;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxNamed;
@@ -38,23 +40,24 @@ public class ElementMatcherFactoryImpl
 
 
   @Override
-  public ElementMatcher<HxType> create(final HxType aspectType) {
+  public ElementMatcher<HxType> createClassesFilter(final HxType aspectType) {
     if(aspectType.isAnnotationPresent(ASPECT_ANNOTATION_TYPE)) {
       HxAnnotation aspect = aspectType.getAnnotation(ASPECT_ANNOTATION_TYPE).get();
-      HxAnnotation[] classes = aspect.getAttribute("classes", HxAnnotation[].class);
-      return createClassesMatcher(classes);
+      HxAnnotation[] classes = aspect.getAttribute("classes", EMPTY_ANNOTATION_ARRAY);
+      return createClassesFilter(classes);
     }
     return ElementMatcher.none();
   }
 
-  protected ElementMatcher<HxType> createClassesMatcher(HxAnnotation[] classes) {
-    final List<ElementMatcher<HxType>> classesMatchers = new ArrayList<>(classes.length);
+  @Override
+  public ElementMatcher<HxType> createClassesFilter(HxAnnotation[] classesAnnotations) {
+    final List<ElementMatcher<HxType>> classesMatchers = new ArrayList<>(classesAnnotations.length);
 
     final List<ElementMatcher<HxType>> valuesMatchers = new ArrayList<>();
     final List<ElementMatcher<HxType>> extendingMatchers = new ArrayList<>();
     final List<ElementMatcher<HxType>> implementingMatchers = new ArrayList<>();
 
-    for(HxAnnotation classesAnnotation : classes) {
+    for(HxAnnotation classesAnnotation : classesAnnotations) {
       final HxAnnotation[] values = classesAnnotation.getAttribute("value", HxAnnotation[].class);
       final HxAnnotation[] extending = classesAnnotation.getAttribute("extending", HxAnnotation[].class);
       final HxAnnotation[] implementing = classesAnnotation.getAttribute("implementing", HxAnnotation[].class);
@@ -82,7 +85,7 @@ public class ElementMatcherFactoryImpl
   }
 
   protected <T extends HxTyped> ElementMatcher<T> createTypedMatcher(HxAnnotation[] classes) {
-    return new TypedMatcher<>(createClassesMatcher(classes));
+    return new TypedMatcher<>(createClassesFilter(classes));
   }
 
   protected ElementMatcher<HxType> createClassWithMatcher(final HxAnnotation classWithAnnotation) {
@@ -236,7 +239,7 @@ public class ElementMatcherFactoryImpl
   }
 
   @Override
-  public ElementMatcher<HxMethod> create(final HxMethod aspectMethod, final HxAnnotation[] methodsAnnotations) {
+  public ElementMatcher<HxMethod> createMethodsFilter(final HxAnnotation[] methodsAnnotations) {
     if(methodsAnnotations == null || methodsAnnotations.length == 0) {
       return ElementMatcher.any();
     }
@@ -250,6 +253,7 @@ public class ElementMatcherFactoryImpl
   }
 
   private ElementMatcher<HxMethod> createMethodMatcher(final HxAnnotation methodsAnnotation) {
+    final HxEnum type = methodsAnnotation.getAttribute("type", (HxEnum) null);
     final HxAnnotation[] declaredBy = methodsAnnotation.getAttribute("declaredBy", EMPTY_ANNOTATION_ARRAY);
     final HxAnnotation[] modifiers = methodsAnnotation.getAttribute("modifiers", EMPTY_ANNOTATION_ARRAY);
     final HxAnnotation[] named = methodsAnnotation.getAttribute("named", EMPTY_ANNOTATION_ARRAY);
@@ -260,16 +264,17 @@ public class ElementMatcherFactoryImpl
     final HxAnnotation[] parameters = methodsAnnotation.getAttribute("parameters", EMPTY_ANNOTATION_ARRAY);
     final boolean negate = methodsAnnotation.getAttribute("negate", false);
 
-    final ElementMatcher<HxType> declaredByMatcher = createClassesMatcher(declaredBy);
+    final ElementMatcher<HxType> declaredByMatcher = createClassesFilter(declaredBy);
     final ElementMatcher<HxMethod> modifiersMatcher = createModifiersMatcher(modifiers);
     final ElementMatcher<HxNamed> namedMatcher = createNamedMatcher(named);
-    final ElementMatcher<HxType> returningMatcher = createClassesMatcher(returning);
+    final ElementMatcher<HxType> returningMatcher = createClassesFilter(returning);
     final ElementMatcher<HxAnnotated> annotatedMatcher = createAnnotatedMatcher(annotated);
-    final ElementMatcher<HxType> throwingMatcher = createClassesMatcher(throwing);
+    final ElementMatcher<HxType> throwingMatcher = createClassesFilter(throwing);
     final ElementMatcher<HxMethod> signaturesMatcher = createSignatureMatcher(signatures);
     final ElementMatcher<HxMethod> parametersMatcher = createParameterMatcher(parameters);
 
     return new MethodsMatcher(
+      type == null? MethodsType.METHODS : (MethodsType) type.loadEnum(getClass().getClassLoader()),
       declaredByMatcher,
       modifiersMatcher,
       namedMatcher,
@@ -362,5 +367,10 @@ public class ElementMatcherFactoryImpl
       annotatedMatcher,
       namedMatcher
     ).negateIf(negate);
+  }
+
+  @Override
+  public ElementMatcher<HxField> createFieldsFilter(final HxAnnotation[] fieldsAnnotations) {
+    return ElementMatcher.any();
   }
 }

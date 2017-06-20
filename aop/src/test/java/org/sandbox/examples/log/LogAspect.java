@@ -16,7 +16,7 @@ import net.andreho.asm.org.objectweb.asm.Type;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionFactory;
-import net.andreho.haxxor.cgen.HxInstructions;
+import net.andreho.haxxor.cgen.HxInstructionsType;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxCode;
 import net.andreho.haxxor.spec.api.HxField;
@@ -77,7 +77,7 @@ public class LogAspect {
     HxCode code = clinit.getCode();
     HxInstructionFactory factory = code.getInstructionFactory();
     Optional<HxInstruction> returnOptional =
-        code.getLast().findLastWithType(HxInstructions.Exit.RETURN);
+        code.getLast().findLastWithType(HxInstructionsType.Exit.RETURN);
 
     HxInstruction returnInst = returnOptional.get();
     returnInst.getPrevious()

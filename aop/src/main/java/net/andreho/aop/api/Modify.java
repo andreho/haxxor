@@ -33,7 +33,8 @@ public @interface Modify {
 
     /**
      * Selection of classes that need to be processed
-     * @return
+     * @apiNote elements are bound via an OR (disjunction);
+     * empty array means any class will be selected
      */
     Classes[] value() default {};
   }
@@ -54,7 +55,8 @@ public @interface Modify {
 
     /**
      * Selection of fields that need to be processed
-     * @return
+     * @apiNote elements are bound via an OR (disjunction);
+     * empty array means any fields will be selected
      */
     Fields[] value() default {};
   }
@@ -75,7 +77,8 @@ public @interface Modify {
 
     /**
      * Selection of methods/constructors that need to be processed
-     * @return
+     * @apiNote elements are bound via an OR (disjunction);
+     * empty array means any methods will be selected
      */
     Methods[] value() default {};
   }

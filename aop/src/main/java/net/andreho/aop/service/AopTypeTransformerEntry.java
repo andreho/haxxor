@@ -4,6 +4,7 @@ import net.andreho.aop.spi.Activator;
 import net.andreho.aop.spi.PackageFilter;
 import net.andreho.aop.spi.impl.AspectClassVisitor;
 import net.andreho.asm.org.objectweb.asm.ClassReader;
+import net.andreho.haxxor.Debugger;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.HaxxorBuilder;
 import net.andreho.haxxor.spec.api.HxType;
@@ -101,9 +102,9 @@ public final class AopTypeTransformerEntry {
 
     if (optional.isPresent()) {
       byte[] bytes = optional.get().toByteCode();
-
       //DEBUG
       printInfo(className, true, start, used);
+      Debugger.trace(bytes, Debugger.SKIP_DEBUG);
       return bytes;
     }
     return null;
