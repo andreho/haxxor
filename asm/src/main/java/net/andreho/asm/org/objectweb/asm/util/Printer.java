@@ -1149,6 +1149,10 @@ public abstract class Printer {
      *            the string to be added.
      */
     public static void appendString(final StringBuffer buf, final String s) {
+        if(s == null) {
+            buf.append("null");
+            return;
+        }
         buf.append('\"');
         for (int i = 0; i < s.length(); ++i) {
             char c = s.charAt(i);
