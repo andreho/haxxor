@@ -35,26 +35,27 @@ public class MethodsMatcher
                         final ElementMatcher<HxMethod> parameters) {
     this.type = type.minimize();
     this.declaredBy = new DeclaredByMatcher<HxMethod>(declaredBy).minimize();
-    this.modifiers = modifiers;
-    this.named = named;
+    this.modifiers = modifiers.minimize();
+    this.named = named.minimize();
     this.returning = new ReturningMatcher(returning).minimize();
-    this.annotated = annotated;
-    this.throwing = throwing;
-    this.signatures = signatures;
-    this.parameters = parameters;
+    this.annotated = annotated.minimize();
+    this.throwing = throwing.minimize();
+    this.signatures = signatures.minimize();
+    this.parameters = parameters.minimize();
   }
 
   @Override
   public boolean match(final HxMethod element) {
     return
+      type.match(element) &&
       declaredBy.match(element) &&
       modifiers.match(element) &&
       named.match(element) &&
       returning.match(element) &&
       annotated.match(element) &&
-      matchThrowing(element) &&
       signatures.match(element) &&
-      parameters.match(element);
+      parameters.match(element) &&
+      matchThrowing(element);
   }
 
   private boolean matchThrowing(final HxMethod element) {
@@ -68,5 +69,86 @@ public class MethodsMatcher
       }
     }
     return false;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder("METHODS [");
+
+    int added = 0;
+    if(!type.isAny()) {
+      builder.append("type: ").append(type);
+      added++;
+    }
+
+    if(!declaredBy.isAny()) {
+      if(added > 0) {
+        builder.append(", ");
+      }
+      builder.append("declaredBy: ").append(declaredBy);
+      added++;
+    }
+
+    if(!modifiers.isAny()) {
+      if(added > 0) {
+        builder.append(", ");
+      }
+      builder.append("modifiers: ").append(modifiers);
+      added++;
+    }
+
+    if(!named.isAny()) {
+      if(added > 0) {
+        builder.append(", ");
+      }
+      builder.append("named: ").append(modifiers);
+      added++;
+    }
+
+    if(!returning.isAny()) {
+      if(added > 0) {
+        builder.append(", ");
+      }
+      builder.append("returning: ").append(returning);
+      added++;
+    }
+
+    if(!annotated.isAny()) {
+      if(added > 0) {
+        builder.append(", ");
+      }
+      builder.append("annotated: ").append(annotated);
+      added++;
+    }
+
+    if(!signatures.isAny()) {
+      if(added > 0) {
+        builder.append(", ");
+      }
+      builder.append("signatures: ").append(signatures);
+      added++;
+    }
+
+    if(!parameters.isAny()) {
+      if(added > 0) {
+        builder.append(", ");
+      }
+      builder.append("parameters: ").append(parameters);
+      added++;
+    }
+
+    if(!throwing.isAny()) {
+      if(added > 0) {
+        builder.append(", ");
+      }
+      builder.append("throwing: ").append(throwing);
+      added++;
+    }
+
+    if(added == 0) {
+      builder.append("ANY");
+    }
+
+    return builder.append("]").toString();
   }
 }

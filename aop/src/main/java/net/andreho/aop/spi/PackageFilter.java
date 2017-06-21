@@ -11,10 +11,10 @@ public interface PackageFilter
     extends Comparable<PackageFilter> {
 
   /**
-   * @param fullyQualifiedName
-   * @return <b>true</b> to allow further transformation, <b>false</b> to skip
+   * @param name is either a internal name of a class or a filename
+   * @return <b>true</b> to allow further transformation, <b>false</b> to ignore
    */
-  boolean filter(String fullyQualifiedName);
+  boolean filter(String name);
 
   @Override
   default int compareTo(PackageFilter o) {

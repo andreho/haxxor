@@ -16,23 +16,21 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Arg {
-  /**
-   * @return the allowed indices of the intercepted argument
-   * @implNote if anything else is not defined tries to use the parameter's type itself as matching type
-   */
-  int[] index() default -1;
-
-  /**
-   * @return the allowed names of the intercepted argument
-   * @implNote if anything else is not defined tries to use the parameter's type itself as matching type.
-   * By default there isn't any information about parameter's names; to enable it
-   * you must provide special parameter to your compiler: <code>-parameters</code>
-   */
-  String[] name() default {};
-
-  /**
-   * @return preferred argument's types
-   * @implNote if anything else is not defined tries to use the parameter's type itself as matching type
-   */
-  Class<?>[] value() default {};
+//  /**
+//   * @return the allowed indices of the intercepted argument
+//   * @implNote if anything else is not defined tries to use the parameter's type itself as matching type
+//   */
+//  int[] index() default -1;
+//  /**
+//   * @return the allowed names of the intercepted argument
+//   * @implNote if anything else is not defined tries to use the parameter's type itself as matching type.
+//   * By default there isn't any information about parameter's names; to enable it
+//   * you must provide special parameter to your compiler: <code>-parameters</code>
+//   */
+//  String[] name() default {};
+//  /**
+//   * @return preferred argument's types
+//   * @implNote if anything else is not defined tries to use the parameter's type itself as matching type
+//   */
+//  Class<?>[] value() default {};
 }

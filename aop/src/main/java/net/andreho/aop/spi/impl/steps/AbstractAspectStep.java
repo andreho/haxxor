@@ -1,6 +1,6 @@
 package net.andreho.aop.spi.impl.steps;
 
-import net.andreho.aop.spi.AspectApplicationContext;
+import net.andreho.aop.spi.AspectContext;
 import net.andreho.aop.spi.AspectStep;
 import net.andreho.aop.spi.AspectStepType;
 import net.andreho.aop.spi.ElementMatcher;
@@ -34,8 +34,8 @@ public abstract class AbstractAspectStep<T>
   }
 
   @Override
-  public boolean hasKind(final Kind kind) {
-    return getType().hasKind(kind);
+  public boolean hasTarget(final Target target) {
+    return getType().hasTarget(target);
   }
 
   @Override
@@ -49,7 +49,7 @@ public abstract class AbstractAspectStep<T>
   }
 
   @Override
-  public boolean apply(final AspectApplicationContext ctx,
+  public boolean apply(final AspectContext ctx,
                        final T element) {
     return false;
   }

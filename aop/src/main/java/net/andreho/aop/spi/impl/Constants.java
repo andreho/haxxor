@@ -24,5 +24,5 @@ public interface Constants {
   String ORDER_ANNOTATION_TYPE = Order.class.getName();
   String BEFORE_ANNOTATION_TYPE = Before.class.getName();
   String AFTER_ANNOTATION_TYPE = After.class.getName();
-  int UNORDERED_ELEMENT_OFFSET = 2_000_000_000;
+  int UNORDERED_ELEMENT_INDEX = 1_000_000;
 }

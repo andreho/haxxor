@@ -5,14 +5,14 @@ package net.andreho.aop.api;
  */
 public interface StandardOrder {
 
-  int MODIFY_TYPE = 10_000;
-  int MODIFY_FIELD = 11_000;
-  int MODIFY_METHOD = 12_000;
-  int FORWARDING = 13_000;
-  int FIELD_GET = 14_000;
-  int FIELD_SET = 15_000;
-  int FINALLY = 16_000;
-  int CATCH = 17_000;
-  int BEFORE = 18_000;
-  int AFTER = 19_000;
+  int MODIFY_TYPE = 100_000_000;
+  int MODIFY_FIELD = 110_000_000;
+  int MODIFY_METHOD = 120_000_000;
+  int FORWARDING = 130_000_000;
+  int FIELD_GET = 140_000_000;
+  int FIELD_SET = 150_000_000;
+  int FINALLY = 160_000_000;
+  int CATCH = 170_000_000;
+  int BEFORE = 180_000_000;
+  int AFTER = 190_000_000;
 }

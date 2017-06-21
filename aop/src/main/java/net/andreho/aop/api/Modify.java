@@ -19,6 +19,9 @@ public @interface Modify {
 
   /**
    * This annotations allows to modify the corresponding representation of selected classes directly.
+   * <br/><b>ATTENTION:</b> The annotated method <b>must</b> have following signature:
+   * <code>(net.andreho.haxxor.spec.api.HxType)boolean</code>.
+   * If the annotated method returns <b>true</b> then it means that the given type was modified.
    * <br/>Created by a.hofmann on 16.06.2017 at 04:12.
    * @see Order
    */
@@ -41,6 +44,9 @@ public @interface Modify {
 
   /**
    * This annotations allows to modify the corresponding representation of selected fields directly.
+   * <br/><b>ATTENTION:</b> The annotated method <b>must</b> have following signature:
+   * <code>(net.andreho.haxxor.spec.api.HxField)boolean</code>.
+   * If the annotated method returns <b>true</b> then it means that the given field was modified.
    * <br/>Created by a.hofmann on 16.06.2017 at 04:12.
    * @see Order
    */
@@ -63,6 +69,9 @@ public @interface Modify {
 
   /**
    * This annotations allows to modify the corresponding representation of selected methods directly.
+   * <br/><b>ATTENTION:</b> The annotated method <b>must</b> have following signature:
+   * <code>(net.andreho.haxxor.spec.api.HxMethod)boolean</code>.
+   * If the annotated method returns <b>true</b> then it means that the given method was modified.
    * <br/>Created by a.hofmann on 16.06.2017 at 04:12.
    * @see Order
    */

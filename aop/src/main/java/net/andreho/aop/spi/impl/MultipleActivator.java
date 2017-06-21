@@ -12,14 +12,15 @@ import java.util.Set;
 /**
  * <br/>Created by a.hofmann on 17.06.2017 at 21:19.
  */
-public class ChainedActivator implements Activator {
+public class MultipleActivator
+  implements Activator {
   private final Activator[] activators;
 
-  public ChainedActivator(final Collection<Activator> activators) {
+  public MultipleActivator(final Collection<Activator> activators) {
     this(activators.toArray(new Activator[0]));
   }
 
-  public ChainedActivator(final Activator[] activators) {
+  public MultipleActivator(final Activator[] activators) {
     this.activators = activators;
   }
 

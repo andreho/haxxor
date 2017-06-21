@@ -7,13 +7,28 @@ import java.util.Collection;
 /**
  * <br/>Created by a.hofmann on 19.06.2017 at 00:10.
  */
-public interface AspectStepType {
+public interface AspectStepType extends Comparable<AspectStepType> {
 
   /**
-   * @param kind
+   * @return numeric order value of this step-type
+   */
+  int getOrder();
+
+  /**
+   * @param target
    * @return
    */
-  boolean hasKind(AspectStep.Kind kind);
+  boolean hasTarget(AspectStep.Target target);
+
+  /**
+   * @return
+   */
+  AspectStepParameterInjector getParameterInjector();
+
+  /**
+   * @return
+   */
+  AspectStepResultHandler getResultHandler();
 
   /**
    * @param def
@@ -21,4 +36,9 @@ public interface AspectStepType {
    * @return
    */
   Collection<AspectStep<?>> buildSteps(AspectDefinition def, HxType type);
+
+  @Override
+  default int compareTo(AspectStepType o) {
+    return Integer.compare(getOrder(), o.getOrder());
+  }
 }

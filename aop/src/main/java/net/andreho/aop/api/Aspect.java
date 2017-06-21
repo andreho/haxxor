@@ -15,7 +15,6 @@ import java.lang.annotation.Target;
  *
  * @see Order
  */
-//@Repeatable(Aspects.class)
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Aspect {
@@ -32,6 +31,11 @@ public @interface Aspect {
   @Target({ElementType.METHOD, ElementType.CONSTRUCTOR})
   @interface Factory {
 
+    /**
+     * @return <b>true</b> if the returned aspect instance must be saved locally and reused for later usage;
+     * <b>false</b> to fetch factory-executable each time it's needed
+     */
+    boolean reuse() default true;
   }
 
   /**

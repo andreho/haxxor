@@ -14,10 +14,12 @@ class AopClassFileTransformerTest {
 */
   @Test
   void checkAgentLoad() {
-    AnyType.controllableMethod(42);
+    AnyType.staticMethod(42);
 
     AnyType anyType = new AnyType();
 
-    anyType.test("ok", true, (byte) 1, (short) 1, (char) 1, 1, 1, 1, 1, 1, 1, 1);
+    anyType.manyArgumentsMethod("ok", true, (byte) 1, (short) 1, (char) 1, 1, 1, 1, 1, 1, 1, 1);
+
+    anyType.self();
   }
 }

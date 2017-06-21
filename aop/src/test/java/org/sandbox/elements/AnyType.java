@@ -10,12 +10,12 @@ import java.util.Arrays;
 @Control
 //@TransparentLog
 public class AnyType {
-  public static void controllableMethod(int a) {
-    System.out.println("Exec: controllableMethod("+a+")");
+  public static void staticMethod(int a) {
+    System.out.println(">>> staticMethod(...)");
   }
 
-  public StringBuilder test(String name, boolean bool, byte b, short s, char c, int i, float f, long l, double d, int ... rest) {
-    System.out.println("Exec: test()");
+  public String manyArgumentsMethod(String name, boolean bool, byte b, short s, char c, int i, float f, long l, double d, int ... rest) {
+    System.out.println(">>> test(...)");
 
     final StringBuilder builder = new StringBuilder();
     builder
@@ -38,6 +38,11 @@ public class AnyType {
       builder.append(j).append("=").append(str).append('\n');
     }
     //info("test");
-    return builder;
+    return builder.toString();
+  }
+
+  public AnyType self() {
+    System.out.println(">>> self(...)");
+    return this;
   }
 }

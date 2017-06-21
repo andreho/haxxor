@@ -33,6 +33,7 @@ import java.lang.annotation.Target;
             This.class})
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
+@Order(StandardOrder.FINALLY)
 public @interface Finally {
   /**
    * @return an unique name of a globally available profile

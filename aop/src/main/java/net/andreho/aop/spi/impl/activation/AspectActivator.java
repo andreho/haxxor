@@ -7,6 +7,7 @@ import net.andreho.aop.spi.AspectDefinitionFactory;
 import net.andreho.aop.spi.AspectProfile;
 import net.andreho.aop.spi.AspectProfileFactory;
 import net.andreho.aop.spi.AspectStepType;
+import net.andreho.aop.spi.DefaultAspectStepTypes;
 import net.andreho.aop.spi.ElementMatcherFactory;
 import net.andreho.aop.spi.impl.AspectDefinitionFactoryImpl;
 import net.andreho.aop.spi.impl.AspectProfileFactoryImpl;
@@ -21,11 +22,13 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * <br/>Created by a.hofmann on 16.06.2017 at 19:03.
  */
-@Order(500)
+@Order(Activator.DEFAULT_ORDER)
 public class AspectActivator
     implements Activator {
 
@@ -69,6 +72,13 @@ public class AspectActivator
 
   public AspectProfileFactory getAspectProfileFactory() {
     return aspectProfileFactory;
+  }
+
+  @Override
+  public Collection<AspectStepType> getAspectStepTypes() {
+    return Stream.of(DefaultAspectStepTypes.values())
+                 .map(DefaultAspectStepTypes::getStepType)
+                 .collect(Collectors.toSet());
   }
 
   @Override

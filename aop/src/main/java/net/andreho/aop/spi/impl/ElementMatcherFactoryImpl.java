@@ -274,7 +274,7 @@ public class ElementMatcherFactoryImpl
     final ElementMatcher<HxMethod> parametersMatcher = createParameterMatcher(parameters);
 
     return new MethodsMatcher(
-      type == null? MethodsType.METHODS : (MethodsType) type.loadEnum(getClass().getClassLoader()),
+      getMethodType(type),
       declaredByMatcher,
       modifiersMatcher,
       namedMatcher,
@@ -284,6 +284,10 @@ public class ElementMatcherFactoryImpl
       signaturesMatcher,
       parametersMatcher
     ).negateIf(negate);
+  }
+
+  private MethodsType getMethodType(final HxEnum type) {
+    return type == null ? MethodsType.METHODS : (MethodsType) type.loadEnum(getClass().getClassLoader());
   }
 
   private ElementMatcher<HxMethod> createSignatureMatcher(final HxAnnotation[] signaturesAnnotations) {

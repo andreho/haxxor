@@ -1,6 +1,6 @@
 package net.andreho.aop.spi.impl;
 
-import net.andreho.aop.spi.AspectApplicationContext;
+import net.andreho.aop.spi.AspectContext;
 import net.andreho.aop.spi.AspectDefinition;
 import net.andreho.aop.spi.AspectProfile;
 import net.andreho.aop.spi.AspectStep;
@@ -32,7 +32,7 @@ public class AspectDefinitionImpl implements AspectDefinition {
   private final Map<String, List<String>> parameters;
   private final HxMethod aspectFactory;
   private final ElementMatcherFactory elementMatcherFactory;
-  private final Map<AspectStep.Kind, List<AspectStep<?>>> aspectStepsMap;
+  private final Map<AspectStep.Target, List<AspectStep<?>>> aspectStepsMap;
   private final List<AspectStep<?>> aspectSteps;
   private final Map<String, AspectProfile> aspectProfileMap;
 
@@ -59,15 +59,15 @@ public class AspectDefinitionImpl implements AspectDefinition {
     this.aspectStepsMap = collectSupportedKinds(aspectSteps);
   }
 
-  private Map<AspectStep.Kind, List<AspectStep<?>>> collectSupportedKinds(final List<AspectStep<?>> aspectSteps) {
-    final AspectStep.Kind[] kinds = AspectStep.Kind.values();
-    final Map<AspectStep.Kind, List<AspectStep<?>>> mappedSteps =
-      new EnumMap<>(AspectStep.Kind.class);
+  private Map<AspectStep.Target, List<AspectStep<?>>> collectSupportedKinds(final List<AspectStep<?>> aspectSteps) {
+    final AspectStep.Target[] targets = AspectStep.Target.values();
+    final Map<AspectStep.Target, List<AspectStep<?>>> mappedSteps =
+      new EnumMap<>(AspectStep.Target.class);
 
     for(AspectStep step : aspectSteps) {
-      for (AspectStep.Kind kind : kinds) {
-        if(step.hasKind(kind)) {
-          mappedSteps.computeIfAbsent(kind, (k) -> new ArrayList<>()).add(step);
+      for (AspectStep.Target target : targets) {
+        if(step.hasTarget(target)) {
+          mappedSteps.computeIfAbsent(target, (k) -> new ArrayList<>()).add(step);
         }
       }
     }
@@ -145,8 +145,8 @@ public class AspectDefinitionImpl implements AspectDefinition {
     return Optional.ofNullable(this.aspectProfileMap.get(profileName));
   }
 
-  private List<AspectStep<?>> aspectStepsFor(AspectStep.Kind kind) {
-    return aspectStepsMap.getOrDefault(kind, Collections.emptyList());
+  private List<AspectStep<?>> aspectStepsFor(AspectStep.Target target) {
+    return aspectStepsMap.getOrDefault(target, Collections.emptyList());
   }
 
   @Override
@@ -154,18 +154,18 @@ public class AspectDefinitionImpl implements AspectDefinition {
     if(!getTypeMatcher().match(type)) {
       return false;
     }
-    final AspectApplicationContext context = new AspectApplicationContextImpl(this);
+    final AspectContext context = new AspectContextImpl(this);
 
-    boolean typesModified = applyAspectsForTypes(type, context, aspectStepsFor(AspectStep.Kind.TYPE));
-    boolean fieldsModified = applyAspectsForFields(type, context, aspectStepsFor(AspectStep.Kind.FIELD));
-    boolean methodsModified = applyAspectsForMethods(type, context, aspectStepsFor(AspectStep.Kind.METHOD));
-    boolean constructorsModified = applyAspectsForConstructors(type, context, aspectStepsFor(AspectStep.Kind.CONSTRUCTOR));
+    boolean typesModified = applyAspectsForTypes(type, context, aspectStepsFor(AspectStep.Target.TYPE));
+    boolean fieldsModified = applyAspectsForFields(type, context, aspectStepsFor(AspectStep.Target.FIELD));
+    boolean methodsModified = applyAspectsForMethods(type, context, aspectStepsFor(AspectStep.Target.METHOD));
+    boolean constructorsModified = applyAspectsForConstructors(type, context, aspectStepsFor(AspectStep.Target.CONSTRUCTOR));
 
     return typesModified || fieldsModified || methodsModified || constructorsModified;
   }
 
   private boolean applyAspectsForConstructors(final HxType type,
-                                              final AspectApplicationContext context,
+                                              final AspectContext context,
                                               final List<AspectStep<?>> aspectSteps) {
     boolean modified = false;
     if(!aspectSteps.isEmpty()) {
@@ -183,7 +183,7 @@ public class AspectDefinitionImpl implements AspectDefinition {
   }
 
   private boolean applyAspectsForMethods(final HxType type,
-                                         final AspectApplicationContext context,
+                                         final AspectContext context,
                                          final List<AspectStep<?>> aspectSteps) {
     boolean modified = false;
     if(!aspectSteps.isEmpty()) {
@@ -203,7 +203,7 @@ public class AspectDefinitionImpl implements AspectDefinition {
   }
 
   private boolean applyAspectsForFields(final HxType type,
-                                        final AspectApplicationContext context,
+                                        final AspectContext context,
                                         final List<AspectStep<?>> aspectSteps) {
     boolean modified = false;
     if(!aspectSteps.isEmpty()) {
@@ -221,7 +221,7 @@ public class AspectDefinitionImpl implements AspectDefinition {
   }
 
   private boolean applyAspectsForTypes(final HxType type,
-                                       final AspectApplicationContext context,
+                                       final AspectContext context,
                                        final List<AspectStep<?>> aspectSteps) {
     boolean modified = false;
     if(!aspectSteps.isEmpty()) {

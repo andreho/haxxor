@@ -1,10 +1,9 @@
 package net.andreho.aop.spi;
 
-import net.andreho.aop.spi.impl.ChainedActivator;
+import net.andreho.aop.spi.impl.MultipleActivator;
 import net.andreho.aop.utils.OrderUtils;
 import net.andreho.haxxor.spec.api.HxType;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -12,13 +11,12 @@ import java.util.Optional;
  * <br/>Created by a.hofmann on 17.06.2017 at 03:16.
  */
 public interface Activator extends Comparable<Activator> {
+  int DEFAULT_ORDER = 5_000_000;
 
   /**
    * @return
    */
-  default Collection<AspectStepType> getAspectStepTypes() {
-    return Arrays.asList(DefaultAspectStepTypes.values());
-  }
+  Collection<AspectStepType> getAspectStepTypes();
 
   /**
    * @return
@@ -56,6 +54,6 @@ public interface Activator extends Comparable<Activator> {
    * @return
    */
   static Activator with(final Activator ... activators) {
-    return new ChainedActivator(activators);
+    return new MultipleActivator(activators);
   }
 }

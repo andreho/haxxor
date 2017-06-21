@@ -22,5 +22,5 @@ public @interface Order {
    * @implSpec default value is the lowest possible value,
    * so any other value would lead to greater priority
    */
-  int value() default Integer.MAX_VALUE;
+  int value();
 }

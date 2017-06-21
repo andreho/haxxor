@@ -9,7 +9,9 @@ public class SandboxPackageFilter
     implements PackageFilter {
 
   @Override
-  public boolean filter(final String fullyQualifiedName) {
-    return fullyQualifiedName.startsWith("org/sandbox/");
+  public boolean filter(final String name) {
+    return name.startsWith("org/sandbox/");
+//    return name.startsWith("org/sandbox/") ||
+//           name.startsWith("org/junit/jupiter");
   }
 }

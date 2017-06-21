@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface AspectStep<T>
     extends Comparable<AspectStep> {
 
-  enum Kind {
+  enum Target {
     TYPE,
     FIELD,
     METHOD,
@@ -23,7 +23,7 @@ public interface AspectStep<T>
   /**
    * @return
    */
-  boolean hasKind(Kind kind);
+  boolean hasTarget(Target target);
 
   /**
    * @return
@@ -55,7 +55,7 @@ public interface AspectStep<T>
    * @param element
    * @return
    */
-  boolean apply(final AspectApplicationContext ctx,
+  boolean apply(final AspectContext ctx,
                 final T element);
 
   /**
@@ -67,6 +67,10 @@ public interface AspectStep<T>
 
   @Override
   default int compareTo(AspectStep o) {
-    return Integer.compare(getIndex(), o.getIndex());
+    int result = getType().compareTo(o.getType());
+    if(result == 0) {
+      result = Integer.compare(getIndex(), o.getIndex());
+    }
+    return result;
   }
 }

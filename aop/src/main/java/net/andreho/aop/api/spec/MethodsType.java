@@ -8,6 +8,16 @@ import net.andreho.haxxor.spec.api.HxMethod;
  */
 public enum MethodsType
   implements ElementMatcher<HxMethod> {
+  ANY() {
+    @Override
+    public boolean match(final HxMethod element) {
+      return true;
+    }
+    @Override
+    public boolean isAny() {
+      return true;
+    }
+  },
   ALL() {
     @Override
     public boolean match(final HxMethod element) {

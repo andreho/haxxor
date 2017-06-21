@@ -1,7 +1,7 @@
 package net.andreho.aop.spi.impl;
 
-import net.andreho.aop.spi.AspectApplicationContext;
 import net.andreho.aop.spi.AspectAttribute;
+import net.andreho.aop.spi.AspectContext;
 import net.andreho.aop.spi.AspectDefinition;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
@@ -13,12 +13,13 @@ import java.util.Map;
 /**
  * <br/>Created by a.hofmann on 19.06.2017 at 07:15.
  */
-public class AspectApplicationContextImpl implements AspectApplicationContext {
+public class AspectContextImpl
+  implements AspectContext {
 
   private final AspectDefinition aspectDefinition;
   private final Map<String, AspectAttribute> localAttributes;
 
-  public AspectApplicationContextImpl(final AspectDefinition aspectDefinition) {
+  public AspectContextImpl(final AspectDefinition aspectDefinition) {
     this.aspectDefinition = aspectDefinition;
     this.localAttributes = new LinkedHashMap<>(0);
   }

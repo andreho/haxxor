@@ -3,7 +3,9 @@ package net.andreho.aop.service;
 import net.andreho.aop.spi.Activator;
 import net.andreho.aop.spi.PackageFilter;
 import net.andreho.aop.spi.impl.AspectClassVisitor;
+import net.andreho.aop.spi.impl.Constants;
 import net.andreho.asm.org.objectweb.asm.ClassReader;
+import net.andreho.asm.org.objectweb.asm.util.Textifier;
 import net.andreho.haxxor.Debugger;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.HaxxorBuilder;
@@ -17,6 +19,7 @@ import net.andreho.resources.ResourceTypeSelector;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
@@ -98,13 +101,20 @@ public final class AopTypeTransformerEntry {
     final Haxxor haxxor = new Haxxor(HaxxorBuilder.with(loader));
     final HxType hxType = haxxor.resolve(className, 0, classfileBuffer);
 
+    //NEVER PROCESS ASPECTS SELF
+    if(hxType.isAnnotationPresent(Constants.ASPECT_ANNOTATION_TYPE)) {
+      return null;
+    }
+
     Optional<HxType> optional = activator.transform(hxType);
 
     if (optional.isPresent()) {
       byte[] bytes = optional.get().toByteCode();
       //DEBUG
       printInfo(className, true, start, used);
-      Debugger.trace(bytes, Debugger.SKIP_DEBUG);
+      if("org/junit/jupiter/engine/discovery/DiscoverySelectorResolver".equals(className)) {
+        Debugger.trace(bytes, new Textifier(), new PrintWriter(System.out), Debugger.SKIP_DEBUG);
+      }
       return bytes;
     }
     return null;

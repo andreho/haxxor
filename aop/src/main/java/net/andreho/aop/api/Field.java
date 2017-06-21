@@ -43,6 +43,7 @@ public @interface Field {
                This.class})
   @Target(ElementType.METHOD)
   @Retention(RetentionPolicy.RUNTIME)
+  @Order(StandardOrder.FIELD_GET)
   @interface Get {
     /**
      * @return an unique name of a globally available profile
@@ -82,6 +83,7 @@ public @interface Field {
                This.class})
   @Target(ElementType.METHOD)
   @Retention(RetentionPolicy.RUNTIME)
+  @Order(StandardOrder.FIELD_SET)
   @interface Set {
     /**
      * @return an unique name of a globally available profile
