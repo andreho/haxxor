@@ -82,16 +82,16 @@ public abstract class HxCgenUtils {
   private HxCgenUtils() {
   }
 
-  public static <S extends HxCodeStream<S>> S packArguments(final List<HxType> argumentTypes,
+  public static <S extends HxCodeStream<S>> S packArguments(final List<HxType> signature,
                                                             final int slotOffset,
                                                             final S stream) {
     stream
-      .LDC(argumentTypes.size())
+      .LDC(signature.size())
       .ANEWARRAY("java/lang/Object");
 
     int slot = slotOffset;
-    for (int i = 0; i < argumentTypes.size(); i++) {
-      final HxType type = argumentTypes.get(i);
+    for (int i = 0; i < signature.size(); i++) {
+      final HxType type = signature.get(i);
       stream
         .DUP()
         .LDC(i);
@@ -157,6 +157,19 @@ public abstract class HxCgenUtils {
       default: {
         return codeStream.ACONST_NULL();
       }
+    }
+  }
+
+  public static <S extends HxCodeStream<S>> S genericPopStack(final HxType lastValue,
+                                                              final S stream) {
+    switch (lastValue.getSort()) {
+      case VOID:
+        return stream;
+      case LONG:
+      case DOUBLE:
+        return stream.POP2();
+      default:
+        return stream.POP();
     }
   }
 

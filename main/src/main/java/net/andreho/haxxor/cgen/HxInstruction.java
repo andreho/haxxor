@@ -1,5 +1,6 @@
 package net.andreho.haxxor.cgen;
 
+import net.andreho.haxxor.cgen.impl.InstructionCodeStream;
 import net.andreho.haxxor.cgen.instr.BEGIN;
 import net.andreho.haxxor.cgen.instr.END;
 import net.andreho.haxxor.cgen.instr.LABEL;
@@ -155,7 +156,7 @@ public interface HxInstruction
     if (hasPrevious()) {
       return getPrevious().append(inst);
     }
-    throw new IllegalStateException("There isn't any previous operation.");
+    throw new IllegalStateException("There isn't any previous instruction.");
   }
 
   /**
@@ -184,7 +185,7 @@ public interface HxInstruction
    */
   default HxInstruction remove() {
     if (!hasPrevious()) {
-      throw new IllegalStateException("There isn't any previous operation.");
+      throw new IllegalStateException("There isn't any previous instruction.");
     }
 
     HxInstruction previous = getPrevious();
@@ -253,6 +254,10 @@ public interface HxInstruction
   void forEachPrevious(final Consumer<HxInstruction> consumer);
 
   void forEachPrevious(final Predicate<HxInstruction> predicate, final Consumer<HxInstruction> consumer);
+
+  default HxExtendedCodeStream asStream() {
+    return new InstructionCodeStream(this);
+  }
 
   default <S extends HxCodeStream<S>> S asStream(Function<HxInstruction, S> factory) {
     return factory.apply(this);

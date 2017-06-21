@@ -14,6 +14,7 @@ import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxAnnotationAttribute;
 import net.andreho.haxxor.spec.api.HxCode;
+import net.andreho.haxxor.spec.api.HxConstants;
 import net.andreho.haxxor.spec.api.HxEnum;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
@@ -309,8 +310,70 @@ public class DefaultHxTypeInterpreter
       return;
     }
 
+    final Object defaultValue = method.getDefaultValue();
 
+    if(defaultValue == null) {
+      return;
+    }
 
+    final AnnotationVisitor av = mv.visitAnnotationDefault();
+
+    if(defaultValue != HxConstants.EMPTY_ARRAY) {
+      if (defaultValue.getClass().isArray()) {
+        final Class<?> arrayType = defaultValue.getClass().getComponentType();
+        if (arrayType.isPrimitive()) {
+          av.visit(null, defaultValue);
+        } else {
+          if (String.class.isAssignableFrom(arrayType)) {
+            String[] array = (String[]) defaultValue;
+            AnnotationVisitor arrayVisitor = av.visitArray(null);
+            for (String s : array) {
+              arrayVisitor.visit(null, s);
+            }
+            arrayVisitor.visitEnd();
+          } else if (HxType.class.isAssignableFrom(arrayType)) {
+            HxType[] array = (HxType[]) defaultValue;
+            AnnotationVisitor arrayVisitor = av.visitArray(null);
+            for (HxType type : array) {
+              arrayVisitor.visit(null, Type.getType(type.toDescriptor()));
+            }
+            arrayVisitor.visitEnd();
+          } else if (HxEnum.class.isAssignableFrom(arrayType)) {
+            HxEnum[] array = (HxEnum[]) defaultValue;
+            AnnotationVisitor arrayVisitor = av.visitArray(null);
+            for (HxEnum anEnum : array) {
+              arrayVisitor.visitEnum(null, anEnum.getType().toDescriptor(), anEnum.getName());
+            }
+            arrayVisitor.visitEnd();
+          } else if (HxAnnotation.class.isAssignableFrom(arrayType)) {
+            HxAnnotation[] array = (HxAnnotation[]) defaultValue;
+            AnnotationVisitor arrayVisitor = av.visitArray(null);
+            for (HxAnnotation annotation : array) {
+              visitAnnotation(annotation, arrayVisitor);
+            }
+            arrayVisitor.visitEnd();
+          }
+        }
+      } else {
+        if (defaultValue instanceof Number ||
+            defaultValue instanceof String ||
+            defaultValue instanceof Boolean ||
+            defaultValue instanceof Character) {
+          av.visit(null, defaultValue);
+        } else if (defaultValue instanceof HxType) {
+          HxType hxType = (HxType) defaultValue;
+          av.visit(null, Type.getType(hxType.toDescriptor()));
+        } else if (defaultValue instanceof HxAnnotation) {
+          HxAnnotation annotation = (HxAnnotation) defaultValue;
+          visitAnnotation(annotation, av.visitAnnotation(null, annotation.getType().toDescriptor())).visitEnd();
+        } else if (defaultValue instanceof HxEnum) {
+          HxEnum hxEnum = (HxEnum) defaultValue;
+          av.visitEnum(null, hxEnum.getType().toDescriptor(), hxEnum.getName());
+        }
+      }
+    }
+
+    av.visitEnd();
   }
 
 

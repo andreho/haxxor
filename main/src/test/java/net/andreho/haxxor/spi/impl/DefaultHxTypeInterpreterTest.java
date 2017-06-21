@@ -5,6 +5,9 @@ import difflib.DiffUtils;
 import difflib.PatchFailedException;
 import net.andreho.haxxor.Debugger;
 import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.model.AnnotationA;
+import net.andreho.haxxor.model.AnnotationB;
+import net.andreho.haxxor.model.AnnotationC;
 import net.andreho.haxxor.model.ComplexBean;
 import net.andreho.haxxor.model.EnumA;
 import net.andreho.haxxor.model.GenericInterfaceA;
@@ -39,7 +42,10 @@ class DefaultHxTypeInterpreterTest {
         SpecificBean.class,
         ComplexBean.class,
         GenericInterfaceA.class,
-        SupportedSpecBean.class
+        SupportedSpecBean.class,
+        AnnotationA.class,
+        AnnotationB.class,
+        AnnotationC.class
 //        OverAnnotatedValueBean.class
     );
   }

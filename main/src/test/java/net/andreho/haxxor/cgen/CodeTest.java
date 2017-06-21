@@ -17,6 +17,9 @@ import net.andreho.haxxor.cgen.code_fragments.LoadStoreFragment;
 import net.andreho.haxxor.cgen.code_fragments.NewOperationsFragment;
 import net.andreho.haxxor.cgen.code_fragments.SyncFragment;
 import net.andreho.haxxor.cgen.impl.PrintingCodeStream;
+import net.andreho.haxxor.model.AnnotationA;
+import net.andreho.haxxor.model.AnnotationB;
+import net.andreho.haxxor.model.AnnotationC;
 import net.andreho.haxxor.spec.api.HxCode;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
@@ -45,7 +48,10 @@ class CodeTest {
         LoadStoreFragment.class,
         FieldAccessFragment.class,
         CompareFragment.class,
-        SyncFragment.class
+        SyncFragment.class,
+        AnnotationA.class,
+        AnnotationB.class,
+        AnnotationC.class
     );
   }
 
@@ -68,7 +74,6 @@ class CodeTest {
                                        final String[] exceptions) {
         HxMethod hxMethod = type.findMethodDirectly(name, desc).orElseThrow(IllegalStateException::new);
         HxCode code = hxMethod.getCode();
-        
         MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
 
         PrintingCodeStream stream = new PrintingCodeStream(System.out);
