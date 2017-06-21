@@ -515,7 +515,7 @@ public class InstructionCodeStream<Stream extends HxExtendedCodeStream<Stream>>
 
   @Override
   public Stream IAND() {
-    return newCurrent(this.current.append(factory.IADD()));
+    return newCurrent(this.current.append(factory.IAND()));
   }
 
   @Override

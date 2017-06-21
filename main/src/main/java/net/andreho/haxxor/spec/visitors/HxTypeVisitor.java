@@ -13,7 +13,6 @@ import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 
 import static net.andreho.haxxor.Utils.normalizeReturnType;
@@ -79,16 +78,8 @@ public class HxTypeVisitor
                               String innerName,
                               int access) {
     super.visitInnerClass(name, outerName, innerName, access);
-
-    if (Objects.equals(this.name, name)) { //is it redundant?
-      if (outerName != null) {
-        type.setDeclaringMember(haxxor.reference(outerName));
-      }
-    } else if (Objects.equals(this.name, outerName)) {
-      type.initialize(HxType.Part.DECLARED_TYPES)
-          .getDeclaredTypes()
-          .add(haxxor.reference(name));
-    }
+//    System.out.println(HxType.Modifiers.toSet(access));
+    type.addInnerType(haxxor.reference(name).setModifiers(access));
   }
 
   @Override

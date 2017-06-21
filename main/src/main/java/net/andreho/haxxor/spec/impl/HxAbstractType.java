@@ -106,12 +106,12 @@ public class HxAbstractType
   }
 
   @Override
-  public List<HxType> getDeclaredTypes() {
+  public List<HxType> getInnerTypes() {
     return Collections.emptyList();
   }
 
   @Override
-  public HxType setDeclaredTypes(List<HxType> declaredTypes) {
+  public HxType setInnerTypes(List<HxType> declaredTypes) {
     //NO OP
     return this;
   }
@@ -366,21 +366,14 @@ public class HxAbstractType
     return Optional.empty();
   }
 
-  private String getSimpleBinaryName() {
+  protected final String getSimpleBinaryName() {
     /* HxLinkedCode was copied from original java.lang.Class */
-    Optional<HxType> enclosingType = getEnclosingType();
-    if (!enclosingType.isPresent()) {
-      // top level class
+    final String name = getName();
+    int dollarIndex = name.lastIndexOf('$');
+    if(dollarIndex < 0) {
       return null;
     }
-    // Otherwise, strip the enclosing class' name
-    try {
-      return getName().substring(enclosingType.get()
-                                              .getName()
-                                              .length());
-    } catch (IndexOutOfBoundsException ex) {
-      throw new InternalError("Malformed class name: " + getName(), ex);
-    }
+    return name.substring(dollarIndex);
   }
 
   @Override
@@ -394,7 +387,10 @@ public class HxAbstractType
     if (simpleName == null) {
       // top level class
       simpleName = getName();
-      return simpleName.substring(simpleName.lastIndexOf(".")+1); // strip the package name
+      int dotIndex = simpleName.lastIndexOf(".");
+      return dotIndex < 0?
+             simpleName :
+             simpleName.substring(dotIndex + 1); // strip the package name
     }
 
     // Remove leading "\$[0-9]*" from the name
@@ -449,14 +445,25 @@ public class HxAbstractType
 
   @Override
   public boolean isLocalType() {
-    return getDeclaringMember() instanceof HxMethod &&
+    return isLocalOrAnonymousClass() &&
            !isAnonymous();
+  }
+
+  /**
+   * Returns {@code true} if this is a local class or an anonymous
+   * class.  Returns {@code false} otherwise.
+   */
+  protected boolean isLocalOrAnonymousClass() {
+    if(!hasModifiers(Modifiers.STATIC)) {
+      return getDeclaringMember() instanceof HxMethod;
+    }
+    return false;
   }
 
   @Override
   public boolean isMemberType() {
     return getSimpleBinaryName() != null &&
-           getDeclaringMember() instanceof HxMethod;
+           !isLocalOrAnonymousClass();
   }
 
   @Override
@@ -478,7 +485,8 @@ public class HxAbstractType
     String name = getName();
     if(isArray()) {
       name = toDescriptor()
-          .replace(HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR, HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR);
+          .replace(HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR,
+                   HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR);
     }
     return Class.forName(name, true, classLoader);
   }

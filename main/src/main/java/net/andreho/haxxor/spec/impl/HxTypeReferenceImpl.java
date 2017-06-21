@@ -44,7 +44,8 @@ public class HxTypeReferenceImpl
   }
 
   private boolean isAvailable() {
-    return isPresent() || getHaxxor().hasResolved(getName());
+    return isPresent() ||
+           getHaxxor().hasResolved(getName());
   }
 
   private boolean isPresent() {
@@ -53,7 +54,8 @@ public class HxTypeReferenceImpl
   }
 
   private boolean hasModifiers() {
-    return !isAvailable() && this.modifiers != -1;
+    return !isAvailable() &&
+           this.modifiers != -1;
   }
 
   @Override
@@ -128,6 +130,9 @@ public class HxTypeReferenceImpl
 
   @Override
   public boolean isMemberType() {
+    if(!isAvailable() && hasModifiers()) {
+      return getSimpleBinaryName() != null && !isLocalOrAnonymousClass();
+    }
     return toType().isMemberType();
   }
 
@@ -246,13 +251,13 @@ public class HxTypeReferenceImpl
   }
 
   @Override
-  public List<HxType> getDeclaredTypes() {
-    return toType().getDeclaredTypes();
+  public List<HxType> getInnerTypes() {
+    return toType().getInnerTypes();
   }
 
   @Override
-  public HxType setDeclaredTypes(List<HxType> declaredTypes) {
-    toType().setDeclaredTypes(declaredTypes);
+  public HxType setInnerTypes(List<HxType> declaredTypes) {
+    toType().setInnerTypes(declaredTypes);
     return this;
   }
 

@@ -184,7 +184,7 @@ public class DefaultHxTypeInterpreter
   protected void visitInnerClasses(final HxType type,
                                    final ClassWriter cw) {
     //Inner types
-    for (HxType innerType : type.getDeclaredTypes()) {
+    for (HxType innerType : type.getInnerTypes()) {
       visitInnerClass(innerType, cw);
     }
   }
@@ -198,8 +198,12 @@ public class DefaultHxTypeInterpreter
       simpleName = null;
     }
 
-    if (declared.isMemberType() && declared != null) {
-      cw.visitInnerClass(name, declared.toInternalName(), simpleName, declared.getModifiers());
+//    System.out.println(HxType.Modifiers.toSet(declared.getModifiers()));
+
+    if (declared.isMemberType()) {
+      final String outerName = simpleName == null?
+        null : name.substring(0, name.length() - simpleName.length() - 1);
+      cw.visitInnerClass(name, outerName, simpleName, declared.getModifiers());
     } else {
       cw.visitInnerClass(name, null, simpleName, declared.getModifiers());
     }

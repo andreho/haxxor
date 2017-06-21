@@ -188,23 +188,33 @@ public interface HxType
   }
 
   /**
+   *
+   * @param innerType
    * @return
    */
-  List<HxType> getDeclaredTypes();
+  default HxType addInnerType(HxType innerType) {
+    initialize(Part.INNER_TYPES).getInnerTypes().add(innerType);
+    return this;
+  }
+
+  /**
+   * @return
+   */
+  List<HxType> getInnerTypes();
 
   /**
    * @param declaredTypes
    * @return
    */
-  default HxType setDeclaredTypes(HxType ... declaredTypes) {
-    return setDeclaredTypes(Arrays.asList(declaredTypes));
+  default HxType setInnerTypes(HxType ... declaredTypes) {
+    return setInnerTypes(Arrays.asList(declaredTypes));
   }
 
   /**
    * @param declaredTypes
    * @return
    */
-  HxType setDeclaredTypes(List<HxType> declaredTypes);
+  HxType setInnerTypes(List<HxType> declaredTypes);
 
   /**
    * @return
@@ -1028,7 +1038,7 @@ public interface HxType
     INTERFACES,
     FIELDS,
     METHODS,
-    DECLARED_TYPES
+    INNER_TYPES
   }
 
   /**
@@ -1036,25 +1046,28 @@ public interface HxType
    */
   enum Modifiers
       implements HxModifier {
+    // class, field, method
     PUBLIC(0x0001),
     // class, field, method
     PRIVATE(0x0002),
     // class, field, method
     PROTECTED(0x0004),
     // class, field, method
-    FINAL(0x0010),
+    STATIC(0x0008),
     // class, field, method, parameter
+    FINAL(0x0010),
+    // class
     SUPER(0x0020),
     // class
     INTERFACE(0x0200),
-    // class
-    ABSTRACT(0x0400),
     // class, method
-    SYNTHETIC(0x1000),
+    ABSTRACT(0x0400),
     // class, field, method, parameter
-    ANNOTATION(0x2000),
+    SYNTHETIC(0x1000),
     // class
-    ENUM(0x4000); // class(?) field inner
+    ANNOTATION(0x2000),
+    // class(?) field inner
+    ENUM(0x4000);
 
     final int bit;
 

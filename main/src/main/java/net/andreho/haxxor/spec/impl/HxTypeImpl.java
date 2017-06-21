@@ -76,8 +76,8 @@ public class HxTypeImpl
         }
       }
       break;
-      case DECLARED_TYPES: {
-        if (isUninitialized(getDeclaredTypes())) {
+      case INNER_TYPES: {
+        if (isUninitialized(getInnerTypes())) {
           this.declaredTypes = new ArrayList<>();
         }
       }
@@ -146,12 +146,12 @@ public class HxTypeImpl
   }
 
   @Override
-  public List<HxType> getDeclaredTypes() {
+  public List<HxType> getInnerTypes() {
     return declaredTypes;
   }
 
   @Override
-  public HxType setDeclaredTypes(List<HxType> declaredTypes) {
+  public HxType setInnerTypes(List<HxType> declaredTypes) {
     if (isUninitialized(declaredTypes)) {
       declaredTypes = Collections.emptyList();
     }

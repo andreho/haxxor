@@ -49,6 +49,22 @@ public class Debugger {
   public static final int EXPAND_FRAMES = 8;
 
   /**
+   * Prints byte code using selected printer and flags
+   *
+   * @param bytes of class
+   * @param printWriter to write into
+   * @param flags     to decide what to trace
+   * @see Debugger#SKIP_CODE
+   * @see Debugger#SKIP_DEBUG
+   * @see Debugger#SKIP_FRAMES
+   */
+  public static void trace(final byte[] bytes,
+                           final PrintWriter printWriter,
+                           final int flags) {
+    trace(bytes, new ASMifier(), printWriter, flags);
+  }
+
+  /**
    * Prints byte code of the given class
    *
    * @param className of class whose bytecode to trace

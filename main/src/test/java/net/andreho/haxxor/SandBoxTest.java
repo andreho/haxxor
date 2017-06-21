@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * <br/>Created by a.hofmann on 31.05.2017 at 00:28.
  */
-class SandBoxTest {
+public class SandBoxTest {
   public static final Class<AbstractBean> ABSTRACT_ITEM_CLASS = AbstractBean.class;
 
   public static class DebugCode {
@@ -79,7 +79,13 @@ class SandBoxTest {
     Debugger.trace(CodeAnnotationBean.class, Debugger.SKIP_DEBUG);
   }
 
-  static class Testing {
+  public class MemberTesting {
+    public class DeeperMemberTesting {
+
+    }
+  }
+
+  public static class Testing {
     static void foo()
     throws FileNotFoundException {
       @AnnotationC("x") String name = "";
@@ -88,6 +94,10 @@ class SandBoxTest {
       } catch (IOException e) {
         e.printStackTrace();
       }
+    }
+
+    public static class DeeperTesting {
+
     }
   }
 

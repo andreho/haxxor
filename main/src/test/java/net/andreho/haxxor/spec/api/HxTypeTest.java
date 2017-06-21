@@ -196,8 +196,8 @@ class HxTypeTest {
           checkInitialization(type, part, () -> type.getAnnotations().values());
         }
         break;
-        case DECLARED_TYPES: {
-          checkInitialization(type, part, type::getDeclaredTypes);
+        case INNER_TYPES: {
+          checkInitialization(type, part, type::getInnerTypes);
         }
         break;
         case INTERFACES: {
@@ -380,21 +380,21 @@ class HxTypeTest {
   void getDeclaredTypes(final Class<?> cls) {
     final Class<?>[] declaredClasses = cls.getDeclaredClasses();
     checkClassArrays(declaredClasses, haxxor.resolve(cls.getName())
-                                            .getDeclaredTypes());
+                                            .getInnerTypes());
   }
 
   @Test
   @DisplayName("Change of type's declared-types must work properly")
   void setDeclaredTypes() {
     HxType type = haxxor.createType(TEST_CLASS_NAME_1);
-    assertTrue(type.getDeclaredTypes()
+    assertTrue(type.getInnerTypes()
                    .isEmpty());
-    type.initialize(HxType.Part.DECLARED_TYPES)
-        .getDeclaredTypes()
+    type.initialize(HxType.Part.INNER_TYPES)
+        .getInnerTypes()
         .add(haxxor.reference(TEST_CLASS_NAME_2));
-    assertEquals(1, type.getDeclaredTypes()
+    assertEquals(1, type.getInnerTypes()
                         .size());
-    assertEquals(TEST_CLASS_NAME_2, type.getDeclaredTypes()
+    assertEquals(TEST_CLASS_NAME_2, type.getInnerTypes()
                                         .get(0)
                                         .getName());
   }

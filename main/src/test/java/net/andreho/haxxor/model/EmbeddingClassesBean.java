@@ -65,7 +65,7 @@ public class EmbeddingClassesBean
     };
   }
 
-  public class InnerClass {
+  public final class InnerClass {
     public final int value;
 
     public InnerClass(final int value) {
