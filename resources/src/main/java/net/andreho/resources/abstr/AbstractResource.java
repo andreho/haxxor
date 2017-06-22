@@ -161,6 +161,6 @@ public abstract class AbstractResource<T>
 
   @Override
   public String toString() {
-    return getName() + " : " + getResourceType();
+    return getName();
   }
 }
