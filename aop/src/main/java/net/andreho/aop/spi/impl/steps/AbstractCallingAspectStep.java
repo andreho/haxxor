@@ -71,7 +71,7 @@ public abstract class AbstractCallingAspectStep<T>
 
     final HxMethod targetMethod = original
       .clone(shadowName, 0)
-      .setModifiers(HxMethod.Modifiers.PRIVATE, HxMethod.Modifiers.SYNTHETIC)
+      .setModifiers(HxMethod.Modifiers.PRIVATE, HxMethod.Modifiers.SYNTHETIC, HxMethod.Modifiers.BRIDGE)
       //IS IT A HACK OR NOT?
       .addAnnotation(original.getHaxxor().createAnnotation("java.lang.invoke.ForceInline", true));
 

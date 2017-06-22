@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -112,5 +113,20 @@ public class SandBoxTest {
   @Disabled
   void cornerCases() {
     Debugger.trace(Testing.class);
+  }
+
+  static class SyntheticException implements Consumer<String> {
+
+    @Override
+    public void accept(final String s) {
+      throw new RuntimeException(s);
+    }
+  }
+
+  @Test
+  @Disabled
+  void syntheticException() {
+    Debugger.trace(SyntheticException.class);
+    new SyntheticException().accept("test");
   }
 }
