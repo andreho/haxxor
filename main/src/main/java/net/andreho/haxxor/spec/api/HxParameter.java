@@ -21,6 +21,19 @@ public interface HxParameter
   HxParameter clone();
 
   /**
+   * @param name of the cloned parameter
+   * @return a new copy of this parameter
+   */
+  HxParameter clone(String name);
+
+  /**
+   * @param name of the cloned parameter
+   * @param withAnnotations whether to copy annotations or not
+   * @return a new copy of this parameter
+   */
+  HxParameter clone(String name, boolean withAnnotations);
+
+  /**
    * @return zero-based index of this parameter in the parameter list of the owning method/constructor
    */
   int getIndex();
@@ -72,9 +85,6 @@ public interface HxParameter
    */
   @Override
   HxMethod getDeclaringMember();
-
-  @Override
-  HxParameter setModifiers(HxModifier... modifiers);
 
   @Override
   HxParameter setModifiers(int modifiers);

@@ -849,7 +849,7 @@ public interface HxInstructionsType {
 
     @Override
     public HxInstructionSort getSort() {
-      return HxInstructionSort.Invalid;
+      return HxInstructionSort.Special;
     }
 
     @Override

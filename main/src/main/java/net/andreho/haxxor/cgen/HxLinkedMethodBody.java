@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 19.03.2016.<br/>
  */
-public class HxLinkedCode
+public class HxLinkedMethodBody
     implements Iterable<HxInstruction> {
 
   protected HxInstruction first;
@@ -19,25 +19,35 @@ public class HxLinkedCode
   protected List<HxLocalVariable> localVariables;
   protected List<HxTryCatch> tryCatches;
 
-  protected int maxStack = -1;
-  protected int maxLocals = -1;
+  protected int maxStack;
+  protected int maxLocals;
 
-  public HxLinkedCode() {
-    this(new BEGIN(), new END());
+  public HxLinkedMethodBody() {
+    reset();
   }
 
-  protected HxLinkedCode(final HxInstruction first,
-                         final HxInstruction last) {
+  public HxLinkedMethodBody(boolean manual) {
+  }
+
+  protected void reset() {
+    reset(new BEGIN(), new END());
+  }
+
+  protected void reset(final HxInstruction first,
+                       final HxInstruction last) {
+    this.maxStack = -1;
+    this.maxLocals = -1;
+
     this.localVariables = Collections.emptyList();
     this.tryCatches = Collections.emptyList();
 
+    first.append(last);
+
     setFirst(first);
     setLast(last);
-
-    getFirst().append(getLast());
   }
 
-  public HxLinkedCode append(HxInstruction inst) {
+  public HxLinkedMethodBody append(HxInstruction inst) {
     getCurrent().append(inst);
     return this;
   }

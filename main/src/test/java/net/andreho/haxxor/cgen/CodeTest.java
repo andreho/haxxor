@@ -20,8 +20,8 @@ import net.andreho.haxxor.cgen.impl.PrintingCodeStream;
 import net.andreho.haxxor.model.AnnotationA;
 import net.andreho.haxxor.model.AnnotationB;
 import net.andreho.haxxor.model.AnnotationC;
-import net.andreho.haxxor.spec.api.HxCode;
 import net.andreho.haxxor.spec.api.HxMethod;
+import net.andreho.haxxor.spec.api.HxMethodBody;
 import net.andreho.haxxor.spec.api.HxType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -73,7 +73,7 @@ class CodeTest {
                                        final String signature,
                                        final String[] exceptions) {
         HxMethod hxMethod = type.findMethodDirectly(name, desc).orElseThrow(IllegalStateException::new);
-        HxCode code = hxMethod.getCode();
+        HxMethodBody code = hxMethod.getBody();
         MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
 
         PrintingCodeStream stream = new PrintingCodeStream(System.out);

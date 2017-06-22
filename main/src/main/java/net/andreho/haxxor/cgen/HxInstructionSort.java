@@ -21,5 +21,5 @@ public enum HxInstructionSort {
   Misc,
   Synchronization,
   Exit,
-  Invalid
+  Special
 }

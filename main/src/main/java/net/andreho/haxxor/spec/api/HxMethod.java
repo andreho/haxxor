@@ -21,6 +21,7 @@ public interface HxMethod
           HxMember<HxMethod>,
           HxOwned<HxMethod>,
           HxGeneric<HxMethod>,
+          HxAccessible<HxMethod>,
           HxOrdered,
           HxNamed,
           HxProvider,
@@ -74,6 +75,10 @@ public interface HxMethod
     }
   }
 
+  int BODY_PART = 1;
+  int ANNOTATIONS_PART = 2;
+  int PARAMETERS_ANNOTATIONS_PART = 4;
+
   /**
    * @return
    */
@@ -86,6 +91,16 @@ public interface HxMethod
    * @return a cloned version of this method with given name
    */
   HxMethod clone(String name);
+
+  /**
+   * @param name of the cloned method
+   * @param parts as a bitset for pars to clone; <code>-1</code> for all method's parts
+   * @return a cloned version of this method with given name
+   * @see #BODY_PART
+   * @see #ANNOTATIONS_PART
+   * @see #PARAMETERS_ANNOTATIONS_PART
+   */
+  HxMethod clone(String name, int parts);
 
   /**
    * @return name of this method
@@ -151,12 +166,19 @@ public interface HxMethod
   /**
    * @return <b>true</b> if this executable defines some code, <b>false</b> otherwise.
    */
-  boolean hasCode();
+  boolean hasBody();
 
   /**
    * @return code of this method or constructor
    */
-  HxCode getCode();
+  HxMethodBody getBody();
+
+  /**
+   * Allows to replace or set methods's body to given one
+   * @param methodBody to used
+   * @return
+   */
+  HxMethod setBody(HxMethodBody methodBody);
 
   /**
    * @return <b>true</b> if this method is a constructor, <b>false</b> otherwise.
@@ -199,7 +221,8 @@ public interface HxMethod
   }
 
   /**
-   * @return
+   * @return number of slots on local variable table to hold this parameters' list;
+   * <b>this</b> for member methods isn't included.
    */
   default int getParametersSlots() {
     int slots = 0;
@@ -408,6 +431,11 @@ public interface HxMethod
   @Override
   HxType getDeclaringMember();
 
+  @Override
+  default HxType getDeclaringType() {
+    return getDeclaringMember();
+  }
+
   /**
    * @param builder to use for printing a method descriptor
    * @return given builder instance containing a method descriptor of this method
@@ -522,5 +550,34 @@ public interface HxMethod
    */
   default boolean isFinal() {
     return hasModifiers(Modifiers.FINAL);
+  }
+
+  /**
+   * @param annotationType
+   * @return
+   */
+  default boolean hasParameterWithAnnotation(String annotationType) {
+    for(HxParameter parameter : getParameters()) {
+      if(parameter.isAnnotationPresent(annotationType)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * @param annotationType
+   * @return
+   */
+  default boolean hasParameterWithAnnotation(HxType annotationType) {
+    return hasParameterWithAnnotation(annotationType.getName());
+  }
+
+  /**
+   * @param annotationType
+   * @return
+   */
+  default boolean hasParameterWithAnnotation(Class<?> annotationType) {
+    return hasParameterWithAnnotation(annotationType.getName());
   }
 }

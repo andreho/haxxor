@@ -1,13 +1,16 @@
 package net.andreho.aop.spi.impl.steps;
 
 import net.andreho.aop.spi.AspectContext;
+import net.andreho.aop.spi.AspectDefinition;
 import net.andreho.aop.spi.AspectStepParameterInjector;
 import net.andreho.aop.spi.AspectStepType;
 import net.andreho.aop.spi.ElementMatcher;
 import net.andreho.haxxor.cgen.HxInstruction;
-import net.andreho.haxxor.spec.api.HxCode;
 import net.andreho.haxxor.spec.api.HxMethod;
+import net.andreho.haxxor.spec.api.HxMethodBody;
 import net.andreho.haxxor.spec.api.HxParameter;
+
+import java.util.function.Supplier;
 
 /**
  * <br/>Created by a.hofmann on 19.06.2017 at 00:34.
@@ -32,152 +35,101 @@ public class BeforeAspectStep
 
   @Override
   public boolean apply(final AspectContext ctx,
-                       final HxMethod method) {
-    if (!match(method) || !method.hasCode()) {
+                       final HxMethod original) {
+    if (!match(original) || !original.hasBody()) {
       return false;
     }
 
-    System.out.println("@Before[" + getIndex() + "]: " + method);
+    System.out.println("@Before[" + getIndex() + "]: " + original);
 
-    final HxCode code = method.getCode();
+    final String shadowMethodName = ctx.getAspectDefinition().formTargetMethodName(original.getName());
+    final HxMethod shadow = findOrCreateShadowMethod(original, shadowMethodName);
+
+    final HxMethodBody code = original.getBody();
     final HxMethod interceptor = getInterceptor();
 
     final HxInstruction begin = code.getFirst();
     final HxInstruction anchor = begin.getNext();
 
-    handleInterceptorParameters(ctx, interceptor, method, begin);
+    final AspectDefinition aspectDefinition = ctx.getAspectDefinition();
+    final boolean needsAspectFactory = needsAspectFactory();
 
-    anchor.getPrevious().asStream().INVOKESTATIC(interceptor);
+//    if (needsAspectFactory) {
+//      final String aspectFactoryAttributesName = formAspectFactoryAttributesName(aspectDefinition);
+//
+//      if (aspectDefinition.isFactoryReusable()) {
+//        if(ctx.hasLocalAttribute(aspectFactoryAttributesName)) {
+//          final AspectAttribute attribute = ctx.getLocalAttribute(aspectFactoryAttributesName);
+//
+//        }
+//      }
+//
+//      final HxMethod aspectFactory = aspectDefinition
+//        .getAspectFactory().orElseThrow(complainAboutMissingAspectFactory(ctx));
+//      handleInterceptorParameters(ctx, aspectFactory, original, anchor.getPrevious());
+//      anchor.getPrevious().asStream().INVOKESTATIC(aspectFactory);
+//
+//      if (aspectDefinition.isFactoryReusable()) {
+//        ctx.hasLocalAttribute(aspectFactoryAttributesName);
+//      } else {
+//
+//      }
+////      final HxAnnotation aspectFactoryAnnotation = aspectFactory
+////        .getAnnotation(Constants.ASPECT_FACTORY_ANNOTATION_TYPE).get();
+//    }
 
-    handleReturnValue(ctx, interceptor, method, anchor.getPrevious());
+    handleInterceptorParameters(ctx, interceptor, original, shadow, anchor.getPrevious());
+
+    if (!needsAspectFactory) {
+      anchor.getPrevious().asStream().INVOKESTATIC(interceptor);
+    } else {
+      anchor.getPrevious().asStream().INVOKEVIRTUAL(interceptor);
+    }
+    handleReturnValue(ctx, interceptor, original, shadow, anchor.getPrevious());
 
     return true;
   }
 
+  private Supplier<IllegalStateException> complainAboutMissingAspectFactory(final AspectContext ctx) {
+    return () ->
+      new IllegalStateException(
+        "Current aspect expects to have a public static method that returns a " +
+        "valid instance of aspect's type and must be marked with @Aspect.Factory: " +
+        ctx.getAspectDefinition().getType());
+  }
+
   private void handleReturnValue(final AspectContext context,
                                  final HxMethod interceptor,
-                                 final HxMethod method,
+                                 final HxMethod original,
+                                 final HxMethod shadow,
                                  final HxInstruction instruction) {
 
-    getResultHandler().handleReturnValue(this, context, interceptor, method, instruction);
+    getResultHandler().handleReturnValue(this, context, interceptor, shadow, shadow, instruction);
   }
 
   private void handleInterceptorParameters(final AspectContext ctx,
                                            final HxMethod interceptor,
-                                           final HxMethod method,
+                                           final HxMethod original,
+                                           final HxMethod shadow,
                                            final HxInstruction instruction) {
 
     final AspectStepParameterInjector parameterInjector = getParameterInjector();
     final HxInstruction anchor = instruction.getNext();
 
     for (HxParameter parameter : interceptor.getParameters()) {
-      if (!parameterInjector.injectParameter(this, ctx, interceptor, method, parameter, anchor.getPrevious())) {
+      if (!parameterInjector.injectParameter(this, ctx, interceptor, original, shadow, parameter, anchor.getPrevious())) {
         throw new IllegalStateException(
           "Unable to inject parameter of " + interceptor + " at position: " + parameter.getIndex());
       }
     }
   }
 
-//
-//  private void expandAccessToLocalVariables(HxInstruction instruction, int parametersOffset, int offsetAddition) {
-//    AbstractLocalAccessInstruction accessInstruction = (AbstractLocalAccessInstruction) instruction;
-//    int slotIndex = accessInstruction.getOperand();
-//    if(slotIndex >= parametersOffset) {
-//      accessInstruction.setOperand(slotIndex + offsetAddition);
-//    }
-//  }
-//  private boolean storeAttribute(final AspectContext context,
-//                                 final HxMethod interceptor,
-//                                 final HxMethod intercepted,
-//                                 final HxInstruction instruction,
-//                                 final HxType returnType) {
-//    if(interceptor.isAnnotationPresent(Attribute.class)) {
-//      final HxAnnotation attributeAnnotation = interceptor.getAnnotation(Attribute.class).get();
-//      final String attributeName = attributeAnnotation.getAttribute("value", "");
-//      final boolean inheritable = attributeAnnotation.getAttribute("inheritable", false);
-//
-//      if(attributeName.isEmpty()) {
-//        return false;
-//      }
-//
-//      if(context.hasLocalAttribute(attributeName)) {
-//        System.out.println("Local-Attribute was already declared: "+attributeName);
-//        return false;
-//      }
-//
-//      final int slotOffset = intercepted.getParametersSlots() + (intercepted.isStatic()? 0 : 1);
-//      final int variableSize = returnType.getSlotsCount();
-//      instruction.forEachNext(
-//        ins -> ins.has(HxInstructionSort.Load) || ins.has(HxInstructionSort.Store),
-//        ins -> expandAccessToLocalVariables(ins, slotOffset, variableSize)
-//      );
-//
-//      context.createLocalAttribute(attributeName, returnType, slotOffset);
-//      HxCgenUtils.genericStoreSlot(returnType, slotOffset, instruction.asStream());
-//
-//      return true;
-//    }
-//    return false;
-//  }
-//
-//  private void injectArguments(final AspectContext context,
-//                               final HxParameter parameter,
-//                               final HxMethod intercepted,
-//                               final HxExtendedCodeStream codeStream) {
-//    HxCgenUtils.packArguments(intercepted.getParameterTypes(), intercepted.isStatic() ? 0 : 1, codeStream);
-//  }
-//
-//  private void injectArgument(final AspectContext context,
-//                              final HxParameter parameter,
-//                              final HxMethod intercepted,
-//                              final HxExtendedCodeStream codeStream,
-//                              final HxAnnotation argAnnotation) {
-//
-//    HxCgenUtils.packArguments(intercepted.getParameterTypes(), intercepted.isStatic() ? 0 : 1, codeStream);
-//  }
-//
-//  private void injectArity(final AspectContext context,
-//                           final HxParameter parameter,
-//                           final HxMethod intercepted,
-//                           final HxExtendedCodeStream codeStream) {
-//    codeStream.LDC(intercepted.getParametersCount());
-//  }
-//
-//  private void injectDeclaring(final AspectContext context,
-//                          final HxParameter parameter,
-//                          final HxMethod intercepted,
-//                          final HxExtendedCodeStream codeStream) {
-//    codeStream.TYPE(intercepted.getDeclaringMember());
-//  }
-//
-//  private void injectThis(final AspectContext context,
-//                          final HxParameter parameter,
-//                          final HxMethod intercepted,
-//                          final HxExtendedCodeStream codeStream) {
-//    if (intercepted.isStatic()) {
-//      codeStream.ACONST_NULL();
-//    } else {
-//      codeStream.THIS();
-//    }
-//  }
-//
-//  private void injectLine(final AspectContext context,
-//                          final HxParameter parameter,
-//                          final HxMethod intercepted,
-//                          final HxExtendedCodeStream codeStream) {
-//
-//    Optional<HxInstruction> lineNumber = intercepted.getCode().getFirst()
-//                                               .findFirst(i -> i instanceof LINE_NUMBER);
-//    if(lineNumber.isPresent()) {
-//      LINE_NUMBER ln = (LINE_NUMBER) lineNumber.get();
-//      codeStream.LDC(ln.getLine());
-//    } else {
-//      codeStream.LDC(-1);
-//    }
-//  }
-
   @Override
   public String toString() {
-    return "BeforeAspectStep{}";
+    return "@Before(...)";
+  }
+
+  private static String formAspectFactoryAttributesName(final AspectDefinition aspectDefinition) {
+    return "@Aspect.Factory(" + aspectDefinition.getName() + ")";
   }
 }

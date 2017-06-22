@@ -4,6 +4,8 @@ import net.andreho.haxxor.spec.api.HxConstants;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Objects;
 
 /**
@@ -38,8 +40,9 @@ public class HxMethodImpl
     }
   }
 
-  protected HxMethodImpl(String name,
-                         HxMethodImpl prototype) {
+  protected HxMethodImpl(final HxMethodImpl prototype,
+                         final String name,
+                         final int parts) {
     this.declaringMember = null;
 
     this.name = Objects.requireNonNull(name != null ? name : prototype.name, "Method's name can't be null.");
@@ -47,9 +50,19 @@ public class HxMethodImpl
     this.defaultValue = prototype.defaultValue;
     this.returnType = prototype.returnType;
     this.genericSignature = prototype.genericSignature;
+    this.exceptions = prototype.hasCheckedExceptions()?
+                      new ArrayList<>(prototype.getExceptionTypes()) :
+                      Collections.emptyList();
 
-    prototype.cloneParametersTo(this);
-    prototype.cloneAnnotationsTo(this);
+    prototype.cloneParametersTo(this, 0 != (parts & PARAMETERS_ANNOTATIONS_PART));
+
+    if(0 != (parts & ANNOTATIONS_PART)) {
+      prototype.cloneAnnotationsTo(this);
+    }
+
+    if(0 != (parts & BODY_PART)) {
+      prototype.cloneCodeTo(this);
+    }
   }
 
   @Override
@@ -59,7 +72,13 @@ public class HxMethodImpl
 
   @Override
   public HxMethod clone(String name) {
-    return new HxMethodImpl(name, this);
+    return clone(name, -1);
+  }
+
+  @Override
+  public HxMethod clone(final String name,
+                        final int parts) {
+    return new HxMethodImpl(this, name, parts);
   }
 
   @Override

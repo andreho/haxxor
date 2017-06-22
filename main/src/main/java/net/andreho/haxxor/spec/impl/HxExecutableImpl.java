@@ -1,8 +1,9 @@
 package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.Haxxor;
-import net.andreho.haxxor.spec.api.HxCode;
+import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.spec.api.HxMethod;
+import net.andreho.haxxor.spec.api.HxMethodBody;
 import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxType;
 
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static net.andreho.haxxor.Utils.isUninitialized;
@@ -27,17 +29,37 @@ public abstract class HxExecutableImpl
   protected List<HxParameter> parameters = DEFAULT_EMPTY_PARAMETERS;
   protected List<HxType> exceptions = DEFAULT_EMPTY_EXCEPTIONS;
   protected Optional<String> genericSignature;
-  protected HxCode code;
+  protected HxMethodBody body;
 
   public HxExecutableImpl() {
     super();
     this.setModifiers(Modifiers.PUBLIC.toBit());
   }
 
-  protected void cloneParametersTo(HxMethod other) {
+  protected void cloneParametersTo(final HxMethod other, boolean withAnnotations) {
     for (HxParameter parameter : getParameters()) {
-      other.addParameter(parameter.clone());
+      other.addParameter(parameter.clone(parameter.getName(), withAnnotations));
     }
+  }
+
+  protected void cloneCodeTo(final HxMethodImpl other) {
+    if(hasBody()) {
+      other.setBody(getBody().clone(other));
+    } else {
+      other.setBody(null);
+    }
+  }
+
+  private static LABEL remap(final Map<Object, LABEL> mapping, final LABEL label) {
+    return mapping.computeIfAbsent(label, key -> new LABEL());
+  }
+
+  private static LABEL[] remap(final Map<Object, LABEL> mapping, final LABEL[] labels) {
+    LABEL[] remappedLabels = new LABEL[labels.length];
+    for (int i = 0; i < labels.length; i++) {
+      remappedLabels[i] = remap(mapping, labels[i]);
+    }
+    return remappedLabels;
   }
 
   public abstract HxMethod clone();
@@ -57,22 +79,29 @@ public abstract class HxExecutableImpl
   }
 
   @Override
-  public boolean hasCode() {
-    return this.code != null && this.code.isAvailable();
+  public boolean hasBody() {
+    return this.body != null && this.body.isAvailable();
   }
 
   @Override
-  public HxCode getCode() {
-    if (this.code == null) {
-      this.code = new HxCodeImpl(this);
+  public HxMethodBody getBody() {
+    HxMethodBody body = this.body;
+    if (body == null) {
+      this.body = body = new HxMethodBodyImpl(this);
     }
+    return body;
+  }
 
-    return this.code;
+  @Override
+  public HxMethod setBody(final HxMethodBody methodBody) {
+    this.body = methodBody;
+    return this;
   }
 
   private List<HxParameter> initializeParameters() {
+    List<HxParameter> parameters = this.parameters;
     if (isUninitialized(parameters)) {
-      parameters = new ArrayList<>();
+      this.parameters = parameters = new ArrayList<>();
     }
     return parameters;
   }
@@ -95,8 +124,9 @@ public abstract class HxExecutableImpl
   }
 
   private List<HxType> initializeExceptions() {
+    List<HxType> exceptions = this.exceptions;
     if (isUninitialized(exceptions)) {
-      exceptions = new ArrayList<>();
+      this.exceptions = exceptions = new ArrayList<>();
     }
     return exceptions;
   }

@@ -19,13 +19,15 @@ public final class ArityInjector
   }
 
   @Override
-  protected void checkedParameterInjection(final AspectStep<?> aspectStep,
+  protected boolean checkedParameterInjection(final AspectStep<?> aspectStep,
                                            final AspectContext context,
                                            final HxMethod interceptor,
-                                           final HxMethod method,
+                                           final HxMethod original,
+                                           final HxMethod shadow,
                                            final HxParameter parameter,
                                            final HxInstruction instruction) {
 
-    instruction.asStream().LDC(method.getParametersCount());
+    instruction.asStream().LDC(original.getParametersCount());
+    return true;
   }
 }

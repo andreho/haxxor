@@ -1,10 +1,11 @@
 package net.andreho.haxxor.spec.api;
 
+import net.andreho.haxxor.Utils;
+
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -107,8 +108,8 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
    * @return
    */
   default A addAnnotation(HxAnnotation annotation) {
-    if (getAnnotations() == DEFAULT_ANNOTATION_MAP) {
-      setAnnotations(new LinkedHashSet<>());
+    if (Utils.isUninitialized(getAnnotations())) {
+      setAnnotations(Arrays.asList());
     }
     if (annotation.getDeclaringMember() != null) {
       throw new IllegalArgumentException("Given annotation was already bound to another host.");

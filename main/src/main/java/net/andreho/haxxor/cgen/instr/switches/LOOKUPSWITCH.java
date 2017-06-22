@@ -4,7 +4,7 @@ import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.instr.LABEL;
-import net.andreho.haxxor.cgen.instr.abstr.AbstractJumpInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.AbstractSwitchJumpInstruction;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,21 +13,20 @@ import java.util.List;
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
 public class LOOKUPSWITCH
-    extends AbstractJumpInstruction {
+  extends AbstractSwitchJumpInstruction {
 
   private final int[] keys;
-  private final LABEL[] labels;
 
   public LOOKUPSWITCH(LABEL defaultLabel, int[] keys, LABEL[] labels) {
-    super(Opcodes.LOOKUPSWITCH, defaultLabel);
+    super(Opcodes.LOOKUPSWITCH, defaultLabel, labels);
     this.keys = keys;
-    this.labels = labels;
   }
 
   @Override
   public void visit(HxCodeStream codeStream) {
     codeStream.LOOKUPSWITCH(this.label, this.keys, this.labels);
   }
+
 
   @Override
   public List<Object> getStackPushList(final HxComputingContext context) {
@@ -38,12 +37,9 @@ public class LOOKUPSWITCH
     return this.keys;
   }
 
-  public LABEL[] getLabels() {
-    return this.labels;
-  }
-
-  public LABEL getDefaultLabel() {
-    return this.label;
+  @Override
+  public LOOKUPSWITCH clone(final LABEL defaultLabel, final LABEL[] labels) {
+    return new LOOKUPSWITCH(defaultLabel, getKeys(), labels);
   }
 
   @Override

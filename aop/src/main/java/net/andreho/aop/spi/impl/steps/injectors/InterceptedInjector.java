@@ -22,27 +22,28 @@ public final class InterceptedInjector
   }
 
   @Override
-  protected void checkedParameterInjection(final AspectStep<?> aspectStep,
+  protected boolean checkedParameterInjection(final AspectStep<?> aspectStep,
                                            final AspectContext context,
                                            final HxMethod interceptor,
-                                           final HxMethod method,
+                                           final HxMethod original,
+                                           final HxMethod shadow,
                                            final HxParameter parameter,
                                            final HxInstruction instruction) {
     final HxExtendedCodeStream stream = instruction.asStream();
 
-    if (method.isStatic()) {
-      stream.TYPE(method.getDeclaringMember());
+    if (original.isStatic()) {
+      stream.TYPE(original.getDeclaringMember());
     } else {
       stream.THIS().INVOKESTATIC(HELPERS_CLASS,
                                  "getClassOf",
                                  "(Ljava/lang/Object;)Ljava/lang/Class;", false);
     }
 
-    final String key = method.toDescriptor(new StringBuilder(method.getName())).toString();
+    final String key = original.toDescriptor(new StringBuilder(original.getName())).toString();
 
     stream.LDC(key);
 
-    if (method.isConstructor()) {
+    if (original.isConstructor()) {
 
       stream.INVOKESTATIC(HELPERS_CLASS,
                           "getConstructorOf",
@@ -53,5 +54,7 @@ public final class InterceptedInjector
                           "getMethodOf",
                           "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/reflect/Method;", false);
     }
+
+    return true;
   }
 }

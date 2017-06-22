@@ -13,11 +13,11 @@ import net.andreho.haxxor.cgen.impl.AsmCodeStream;
 import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxAnnotationAttribute;
-import net.andreho.haxxor.spec.api.HxCode;
 import net.andreho.haxxor.spec.api.HxConstants;
 import net.andreho.haxxor.spec.api.HxEnum;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
+import net.andreho.haxxor.spec.api.HxMethodBody;
 import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spi.HxTypeInterpreter;
@@ -415,14 +415,14 @@ public class DefaultHxTypeInterpreter
 
   protected void visitCode(final HxMethod method,
                            final MethodVisitor mv) {
-    if (!method.hasCode()) {
+    if (!method.hasBody()) {
       return;
     }
 
-    visitCode(method.getCode(), new AsmCodeStream(method, mv), mv);
+    visitCode(method.getBody(), new AsmCodeStream(method, mv), mv);
   }
 
-  protected void visitCode(final HxCode code,
+  protected void visitCode(final HxMethodBody code,
                            final HxCodeStream codeStream,
                            final MethodVisitor mv) {
     assert code.getFirst().isBegin();
@@ -447,7 +447,7 @@ public class DefaultHxTypeInterpreter
     }
   }
 
-  protected void visitLocalVariables(final HxCode code,
+  protected void visitLocalVariables(final HxMethodBody code,
                                      final HxCodeStream codeStream,
                                      final MethodVisitor mv) {
     for (HxLocalVariable var : code.getLocalVariables()) {
@@ -463,13 +463,13 @@ public class DefaultHxTypeInterpreter
     }
   }
 
-  protected void visitTryCatchBlocks(final HxCode code,
+  protected void visitTryCatchBlocks(final HxMethodBody code,
                                      final HxCodeStream codeStream,
                                      final MethodVisitor mv) {
     for (HxTryCatch tryCatch : code.getTryCatches()) {
       codeStream.TRY_CATCH(
-          tryCatch.getStartLabel(),
-          tryCatch.getEndLabel(),
+          tryCatch.getStart(),
+          tryCatch.getEnd(),
           tryCatch.getHandler(),
           tryCatch.getType()
       );

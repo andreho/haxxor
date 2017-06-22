@@ -22,9 +22,8 @@ public @interface Aspect {
   /**
    * Allows to instantiate the matching aspect when it needed and use its public member methods as possible
    * interceptors.
-   * This annotation must be used inside of the matching aspect either on exactly one <b>public static</b> method
-   * that returns the aspect's type or on exactly one <b>public constructor</b> of the matching aspect.
-   * The static factory method must return a valid instance of the matching aspect.
+   * This annotation must be used inside of the matching aspect on exactly one <b>public static</b> method
+   * that returns the aspect's type. The static factory method must return a valid instance of the matching aspect.
    */
   @CanInject({/* DEPENDS ON ASPECT'S TYPE */})
   @Retention(RetentionPolicy.RUNTIME)

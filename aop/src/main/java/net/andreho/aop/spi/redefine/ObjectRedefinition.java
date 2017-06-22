@@ -6,7 +6,7 @@ package net.andreho.aop.spi.redefine;
 final class ObjectRedefinition<T> extends Redefinition<T> {
    private final T value;
 
-   public ObjectRedefinition(final T value) {
+   ObjectRedefinition(final T value) {
       this.value = value;
    }
 

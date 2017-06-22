@@ -1,12 +1,10 @@
 package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.Haxxor;
-import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxConstants;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxGenericType;
 import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxModifier;
 import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxTypeReference;
 
@@ -21,7 +19,7 @@ import java.util.function.Predicate;
 /**
  * <br/>Created by andreho on 3/26/16 at 7:21 PM.<br/>
  */
-public class HxAbstractType
+public abstract class HxAbstractType
     extends HxAnnotatedImpl<HxType>
     implements HxType {
 
@@ -348,6 +346,11 @@ public class HxAbstractType
   }
 
   @Override
+  public HxType getDeclaringType() {
+    return getEnclosingType().orElse(this);
+  }
+
+  @Override
   public Optional<HxType> getEnclosingType() {
     if (getEnclosingMethod().isPresent()) {
       return Optional.of(getEnclosingMethod().get().getDeclaringMember());
@@ -491,41 +494,6 @@ public class HxAbstractType
     return Class.forName(name, true, classLoader);
   }
 
-  @Override
-  public HxType setModifiers(HxModifier... modifiers) {
-    super.setModifiers(modifiers);
-    return this;
-  }
-
-  @Override
-  public HxType setModifiers(int modifiers) {
-    super.setModifiers(modifiers);
-    return this;
-  }
-
-  @Override
-  public HxType setAnnotations(Collection<HxAnnotation> annotations) {
-    super.setAnnotations(annotations);
-    return this;
-  }
-
-  @Override
-  public HxType addAnnotation(HxAnnotation annotation) {
-    super.addAnnotation(annotation);
-    return this;
-  }
-
-  @Override
-  public HxType setAnnotations(HxAnnotation... annotations) {
-    super.setAnnotations(annotations);
-    return this;
-  }
-
-  @Override
-  public HxType removeAnnotation(HxAnnotation annotation) {
-    super.removeAnnotation(annotation);
-    return this;
-  }
 
   @Override
   public int hashCode() {

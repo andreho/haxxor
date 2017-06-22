@@ -1,21 +1,24 @@
 package org.sandbox.elements;
 
+import net.andreho.aop.api.spec.Disable;
 import org.sandbox.examples.exec_flow.Control;
+import org.sandbox.examples.exec_flow.ExecFlowAspect;
 
 import java.util.Arrays;
 
 /**
  * <br/>Created by a.hofmann on 16.06.2017 at 21:10.
  */
+//@Log
 @Control
-//@TransparentLog
 public class AnyType {
+
   public static void staticMethod(int a) {
     System.out.println(">>> staticMethod(...)");
   }
 
-  public String manyArgumentsMethod(String name, boolean bool, byte b, short s, char c, int i, float f, long l, double d, int ... rest) {
-    System.out.println(">>> test(...)");
+  public String complexMethod(String name, boolean bool, byte b, short s, char c, int i, float f, long l, double d, int ... rest) {
+    System.out.println(">>> complexMethod(...)");
 
     final StringBuilder builder = new StringBuilder();
     builder
@@ -37,10 +40,20 @@ public class AnyType {
       String str = String.valueOf(s);
       builder.append(j).append("=").append(str).append('\n');
     }
-    //info("test");
-    return builder.toString();
+    multiply(builder, "\n", 2).toString();
+    return name;
   }
 
+  @Disable(ExecFlowAspect.class)
+  private static StringBuilder multiply(StringBuilder builder, String fragment, int times) {
+    System.out.println(">>> multiply(...)");
+    while(times-- > 0) {
+      builder.append(fragment);
+    }
+    return builder;
+  }
+
+  @Disable(ExecFlowAspect.class)
   public AnyType self() {
     System.out.println(">>> self(...)");
     return this;

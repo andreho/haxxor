@@ -7,7 +7,7 @@ final class CharRedefinition extends Redefinition<Character> {
    private static final Class<Character> TYPE = Character.class;
    private final char value;
 
-   public CharRedefinition(final char value) {
+   CharRedefinition(final char value) {
       this.value = value;
    }
 

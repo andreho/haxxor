@@ -17,7 +17,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class AopClassFileTransformer
     implements ClassFileTransformerService {
   private final ReadWriteLock lock = new ReentrantReadWriteLock();
-  private final WeakHashMap<ClassLoader, AopTypeTransformerEntry> entries = new WeakHashMap<>();
+  private final WeakHashMap<ClassLoader, AopEntryPoint> entries = new WeakHashMap<>();
 
   public AopClassFileTransformer() {
   }
@@ -32,7 +32,7 @@ public class AopClassFileTransformer
 
     if(loader != null) { //if null => bootstrap loader -> skip
       //This must be done early on load so we don't have dead-locks.
-      AopTypeTransformerEntry entry = initEntry(loader);
+      AopEntryPoint entry = initEntry(loader);
       String typeName = className;
 
       if(typeName == null) { //=> anonymous class -> skip or not?
@@ -51,8 +51,8 @@ public class AopClassFileTransformer
     return new ClassReader(bytecode).getClassName();
   }
 
-  private AopTypeTransformerEntry initEntry(final ClassLoader classLoader) {
-    AopTypeTransformerEntry entry = getEntry(classLoader);
+  private AopEntryPoint initEntry(final ClassLoader classLoader) {
+    AopEntryPoint entry = getEntry(classLoader);
     if (entry != null) {
       return entry;
     }
@@ -60,16 +60,16 @@ public class AopClassFileTransformer
     return createEntry(classLoader);
   }
 
-  private AopTypeTransformerEntry createEntry(final ClassLoader classLoader) {
+  private AopEntryPoint createEntry(final ClassLoader classLoader) {
     final Lock writeLock = getWriteLock();
-    AopTypeTransformerEntry entry;
+    AopEntryPoint entry;
     boolean newEntry = false;
 
     writeLock.lock();
     try {
       entry = getEntry(classLoader);
       if (entry == null) {
-        entry = new AopTypeTransformerEntry();
+        entry = new AopEntryPoint();
         newEntry = null == this.entries.putIfAbsent(classLoader, entry);
       }
     } finally {
@@ -83,7 +83,7 @@ public class AopClassFileTransformer
     return entry;
   }
 
-  private AopTypeTransformerEntry getEntry(final ClassLoader loader) {
+  private AopEntryPoint getEntry(final ClassLoader loader) {
     final Lock readLock = getReadLock();
     readLock.lock();
     try {

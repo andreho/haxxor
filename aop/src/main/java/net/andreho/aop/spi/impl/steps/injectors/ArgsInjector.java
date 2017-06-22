@@ -20,13 +20,15 @@ public final class ArgsInjector
   }
 
   @Override
-  protected void checkedParameterInjection(final AspectStep<?> aspectStep,
+  protected boolean checkedParameterInjection(final AspectStep<?> aspectStep,
                                            final AspectContext context,
                                            final HxMethod interceptor,
-                                           final HxMethod method,
+                                           final HxMethod original,
+                                           final HxMethod shadow,
                                            final HxParameter parameter,
                                            final HxInstruction instruction) {
 
-    HxCgenUtils.packArguments(method.getParameterTypes(), method.isStatic() ? 0 : 1, instruction.asStream());
+    HxCgenUtils.packArguments(original.getParameterTypes(), original.isStatic() ? 0 : 1, instruction.asStream());
+    return true;
   }
 }

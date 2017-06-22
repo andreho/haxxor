@@ -20,18 +20,22 @@ public final class ThisInjector
   }
 
   @Override
-  protected void checkedParameterInjection(final AspectStep<?> aspectStep,
+  protected boolean checkedParameterInjection(final AspectStep<?> aspectStep,
                                            final AspectContext context,
                                            final HxMethod interceptor,
-                                           final HxMethod method,
+                                           final HxMethod original,
+                                           final HxMethod shadow,
                                            final HxParameter parameter,
                                            final HxInstruction instruction) {
     final HxExtendedCodeStream stream = instruction.asStream();
-    if (method.isStatic() ||
-        method.isConstructor()) { //don't allow an uninitialized instance to be used somewhere
+
+    if (original.isStatic() ||
+        original.isConstructor()) { //don't allow an uninitialized instance to be used elsewhere
       stream.ACONST_NULL();
     } else {
       stream.THIS();
     }
+
+    return true;
   }
 }

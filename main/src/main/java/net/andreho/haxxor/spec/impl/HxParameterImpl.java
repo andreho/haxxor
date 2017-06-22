@@ -22,27 +22,42 @@ public class HxParameterImpl
   public HxParameterImpl() {
   }
 
-  public HxParameterImpl(HxType type) {
+  public HxParameterImpl(final HxType type) {
     this.setType(type);
   }
 
-  public HxParameterImpl(HxParameterImpl prototype) {
-    this(prototype.name, prototype);
+  public HxParameterImpl(final HxParameterImpl prototype) {
+    this(prototype, prototype.name, true);
   }
 
-  public HxParameterImpl(String name, HxParameterImpl prototype) {
+  public HxParameterImpl(final HxParameterImpl prototype,
+                         final String name,
+                         final boolean withAnnotations) {
     this.declaringMember = null;
 
     this.modifiers = prototype.modifiers;
     this.type = prototype.type;
     this.name = name != null? name : prototype.name;
 
-    prototype.cloneAnnotationsTo(this);
+    if(withAnnotations) {
+      prototype.cloneAnnotationsTo(this);
+    }
   }
 
   @Override
   public HxParameter clone() {
-    return new HxParameterImpl(this);
+    return clone(getName(), true);
+  }
+
+  @Override
+  public HxParameter clone(final String name) {
+    return clone(getName(), true);
+  }
+
+  @Override
+  public HxParameter clone(final String name,
+                           final boolean withAnnotations) {
+    return new HxParameterImpl(this, name, withAnnotations);
   }
 
   @Override

@@ -18,12 +18,18 @@ public enum MethodsType
       return true;
     }
   },
+  /**
+   * All methods and constructors except static class-initializer
+   */
   ALL() {
     @Override
     public boolean match(final HxMethod element) {
       return !"<clinit>".equals(element.getName());
     }
   },
+  /**
+   * All methods without any constructor and static class-initializer
+   */
   METHODS() {
     @Override
     public boolean match(final HxMethod element) {
@@ -31,6 +37,9 @@ public enum MethodsType
              !"<init>".equals(element.getName());
     }
   },
+  /**
+   * All constructors without any methods and static class-initializer
+   */
   CONSTRUCTORS() {
     @Override
     public boolean match(final HxMethod element) {

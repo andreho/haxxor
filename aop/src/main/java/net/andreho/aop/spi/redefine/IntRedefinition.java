@@ -7,7 +7,7 @@ final class IntRedefinition extends Redefinition<Integer> {
    private static final Class<Integer> TYPE = Integer.class;
    private final int value;
 
-   public IntRedefinition(final int value) {
+   IntRedefinition(final int value) {
       this.value = value;
    }
 

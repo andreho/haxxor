@@ -1,7 +1,6 @@
 package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.spec.api.HxMember;
-import net.andreho.haxxor.spec.api.HxModifier;
 import net.andreho.haxxor.spec.api.HxOwned;
 
 /**
@@ -25,16 +24,5 @@ public class HxMemberImpl<M extends HxMember<M> & HxOwned<M>>
   public M setModifiers(int modifiers) {
     this.modifiers = modifiers;
     return (M) this;
-  }
-
-  @Override
-  public M setModifiers(HxModifier... modifiers) {
-    int bits = 0;
-
-    for (HxModifier modifier : modifiers) {
-      bits |= modifier.toBit();
-    }
-
-    return setModifiers(bits);
   }
 }

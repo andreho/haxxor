@@ -14,6 +14,8 @@ import net.andreho.aop.spi.impl.AspectProfileFactoryImpl;
 import net.andreho.aop.spi.impl.ElementMatcherFactoryImpl;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,6 +33,7 @@ import java.util.stream.Stream;
 @Order(Activator.DEFAULT_ORDER)
 public class AspectActivator
     implements Activator {
+  private static final Logger LOG = LoggerFactory.getLogger(AspectActivator.class);
 
   private final AtomicBoolean activated = new AtomicBoolean();
 
@@ -109,7 +112,16 @@ public class AspectActivator
 
     for(HxType aspectType : aspectTypes) {
       final AspectDefinition aspectDefinition = doActivation(aspectType, aspectProfiles, aspectStepTypes);
-      aspectDefinitions.add(aspectDefinition);
+      if(aspectDefinition != null) {
+        aspectDefinitions.add(aspectDefinition);
+        if(LOG.isDebugEnabled()) {
+          LOG.debug("Aspect was activated: {}", aspectType.getName());
+        }
+      } else {
+        if(LOG.isDebugEnabled()) {
+          LOG.debug("Aspect couldn't be activated: {}", aspectType.getName());
+        }
+      }
     }
 
     this.aspectDefinitions = aspectDefinitions;
@@ -119,14 +131,17 @@ public class AspectActivator
                                           final Collection<AspectProfile> aspectProfiles,
                                           final Collection<AspectStepType> aspectStepTypes) {
 
-    System.out.println("Activating: " + aspectType);
-
-    return aspectDefinitionFactory.create(
-      aspectType.getHaxxor(),
-      aspectType,
-      aspectProfiles,
-      aspectStepTypes
-    );
+    try {
+      return aspectDefinitionFactory.create(
+        aspectType.getHaxxor(),
+        aspectType,
+        aspectProfiles,
+        aspectStepTypes
+      );
+    } catch (Throwable t) {
+      LOG.error("Aspect's activation ends up in an error: " + aspectType.getName(), t);
+    }
+    return null;
   }
 
   private boolean needsActivation() {
@@ -135,20 +150,34 @@ public class AspectActivator
 
   @Override
   public Optional<HxType> transform(final HxType hxType) {
-    System.out.println("Reached activator: " + hxType);
+    if(LOG.isDebugEnabled()) {
+      LOG.debug("Trying to transform type: {}", hxType.getName());
+    }
 
     boolean modified = false;
     for(AspectDefinition aspectDefinition : getAspectDefinitions()) {
       if(aspectDefinition.getTypeMatcher().match(hxType)) {
-        System.out.println("Matched class '"+hxType+"' with "+aspectDefinition);
+        if(LOG.isDebugEnabled()) {
+          LOG.debug("Type's pre-matching was successful for: {}", hxType.getName());
+        }
+
         if(aspectDefinition.apply(hxType)) {
           modified = true;
+
+          if(LOG.isDebugEnabled()) {
+            LOG.debug("Modifications of {} were applied to: {}", aspectDefinition.getType().getName(), hxType.getName());
+          }
         }
       }
     }
     if(modified) {
       return Optional.of(hxType);
     }
+
+    if(LOG.isDebugEnabled()) {
+      LOG.debug("Type wasn't modified: {}", hxType.getName());
+    }
+
     return Optional.empty();
   }
 }

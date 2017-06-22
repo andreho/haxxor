@@ -7,7 +7,7 @@ final class ByteRedefinition extends Redefinition<Byte> {
    private static final Class<Byte> TYPE = Byte.class;
    private final byte value;
 
-   public ByteRedefinition(final byte value) {
+   ByteRedefinition(final byte value) {
       this.value = value;
    }
 

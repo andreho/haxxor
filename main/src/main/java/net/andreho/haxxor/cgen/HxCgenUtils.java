@@ -1,6 +1,7 @@
 package net.andreho.haxxor.cgen;
 
 import net.andreho.asm.org.objectweb.asm.Type;
+import net.andreho.haxxor.cgen.instr.abstr.AbstractLocalAccessInstruction;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.List;
@@ -80,6 +81,28 @@ public abstract class HxCgenUtils {
     "(" + Type.DOUBLE_TYPE.getDescriptor() + ")" + DOUBLE_WRAPPER.getDescriptor();
 
   private HxCgenUtils() {
+  }
+
+  public static <S extends HxCodeStream<S>> S genericReturnValue(final HxType returnType,
+                                        final S stream) {
+    switch (returnType.getSort()) {
+      case VOID: return stream.RETURN();
+      case BOOLEAN:
+      case BYTE:
+      case CHAR:
+      case SHORT:
+      case INT:
+        return stream.IRETURN();
+      case FLOAT:
+        return stream.FRETURN();
+      case LONG:
+        return stream.LRETURN();
+      case DOUBLE:
+        return stream.DRETURN();
+      default: {
+        return stream.ARETURN();
+      }
+    }
   }
 
   public static <S extends HxCodeStream<S>> S packArguments(final List<HxType> signature,
@@ -173,6 +196,14 @@ public abstract class HxCgenUtils {
     }
   }
 
+  public static <S extends HxCodeStream<S>> S genericLoadTypes(final List<HxType> types, int slotShift, final S stream) {
+    for(HxType type : types) {
+      genericLoadSlot(type, slotShift, stream);
+      slotShift += type.getSlotsCount();
+    }
+    return stream;
+  }
+
   public static <S extends HxCodeStream<S>> S genericLoadSlot(final HxType type,
                                                               final int slotId,
                                                               final S stream) {
@@ -194,6 +225,41 @@ public abstract class HxCgenUtils {
         return stream.DLOAD(slotId);
       default:
         return stream.ALOAD(slotId);
+    }
+  }
+
+  public static <S extends HxCodeStream<S>> S genericDuplicate(final HxType type,
+                                                               final S stream) {
+    switch (type.getSort()) {
+      case VOID:
+        throw new IllegalArgumentException("Invalid parameter: " + type);
+      case LONG:
+      case DOUBLE:
+        return stream.DUP2();
+      default:
+        return stream.DUP();
+    }
+  }
+
+  /**
+   * @param instruction
+   * @param slotOffset
+   * @param variableSize
+   */
+  public static void shiftAccessToLocalVariable(final HxInstruction instruction,
+                                                 final int slotOffset,
+                                                 final int variableSize) {
+    instruction.forEachNext(
+      ins -> ins.hasSort(HxInstructionSort.Load) || ins.hasSort(HxInstructionSort.Store),
+      ins -> shiftAccessToLocalVariables(ins, slotOffset, variableSize)
+    );
+  }
+
+  private static void shiftAccessToLocalVariables(final HxInstruction instruction, final int parametersOffset, final int offsetAddition) {
+    final AbstractLocalAccessInstruction accessInstruction = (AbstractLocalAccessInstruction) instruction;
+    int slotIndex = accessInstruction.getOperand();
+    if(slotIndex >= parametersOffset) {
+      accessInstruction.setOperand(slotIndex + offsetAddition);
     }
   }
 

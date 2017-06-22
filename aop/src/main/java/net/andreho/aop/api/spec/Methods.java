@@ -10,7 +10,8 @@ import java.lang.annotation.RetentionPolicy;
 public @interface Methods {
 
   /**
-   * @return
+   * This is a rough preselection filter
+   * @return what sort of methods must be selected
    */
   MethodsType type() default MethodsType.METHODS;
   //AND

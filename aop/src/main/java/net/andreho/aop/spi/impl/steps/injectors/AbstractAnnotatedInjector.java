@@ -22,31 +22,33 @@ public abstract class AbstractAnnotatedInjector
 
   @Override
   public final boolean isInjectable(final AspectContext context,
-                              final HxMethod interceptor,
-                              final HxMethod method,
-                              final HxParameter parameter) {
+                                    final HxMethod interceptor,
+                                    final HxMethod original,
+                                    final HxMethod shadow,
+                                    final HxParameter parameter) {
     return parameter.isAnnotationPresent(annotationTypename);
   }
 
   @Override
   public final boolean injectParameter(final AspectStep<?> aspectStep,
-                                 final AspectContext context,
-                                 final HxMethod interceptor,
-                                 final HxMethod method,
-                                 final HxParameter parameter,
-                                 final HxInstruction instruction) {
-    if(!isInjectable(context, interceptor, method, parameter)) {
+                                       final AspectContext context,
+                                       final HxMethod interceptor,
+                                       final HxMethod original,
+                                       final HxMethod shadow,
+                                       final HxParameter parameter,
+                                       final HxInstruction instruction) {
+    if(!isInjectable(context, interceptor, original, shadow, parameter)) {
       return false;
     }
 
-    checkedParameterInjection(aspectStep, context, interceptor, method, parameter, instruction);
-    return true;
+    return checkedParameterInjection(aspectStep, context, interceptor, original, shadow, parameter, instruction);
   }
 
-  protected abstract void checkedParameterInjection(final AspectStep<?> aspectStep,
+  protected abstract boolean checkedParameterInjection(final AspectStep<?> aspectStep,
                                                     final AspectContext context,
                                                     final HxMethod interceptor,
-                                                    final HxMethod method,
+                                                    final HxMethod original,
+                                                    final HxMethod shadow,
                                                     final HxParameter parameter,
                                                     final HxInstruction instruction);
 }

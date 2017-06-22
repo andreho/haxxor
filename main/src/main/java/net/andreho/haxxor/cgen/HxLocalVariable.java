@@ -16,9 +16,9 @@ import java.util.function.Predicate;
 public class HxLocalVariable
     implements HxAnnotated<HxLocalVariable> {
 
-  private final int index;
-  private final String descriptor;
+  private int index;
   private final String name;
+  private final String descriptor;
   private final String signature;
 
   private final LABEL start;
@@ -26,18 +26,18 @@ public class HxLocalVariable
 
   private HxAnnotated annotated; //lazy init
 
-  public HxLocalVariable(final String name,
+  public HxLocalVariable(final int index,
+                         final String name,
                          final String descriptor,
                          final String signature,
                          final LABEL start,
-                         final LABEL end,
-                         final int index) {
+                         final LABEL end) {
+    this.index = index;
     this.name = name;
     this.descriptor = descriptor;
     this.signature = signature;
     this.start = start;
     this.end = end;
-    this.index = index;
   }
 
   /**
@@ -45,6 +45,13 @@ public class HxLocalVariable
    */
   public int getIndex() {
     return this.index;
+  }
+
+  /**
+   * @param index of this variable
+   */
+  public void setIndex(final int index) {
+    this.index = index;
   }
 
   /**

@@ -27,8 +27,8 @@ import static java.util.Objects.requireNonNull;
  * <br/>Created by a.hofmann on 18.06.2017 at 02:41.
  */
 public class AspectDefinitionFactoryImpl
-    implements AspectDefinitionFactory,
-               Constants {
+  implements AspectDefinitionFactory,
+             Constants {
 
   private final ElementMatcherFactory elementMatcherFactory;
 
@@ -65,9 +65,14 @@ public class AspectDefinitionFactoryImpl
       parameters,
       getElementMatcherFactory().createClassesFilter(type),
       getElementMatcherFactory(),
-      aspectProfiles.stream().collect(Collectors.toMap(AspectProfile::getName, Function.identity())),
-      aspectFactory
+      buildNamedAspectProfileMap(aspectProfiles),
+      aspectFactory,
+      isAspectFactoryReusable(aspectFactory)
     );
+  }
+
+  private Map<String, AspectProfile> buildNamedAspectProfileMap(final Collection<AspectProfile> aspectProfiles) {
+    return aspectProfiles.stream().collect(Collectors.toMap(AspectProfile::getName, Function.identity()));
   }
 
   protected Map<String, List<String>> extractParameters(HxAnnotation aspectAnnotation) {
@@ -85,11 +90,11 @@ public class AspectDefinitionFactoryImpl
 
   protected HxMethod findAspectFactory(final HxType aspectType) {
     final Collection<HxMethod> constructorFactories =
-        aspectType.constructors(
-          (c) -> c.isAnnotationPresent(ASPECT_FACTORY_ANNOTATION_TYPE));
+      aspectType.constructors(
+        (c) -> c.isAnnotationPresent(ASPECT_FACTORY_ANNOTATION_TYPE));
     final Collection<HxMethod> methodFactories =
-        aspectType.methods(
-          (m) -> m.isAnnotationPresent(ASPECT_FACTORY_ANNOTATION_TYPE));
+      aspectType.methods(
+        (m) -> m.isAnnotationPresent(ASPECT_FACTORY_ANNOTATION_TYPE));
 
     if (!constructorFactories.isEmpty()) {
       if (constructorFactories.size() != 1 || !methodFactories.isEmpty()) {
@@ -113,5 +118,15 @@ public class AspectDefinitionFactoryImpl
       return method;
     }
     return null;
+  }
+
+  protected boolean isAspectFactoryReusable(HxMethod aspectFactory) {
+    if (aspectFactory != null) {
+      return aspectFactory.getAnnotation(ASPECT_FACTORY_ANNOTATION_TYPE)
+                          .map(annotation ->
+                                 annotation.getAttribute("reuse", true))
+                          .orElse(true);
+    }
+    return false;
   }
 }

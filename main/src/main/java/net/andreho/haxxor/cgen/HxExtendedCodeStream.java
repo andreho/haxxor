@@ -11,26 +11,26 @@ public interface HxExtendedCodeStream<Stream extends HxExtendedCodeStream<Stream
   extends HxCodeStream<Stream> {
 
   default Stream INVOKEVIRTUAL(HxMethod method) {
-    final HxType type = method.getDeclaringMember();
-    return INVOKEVIRTUAL(type.toInternalName(), method.getName(), method.toDescriptor());
+    final HxType declaring = method.getDeclaringMember();
+    return INVOKEVIRTUAL(declaring.toInternalName(), method.getName(), method.toDescriptor());
   }
 
   default Stream INVOKESTATIC(HxMethod method) {
     if(!method.isStatic()) {
       throw new IllegalStateException("Not a static method: "+method);
     }
-    final HxType type = method.getDeclaringMember();
-    return INVOKESTATIC(type.toInternalName(), method.getName(), method.toDescriptor(), type.isInterface());
+    final HxType declaring = method.getDeclaringMember();
+    return INVOKESTATIC(declaring.toInternalName(), method.getName(), method.toDescriptor(), declaring.isInterface());
   }
 
   default Stream INVOKESPECIAL(HxMethod method) {
-    final HxType type = method.getDeclaringMember();
-    return INVOKESPECIAL(type.toInternalName(), method.getName(), method.toDescriptor());
+    final HxType declaring = method.getDeclaringMember();
+    return INVOKESPECIAL(declaring.toInternalName(), method.getName(), method.toDescriptor());
   }
 
   default Stream INVOKEINTERFACE(HxMethod method) {
-    final HxType type = method.getDeclaringMember();
-    return INVOKEINTERFACE(type.toInternalName(), method.getName(), method.toDescriptor());
+    final HxType declaring = method.getDeclaringMember();
+    return INVOKEINTERFACE(declaring.toInternalName(), method.getName(), method.toDescriptor());
   }
 
   /**

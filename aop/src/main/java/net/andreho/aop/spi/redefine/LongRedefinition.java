@@ -7,7 +7,7 @@ final class LongRedefinition extends Redefinition<Long> {
    private static final Class<Long> TYPE = Long.class;
    private final long value;
 
-   public LongRedefinition(final long value) {
+   LongRedefinition(final long value) {
       this.value = value;
    }
 

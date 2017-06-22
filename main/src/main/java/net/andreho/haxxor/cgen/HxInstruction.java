@@ -90,7 +90,7 @@ public interface HxInstruction
    * @param sort
    * @return
    */
-  default boolean has(HxInstructionSort sort) {
+  default boolean hasSort(HxInstructionSort sort) {
     return getInstructionType().getSort() == sort;
   }
 
@@ -98,7 +98,7 @@ public interface HxInstruction
    * @param type
    * @return
    */
-  default boolean has(HxInstructionType type) {
+  default boolean hasType(HxInstructionType type) {
     return getInstructionType() == type;
   }
 

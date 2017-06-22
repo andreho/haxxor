@@ -1,5 +1,6 @@
 package net.andreho.haxxor.spec.impl;
 
+import net.andreho.haxxor.Utils;
 import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxMember;
@@ -47,7 +48,13 @@ public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>
 
   @Override
   public A setAnnotations(Collection<HxAnnotation> annotations) {
+    if(Utils.isUninitialized(annotations)) {
+      this.annotations = DEFAULT_ANNOTATION_MAP;
+      return (A) this;
+    }
+
     Map<String, HxAnnotation> annotationsMap = this.annotations;
+
     if (annotationsMap == DEFAULT_ANNOTATION_MAP) {
       this.annotations = annotationsMap = new LinkedHashMap<>();
     }

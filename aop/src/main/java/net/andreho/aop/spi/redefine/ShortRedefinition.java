@@ -7,7 +7,7 @@ final class ShortRedefinition extends Redefinition<Short> {
    private static final Class<Short> TYPE = Short.class;
    private final short value;
 
-   public ShortRedefinition(final short value) {
+   ShortRedefinition(final short value) {
       this.value = value;
    }
 

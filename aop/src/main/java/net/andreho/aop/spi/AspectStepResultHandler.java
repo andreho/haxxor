@@ -15,15 +15,16 @@ public interface AspectStepResultHandler {
    * @param aspectStep
    * @param context
    * @param interceptor
-   * @param method
-   * @param instruction
-   * @return
+   * @param original
+   * @param shadow
+   *@param instruction  @return
    */
-  boolean handleReturnValue (
+  boolean handleReturnValue(
     final AspectStep<?> aspectStep,
     final AspectContext context,
     final HxMethod interceptor,
-    final HxMethod method,
+    final HxMethod original,
+    final HxMethod shadow,
     final HxInstruction instruction);
 
   static AspectStepResultHandler with(final Collection<AspectStepResultHandler> list) {
@@ -31,9 +32,9 @@ public interface AspectStepResultHandler {
   }
 
   static AspectStepResultHandler with(final AspectStepResultHandler ... list) {
-    return (aspectStep, context, interceptor, method, instruction) -> {
+    return (aspectStep, context, interceptor, method, shadow, instruction) -> {
       for(AspectStepResultHandler handler : list) {
-        if(handler.handleReturnValue(aspectStep, context, interceptor, method, instruction)) {
+        if(handler.handleReturnValue(aspectStep, context, interceptor, method, shadow, instruction)) {
           return true;
         }
       }

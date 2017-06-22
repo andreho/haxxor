@@ -13,16 +13,20 @@ import java.util.Collection;
 public interface AspectStepParameterInjector {
 
   /**
-   * @param context
-   * @param interceptor
-   * @param method
-   * @param parameter
+   * Tries to answer a question about whether this injector
+   * can be applied and inject valid value into the given parameter or not
+   * @param context to use
+   * @param interceptor to invoke
+   * @param original that should be modified
+   * @param shadow that should be executed
+   * @param parameter that must be populated with a suitable value
    * @return
    */
-  default boolean isInjectable (
+  default boolean isInjectable(
     AspectContext context,
     HxMethod interceptor,
-    HxMethod method,
+    HxMethod original,
+    HxMethod shadow,
     HxParameter parameter) {
 
     return true;
@@ -32,17 +36,18 @@ public interface AspectStepParameterInjector {
    * @param aspectStep is the currently processed step
    * @param context to use
    * @param interceptor to invoke
-   * @param method that should be modified
+   * @param original that should be modified
+   * @param shadow that should be executed
    * @param parameter that must be populated with a suitable value
-   * @param instruction for injection
-   * @return <b>true</b> if injection was successful or
+   * @param instruction for injection   @return <b>true</b> if injection was successful or
    * <b>false</b> to signal that the injection value isn't available, which leads to default injection.
    */
   boolean injectParameter(
     AspectStep<?> aspectStep,
     AspectContext context,
     HxMethod interceptor,
-    HxMethod method,
+    HxMethod original,
+    HxMethod shadow,
     HxParameter parameter,
     HxInstruction instruction);
 
@@ -51,9 +56,9 @@ public interface AspectStepParameterInjector {
   }
 
   static AspectStepParameterInjector with(final AspectStepParameterInjector ... list) {
-    return (aspectStep, context, interceptor, method, parameter, instruction) -> {
+    return (aspectStep, context, interceptor, method, shadow, parameter, instruction) -> {
       for(AspectStepParameterInjector injector : list) {
-        if(injector.injectParameter(aspectStep, context, interceptor, method, parameter, instruction)) {
+        if(injector.injectParameter(aspectStep, context, interceptor, method, shadow, parameter, instruction)) {
           return true;
         }
       }

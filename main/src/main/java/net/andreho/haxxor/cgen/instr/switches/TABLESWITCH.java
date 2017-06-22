@@ -4,25 +4,24 @@ import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.instr.LABEL;
-import net.andreho.haxxor.cgen.instr.abstr.AbstractJumpInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.AbstractSwitchJumpInstruction;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
 public class TABLESWITCH
-    extends AbstractJumpInstruction {
+  extends AbstractSwitchJumpInstruction {
 
   protected final int min;
   protected final int max;
-  protected final LABEL[] labels;
 
   public TABLESWITCH(int min, int max, LABEL defaultLabel, LABEL... labels) {
-    super(Opcodes.TABLESWITCH, defaultLabel);
+    super(Opcodes.TABLESWITCH, defaultLabel, labels);
     this.min = min;
     this.max = max;
-    this.labels = labels;
   }
 
   @Override
@@ -41,6 +40,7 @@ public class TABLESWITCH
     return NO_STACK_PUSH;
   }
 
+
   public int getMin() {
     return this.min;
   }
@@ -49,16 +49,13 @@ public class TABLESWITCH
     return this.max;
   }
 
-  public LABEL[] getLabels() {
-    return this.labels;
-  }
-
-  public LABEL getDefaultLabel() {
-    return this.label;
+  @Override
+  public TABLESWITCH clone(LABEL defaultLabel, LABEL[] labels) {
+    return new TABLESWITCH(getMin(), getMax(), defaultLabel, labels);
   }
 
   @Override
   public String toString() {
-    return super.toString() + " (" + this.min + ", " + this.max + ", " + this.labels + ", " + this.label + ")";
+    return super.toString() + " (" + this.min + ", " + this.max + ", " + Arrays.toString(this.labels) + ", " + this.label + ")";
   }
 }

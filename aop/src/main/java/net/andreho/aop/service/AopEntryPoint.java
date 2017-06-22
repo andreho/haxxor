@@ -5,8 +5,6 @@ import net.andreho.aop.spi.PackageFilter;
 import net.andreho.aop.spi.impl.AspectClassVisitor;
 import net.andreho.aop.spi.impl.Constants;
 import net.andreho.asm.org.objectweb.asm.ClassReader;
-import net.andreho.asm.org.objectweb.asm.util.Textifier;
-import net.andreho.haxxor.Debugger;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.HaxxorBuilder;
 import net.andreho.haxxor.spec.api.HxType;
@@ -16,10 +14,11 @@ import net.andreho.resources.ResourceScanner;
 import net.andreho.resources.ResourceSourceLocator;
 import net.andreho.resources.ResourceType;
 import net.andreho.resources.ResourceTypeSelector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
@@ -34,7 +33,8 @@ import java.util.function.Supplier;
 /**
  * <br/>Created by a.hofmann on 16.06.2017 at 20:48.
  */
-public final class AopTypeTransformerEntry {
+public final class AopEntryPoint {
+  private static final Logger LOG = LoggerFactory.getLogger(AopEntryPoint.class);
 
   private static final PackageFilter[] EMPTY_PACKAGE_FILTERS = {};
   private static final Activator[] EMPTY_ACTIVATORS = {};
@@ -44,7 +44,7 @@ public final class AopTypeTransformerEntry {
   private volatile Activator activator;
   private volatile Collection<String> aspects;
 
-  public AopTypeTransformerEntry() {
+  public AopEntryPoint() {
   }
 
   private Activator fetchActivator(ClassLoader classLoader) {
@@ -112,9 +112,7 @@ public final class AopTypeTransformerEntry {
       byte[] bytes = optional.get().toByteCode();
       //DEBUG
       printInfo(className, true, start, used);
-      if("org/junit/jupiter/engine/discovery/DiscoverySelectorResolver".equals(className)) {
-        Debugger.trace(bytes, new Textifier(), new PrintWriter(System.out), Debugger.SKIP_DEBUG);
-      }
+//      Debugger.trace(bytes, new Textifier(), new PrintWriter(System.out), Debugger.SKIP_DEBUG);
       return bytes;
     }
     return null;
@@ -124,12 +122,15 @@ public final class AopTypeTransformerEntry {
                          final boolean changed,
                          final long start,
                          final long used) {
-    System.out.printf("%s %s transformed in: %6d ms and used memory: %15.2f Kb \n",
-                      className,
-                      changed ? "WAS" : "NOT",
-                      (System.currentTimeMillis() - start),
-                      ((ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() - used) / 1024d)
-    );
+    if(LOG.isDebugEnabled()) {
+      LOG.debug(String.format(
+        "%s %s transformed in: %6d ms and used memory: %15.2f Kb \n",
+                        className,
+                        changed ? "WAS" : "NOT",
+                        (System.currentTimeMillis() - start),
+                        ((ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() - used) / 1024d)
+      ));
+    }
   }
 
   private Activator locateActivator(final ClassLoader loader) {

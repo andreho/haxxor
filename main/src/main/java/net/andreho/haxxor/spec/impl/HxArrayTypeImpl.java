@@ -3,7 +3,6 @@ package net.andreho.haxxor.spec.impl;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxMember;
-import net.andreho.haxxor.spec.api.HxModifier;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.io.Serializable;
@@ -57,11 +56,6 @@ public class HxArrayTypeImpl
 
   @Override
   public HxType setDeclaringMember(HxMember declaringMember) {
-    return this;
-  }
-
-  @Override
-  public HxType setModifiers(HxModifier... modifiers) {
     return this;
   }
 

@@ -4,6 +4,8 @@ import net.andreho.aop.api.After;
 import net.andreho.aop.api.Aspect;
 import net.andreho.aop.api.Before;
 import net.andreho.aop.api.Order;
+import net.andreho.aop.api.injectable.Result;
+import net.andreho.aop.api.spec.Disable;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxEnum;
 import net.andreho.haxxor.spec.api.HxType;
@@ -24,5 +26,10 @@ public interface Constants {
   String ORDER_ANNOTATION_TYPE = Order.class.getName();
   String BEFORE_ANNOTATION_TYPE = Before.class.getName();
   String AFTER_ANNOTATION_TYPE = After.class.getName();
+  String INJECT_RESULT_ANNOTATION_TYPE = Result.class.getName();
+  String DISABLE_ANNOTATION_TYPE = Disable.class.getName();
+
+  String RESULT_ATTRIBUTES_NAME =
+    "__$result";
   int UNORDERED_ELEMENT_INDEX = 1_000_000;
 }

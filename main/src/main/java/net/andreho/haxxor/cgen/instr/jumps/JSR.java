@@ -4,7 +4,7 @@ import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.instr.LABEL;
-import net.andreho.haxxor.cgen.instr.abstr.AbstractJumpInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.AbstractSimpleJumpInstruction;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import java.util.List;
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
 public class JSR
-    extends AbstractJumpInstruction {
+  extends AbstractSimpleJumpInstruction {
 
   public JSR(LABEL label) {
     super(Opcodes.JSR, label);
@@ -21,6 +21,11 @@ public class JSR
   @Override
   public void visit(HxCodeStream codeStream) {
     codeStream.JSR(this.label);
+  }
+
+  @Override
+  public JSR clone(final LABEL label) {
+    return new JSR(label);
   }
 
   @Override

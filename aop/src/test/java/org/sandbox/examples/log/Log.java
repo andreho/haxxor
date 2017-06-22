@@ -10,6 +10,10 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface TransparentLog {
+public @interface Log {
+
+  /**
+   * @return name of the static final field that should be created and contain the reference to the desired log itself
+   */
   String value() default "LOG";
 }

@@ -7,27 +7,27 @@ import net.andreho.haxxor.cgen.HxLocalVariable;
 import net.andreho.haxxor.cgen.HxTryCatch;
 
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * <br/>Created by a.hofmann on 18.03.2016.<br/>
  */
-public interface HxCode extends Iterable<HxInstruction> {
+public interface HxMethodBody
+  extends Iterable<HxInstruction>,
+          Cloneable {
 
   /**
-   * Stores this bytecode into a persistent storage and so frees used memory
+   * @param owner of the cloned method's body
+   * @return makes a deep-copy of this method's body
    */
-  boolean store();
+  HxMethodBody clone(HxMethod owner);
 
   /**
-   * Loads the previously stored bytecode from a persistent storage and
-   * so makes this method code available for processing
+   * Moves the content of this method's bode into the given method and resets this method's body to empty state.
+   * @param newOwner of the cloned method's body
+   * @return current method's body of the given method
    */
-  boolean load();
-
-  /**
-   * @return <b>true</b> if this code is loaded and available for modifications, <b>false</b> otherwise
-   */
-  boolean isLoaded();
+  HxMethodBody moveTo(HxMethod newOwner);
 
   /**
    * @return owning method or constructor of this code block
@@ -40,7 +40,7 @@ public interface HxCode extends Iterable<HxInstruction> {
   HxInstruction getFirst();
 
   /**
-   * @return the last added instruction or {@link HxCode#getFirst()} if there isn't any instructions
+   * @return the last added instruction or {@link HxMethodBody#getFirst()} if there isn't any instructions
    */
   HxInstruction getCurrent();
 
@@ -58,17 +58,24 @@ public interface HxCode extends Iterable<HxInstruction> {
   }
 
   /**
-   * @return a code stream that collects the visited instructions into this {@link HxCode code instance}
+   * @return a code stream that collects the visited instructions into this {@link HxMethodBody code instance}
    */
-  default HxCodeStream build() {
+  default <S extends HxCodeStream<S>> S build() {
     return build(false);
   }
 
   /**
    * @param rebuild defines whether already collected instructions may be replaced or not
-   * @return a code stream that collects the visited instructions into this {@link HxCode code instance}
+   * @return a code stream that collects the visited instructions into this {@link HxMethodBody code instance}
    */
-  HxCodeStream build(boolean rebuild);
+  <S extends HxCodeStream<S>> S build(boolean rebuild);
+
+  /**
+   * @param rebuild defines whether already collected instructions may be replaced or not
+   * @param streamFactory to use to build a new stream
+   * @return a code stream that collects the visited instructions into this {@link HxMethodBody code instance}
+   */
+  <S extends HxCodeStream<S>> S build(boolean rebuild, Function<HxMethodBody, S> streamFactory);
 
   /**
    * @return count of maximal used stack slots
@@ -114,7 +121,7 @@ public interface HxCode extends Iterable<HxInstruction> {
    * @param localVariable
    * @return
    */
-  HxCode addLocalVariable(HxLocalVariable localVariable);
+  HxMethodBody addLocalVariable(HxLocalVariable localVariable);
 
   /**
    * @return
@@ -139,7 +146,7 @@ public interface HxCode extends Iterable<HxInstruction> {
    * @param tryCatch block to add
    * @return
    */
-  HxCode addTryCatch(HxTryCatch tryCatch);
+  HxMethodBody addTryCatch(HxTryCatch tryCatch);
 
   /**
    * @return factory for instructions

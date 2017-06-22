@@ -19,6 +19,7 @@ public interface HxField
             HxMember<HxField>,
             HxOwned<HxField>,
             HxGeneric<HxField>,
+            HxAccessible<HxField>,
             HxNamed,
             HxTyped,
             HxOrdered,
@@ -170,6 +171,11 @@ public interface HxField
 
   @Override
   HxType getDeclaringMember();
+
+  @Override
+  default HxType getDeclaringType() {
+    return getDeclaringMember();
+  }
 
   /**
    * @return

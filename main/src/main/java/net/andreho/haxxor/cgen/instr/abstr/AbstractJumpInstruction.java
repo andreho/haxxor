@@ -18,6 +18,10 @@ public abstract class AbstractJumpInstruction
     this.label = label;
   }
 
+  protected LABEL getLabel() {
+    return label;
+  }
+
   @Override
   public List<Object> getStackPushList(final HxComputingContext context) {
     this.label.addReference(this);

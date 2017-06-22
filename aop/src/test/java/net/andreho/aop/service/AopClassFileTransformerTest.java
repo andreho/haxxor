@@ -18,7 +18,7 @@ class AopClassFileTransformerTest {
 
     AnyType anyType = new AnyType();
 
-    anyType.manyArgumentsMethod("ok", true, (byte) 1, (short) 1, (char) 1, 1, 1, 1, 1, 1, 1, 1);
+    anyType.complexMethod("ok", true, (byte) 1, (short) 1, (char) 1, 1, 1, 1, 1, 1, 1, 1);
 
     anyType.self();
   }

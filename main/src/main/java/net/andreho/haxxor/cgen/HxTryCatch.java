@@ -17,33 +17,33 @@ public class HxTryCatch
     implements HxVisitable,
                HxAnnotated<HxTryCatch> {
 
-  private final LABEL startLabel;
-  private final LABEL endLabel;
+  private final LABEL start;
+  private final LABEL end;
   private final LABEL handler;
   private final String type;
   private volatile HxAnnotated annotated;
 
-  public HxTryCatch(LABEL startLabel,
-                    LABEL endLabel,
+  public HxTryCatch(LABEL start,
+                    LABEL end,
                     LABEL handler,
                     String type) {
-    this.startLabel = Objects.requireNonNull(startLabel);
-    this.endLabel = Objects.requireNonNull(endLabel);
+    this.start = Objects.requireNonNull(start);
+    this.end = Objects.requireNonNull(end);
     this.handler = Objects.requireNonNull(handler);
     this.type = type;
   }
 
   @Override
   public void visit(HxCodeStream codeStream) {
-    codeStream.TRY_CATCH(this.startLabel, this.endLabel, this.handler, this.type);
+    codeStream.TRY_CATCH(this.start, this.end, this.handler, this.type);
   }
 
-  public LABEL getStartLabel() {
-    return this.startLabel;
+  public LABEL getStart() {
+    return this.start;
   }
 
-  public LABEL getEndLabel() {
-    return this.endLabel;
+  public LABEL getEnd() {
+    return this.end;
   }
 
   public LABEL getHandler() {

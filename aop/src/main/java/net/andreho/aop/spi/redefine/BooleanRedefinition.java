@@ -7,7 +7,7 @@ final class BooleanRedefinition extends Redefinition<Boolean> {
    private static final Class<Boolean> TYPE = Boolean.class;
    private final boolean value;
 
-   public BooleanRedefinition(final boolean value) {
+   BooleanRedefinition(final boolean value) {
       this.value = value;
    }
 

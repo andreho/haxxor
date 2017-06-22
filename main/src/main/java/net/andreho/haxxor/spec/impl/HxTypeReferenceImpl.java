@@ -73,12 +73,12 @@ public class HxTypeReferenceImpl
   }
 
   @Override
-  public HxType setModifiers(HxModifier... modifiers) {
+  public HxType setModifiers(HxModifier modifier, HxModifier... rest) {
     if(isAvailable()) {
-      toType().setModifiers(modifiers);
+      toType().setModifiers(modifier, rest);
       super.setModifiers(-1);
     } else {
-      super.setModifiers(modifiers);
+      super.setModifiers(modifier, rest);
     }
     return this;
   }

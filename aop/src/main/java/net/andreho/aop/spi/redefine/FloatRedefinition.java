@@ -7,7 +7,7 @@ final class FloatRedefinition extends Redefinition<Float> {
    private static final Class<Float> TYPE = Float.class;
    private final float value;
 
-   public FloatRedefinition(final float value) {
+   FloatRedefinition(final float value) {
       this.value = value;
    }
 

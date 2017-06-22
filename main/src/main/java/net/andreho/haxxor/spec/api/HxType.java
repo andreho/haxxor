@@ -25,6 +25,7 @@ public interface HxType
             HxOwned<HxType>,
             HxGeneric<HxType>,
             HxGenericElement<HxType>,
+            HxAccessible<HxType>,
             HxNamed,
             HxProvider {
 
@@ -102,7 +103,7 @@ public interface HxType
    */
   default HxType setSuperType(String superType) {
     return setSuperType(getHaxxor().reference(superType));
-  }
+}
 
   /**
    * @param superType
@@ -925,6 +926,13 @@ public interface HxType
    */
   default boolean isReference() {
     return this instanceof HxTypeReference;
+  }
+
+  /**
+   * @return
+   */
+  default boolean isVoid() {
+    return "void".equals(getName());
   }
 
   /**

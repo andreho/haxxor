@@ -12,7 +12,7 @@ import net.andreho.haxxor.cgen.instr.abstr.AbstractSingleOperandInstruction;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractStringOperandInstruction;
 import net.andreho.haxxor.cgen.instr.invokes.INVOKEDYNAMIC;
 import net.andreho.haxxor.cgen.instr.misc.LINE_NUMBER;
-import net.andreho.haxxor.spec.api.HxCode;
+import net.andreho.haxxor.spec.api.HxMethodBody;
 
 import java.util.Iterator;
 
@@ -24,14 +24,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class CodeStreamMatcher extends MethodVisitor {
 
-  private final HxCode code;
+  private final HxMethodBody code;
   private final Iterator<HxInstruction> iterator;
 
-  public CodeStreamMatcher(final HxCode code) {
+  public CodeStreamMatcher(final HxMethodBody code) {
     this(code, null);
   }
 
-  public CodeStreamMatcher(final HxCode code, final MethodVisitor mv) {
+  public CodeStreamMatcher(final HxMethodBody code, final MethodVisitor mv) {
     super(Opcodes.ASM5, mv);
     this.code = code;
     this.iterator = code.iterator();

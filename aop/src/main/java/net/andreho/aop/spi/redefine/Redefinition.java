@@ -4,206 +4,215 @@ package net.andreho.aop.spi.redefine;
  * <br/>Created by a.hofmann on 23.03.2017 at 17:49.
  */
 public abstract class Redefinition<T> {
-   private static final Redefinition NONE = new Redefinition() {
-      @Override
-      public boolean isNeeded() {
-         return false;
-      }
 
-      @Override
-      public boolean isCompatibleWith(final Class type) {
-         return type != null && !type.isPrimitive();
-      }
-   };
+  private static final Redefinition NONE = new Redefinition() {
+    @Override
+    public boolean isNeeded() {
+      return false;
+    }
 
-   /**
-    * @param <T>
-    * @return
-    */
-   public static <T> Redefinition<T> none() {
-      return NONE;
-   }
+    @Override
+    public boolean isCompatibleWith(final Class type) {
+      return type != null && !type.isPrimitive();
+    }
+  };
 
-   /**
-    * @param value
-    * @return
-    */
-   public static Redefinition<Boolean> as(boolean value) {
-      return new BooleanRedefinition(value);
-   }
+  public boolean isNeeded() {
+    return true;
+  }
 
-   /**
-    * @param value
-    * @return
-    */
-   public static Redefinition<Byte> as(byte value) {
-      return new ByteRedefinition(value);
-   }
+  public boolean toBoolean() {
+    throw new UnsupportedOperationException();
+  }
 
-   /**
-    * @param value
-    * @return
-    */
-   public static Redefinition<Short> as(short value) {
-      return new ShortRedefinition(value);
-   }
+  public byte toByte() {
+    throw new UnsupportedOperationException();
+  }
 
-   /**
-    * @param value
-    * @return
-    */
-   public static Redefinition<Character> as(char value) {
-      return new CharRedefinition(value);
-   }
+  public short toShort() {
+    throw new UnsupportedOperationException();
+  }
 
-   /**
-    * @param value
-    * @return
-    */
-   public static Redefinition<Integer> as(int value) {
-      return new IntRedefinition(value);
-   }
+  public char toChar() {
+    throw new UnsupportedOperationException();
+  }
 
-   /**
-    * @param value
-    * @return
-    */
-   public static Redefinition<Float> as(float value) {
-      return new FloatRedefinition(value);
-   }
+  public int toInt() {
+    throw new UnsupportedOperationException();
+  }
 
-   /**
-    * @param value
-    * @return
-    */
-   public static Redefinition<Long> as(long value) {
-      return new LongRedefinition(value);
-   }
+  public float toFloat() {
+    throw new UnsupportedOperationException();
+  }
 
-   /**
-    * @param value
-    * @return
-    */
-   public static Redefinition<Double> as(double value) {
-      return new DoubleRedefinition(value);
-   }
+  public long toLong() {
+    throw new UnsupportedOperationException();
+  }
 
-   /**
-    * @param value
-    * @return
-    */
-   public static Redefinition<Boolean> as(Boolean value) {
-      return value == null? new ObjectRedefinition<>(value) : as(value.booleanValue());
-   }
+  public double toDouble() {
+    throw new UnsupportedOperationException();
+  }
 
-   /**
-    * @param value
-    * @return
-    */
-   public static Redefinition<Byte> as(Byte value) {
-      return value == null? new ObjectRedefinition<>(value) : as(value.byteValue());
-   }
+  public T toObject() {
+    throw new UnsupportedOperationException();
+  }
 
-   /**
-    * @param value
-    * @return
-    */
-   public static Redefinition<Short> as(Short value) {
-      return value == null? new ObjectRedefinition<>(value) : as(value.shortValue());
-   }
+  public abstract boolean isCompatibleWith(Class<?> type);
 
-   /**
-    * @param value
-    * @return
-    */
-   public static Redefinition<Character> as(Character value) {
-      return value == null? new ObjectRedefinition<>(value) : as(value.charValue());
-   }
+  @Override
+  public String toString() {
+    return "Redefinition {" + String.valueOf(toObject()) + "}";
+  }
 
-   /**
-    * @param value
-    * @return
-    */
-   public static Redefinition<Integer> as(Integer value) {
-      return value == null? new ObjectRedefinition<>(value) : as(value.intValue());
-   }
+  /**
+   * @param <T>
+   * @return
+   */
+  public static <T> Redefinition<T> none() {
+    return NONE;
+  }
 
-   /**
-    * @param value
-    * @return
-    */
-   public static Redefinition<Float> as(Float value) {
-      return value == null? new ObjectRedefinition<>(value) : as(value.floatValue());
-   }
+  /**
+   * @param <T>
+   * @return
+   */
+  public static <T> Redefinition<T> asNull() {
+    return NullableRedefinition.INSTANCE;
+  }
 
-   /**
-    * @param value
-    * @return
-    */
-   public static Redefinition<Long> as(Long value) {
-      return value == null? new ObjectRedefinition<>(value) : as(value.longValue());
-   }
+  /**
+   * @param value
+   * @return
+   */
+  public static Redefinition<Boolean> as(boolean value) {
+    return new BooleanRedefinition(value);
+  }
 
-   /**
-    * @param value
-    * @return
-    */
-   public static Redefinition<Double> as(Double value) {
-      return value == null? new ObjectRedefinition<>(value) : as(value.doubleValue());
-   }
+  /**
+   * @param value
+   * @return
+   */
+  public static Redefinition<Byte> as(byte value) {
+    return new ByteRedefinition(value);
+  }
 
-   /**
-    * @param value
-    * @return
-    */
-   public static <T> Redefinition<T> as(T value) {
-      return new ObjectRedefinition<>(value);
-   }
+  /**
+   * @param value
+   * @return
+   */
+  public static Redefinition<Short> as(short value) {
+    return new ShortRedefinition(value);
+  }
 
-   public boolean isNeeded() {
-      return true;
-   }
+  /**
+   * @param value
+   * @return
+   */
+  public static Redefinition<Character> as(char value) {
+    return new CharRedefinition(value);
+  }
 
-   public boolean toBoolean() {
-      throw new UnsupportedOperationException();
-   }
+  /**
+   * @param value
+   * @return
+   */
+  public static Redefinition<Integer> as(int value) {
+    return new IntRedefinition(value);
+  }
 
-   public byte toByte() {
-      throw new UnsupportedOperationException();
-   }
+  /**
+   * @param value
+   * @return
+   */
+  public static Redefinition<Float> as(float value) {
+    return new FloatRedefinition(value);
+  }
 
-   public short toShort() {
-      throw new UnsupportedOperationException();
-   }
+  /**
+   * @param value
+   * @return
+   */
+  public static Redefinition<Long> as(long value) {
+    return new LongRedefinition(value);
+  }
 
-   public char toChar() {
-      throw new UnsupportedOperationException();
-   }
+  /**
+   * @param value
+   * @return
+   */
+  public static Redefinition<Double> as(double value) {
+    return new DoubleRedefinition(value);
+  }
 
-   public int toInt() {
-      throw new UnsupportedOperationException();
-   }
+  /**
+   * @param value
+   * @return
+   */
+  public static Redefinition<Boolean> as(Boolean value) {
+    return value == null ? asNull() : as(value.booleanValue());
+  }
 
-   public float toFloat() {
-      throw new UnsupportedOperationException();
-   }
+  /**
+   * @param value
+   * @return
+   */
+  public static Redefinition<Byte> as(Byte value) {
+    return value == null ? asNull() : as(value.byteValue());
+  }
 
-   public long toLong() {
-      throw new UnsupportedOperationException();
-   }
+  /**
+   * @param value
+   * @return
+   */
+  public static Redefinition<Short> as(Short value) {
+    return value == null ? asNull() : as(value.shortValue());
+  }
 
-   public double toDouble() {
-      throw new UnsupportedOperationException();
-   }
+  /**
+   * @param value
+   * @return
+   */
+  public static Redefinition<Character> as(Character value) {
+    return value == null ? asNull() : as(value.charValue());
+  }
 
-   public T toObject() {
-      throw new UnsupportedOperationException();
-   }
+  /**
+   * @param value
+   * @return
+   */
+  public static Redefinition<Integer> as(Integer value) {
+    return value == null ? asNull() : as(value.intValue());
+  }
 
-   public abstract boolean isCompatibleWith(Class<?> type);
+  /**
+   * @param value
+   * @return
+   */
+  public static Redefinition<Float> as(Float value) {
+    return value == null ? asNull() : as(value.floatValue());
+  }
 
-   @Override
-   public String toString() {
-      return "Redefinition {" + String.valueOf(toObject()) + "}";
-   }
+  /**
+   * @param value
+   * @return
+   */
+  public static Redefinition<Long> as(Long value) {
+    return value == null ? asNull() : as(value.longValue());
+  }
+
+  /**
+   * @param value
+   * @return
+   */
+  public static Redefinition<Double> as(Double value) {
+    return value == null ? asNull() : as(value.doubleValue());
+  }
+
+  /**
+   * @param value
+   * @return
+   */
+  public static <T> Redefinition<T> as(T value) {
+    return value == null ? asNull() : new ObjectRedefinition<>(value);
+  }
 }

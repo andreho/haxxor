@@ -107,22 +107,22 @@ public abstract class AbstractInstruction
 
   @Override
   public Optional<HxInstruction> findFirstWithType(final HxInstructionType instructionType) {
-    return findFirst(i -> i.has(instructionType));
+    return findFirst(i -> i.hasType(instructionType));
   }
 
   @Override
   public Optional<HxInstruction> findLastWithType(final HxInstructionType instructionType) {
-    return findLast(i -> i.has(instructionType));
+    return findLast(i -> i.hasType(instructionType));
   }
 
   @Override
   public Optional<HxInstruction> findFirstWithKind(final HxInstructionSort instructionSort) {
-    return findFirst(i -> i.has(instructionSort));
+    return findFirst(i -> i.hasSort(instructionSort));
   }
 
   @Override
   public Optional<HxInstruction> findLastWithKind(final HxInstructionSort instructionSort) {
-    return findLast(i -> i.has(instructionSort));
+    return findLast(i -> i.hasSort(instructionSort));
   }
 
   @Override

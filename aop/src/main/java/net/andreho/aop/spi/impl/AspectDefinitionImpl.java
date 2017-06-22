@@ -7,17 +7,22 @@ import net.andreho.aop.spi.AspectStep;
 import net.andreho.aop.spi.AspectStepType;
 import net.andreho.aop.spi.ElementMatcher;
 import net.andreho.aop.spi.ElementMatcherFactory;
+import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static net.andreho.aop.spi.impl.Constants.DISABLE_ANNOTATION_TYPE;
+import static net.andreho.aop.spi.impl.Constants.EMPTY_TYPE_ARRAY;
 
 /**
  * <br/>Created by a.hofmann on 18.06.2017 at 02:07.
@@ -35,6 +40,7 @@ public class AspectDefinitionImpl implements AspectDefinition {
   private final Map<AspectStep.Target, List<AspectStep<?>>> aspectStepsMap;
   private final List<AspectStep<?>> aspectSteps;
   private final Map<String, AspectProfile> aspectProfileMap;
+  private final boolean aspectFactoryReusable;
 
   public AspectDefinitionImpl(final HxType type,
                               final String prefix,
@@ -44,7 +50,8 @@ public class AspectDefinitionImpl implements AspectDefinition {
                               final ElementMatcher<HxType> classMatcher,
                               final ElementMatcherFactory elementMatcherFactory,
                               final Map<String, AspectProfile> aspectProfileMap,
-                              final HxMethod aspectFactory) {
+                              final HxMethod aspectFactory,
+                              final boolean aspectFactoryReusable) {
     this.type = type;
     this.prefix = prefix;
     this.suffix = suffix;
@@ -52,6 +59,7 @@ public class AspectDefinitionImpl implements AspectDefinition {
     this.classMatcher = classMatcher;
     this.parameters = parameters;
     this.aspectFactory = aspectFactory;
+    this.aspectFactoryReusable = aspectFactoryReusable;
     this.elementMatcherFactory = elementMatcherFactory;
     this.aspectProfileMap = aspectProfileMap;
 
@@ -95,6 +103,11 @@ public class AspectDefinitionImpl implements AspectDefinition {
   }
 
   @Override
+  public String getName() {
+    return type.getName();
+  }
+
+  @Override
   public HxType getType() {
     return type;
   }
@@ -110,9 +123,19 @@ public class AspectDefinitionImpl implements AspectDefinition {
   }
 
   @Override
+  public String formTargetMethodName(final String originalMethodName) {
+    return getPrefix() + originalMethodName + getSuffix();
+  }
+
+  @Override
   public Optional<HxMethod> getAspectFactory() {
     HxMethod aspectFactory = this.aspectFactory;
     return aspectFactory == null? Optional.empty() : Optional.of(aspectFactory);
+  }
+
+  @Override
+  public boolean isFactoryReusable() {
+    return aspectFactoryReusable;
   }
 
   @Override
@@ -169,12 +192,14 @@ public class AspectDefinitionImpl implements AspectDefinition {
                                               final List<AspectStep<?>> aspectSteps) {
     boolean modified = false;
     if(!aspectSteps.isEmpty()) {
-      for(HxMethod constructor : type.getConstructors()) {
-        context.enterConstructor(constructor);
+      for(HxMethod constructor : type.getConstructors().toArray(new HxMethod[0])) {
+        if(isApplicable(constructor)) {
+          context.enterConstructor(constructor);
 
-        for(AspectStep step : aspectSteps) {
-          if(step.apply(context, constructor)) {
-            modified = true;
+          for(AspectStep step : aspectSteps) {
+            if(step.apply(context, constructor)) {
+              modified = true;
+            }
           }
         }
       }
@@ -182,13 +207,33 @@ public class AspectDefinitionImpl implements AspectDefinition {
     return modified;
   }
 
+  private boolean isApplicable(final HxMethod method) {
+    return !method.isSynthetic() &&
+           isDisabled(method);
+  }
+
+  private boolean isApplicable(final HxField field) {
+    return !field.isSynthetic() &&
+           isDisabled(field);
+  }
+
+  private boolean isApplicable(final HxType type) {
+    return isDisabled(type);
+  }
+
+  private boolean isDisabled(final HxAnnotated<?> annotated) {
+    return !annotated.getAnnotation(DISABLE_ANNOTATION_TYPE)
+          .filter(a -> Arrays.asList(a.getAttribute("value", EMPTY_TYPE_ARRAY)).contains(getType()))
+          .isPresent();
+  }
+
   private boolean applyAspectsForMethods(final HxType type,
                                          final AspectContext context,
                                          final List<AspectStep<?>> aspectSteps) {
     boolean modified = false;
     if(!aspectSteps.isEmpty()) {
-      for(HxMethod method : type.getMethods()) {
-        if(!method.isConstructor()) {
+      for(HxMethod method : type.getMethods().toArray(new HxMethod[0])) {
+        if(!method.isConstructor() && isApplicable(method)) {
           context.enterMethod(method);
 
           for(AspectStep step : aspectSteps) {
@@ -207,12 +252,14 @@ public class AspectDefinitionImpl implements AspectDefinition {
                                         final List<AspectStep<?>> aspectSteps) {
     boolean modified = false;
     if(!aspectSteps.isEmpty()) {
-      for(HxField field : type.getFields()) {
-        context.enterField(field);
+      for(HxField field : type.getFields().toArray(new HxField[0])) {
+        if(isApplicable(field)) {
+          context.enterField(field);
 
-        for(AspectStep step : aspectSteps) {
-          if(step.apply(context, field)) {
-            modified = true;
+          for(AspectStep step : aspectSteps) {
+            if(step.apply(context, field)) {
+              modified = true;
+            }
           }
         }
       }
@@ -225,14 +272,21 @@ public class AspectDefinitionImpl implements AspectDefinition {
                                        final List<AspectStep<?>> aspectSteps) {
     boolean modified = false;
     if(!aspectSteps.isEmpty()) {
-      context.enterType(type);
+      if(isApplicable(type)) {
+        context.enterType(type);
 
-      for(AspectStep step : aspectSteps) {
-        if(step.apply(context, type)) {
-          modified = true;
+        for(AspectStep step : aspectSteps) {
+          if(step.apply(context, type)) {
+            modified = true;
+          }
         }
       }
     }
     return modified;
+  }
+
+  @Override
+  public String toString() {
+    return "@Aspect("+getName()+")";
   }
 }

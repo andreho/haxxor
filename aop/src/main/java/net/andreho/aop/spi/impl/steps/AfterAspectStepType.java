@@ -13,6 +13,7 @@ import net.andreho.aop.spi.impl.steps.injectors.DefaultInjector;
 import net.andreho.aop.spi.impl.steps.injectors.InterceptedInjector;
 import net.andreho.aop.spi.impl.steps.injectors.LineInjector;
 import net.andreho.aop.spi.impl.steps.injectors.LocalAttributeInjector;
+import net.andreho.aop.spi.impl.steps.injectors.ResultInjector;
 import net.andreho.aop.spi.impl.steps.injectors.ThisInjector;
 import net.andreho.aop.spi.impl.steps.results.DefaultResultHandler;
 import net.andreho.haxxor.spec.api.HxAnnotation;
@@ -41,6 +42,7 @@ public class AfterAspectStepType
           LineInjector.INSTANCE,
           ArityInjector.INSTANCE,
           LocalAttributeInjector.INSTANCE,
+          ResultInjector.INSTANCE,
           DefaultInjector.INSTANCE
         ),
         AspectStepResultHandler.with(

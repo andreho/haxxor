@@ -6,9 +6,8 @@ import net.andreho.aop.api.Before;
 import net.andreho.aop.api.Profile;
 import net.andreho.aop.api.injectable.Args;
 import net.andreho.aop.api.injectable.Attribute;
-import net.andreho.aop.api.injectable.Declaring;
 import net.andreho.aop.api.injectable.Intercepted;
-import net.andreho.aop.api.injectable.This;
+import net.andreho.aop.api.injectable.Result;
 import net.andreho.aop.api.spec.Annotated;
 import net.andreho.aop.api.spec.ClassWith;
 import net.andreho.aop.api.spec.Classes;
@@ -52,34 +51,39 @@ import static org.sandbox.examples.exec_flow.ExecFlowAspect.ANNOTATED_WITH_CONTR
   }
 )
 public class ExecFlowAspect {
-  public static final String ALL_PUBLIC_METHODS = "All.public.Methods";
-  public static final String ANNOTATED_WITH_CONTROL = "Annotated.with.Control";
-  private static final String START_TIME_ALIAS = "start.time.ms";
+  public static final String ALL_PUBLIC_METHODS = "all.public.methods";
+  public static final String ANNOTATED_WITH_CONTROL = "@Control";
+  private static final String STATE = "start.time.ms";
 
   public static class State {
     private final long time;
-
     public State(final long time) {
       this.time = time;
     }
+    long diff() {
+      return System.currentTimeMillis() - time;
+    }
   }
 
-  @Before(profile = ALL_PUBLIC_METHODS)
-  public static
-  @Attribute(START_TIME_ALIAS) State
-  beforeMethodExecution(
-    @Declaring Class<?> cls,
-    @Intercepted Method method,
-    @Args Object[] args,
-    @This Object self) {
+//  @Aspect.Factory
+//  public static ExecFlowAspect create() {
+//    return new ExecFlowAspect();
+//  }
 
-    System.out.println("BEFORE: "+method.getName()+" (" + Arrays.toString(args)+")");
+  @Before(profile = ANNOTATED_WITH_CONTROL)
+  public static
+  @Attribute(STATE) State
+  beforeMethodExecution(
+    @Intercepted Method method,
+    @Args Object[] args) {
+
+    System.out.printf("Before: %s with arguments (%s)\n", method, Arrays.toString(args));
     return new State(System.currentTimeMillis());
   }
 
   @After(profile = ANNOTATED_WITH_CONTROL)
   public static void
-  afterMethodExecution(@Intercepted Method method, @Attribute(START_TIME_ALIAS) State state) {
-    System.out.println("AFTER["+(System.currentTimeMillis() - state.time)+"]: "+method.getName());
+  afterMethodExecution(@Intercepted Method method, @Attribute(STATE) State state, @Result Object result) {
+    System.out.printf("After: %s with time %d and result %s\n", method, state.diff(), result);
   }
 }

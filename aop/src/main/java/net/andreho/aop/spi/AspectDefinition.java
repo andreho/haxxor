@@ -16,6 +16,11 @@ public interface AspectDefinition {
   /**
    * @return
    */
+  String getName();
+
+  /**
+   * @return
+   */
   HxType getType();
 
   /**
@@ -31,7 +36,18 @@ public interface AspectDefinition {
   /**
    * @return
    */
+  boolean isFactoryReusable();
+
+  /**
+   * @return
+   */
   Collection<AspectStepType> getAspectStepTypes();
+
+  /**
+   * @param originalMethodName
+   * @return
+   */
+  String formTargetMethodName(String originalMethodName);
 
   /**
    * @return

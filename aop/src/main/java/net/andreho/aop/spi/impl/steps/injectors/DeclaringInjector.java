@@ -21,21 +21,24 @@ public final class DeclaringInjector
   }
 
   @Override
-  protected void checkedParameterInjection(final AspectStep<?> aspectStep,
+  protected boolean checkedParameterInjection(final AspectStep<?> aspectStep,
                                            final AspectContext context,
                                            final HxMethod interceptor,
-                                           final HxMethod method,
+                                           final HxMethod original,
+                                           final HxMethod shadow,
                                            final HxParameter parameter,
                                            final HxInstruction instruction) {
     final HxExtendedCodeStream stream = instruction.asStream();
 
-    if(method.isStatic()) {
-      stream.TYPE(method.getDeclaringMember());
+    if(original.isStatic()) {
+      stream.TYPE(original.getDeclaringMember());
     } else {
       stream.THIS().INVOKESTATIC(HELPERS_CLASS,
                                  "getClassOf",
                                  "(Ljava/lang/Object;)Ljava/lang/Class;", false);
     }
+
+    return true;
   }
 /*
 INVOKEVIRTUAL java/lang/Object.getClass ()Ljava/lang/Class;

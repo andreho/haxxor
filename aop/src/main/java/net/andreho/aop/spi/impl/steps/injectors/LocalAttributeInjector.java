@@ -24,24 +24,27 @@ public class LocalAttributeInjector
   }
 
   @Override
-  protected void checkedParameterInjection(final AspectStep<?> aspectStep,
-                                           final AspectContext context,
-                                           final HxMethod interceptor,
-                                           final HxMethod method,
-                                           final HxParameter parameter,
-                                           final HxInstruction instruction) {
-
+  protected boolean checkedParameterInjection(final AspectStep<?> aspectStep,
+                                              final AspectContext context,
+                                              final HxMethod interceptor,
+                                              final HxMethod original,
+                                              final HxMethod shadow,
+                                              final HxParameter parameter,
+                                              final HxInstruction instruction) {
     final HxAnnotation attributeAnnotation = parameter.getAnnotation(ATTRIBUTE_ANNOTATION_TYPE_NAME).get();
     final String attributeName = attributeAnnotation.getAttribute("value", "");
 
     if (attributeName.isEmpty()) {
       throw new IllegalStateException("Attribute's name is invalid.");
     }
+
     if (!context.hasLocalAttribute(attributeName)) {
-      throw new IllegalStateException("There isn't any locally created attribute with name: " + attributeName);
+      return false;
     }
 
     final AspectAttribute attribute = context.getLocalAttribute(attributeName);
     HxCgenUtils.genericLoadSlot(attribute.getType(), attribute.getIndex(), instruction.asStream());
+
+    return true;
   }
 }

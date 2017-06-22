@@ -3,10 +3,9 @@ package net.andreho.haxxor.spec.impl;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.api.HxCode;
 import net.andreho.haxxor.spec.api.HxMember;
 import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxModifier;
+import net.andreho.haxxor.spec.api.HxMethodBody;
 import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxType;
 
@@ -78,6 +77,17 @@ public class HxMethodReferenceImpl
   }
 
   @Override
+  public HxMethod clone(final String name,
+                        final int parts) {
+    return toMethod().clone(name, parts);
+  }
+
+  @Override
+  public HxMethod setBody(final HxMethodBody methodBody) {
+    return null;
+  }
+
+  @Override
   public Haxxor getHaxxor() {
     return declaringType.getHaxxor();
   }
@@ -88,25 +98,19 @@ public class HxMethodReferenceImpl
   }
 
   @Override
-  public boolean hasCode() {
-    return toMethod().hasCode();
+  public boolean hasBody() {
+    return toMethod().hasBody();
   }
 
   @Override
-  public HxCode getCode() {
-    return toMethod().getCode();
+  public HxMethodBody getBody() {
+    return toMethod().getBody();
   }
 
 
   @Override
   public String getName() {
     return name;
-  }
-
-  @Override
-  public HxMethod setModifiers(HxModifier... modifiers) {
-    toMethod().setModifiers(modifiers);
-    return this;
   }
 
   @Override

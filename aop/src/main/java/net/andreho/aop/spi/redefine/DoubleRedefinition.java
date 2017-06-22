@@ -7,7 +7,7 @@ final class DoubleRedefinition extends Redefinition<Double> {
    private static final Class<Double> TYPE = Double.class;
    private final double value;
 
-   public DoubleRedefinition(final double value) {
+   DoubleRedefinition(final double value) {
       this.value = value;
    }
 

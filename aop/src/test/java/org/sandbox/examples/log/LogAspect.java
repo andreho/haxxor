@@ -18,9 +18,9 @@ import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionFactory;
 import net.andreho.haxxor.cgen.HxInstructionsType;
 import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.api.HxCode;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
+import net.andreho.haxxor.spec.api.HxMethodBody;
 import net.andreho.haxxor.spec.api.HxType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,16 +34,16 @@ import java.util.Optional;
     classes = @Classes(
         @ClassWith(
             modifiers = @Modifier(value = Modifiers.ABSTRACT | Modifiers.INTERFACE, negate = true),
-            annotated = @Annotated(TransparentLog.class)
+            annotated = @Annotated(Log.class)
         )
     )
 )
 public class LogAspect {
-  public static final String LOGGER_ATTRIBUTE = "TransparentLog";
+  public static final String LOGGER_ATTRIBUTE = "Log";
 
   @Modify.Type
   public static boolean setupLog(final HxType hxType) {
-    Optional<HxAnnotation> optional = hxType.getAnnotation(TransparentLog.class);
+    Optional<HxAnnotation> optional = hxType.getAnnotation(Log.class);
     if (!optional.isPresent()) {
       return false;
     }
@@ -70,11 +70,11 @@ public class LogAspect {
       clinit = methodOptional.get();
     } else {
       clinit = haxxor.createMethod("void", "<clinit>");
-      clinit.getCode().build().RETURN();
+      clinit.getBody().build().RETURN();
       hxType.addMethod(clinit);
     }
 
-    HxCode code = clinit.getCode();
+    HxMethodBody code = clinit.getBody();
     HxInstructionFactory factory = code.getInstructionFactory();
     Optional<HxInstruction> returnOptional =
         code.getLast().findLastWithType(HxInstructionsType.Exit.RETURN);

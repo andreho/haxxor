@@ -17,7 +17,8 @@ public class DefaultResultHandler
   public boolean handleReturnValue(final AspectStep<?> aspectStep,
                                    final AspectContext context,
                                    final HxMethod interceptor,
-                                   final HxMethod method,
+                                   final HxMethod original,
+                                   final HxMethod shadow,
                                    final HxInstruction instruction) {
 
     switch (interceptor.getReturnType().getSlotsCount()) {

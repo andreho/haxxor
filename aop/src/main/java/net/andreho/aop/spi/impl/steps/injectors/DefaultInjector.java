@@ -19,7 +19,8 @@ public final class DefaultInjector
   public boolean injectParameter(final AspectStep<?> aspectStep,
                                  final AspectContext context,
                                  final HxMethod interceptor,
-                                 final HxMethod method,
+                                 final HxMethod original,
+                                 final HxMethod shadow,
                                  final HxParameter parameter,
                                  final HxInstruction instruction) {
     HxCgenUtils.genericLoadDefault(parameter.getType(), instruction.asStream());
