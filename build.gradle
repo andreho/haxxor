@@ -35,11 +35,12 @@ allprojects {
   }
 
   dependencies {
-    compile "org.slf4j:slf4j-simple:1.7.25"
+    compile 'org.slf4j:slf4j-api:1.7.25'
 
     // https://mvnrepository.com/artifact/org.ow2.asm/asm
 
     testRuntime "junit:junit:4.12"
+    testCompile 'org.slf4j:slf4j-simple:1.7.25'
     testCompile "org.junit.jupiter:junit-jupiter-api:5.0.0-M4"
     testCompile "org.junit.jupiter:junit-jupiter-engine:5.0.0-M4"
     testCompile "org.junit.jupiter:junit-jupiter-params:5.0.0-M4"
