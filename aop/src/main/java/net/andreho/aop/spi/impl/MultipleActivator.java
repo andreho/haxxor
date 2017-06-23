@@ -1,7 +1,7 @@
 package net.andreho.aop.spi.impl;
 
 import net.andreho.aop.spi.Activator;
-import net.andreho.aop.spi.AspectStepType;
+import net.andreho.aop.spi.AspectAdviceType;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Collection;
@@ -25,12 +25,12 @@ public class MultipleActivator
   }
 
   @Override
-  public Collection<AspectStepType> getAspectStepTypes() {
-    final Set<AspectStepType> aspectStepTypes = new LinkedHashSet<>();
+  public Collection<AspectAdviceType> getAspectStepTypes() {
+    final Set<AspectAdviceType> aspectAdviceTypes = new LinkedHashSet<>();
     for(Activator activator : activators) {
-      aspectStepTypes.addAll(activator.getAspectStepTypes());
+      aspectAdviceTypes.addAll(activator.getAspectStepTypes());
     }
-    return aspectStepTypes;
+    return aspectAdviceTypes;
   }
 
   @Override

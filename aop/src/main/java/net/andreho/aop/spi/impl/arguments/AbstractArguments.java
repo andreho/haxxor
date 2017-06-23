@@ -3,6 +3,7 @@ package net.andreho.aop.spi.impl.arguments;
 import net.andreho.aop.spi.Arguments;
 
 import java.lang.reflect.Field;
+import java.util.function.Consumer;
 
 /**
  * <br/>Created by a.hofmann on 21.06.2017 at 23:52.
@@ -144,12 +145,118 @@ public abstract class AbstractArguments implements Arguments {
   }
 
   @Override
+  public final Arguments setBoolean(final int idx,
+                              final boolean value) {
+    try {
+      toField(idx).setBoolean(this, value);
+    } catch (IllegalAccessException e) {
+      throw new IllegalStateException("Failed to set a boolean: "+ idx, e);
+    }
+    return this;
+  }
+
+  @Override
+  public final Arguments setByte(final int idx,
+                           final byte value) {
+    try {
+      toField(idx).setByte(this, value);
+    } catch (IllegalAccessException e) {
+      throw new IllegalStateException("Failed to set a byte: "+ idx, e);
+    }
+    return this;
+  }
+
+  @Override
+  public final Arguments setShort(final int idx,
+                            final short value) {
+    try {
+      toField(idx).setShort(this, value);
+    } catch (IllegalAccessException e) {
+      throw new IllegalStateException("Failed to set a short: "+ idx, e);
+    }
+    return this;
+  }
+
+  @Override
+  public final Arguments setChar(final int idx,
+                           final char value) {
+    try {
+      toField(idx).setChar(this, value);
+    } catch (IllegalAccessException e) {
+      throw new IllegalStateException("Failed to set a char: "+ idx, e);
+    }
+    return this;
+  }
+
+  @Override
+  public final Arguments setInt(final int idx,
+                          final int value) {
+    try {
+      toField(idx).setInt(this, value);
+    } catch (IllegalAccessException e) {
+      throw new IllegalStateException("Failed to set a int: "+ idx, e);
+    }
+    return this;
+  }
+
+  @Override
+  public final Arguments setFloat(final int idx,
+                            final float value) {
+    try {
+      toField(idx).setFloat(this, value);
+    } catch (IllegalAccessException e) {
+      throw new IllegalStateException("Failed to set a float: "+ idx, e);
+    }
+    return this;
+  }
+
+  @Override
+  public final Arguments setLong(final int idx,
+                           final long value) {
+    try {
+      toField(idx).setLong(this, value);
+    } catch (IllegalAccessException e) {
+      throw new IllegalStateException("Failed to set a long: "+ idx, e);
+    }
+    return this;
+  }
+
+  @Override
+  public final Arguments setDouble(final int idx,
+                             final double value) {
+    try {
+      toField(idx).setDouble(this, value);
+    } catch (IllegalAccessException e) {
+      throw new IllegalStateException("Failed to set a double: "+ idx, e);
+    }
+    return this;
+  }
+
+  @Override
+  public final Arguments setObject(final int idx,
+                             final Object value) {
+    try {
+      toField(idx).set(this, value);
+    } catch (IllegalAccessException e) {
+      throw new IllegalStateException("Failed to set an object: "+ idx, e);
+    }
+    return this;
+  }
+
+  @Override
   public final Object[] toArray() {
     final Object[] array = new Object[length()];
     for (int i = 0; i < array.length; i++) {
       array[i] = getObject(i);
     }
     return array;
+  }
+
+  @Override
+  public <T> void toConsumer(final Consumer<T> consumer) {
+    for (Object o : this) {
+      consumer.accept((T) o);
+    }
   }
 
   @Override

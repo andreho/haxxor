@@ -3,6 +3,7 @@ package net.andreho.haxxor.spec.impl;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
+import net.andreho.haxxor.spec.api.HxSourceInfo;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class HxTypeImpl
     implements HxType {
 
   protected Version version = Version.V1_8;
+  protected HxSourceInfo sourceInfo;
 
   protected HxType superType;
   protected List<HxType> interfaces = Collections.emptyList();
@@ -97,6 +99,18 @@ public class HxTypeImpl
   @Override
   public HxType setVersion(Version version) {
     this.version = version;
+    return this;
+  }
+
+  @Override
+  public Optional<HxSourceInfo> getSourceInfo() {
+    HxSourceInfo sourceInfo = this.sourceInfo;
+    return sourceInfo == null? Optional.empty() : Optional.of(sourceInfo);
+  }
+
+  @Override
+  public HxType setSourceInfo(final HxSourceInfo sourceInfo) {
+    this.sourceInfo = sourceInfo;
     return this;
   }
 

@@ -116,7 +116,6 @@ public class SandBoxTest {
   }
 
   static class SyntheticException implements Consumer<String> {
-
     @Override
     public void accept(final String s) {
       throw new RuntimeException(s);

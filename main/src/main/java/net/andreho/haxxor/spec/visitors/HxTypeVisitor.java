@@ -11,6 +11,7 @@ import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
+import net.andreho.haxxor.spec.api.HxSourceInfo;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.function.Consumer;
@@ -70,6 +71,7 @@ public class HxTypeVisitor
   public void visitSource(String source,
                           String debug) {
     super.visitSource(source, debug);
+    this.type.setSourceInfo(new HxSourceInfo(source, debug));
   }
 
   @Override
@@ -79,7 +81,11 @@ public class HxTypeVisitor
                               int access) {
     super.visitInnerClass(name, outerName, innerName, access);
 //    System.out.println(HxType.Modifiers.toSet(access));
-    type.addInnerType(haxxor.reference(name).setModifiers(access));
+    if(!this.type.hasName(name)) {
+      this.type.addInnerType(haxxor.reference(name).setModifiers(access));
+    } else {
+      System.out.println(HxType.Modifiers.toSet(this.type.getModifiers()) + name);
+    }
   }
 
   @Override
@@ -90,7 +96,7 @@ public class HxTypeVisitor
 
     if (name != null && desc != null) {
       final HxMethod methodReference =
-        haxxor.createMethodReference(owner, normalizeReturnType(desc), name, normalizeSignature(desc));
+        this.haxxor.createMethodReference(owner, normalizeReturnType(desc), name, normalizeSignature(desc));
       this.type.setDeclaringMember(methodReference);
     } else {
       this.type.setDeclaringMember(this.haxxor.reference(owner));

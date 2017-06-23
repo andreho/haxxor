@@ -21,6 +21,8 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -292,8 +294,16 @@ public abstract class HxTypeTestUtils {
 
   public static void checkClassArrays(final Class<?>[] classes,
                                       final List<HxType> types) {
+    Set<String> classNames = Stream.of(classes).map(Class::getName).collect(Collectors.toSet());
+    Set<String> typeNames = types.stream().map(HxType::getName).collect(Collectors.toSet());
+
+    if(!typeNames.containsAll(classNames)) {
+      classNames.removeAll(typeNames);
+      System.out.println("Diff: "+classNames);
+    }
+
     assertEquals(classes.length, types
-      .size(), "Collections have different sizes.");
+      .size(), "Collections have different sizes: \n"+Arrays.toString(classes)+"\n"+types);
 
     for (int i = 0; i < classes.length; i++) {
       Class<?> originalInterface = classes[i];

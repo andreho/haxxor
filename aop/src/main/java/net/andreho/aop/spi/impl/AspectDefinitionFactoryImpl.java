@@ -1,9 +1,9 @@
 package net.andreho.aop.spi.impl;
 
+import net.andreho.aop.spi.AspectAdviceType;
 import net.andreho.aop.spi.AspectDefinition;
 import net.andreho.aop.spi.AspectDefinitionFactory;
 import net.andreho.aop.spi.AspectProfile;
-import net.andreho.aop.spi.AspectStepType;
 import net.andreho.aop.spi.ElementMatcherFactory;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxAnnotation;
@@ -44,7 +44,7 @@ public class AspectDefinitionFactoryImpl
   public AspectDefinition create(final Haxxor haxxor,
                                  final HxType type,
                                  final Collection<AspectProfile> aspectProfiles,
-                                 final Collection<AspectStepType> aspectStepTypes) {
+                                 final Collection<AspectAdviceType> aspectAdviceTypes) {
 
     final Optional<HxAnnotation> aspectOptional = type.getAnnotation(ASPECT_ANNOTATION_TYPE);
     if (!aspectOptional.isPresent()) {
@@ -61,7 +61,7 @@ public class AspectDefinitionFactoryImpl
       type,
       prefix,
       suffix,
-      aspectStepTypes,
+      aspectAdviceTypes,
       parameters,
       getElementMatcherFactory().createClassesFilter(type),
       getElementMatcherFactory(),

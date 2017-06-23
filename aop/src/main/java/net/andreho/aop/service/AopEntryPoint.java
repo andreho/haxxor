@@ -5,6 +5,8 @@ import net.andreho.aop.spi.PackageFilter;
 import net.andreho.aop.spi.impl.AspectClassVisitor;
 import net.andreho.aop.spi.impl.Constants;
 import net.andreho.asm.org.objectweb.asm.ClassReader;
+import net.andreho.asm.org.objectweb.asm.util.Textifier;
+import net.andreho.haxxor.Debugger;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.HaxxorBuilder;
 import net.andreho.haxxor.spec.api.HxType;
@@ -19,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
@@ -112,7 +115,7 @@ public final class AopEntryPoint {
       byte[] bytes = optional.get().toByteCode();
       //DEBUG
       printInfo(className, true, start, used);
-//      Debugger.trace(bytes, new Textifier(), new PrintWriter(System.out), Debugger.SKIP_DEBUG);
+      Debugger.trace(bytes, new Textifier(), new PrintWriter(System.out), Debugger.SKIP_DEBUG);
       return bytes;
     }
     return null;

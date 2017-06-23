@@ -5,15 +5,11 @@ import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionSort;
 import net.andreho.haxxor.cgen.HxInstructionType;
-import net.andreho.haxxor.spec.api.HxAnnotated;
-import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.impl.HxAnnotatedImpl;
+import net.andreho.haxxor.spec.impl.HxAnnotatedDelegate;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -22,7 +18,7 @@ import java.util.function.Predicate;
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
-public abstract class AbstractInstruction
+public abstract class AbstractInstruction extends HxAnnotatedDelegate<HxInstruction>
     implements HxInstruction {
 
   public static final List<Object> NO_STACK_PUSH = Collections.emptyList();
@@ -46,18 +42,10 @@ public abstract class AbstractInstruction
   protected final int opcode;
   protected HxInstruction next;
   protected HxInstruction previous;
-  protected HxAnnotated annotated;
   private int index = -1;
 
   public AbstractInstruction(int opcode) {
     this.opcode = opcode;
-  }
-
-  @Override
-  public boolean hasAnnotations() {
-    return annotated != null &&
-           annotated.getAnnotations()
-                    .isEmpty();
   }
 
   @Override
@@ -202,39 +190,6 @@ public abstract class AbstractInstruction
   @Override
   public String toString() {
     return getClass().getSimpleName();
-  }
-
-  private HxAnnotated initAnnotated() {
-    if (this.annotated == null) {
-      this.annotated = new HxAnnotatedImpl();
-    }
-    return this.annotated;
-  }
-
-  @Override
-  public HxInstruction setAnnotations(final Collection<HxAnnotation> annotations) {
-    initAnnotated().setAnnotations(annotations);
-    return this;
-  }
-
-  @Override
-  public Map<String, HxAnnotation> getAnnotations() {
-    return initAnnotated().getAnnotations();
-  }
-
-  @Override
-  public Collection<HxAnnotated> getSuperAnnotated() {
-    return initAnnotated().getSuperAnnotated();
-  }
-
-  @Override
-  public Collection<HxAnnotation> getAnnotationsByType(final String type) {
-    return initAnnotated().getAnnotationsByType(type);
-  }
-
-  @Override
-  public Collection<HxAnnotation> annotations(final Predicate<HxAnnotation> predicate, final boolean recursive) {
-    return initAnnotated().annotations(predicate, recursive);
   }
 
   protected static class Utils {

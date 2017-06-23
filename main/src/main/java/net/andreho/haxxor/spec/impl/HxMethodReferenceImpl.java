@@ -210,6 +210,13 @@ public class HxMethodReferenceImpl
   }
 
   @Override
+  public HxMethod addRepeatableAnnotationIfNeeded(final HxAnnotation annotation,
+                                                  final String repeatableAnnotationClassname) {
+    toMethod().addRepeatableAnnotationIfNeeded(annotation, repeatableAnnotationClassname);
+    return this;
+  }
+
+  @Override
   public HxMethod setAnnotations(Collection<HxAnnotation> annotations) {
     toMethod().setAnnotations(annotations);
     return this;

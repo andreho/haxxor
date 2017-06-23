@@ -10,8 +10,8 @@ import net.andreho.haxxor.spec.api.HxMethodBody;
 /**
  * <br/>Created by a.hofmann on 18.03.2016.<br/>
  */
-public class ExtendedInstructionCodeStream<Stream extends HxExtendedCodeStream<Stream>>
-  extends InstructionCodeStream<Stream> {
+public class ExtendedInstructionCodeStream
+  extends InstructionCodeStream {
 
   private final HxMethodBody methodBody;
 
@@ -25,36 +25,33 @@ public class ExtendedInstructionCodeStream<Stream extends HxExtendedCodeStream<S
     this.methodBody = methodBody;
   }
 
-  private Stream asStream() {
-    return (Stream) this;
-  }
 
   @Override
-  public Stream TRY_CATCH(final LABEL startLabel,
+  public HxExtendedCodeStream TRY_CATCH(final LABEL startLabel,
                           final LABEL endLabel,
                           final LABEL handler,
                           final String type) {
     this.methodBody.addTryCatch(new HxTryCatch(startLabel, endLabel, handler, type));
-    return asStream();
+    return this;
   }
 
 
   @Override
-  public Stream LOCAL_VARIABLE(final String name,
+  public HxExtendedCodeStream LOCAL_VARIABLE(final String name,
                                final String desc,
                                final String signature,
                                final LABEL start,
                                final LABEL end,
                                final int index) {
     this.methodBody.addLocalVariable(new HxLocalVariable(index, name, desc, signature, start, end));
-    return asStream();
+    return this;
   }
 
   @Override
-  public Stream MAXS(final int maxStack,
+  public HxExtendedCodeStream MAXS(final int maxStack,
                      final int maxLocals) {
     this.methodBody.setMaxStack(maxStack);
     this.methodBody.setMaxLocals(maxLocals);
-    return asStream();
+    return this;
   }
 }

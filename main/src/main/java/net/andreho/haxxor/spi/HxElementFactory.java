@@ -142,6 +142,15 @@ public interface HxElementFactory extends HxProvider {
   }
 
   /**
+   * Creates a new unbound parameter with given type
+   * @param parameterType of new parameter
+   * @return a new unbound parameter instance
+   */
+  default HxParameter createParameter(final HxType parameterType) {
+    return createParameter(parameterType.getName());
+  }
+
+  /**
    * Creates a new unbound annotation with given type and visibility
    * @param className of new annotation
    * @param visible is the visibility of new annotation
@@ -159,5 +168,16 @@ public interface HxElementFactory extends HxProvider {
   default HxAnnotation createAnnotation(final Class<? extends Annotation> cls,
                                 final boolean visible) {
     return createAnnotation(cls.getName(), visible);
+  }
+
+  /**
+   * Creates a new unbound annotation with given type and visibility
+   * @param annotationType of new annotation
+   * @param visible is the visibility of new annotation
+   * @return a new unbound parameter instance
+   */
+  default HxAnnotation createAnnotation(final HxType annotationType,
+                                        final boolean visible) {
+    return createAnnotation(annotationType.getName(), visible);
   }
 }

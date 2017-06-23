@@ -20,6 +20,13 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
   Collection<HxAnnotated> DEFAULT_SUPER_ANNOTATED_COLLECTION = Collections.emptySet();
 
   /**
+   * @return
+   */
+  default boolean hasAnnotations() {
+    return !Utils.isUninitialized(getAnnotations());
+  }
+
+  /**
    * Replaces all annotations with given annotation list
    *
    * @param annotations
@@ -27,15 +34,6 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
    */
   A setAnnotations(Collection<HxAnnotation> annotations);
 
-  /**
-   * Replaces all annotations with given annotation map
-   *
-   * @param annotations
-   * @return
-   */
-  default A setAnnotations(Map<String, HxAnnotation> annotations) {
-    return setAnnotations(annotations.values());
-  }
 
   /**
    * @return
@@ -43,14 +41,41 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
   Map<String, HxAnnotation> getAnnotations();
 
   /**
-   * Replaces all current annotations with given annotation list
-   *
-   * @param annotations
+   * @param annotation
    * @return
    */
-  default A setAnnotations(HxAnnotation... annotations) {
-    return setAnnotations(Arrays.asList(annotations));
+  A addAnnotation(HxAnnotation annotation);
+
+  /**
+   * @param annotation
+   * @param repeatableAnnotationClass
+   * @return
+   */
+  default A addRepeatableAnnotationIfNeeded(HxAnnotation annotation, Class<? extends Annotation> repeatableAnnotationClass) {
+    return addRepeatableAnnotationIfNeeded(annotation, repeatableAnnotationClass.getName());
   }
+
+  /**
+   * @param annotation
+   * @param repeatableAnnotationType
+   * @return
+   */
+  default A addRepeatableAnnotationIfNeeded(HxAnnotation annotation, HxType repeatableAnnotationType) {
+    return addRepeatableAnnotationIfNeeded(annotation, repeatableAnnotationType.getName());
+  }
+
+  /**
+   * @param annotation
+   * @param repeatableAnnotationClassname
+   * @return
+   */
+  A addRepeatableAnnotationIfNeeded(HxAnnotation annotation, String repeatableAnnotationClassname);
+
+  /**
+   * @param type
+   * @return
+   */
+  Collection<HxAnnotation> getAnnotationsByType(String type);
 
   /**
    * Links the annotations of this element with the annotations of its parent element(s)
@@ -66,6 +91,26 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
    */
   Collection<HxAnnotation> annotations(Predicate<HxAnnotation> predicate,
                                        boolean recursive);
+
+  /**
+   * Replaces all annotations with given annotation map
+   *
+   * @param annotations
+   * @return
+   */
+  default A setAnnotations(Map<String, HxAnnotation> annotations) {
+    return setAnnotations(annotations.values());
+  }
+
+  /**
+   * Replaces all current annotations with given annotation list
+   *
+   * @param annotations
+   * @return
+   */
+  default A setAnnotations(HxAnnotation... annotations) {
+    return setAnnotations(Arrays.asList(annotations));
+  }
 
   /**
    * @param type
@@ -97,30 +142,10 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
    */
   default Optional<HxAnnotation> getAnnotation(String type) {
     final HxAnnotation annotation = getAnnotations().get(type);
-    if(annotation != null) {
+    if (annotation != null) {
       return Optional.of(annotation);
     }
     return Optional.empty();
-  }
-
-  /**
-   * @param annotation
-   * @return
-   */
-  default A addAnnotation(HxAnnotation annotation) {
-    if (Utils.isUninitialized(getAnnotations())) {
-      setAnnotations(Arrays.asList());
-    }
-    if (annotation.getDeclaringMember() != null) {
-      throw new IllegalArgumentException("Given annotation was already bound to another host.");
-    }
-    getAnnotations().putIfAbsent(annotation.getType().getName(), annotation);
-
-    if (this instanceof HxMember) {
-      annotation.setDeclaringMember((HxMember) this);
-    }
-
-    return (A) this;
   }
 
   /**
@@ -137,15 +162,8 @@ public interface HxAnnotated<A extends HxAnnotated<A>> {
         annotation.setDeclaringMember(null);
       }
     }
-
     return (A) this;
   }
-
-  /**
-   * @param type
-   * @return
-   */
-  Collection<HxAnnotation> getAnnotationsByType(String type);
 
   /**
    * @param annotationType

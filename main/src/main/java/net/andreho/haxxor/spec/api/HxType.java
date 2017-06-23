@@ -57,6 +57,21 @@ public interface HxType
   HxType setVersion(Version version);
 
   /**
+   * @return
+   */
+  default Optional<HxSourceInfo> getSourceInfo() {
+    return Optional.empty();
+  }
+
+  /**
+   * @param source
+   * @return
+   */
+  default HxType setSourceInfo(HxSourceInfo source) {
+    return this;
+  }
+
+  /**
    * @return the standard Java classname, like:
    * <code>int</code>,
    * <code>byte[]</code>,
@@ -1055,27 +1070,27 @@ public interface HxType
   enum Modifiers
       implements HxModifier {
     // class, field, method
-    PUBLIC(0x0001),
+    PUBLIC(Opcodes.ACC_PUBLIC),
     // class, field, method
-    PRIVATE(0x0002),
+    PRIVATE(Opcodes.ACC_PRIVATE),
     // class, field, method
-    PROTECTED(0x0004),
+    PROTECTED(Opcodes.ACC_PROTECTED),
     // class, field, method
-    STATIC(0x0008),
+    STATIC(Opcodes.ACC_STATIC),
     // class, field, method, parameter
-    FINAL(0x0010),
+    FINAL(Opcodes.ACC_FINAL),
     // class
-    SUPER(0x0020),
+    SUPER(Opcodes.ACC_SUPER),
     // class
-    INTERFACE(0x0200),
+    INTERFACE(Opcodes.ACC_INTERFACE),
     // class, method
-    ABSTRACT(0x0400),
+    ABSTRACT(Opcodes.ACC_ABSTRACT),
     // class, field, method, parameter
-    SYNTHETIC(0x1000),
+    SYNTHETIC(Opcodes.ACC_SYNTHETIC),
     // class
-    ANNOTATION(0x2000),
+    ANNOTATION(Opcodes.ACC_ANNOTATION),
     // class(?) field inner
-    ENUM(0x4000);
+    ENUM(Opcodes.ACC_ENUM);
 
     final int bit;
 

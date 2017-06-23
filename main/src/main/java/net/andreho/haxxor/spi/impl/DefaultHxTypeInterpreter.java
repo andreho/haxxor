@@ -77,7 +77,7 @@ public class DefaultHxTypeInterpreter
 
   protected void visitSource(final HxType type,
                              final ClassWriter writer) {
-    //NO OP
+    type.getSourceInfo().ifPresent(sourceInfo -> writer.visitSource(sourceInfo.getSource(), sourceInfo.getDebug()));
   }
 
   protected void visitOuterClass(final HxType type,

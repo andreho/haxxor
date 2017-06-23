@@ -41,7 +41,7 @@ public interface AspectDefinition {
   /**
    * @return
    */
-  Collection<AspectStepType> getAspectStepTypes();
+  Collection<AspectAdviceType> getAspectAdviceTypes();
 
   /**
    * @param originalMethodName
@@ -72,7 +72,7 @@ public interface AspectDefinition {
   /**
    * @return
    */
-  List<AspectStep<?>> getAspectSteps();
+  List<AspectAdvice<?>> getAspectAdvices();
 
   /**
    * @param profileName

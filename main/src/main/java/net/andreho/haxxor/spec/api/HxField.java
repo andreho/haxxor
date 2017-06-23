@@ -1,5 +1,7 @@
 package net.andreho.haxxor.spec.api;
 
+import net.andreho.asm.org.objectweb.asm.Opcodes;
+
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -196,23 +198,23 @@ public interface HxField
 
   enum Modifiers
       implements HxModifier {
-    PUBLIC(0x0001),
+    PUBLIC(Opcodes.ACC_PUBLIC),
     // class, field, method
-    PRIVATE(0x0002),
+    PRIVATE(Opcodes.ACC_PRIVATE),
     // class, field, method
-    PROTECTED(0x0004),
+    PROTECTED(Opcodes.ACC_PROTECTED),
     // class, field, method
-    STATIC(0x0008),
+    STATIC(Opcodes.ACC_STATIC),
     // field, method
-    FINAL(0x0010),
+    FINAL(Opcodes.ACC_FINAL),
     // class, field, method, parameter
-    VOLATILE(0x0040),
+    VOLATILE(Opcodes.ACC_VOLATILE),
     // field
-    TRANSIENT(0x0080),
+    TRANSIENT(Opcodes.ACC_TRANSIENT),
     // field
-    SYNTHETIC(0x1000),
+    SYNTHETIC(Opcodes.ACC_SYNTHETIC),
     // class, field, method, parameter
-    ENUM(0x4000); // class(?) field inner
+    ENUM(Opcodes.ACC_ENUM); // class(?) field inner
 
     final int bit;
 

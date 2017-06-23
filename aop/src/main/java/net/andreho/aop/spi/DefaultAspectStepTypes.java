@@ -3,8 +3,8 @@ package net.andreho.aop.spi;
 import net.andreho.aop.api.After;
 import net.andreho.aop.api.Before;
 import net.andreho.aop.api.Order;
-import net.andreho.aop.spi.impl.steps.AfterAspectStepType;
-import net.andreho.aop.spi.impl.steps.BeforeAspectStepType;
+import net.andreho.aop.spi.impl.advices.AfterAspectAdviceType;
+import net.andreho.aop.spi.impl.advices.BeforeAspectAdviceType;
 
 import java.lang.annotation.Annotation;
 
@@ -17,16 +17,16 @@ public enum DefaultAspectStepTypes {
 //  MODIFY_METHOD,
 //  FORWARDING,
   //  PATCH,
-  BEFORE(new BeforeAspectStepType(fetchOrderFromAnnotation(Before.class))),
-  AFTER(new AfterAspectStepType(fetchOrderFromAnnotation(After.class))),
+  BEFORE(new BeforeAspectAdviceType(fetchOrderFromAnnotation(Before.class))),
+  AFTER(new AfterAspectAdviceType(fetchOrderFromAnnotation(After.class))),
 //  FINALLY,
 //  CATCH,
 //  FIELD_GET,
 //  FIELD_SET
   ;
-  private final AspectStepType stepType;
+  private final AspectAdviceType stepType;
 
-  DefaultAspectStepTypes(final AspectStepType stepType) {
+  DefaultAspectStepTypes(final AspectAdviceType stepType) {
     this.stepType = stepType;
   }
 
@@ -34,7 +34,7 @@ public enum DefaultAspectStepTypes {
     return annotation.getAnnotation(Order.class).value();
   }
 
-  public AspectStepType getStepType() {
+  public AspectAdviceType getStepType() {
     return stepType;
   }
 }

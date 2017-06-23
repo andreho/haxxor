@@ -1,5 +1,7 @@
 package net.andreho.aop.spi;
 
+import java.util.function.Consumer;
+
 /**
  * <br/>Created by a.hofmann on 15.06.2017 at 01:21.
  */
@@ -105,6 +107,77 @@ public interface Arguments extends Iterable<Object> {
 
   /**
    *
+   * @param idx
+   * @param value
+   * @return
+   */
+  Arguments setBoolean(int idx, boolean value);
+
+  /**
+   *
+   * @param idx
+   * @param value
+   * @return
+   */
+  Arguments setByte(int idx, byte value);
+
+  /**
+   *
+   * @param idx
+   * @param value
+   * @return
+   */
+  Arguments setShort(int idx, short value);
+
+  /**
+   *
+   * @param idx
+   * @param value
+   * @return
+   */
+  Arguments setChar(int idx, char value);
+
+  /**
+   *
+   * @param idx
+   * @param value
+   * @return
+   */
+  Arguments setInt(int idx, int value);
+
+  /**
+   *
+   * @param idx
+   * @param value
+   * @return
+   */
+  Arguments setFloat(int idx,  float value);
+
+  /**
+   *
+   * @param idx
+   * @param value
+   * @return
+   */
+  Arguments setLong(int idx, long value);
+
+  /**
+   *
+   * @param idx
+   * @param value
+   * @return
+   */
+  Arguments setDouble(int idx, double value);
+
+  /**
+   * @param idx
+   * @param value
+   * @return
+   */
+  Arguments setObject(int idx, Object value);
+
+  /**
+   *
    * @return
    */
   int length();
@@ -113,6 +186,11 @@ public interface Arguments extends Iterable<Object> {
    * @return
    */
   Object[] toArray();
+
+  /**
+   * @return
+   */
+  <T> void toConsumer(Consumer<T> consumer);
 
   /**
    * @return

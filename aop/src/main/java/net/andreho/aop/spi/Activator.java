@@ -16,7 +16,7 @@ public interface Activator extends Comparable<Activator> {
   /**
    * @return
    */
-  Collection<AspectStepType> getAspectStepTypes();
+  Collection<AspectAdviceType> getAspectStepTypes();
 
   /**
    * @return

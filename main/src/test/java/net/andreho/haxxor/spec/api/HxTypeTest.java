@@ -844,6 +844,13 @@ class HxTypeTest {
     if(enclosingClass == null) {
       assertFalse(enclosingType.isPresent());
     } else {
+      if(!enclosingType.isPresent()) {
+//        Optional<HxType> enclosingType1 = new Haxxor()
+//          .resolve(cls.getName())
+//          .getEnclosingType();
+//        System.out.println();
+      }
+      assertTrue(enclosingType.isPresent(), "Enclosing-type not found: "+enclosingClass.getName());
       assertEquals(enclosingClass.getName(), enclosingType.get().getName());
     }
 

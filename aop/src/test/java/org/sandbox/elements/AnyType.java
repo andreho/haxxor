@@ -12,9 +12,13 @@ import java.util.Arrays;
 //@Log
 @Control
 public class AnyType {
-
   public static void staticMethod(int a) {
     System.out.println(">>> staticMethod(...)");
+  }
+
+  public static void staticFailingMethod(String message) {
+    System.out.println(">>> staticFailingMethod(...)");
+    throw new RuntimeException(message);
   }
 
   public String complexMethod(String name, boolean bool, byte b, short s, char c, int i, float f, long l, double d, int ... rest) {
@@ -53,9 +57,13 @@ public class AnyType {
     return builder;
   }
 
-  @Disable(ExecFlowAspect.class)
   public AnyType self() {
     System.out.println(">>> self(...)");
     return this;
+  }
+
+  public AnyType failingMethod() {
+    System.out.println(">>> failingMethod(...)");
+    throw new RuntimeException();
   }
 }

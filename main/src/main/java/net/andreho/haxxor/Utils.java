@@ -9,6 +9,7 @@ import net.andreho.haxxor.spi.HxClassnameNormalizer;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -373,5 +374,29 @@ public abstract class Utils {
         return array[i++];
       }
     };
+  }
+
+  /**
+   * @param array
+   * @param value
+   * @param <T>
+   * @return
+   */
+  public static <T> T[] concat(T[] array, T value) {
+    final T[] copied = Arrays.copyOf(array, array.length + 1);
+    copied[array.length] = value;
+    return copied;
+  }
+
+  /**
+   * @param left
+   * @param right
+   * @param <T>
+   * @return
+   */
+  public static <T> T[] concat(T[] left, T[] right) {
+    final T[] copied = Arrays.copyOf(left, left.length + right.length);
+    System.arraycopy(right, 0, copied, left.length, right.length);
+    return copied;
   }
 }

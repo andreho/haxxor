@@ -1,7 +1,9 @@
 package net.andreho.haxxor.cgen;
 
 import net.andreho.asm.org.objectweb.asm.Type;
+import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractLocalAccessInstruction;
+import net.andreho.haxxor.spec.api.HxSort;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.List;
@@ -84,9 +86,10 @@ public abstract class HxCgenUtils {
   }
 
   public static <S extends HxCodeStream<S>> S genericReturnValue(final HxType returnType,
-                                        final S stream) {
+                                                                 final S stream) {
     switch (returnType.getSort()) {
-      case VOID: return stream.RETURN();
+      case VOID:
+        return stream.RETURN();
       case BOOLEAN:
       case BYTE:
       case CHAR:
@@ -134,7 +137,7 @@ public abstract class HxCgenUtils {
   }
 
   public static <S extends HxCodeStream<S>> S genericArrayStore(final HxType arrayType,
-                                                                final S codeStream) {
+                                                                final S stream) {
     if (!arrayType.isArray()) {
       throw new IllegalArgumentException("Not an array-type: " + arrayType);
     }
@@ -143,21 +146,175 @@ public abstract class HxCgenUtils {
     switch (arrayType.getComponentType().get().getSort()) {
       case BOOLEAN:
       case BYTE:
-        return codeStream.BASTORE();
+        return stream.BASTORE();
       case CHAR:
-        return codeStream.CASTORE();
+        return stream.CASTORE();
       case SHORT:
-        return codeStream.SASTORE();
+        return stream.SASTORE();
       case INT:
-        return codeStream.IASTORE();
+        return stream.IASTORE();
       case FLOAT:
-        return codeStream.FASTORE();
+        return stream.FASTORE();
       case LONG:
-        return codeStream.LASTORE();
+        return stream.LASTORE();
       case DOUBLE:
-        return codeStream.DASTORE();
+        return stream.DASTORE();
       default: {
-        return codeStream.AASTORE();
+        return stream.AASTORE();
+      }
+    }
+  }
+
+  public static <S extends HxCodeStream<S>> S genericConvertInteger(final HxType toType,
+                                                                    final S stream) {
+    if (toType.isArray()) {
+      throw new IllegalArgumentException("Cannot convert an int to an array: " + toType);
+    }
+
+    switch (toType.getSort()) {
+      case BOOLEAN:
+        LABEL notZero = new LABEL();
+        LABEL endif = new LABEL();
+        return stream
+          .IFNE(notZero)
+          .ICONST_0()
+          .GOTO(endif)
+          .LABEL(notZero)
+          .ICONST_1()
+          .LABEL(endif);
+      case BYTE:
+        return stream.I2B();
+      case CHAR:
+        return stream.I2C();
+      case SHORT:
+        return stream.I2S();
+      case INT:
+        return stream;
+      case FLOAT:
+        return stream.I2F();
+      case LONG:
+        return stream.I2L();
+      case DOUBLE:
+        return stream.I2D();
+      default: {
+        return wrapIfNeeded(HxSort.INT, stream);
+      }
+    }
+  }
+
+  public static <S extends HxCodeStream<S>> S genericConvertFloat(final HxType toType,
+                                                                  final S stream) {
+    if (toType.isArray()) {
+      throw new IllegalArgumentException("Cannot convert an int to an array: " + toType);
+    }
+
+    switch (toType.getSort()) {
+      case BOOLEAN:
+        LABEL notZero = new LABEL();
+        LABEL endif = new LABEL();
+        return stream
+          .FCONST_0()
+          .FCMPG()
+          .IFNE(notZero)
+          .ICONST_0()
+          .GOTO(endif)
+          .LABEL(notZero)
+          .ICONST_1()
+          .LABEL(endif);
+      case BYTE:
+        return stream.F2I().I2B();
+      case CHAR:
+        return stream.F2I().I2C();
+      case SHORT:
+        return stream.F2I().I2S();
+      case INT:
+        return stream.F2I();
+      case FLOAT:
+        return stream;
+      case LONG:
+        return stream.F2L();
+      case DOUBLE:
+        return stream.F2D();
+      default: {
+        return wrapIfNeeded(HxSort.FLOAT, stream);
+      }
+    }
+  }
+
+  public static <S extends HxCodeStream<S>> S genericConvertLong(final HxType toType,
+                                                                  final S stream) {
+    if (toType.isArray()) {
+      throw new IllegalArgumentException("Cannot convert an int to an array: " + toType);
+    }
+
+    switch (toType.getSort()) {
+      case BOOLEAN:
+        LABEL notZero = new LABEL();
+        LABEL endif = new LABEL();
+        return stream
+          .LCONST_0()
+          .LCMP()
+          .IFNE(notZero)
+          .ICONST_0()
+          .GOTO(endif)
+          .LABEL(notZero)
+          .ICONST_1()
+          .LABEL(endif);
+      case BYTE:
+        return stream.L2I().I2B();
+      case CHAR:
+        return stream.L2I().I2C();
+      case SHORT:
+        return stream.L2I().I2S();
+      case INT:
+        return stream.L2I();
+      case FLOAT:
+        return stream.L2F();
+      case LONG:
+        return stream;
+      case DOUBLE:
+        return stream.L2D();
+      default: {
+        return wrapIfNeeded(HxSort.LONG, stream);
+      }
+    }
+  }
+
+  public static <S extends HxCodeStream<S>> S genericConvertDouble(final HxType toType,
+                                                                 final S stream) {
+    if (toType.isArray()) {
+      throw new IllegalArgumentException("Cannot convert an int to an array: " + toType);
+    }
+
+    switch (toType.getSort()) {
+      case BOOLEAN:
+        LABEL notZero = new LABEL();
+        LABEL endif = new LABEL();
+        return stream
+          .DCONST_0()
+          .DCMPG()
+          .IFNE(notZero)
+          .ICONST_0()
+          .GOTO(endif)
+          .LABEL(notZero)
+          .ICONST_1()
+          .LABEL(endif);
+      case BYTE:
+        return stream.D2I().I2B();
+      case CHAR:
+        return stream.D2I().I2C();
+      case SHORT:
+        return stream.D2I().I2S();
+      case INT:
+        return stream.D2I();
+      case FLOAT:
+        return stream.D2F();
+      case LONG:
+        return stream.D2L();
+      case DOUBLE:
+        return stream;
+      default: {
+        return wrapIfNeeded(HxSort.DOUBLE, stream);
       }
     }
   }
@@ -196,8 +353,10 @@ public abstract class HxCgenUtils {
     }
   }
 
-  public static <S extends HxCodeStream<S>> S genericLoadTypes(final List<HxType> types, int slotShift, final S stream) {
-    for(HxType type : types) {
+  public static <S extends HxCodeStream<S>> S genericLoadTypes(final List<HxType> types,
+                                                               int slotShift,
+                                                               final S stream) {
+    for (HxType type : types) {
       genericLoadSlot(type, slotShift, stream);
       slotShift += type.getSlotsCount();
     }
@@ -247,18 +406,20 @@ public abstract class HxCgenUtils {
    * @param variableSize
    */
   public static void shiftAccessToLocalVariable(final HxInstruction instruction,
-                                                 final int slotOffset,
-                                                 final int variableSize) {
+                                                final int slotOffset,
+                                                final int variableSize) {
     instruction.forEachNext(
       ins -> ins.hasSort(HxInstructionSort.Load) || ins.hasSort(HxInstructionSort.Store),
       ins -> shiftAccessToLocalVariables(ins, slotOffset, variableSize)
     );
   }
 
-  private static void shiftAccessToLocalVariables(final HxInstruction instruction, final int parametersOffset, final int offsetAddition) {
+  private static void shiftAccessToLocalVariables(final HxInstruction instruction,
+                                                  final int parametersOffset,
+                                                  final int offsetAddition) {
     final AbstractLocalAccessInstruction accessInstruction = (AbstractLocalAccessInstruction) instruction;
     int slotIndex = accessInstruction.getOperand();
-    if(slotIndex >= parametersOffset) {
+    if (slotIndex >= parametersOffset) {
       accessInstruction.setOperand(slotIndex + offsetAddition);
     }
   }
@@ -289,7 +450,12 @@ public abstract class HxCgenUtils {
 
   public static <S extends HxCodeStream<S>> S wrapIfNeeded(final HxType possiblyPrimitiveType,
                                                            final S stream) {
-    switch (possiblyPrimitiveType.getSort()) {
+    return wrapIfNeeded (possiblyPrimitiveType.getSort(), stream);
+  }
+
+  public static <S extends HxCodeStream<S>> S wrapIfNeeded(final HxSort sortOfType,
+                                                           final S stream) {
+    switch (sortOfType) {
       case BOOLEAN:
         return stream.
                        INVOKESTATIC(BOOLEAN_WRAPPER_INTERNAL_NAME, VALUE_OF_METHOD, BOOLEAN_WRAP_DESCRIPTOR, false);
@@ -315,7 +481,7 @@ public abstract class HxCgenUtils {
         return stream.
                        INVOKESTATIC(DOUBLE_WRAPPER_INTERNAL_NAME, VALUE_OF_METHOD, DOUBLE_WRAP_DESCRIPTOR, false);
       case VOID:
-        throw new IllegalArgumentException("Invalid type: " + possiblyPrimitiveType);
+        throw new IllegalArgumentException("Invalid type: " + sortOfType);
     }
     return stream;
   }

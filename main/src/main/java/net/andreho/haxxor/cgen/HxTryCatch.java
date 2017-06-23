@@ -79,6 +79,19 @@ public class HxTryCatch
   }
 
   @Override
+  public HxTryCatch addAnnotation(final HxAnnotation annotation) {
+    initAnnotated().addAnnotation(annotation);
+    return this;
+  }
+
+  @Override
+  public HxTryCatch addRepeatableAnnotationIfNeeded(final HxAnnotation annotation,
+                                                         final String repeatableAnnotationClassname) {
+    initAnnotated().addRepeatableAnnotationIfNeeded(annotation, repeatableAnnotationClassname);
+    return this;
+  }
+
+  @Override
   public Collection<HxAnnotated> getSuperAnnotated() {
     return initAnnotated().getSuperAnnotated();
   }

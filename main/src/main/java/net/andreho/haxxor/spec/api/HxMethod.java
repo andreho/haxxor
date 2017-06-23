@@ -1,5 +1,6 @@
 package net.andreho.haxxor.spec.api;
 
+import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.Utils;
 import net.andreho.haxxor.misc.MappedList;
 import net.andreho.haxxor.spec.impl.HxParameterImpl;
@@ -29,29 +30,29 @@ public interface HxMethod
 
   enum Modifiers
     implements HxModifier {
-    PUBLIC(0x0001),
+    PUBLIC(Opcodes.ACC_PUBLIC),
     // class, field, method
-    PRIVATE(0x0002),
+    PRIVATE(Opcodes.ACC_PRIVATE),
     // class, field, method
-    PROTECTED(0x0004),
+    PROTECTED(Opcodes.ACC_PROTECTED),
     // class, field, method
-    STATIC(0x0008),
+    STATIC(Opcodes.ACC_STATIC),
     // field, method
-    FINAL(0x0010),
+    FINAL(Opcodes.ACC_FINAL),
     // class, field, method, parameter
-    SYNCHRONIZED(0x0020),
+    SYNCHRONIZED(Opcodes.ACC_SYNCHRONIZED),
     // method
-    BRIDGE(0x0040),
+    BRIDGE(Opcodes.ACC_BRIDGE),
     // method
-    VARARGS(0x0080),
+    VARARGS(Opcodes.ACC_VARARGS),
     // method
-    NATIVE(0x0100),
+    NATIVE(Opcodes.ACC_NATIVE),
     // method
-    ABSTRACT(0x0400),
+    ABSTRACT(Opcodes.ACC_ABSTRACT),
     // class, method
-    STRICT(0x0800),
+    STRICT(Opcodes.ACC_STRICT),
     // method
-    SYNTHETIC(0x1000); // class, field, method, parameter
+    SYNTHETIC(Opcodes.ACC_SYNTHETIC); // class, field, method, parameter
 
     final int bit;
 

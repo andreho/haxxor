@@ -17,10 +17,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class CachedHxByteCodeLoader
     extends DefaultHxByteCodeLoader {
 
-  public static final String HX_BYTECODE_LOADER_MAX_CACHE =
-      "hx.bytecode.loader.max.cache";
+  public static final String MAX_CACHE_SIZE_PARAMETER =
+      "hx.bytecode.loader.max_cache_size";
   public static final int MAXIMAL_CACHE_SIZE =
-      Integer.parseInt(System.getProperty(HX_BYTECODE_LOADER_MAX_CACHE, "1000"));
+      Math.max(100, Integer.parseInt(System.getProperty(MAX_CACHE_SIZE_PARAMETER, "1000")));
 
   private static final Map<String, Reference<byte[]>> GLOBAL_CACHE =
       new LinkedHashMap<String, Reference<byte[]>>() {

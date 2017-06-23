@@ -68,7 +68,6 @@ public class CgenTest {
 //    System.out.println(HxType.Modifiers.toSet(new EmbeddingClassesBean().getAnonymousClass().getClass().getModifiers()));
 //    System.out.println(HxType.Modifiers.toSet(new EmbeddingClassesBean().getLocalClassFromMethod().getClass().getModifiers()));
 //    System.out.println(HxType.Modifiers.toSet(new EmbeddingClassesBean().getLocalClassFromConstructor().getClass().getModifiers()));
-
     Resource resource = makeResourceMap().get("net/andreho/haxxor/SandBoxTest$Testing.class");
     checkClass(resource);
   }

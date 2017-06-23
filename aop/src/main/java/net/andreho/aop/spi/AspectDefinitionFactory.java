@@ -14,12 +14,12 @@ public interface AspectDefinitionFactory {
    * @param haxxor
    * @param type
    * @param aspectProfiles
-   * @param aspectStepTypes
+   * @param aspectAdviceTypes
    * @return
    */
   AspectDefinition create(Haxxor haxxor,
                           HxType type,
                           Collection<AspectProfile> aspectProfiles,
-                          Collection<AspectStepType> aspectStepTypes
+                          Collection<AspectAdviceType> aspectAdviceTypes
   );
 }

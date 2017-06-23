@@ -131,6 +131,19 @@ public class HxLocalVariable
   }
 
   @Override
+  public HxLocalVariable addAnnotation(final HxAnnotation annotation) {
+    initAnnotated().addAnnotation(annotation);
+    return this;
+  }
+
+  @Override
+  public HxLocalVariable addRepeatableAnnotationIfNeeded(final HxAnnotation annotation,
+                                                       final String repeatableAnnotationClassname) {
+    initAnnotated().addRepeatableAnnotationIfNeeded(annotation, repeatableAnnotationClassname);
+    return this;
+  }
+
+  @Override
   public Map<String, HxAnnotation> getAnnotations() {
     return initAnnotated().getAnnotations();
   }

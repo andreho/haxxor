@@ -16,14 +16,21 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
+
+import static net.andreho.haxxor.Utils.concat;
 
 /**
  * Created by a.hofmann on 30.05.2015.
  */
 public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>>
-    extends HxMemberImpl<A>
-    implements HxAnnotated<A> {
+  extends HxMemberImpl<A>
+  implements HxAnnotated<A> {
+
+  private static final Map<String, String> REPEATABLE_CACHE = new ConcurrentHashMap<>();
+
+  private static final HxAnnotation[] EMPTY_ANNOTATIONS_ARRAY = new HxAnnotation[0];
   private static final Class<Repeatable> REPEATABLE_ANNOTATION_CLASS = Repeatable.class;
   protected Map<String, HxAnnotation> annotations = DEFAULT_ANNOTATION_MAP;
 
@@ -32,8 +39,8 @@ public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>
   }
 
   protected void cloneAnnotationsTo(HxAnnotatedImpl<A> other) {
-    if(!getAnnotations().isEmpty()) {
-      for(HxAnnotation annotation : other.getAnnotations().values()) {
+    if (!getAnnotations().isEmpty()) {
+      for (HxAnnotation annotation : other.getAnnotations().values()) {
         other.addAnnotation(annotation.clone());
       }
     } else {
@@ -48,24 +55,81 @@ public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>
 
   @Override
   public A setAnnotations(Collection<HxAnnotation> annotations) {
-    if(Utils.isUninitialized(annotations)) {
+    if (Utils.isUninitialized(annotations)) {
       this.annotations = DEFAULT_ANNOTATION_MAP;
       return (A) this;
     }
 
-    Map<String, HxAnnotation> annotationsMap = this.annotations;
-
-    if (annotationsMap == DEFAULT_ANNOTATION_MAP) {
-      this.annotations = annotationsMap = new LinkedHashMap<>();
-    }
-
+    final Map<String, HxAnnotation> annotationsMap = initializeAnnotationsMap();
     annotationsMap.clear();
 
-    for(HxAnnotation annotation : annotations) {
+    for (HxAnnotation annotation : annotations) {
       annotationsMap.putIfAbsent(annotation.getType().getName(), annotation);
     }
 
     return (A) this;
+  }
+
+  private Map<String, HxAnnotation> initializeAnnotationsMap() {
+    Map<String, HxAnnotation> annotationsMap = this.annotations;
+    if (annotationsMap == DEFAULT_ANNOTATION_MAP) {
+      this.annotations = annotationsMap = new LinkedHashMap<>();
+    }
+    return annotationsMap;
+  }
+
+  @Override
+  public A addAnnotation(final HxAnnotation annotation) {
+    checkAnnotationsState(annotation);
+
+    final HxAnnotation currentAnnotation = initializeAnnotationsMap()
+      .putIfAbsent(annotation.getType().getName(), annotation);
+
+    if(currentAnnotation != null) {
+      throw new IllegalStateException(
+        "Invalid attempt to add multiple annotations with type: " + annotation.getType());
+    }
+
+    annotation.setDeclaringMember(this);
+
+    return (A) this;
+  }
+
+  @Override
+  public A addRepeatableAnnotationIfNeeded(final HxAnnotation annotation, String repeatableAnnotationType) {
+    checkAnnotationsState(annotation);
+    final Optional<HxAnnotation> repeatableAnnotationOptional = this.getAnnotation(repeatableAnnotationType);
+
+    HxAnnotation repeatableAnnotation;
+    if(repeatableAnnotationOptional.isPresent()) {
+      repeatableAnnotation = repeatableAnnotationOptional.get();
+      final HxAnnotation[] values = concat(repeatableAnnotation.getAttribute("value", EMPTY_ANNOTATIONS_ARRAY), annotation);
+      repeatableAnnotation.attribute("value", values);
+    } else {
+      final HxAnnotation currentAnnotation = initializeAnnotationsMap()
+        .putIfAbsent(annotation.getType().getName(), annotation);
+
+      if(currentAnnotation == null) {
+        currentAnnotation.setDeclaringMember(this);
+      } else {
+        removeAnnotation(currentAnnotation);
+        repeatableAnnotation =
+          annotation.getType().getHaxxor().createAnnotation(repeatableAnnotationType, true);
+        repeatableAnnotation.attribute("value", new HxAnnotation[]{currentAnnotation});
+
+        addAnnotation(repeatableAnnotation);
+        addRepeatableAnnotationIfNeeded(currentAnnotation, repeatableAnnotationType);
+        addRepeatableAnnotationIfNeeded(annotation, repeatableAnnotationType);
+      }
+    }
+
+    return (A) this;
+  }
+
+  private void checkAnnotationsState(final HxAnnotation annotation) {
+    if (annotation.getDeclaringMember() != null) {
+      throw new IllegalArgumentException("Given annotation was already bound to another host: "+annotation.getDeclaringMember());
+    }
   }
 
   @Override
@@ -81,14 +145,15 @@ public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>
   @Override
   public Optional<HxAnnotation> getAnnotation(final String type) {
     final HxAnnotation annotation = this.annotations.get(type);
-    if(annotation != null) {
+    if (annotation != null) {
       return Optional.of(annotation);
     }
     return Optional.empty();
   }
 
   @Override
-  public Collection<HxAnnotation> annotations(final Predicate<HxAnnotation> predicate, boolean recursive) {
+  public Collection<HxAnnotation> annotations(final Predicate<HxAnnotation> predicate,
+                                              boolean recursive) {
     final List<HxAnnotation> annotationList = new ArrayList<>(this.annotations.size());
 
     for (HxAnnotation annotation : getAnnotations().values()) {

@@ -1,65 +1,16 @@
 package net.andreho.haxxor.spec.impl;
 
-import net.andreho.haxxor.spec.api.HxAnnotated;
-import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxGenericElement;
-
-import java.util.Collection;
-import java.util.Map;
-import java.util.function.Predicate;
 
 /**
  * <br/>Created by andreho on 3/26/16 at 7:17 PM.<br/>
  */
-public abstract class HxAbstractGeneric<A extends HxGenericElement<A>> implements HxAnnotated<A>,
-                                                                                  HxGenericElement<A> {
-  private HxAnnotated annotated;
-
-  @Override
-  public Map<String, HxAnnotation> getAnnotations() {
-    final HxAnnotated annotated = this.annotated;
-    if(annotated == null) {
-      return HxAnnotated.DEFAULT_ANNOTATION_MAP;
-    }
-    return annotated.getAnnotations();
-  }
-
-  @Override
-  public A setAnnotations(final Collection<HxAnnotation> collection) {
-    HxAnnotated annotated = this.annotated;
-    if(annotated == null) {
-      this.annotated = annotated = new HxAnnotatedImpl();
-    }
-    annotated.setAnnotations(collection);
-    return (A) this;
-  }
-
-  @Override
-  public Collection<HxAnnotated> getSuperAnnotated() {
-    return HxAnnotated.DEFAULT_SUPER_ANNOTATED_COLLECTION;
-  }
-
-  @Override
-  public Collection<HxAnnotation> getAnnotationsByType(final String type) {
-    final HxAnnotated annotated = this.annotated;
-    if(annotated == null) {
-      return HxAnnotated.DEFAULT_ANNOTATION_COLLECTION;
-    }
-    return annotated.getAnnotationsByType(type);
-  }
-
-  @Override
-  public Collection<HxAnnotation> annotations(final Predicate predicate,
-                                              final boolean recursive) {
-    if(annotated == null) {
-      return HxAnnotated.DEFAULT_ANNOTATION_COLLECTION;
-    }
-
-    return annotated.annotations(predicate, recursive);
-  }
+public abstract class HxAbstractGeneric<A extends HxGenericElement<A>>
+  extends HxAnnotatedDelegate<A>
+  implements HxGenericElement<A> {
 
   protected HxGenericElement<?> minimize(HxGenericElement<?> hxGeneric) {
-    if(hxGeneric instanceof HxAbstractGeneric) {
+    if (hxGeneric instanceof HxAbstractGeneric) {
       return ((HxAbstractGeneric) hxGeneric).minimize();
     }
     return hxGeneric;

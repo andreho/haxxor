@@ -2,11 +2,11 @@ package net.andreho.aop.spi.impl.activation;
 
 import net.andreho.aop.api.Order;
 import net.andreho.aop.spi.Activator;
+import net.andreho.aop.spi.AspectAdviceType;
 import net.andreho.aop.spi.AspectDefinition;
 import net.andreho.aop.spi.AspectDefinitionFactory;
 import net.andreho.aop.spi.AspectProfile;
 import net.andreho.aop.spi.AspectProfileFactory;
-import net.andreho.aop.spi.AspectStepType;
 import net.andreho.aop.spi.DefaultAspectStepTypes;
 import net.andreho.aop.spi.ElementMatcherFactory;
 import net.andreho.aop.spi.impl.AspectDefinitionFactoryImpl;
@@ -78,7 +78,7 @@ public class AspectActivator
   }
 
   @Override
-  public Collection<AspectStepType> getAspectStepTypes() {
+  public Collection<AspectAdviceType> getAspectStepTypes() {
     return Stream.of(DefaultAspectStepTypes.values())
                  .map(DefaultAspectStepTypes::getStepType)
                  .collect(Collectors.toSet());
@@ -95,7 +95,7 @@ public class AspectActivator
       return;
     }
 
-    final Collection<AspectStepType> aspectStepTypes = Collections.unmodifiableCollection(getAspectStepTypes());
+    final Collection<AspectAdviceType> aspectAdviceTypes = Collections.unmodifiableCollection(getAspectStepTypes());
     final AspectProfileFactory aspectProfileFactory = getAspectProfileFactory();
 
     final Haxxor haxxor = new Haxxor(Haxxor.Flags.SKIP_CODE);
@@ -111,7 +111,7 @@ public class AspectActivator
     final List<AspectDefinition> aspectDefinitions = new ArrayList<>(aspects.size());
 
     for(HxType aspectType : aspectTypes) {
-      final AspectDefinition aspectDefinition = doActivation(aspectType, aspectProfiles, aspectStepTypes);
+      final AspectDefinition aspectDefinition = doActivation(aspectType, aspectProfiles, aspectAdviceTypes);
       if(aspectDefinition != null) {
         aspectDefinitions.add(aspectDefinition);
         if(LOG.isDebugEnabled()) {
@@ -129,14 +129,14 @@ public class AspectActivator
 
   protected AspectDefinition doActivation(final HxType aspectType,
                                           final Collection<AspectProfile> aspectProfiles,
-                                          final Collection<AspectStepType> aspectStepTypes) {
+                                          final Collection<AspectAdviceType> aspectAdviceTypes) {
 
     try {
       return aspectDefinitionFactory.create(
         aspectType.getHaxxor(),
         aspectType,
         aspectProfiles,
-        aspectStepTypes
+        aspectAdviceTypes
       );
     } catch (Throwable t) {
       LOG.error("Aspect's activation ends up in an error: " + aspectType.getName(), t);

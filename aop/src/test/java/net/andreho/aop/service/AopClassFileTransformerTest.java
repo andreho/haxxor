@@ -15,11 +15,20 @@ class AopClassFileTransformerTest {
   @Test
   void checkAgentLoad() {
     AnyType.staticMethod(42);
+    try {
+      AnyType.staticFailingMethod("ok");
+    } catch (RuntimeException e) {
+      e.printStackTrace();
+    }
 
     AnyType anyType = new AnyType();
 
     anyType.complexMethod("ok", true, (byte) 1, (short) 1, (char) 1, 1, 1, 1, 1, 1, 1, 1);
 
-    anyType.self();
+    try {
+      anyType.failingMethod();
+    } catch (RuntimeException e) {
+      e.printStackTrace();
+    }
   }
 }
