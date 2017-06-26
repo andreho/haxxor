@@ -3,7 +3,10 @@ package net.andreho.haxxor.cgen;
 
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
+import net.andreho.haxxor.spec.api.HxSort;
 import net.andreho.haxxor.spec.api.HxType;
+
+import java.util.List;
 
 /**
  * <br/>Created by a.hofmann on 16.06.2015.<br/>
@@ -83,15 +86,120 @@ public interface HxExtendedCodeStream
     return CHECKCAST(type.toInternalName());
   }
 
-  /**
-   * Pushes a class reference from constant pool on the operand stack.<br/>
-   * Code: <code>0x12</code><br/>
-   *
-   * @param type to push
-   * @return this
-   * @implNote by specification this command called <b>LDC</b> too.
-   */
   default HxExtendedCodeStream TYPE(HxType type) {
     return TYPE(type.toInternalName());
+  }
+
+  default HxExtendedCodeStream GENERIC_RETURN(HxSort returnValueSort) { {
+      switch (returnValueSort) {
+        case VOID:
+          return RETURN();
+        case BOOLEAN:
+        case BYTE:
+        case CHAR:
+        case SHORT:
+        case INT:
+          return IRETURN();
+        case FLOAT:
+          return FRETURN();
+        case LONG:
+          return LRETURN();
+        case DOUBLE:
+          return DRETURN();
+        default: {
+          return ARETURN();
+        }
+      }
+    }
+  }
+
+  default HxExtendedCodeStream GENERIC_ARRAY_STORE(HxType arrayType) {
+    final HxType componentType =
+       arrayType.getComponentType().orElseThrow(IllegalArgumentException::new);
+
+    switch (componentType.getSort()) {
+      case BOOLEAN:
+      case BYTE:
+        return BASTORE();
+      case CHAR:
+        return CASTORE();
+      case SHORT:
+        return SASTORE();
+      case INT:
+        return IASTORE();
+      case FLOAT:
+        return FASTORE();
+      case LONG:
+        return LASTORE();
+      case DOUBLE:
+        return DASTORE();
+      default: {
+        return AASTORE();
+      }
+    }
+  }
+
+  default HxExtendedCodeStream GENERIC_LOAD(final List<HxType> types, int slotShift) {
+    for (HxType type : types) {
+      GENERIC_LOAD(type, slotShift);
+      slotShift += type.getSlotsCount();
+    }
+    return this;
+  }
+
+  default HxExtendedCodeStream GENERIC_LOAD(final HxType type, final int slotId) {
+    switch (type.getSort()) {
+      case VOID:
+        throw new IllegalArgumentException("Invalid parameter: " + type);
+
+      case BOOLEAN:
+      case BYTE:
+      case CHAR:
+      case SHORT:
+      case INT:
+        return ILOAD(slotId);
+      case FLOAT:
+        return FLOAD(slotId);
+      case LONG:
+        return LLOAD(slotId);
+      case DOUBLE:
+        return DLOAD(slotId);
+      default:
+        return ALOAD(slotId);
+    }
+  }
+
+  default HxExtendedCodeStream GENERIC_STORE(final HxSort sort, final int slotId) {
+    switch (sort) {
+      case VOID:
+        throw new IllegalArgumentException("Invalid parameter: " + sort);
+
+      case BOOLEAN:
+      case BYTE:
+      case CHAR:
+      case SHORT:
+      case INT:
+        return ISTORE(slotId);
+      case FLOAT:
+        return FSTORE(slotId);
+      case LONG:
+        return LSTORE(slotId);
+      case DOUBLE:
+        return DSTORE(slotId);
+      default:
+        return ASTORE(slotId);
+    }
+  }
+
+  default HxExtendedCodeStream GENERIC_DUP(final HxSort sort) {
+    switch (sort) {
+      case VOID:
+        return this;
+      case LONG:
+      case DOUBLE:
+        return DUP2();
+      default:
+        return DUP();
+    }
   }
 }

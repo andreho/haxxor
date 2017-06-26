@@ -1,7 +1,9 @@
-package net.andreho.aop.spi.impl.advices.injectors;
+package net.andreho.aop.spi;
 
 import net.andreho.asm.org.objectweb.asm.Type;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -12,6 +14,13 @@ import java.util.Map;
  * <br/>Created by a.hofmann on 21.06.2017 at 01:01.
  */
 public abstract class Helpers {
+  enum Sort {
+    TYPE,
+    FIELD,
+    METHOD,
+    CONSTRUCTOR
+  }
+
   private static final ClassValue<Map<String, Method>> CACHED_METHODS = new ClassValue<Map<String, Method>>() {
     @Override
     protected Map<String, Method> computeValue(final Class<?> type) {
@@ -28,7 +37,7 @@ public abstract class Helpers {
     protected Map<String, Constructor<?>> computeValue(final Class<?> type) {
       final Map<String, Constructor<?>> cache = new HashMap<>();
       for(Constructor<?> constructor : type.getDeclaredConstructors()) {
-        cache.put(constructor.getName() + Type.getConstructorDescriptor(constructor), constructor);
+        cache.put(Type.getConstructorDescriptor(constructor), constructor);
       }
       return cache;
     }
@@ -67,11 +76,11 @@ public abstract class Helpers {
 
   /**
    * @param cls
-   * @param nameWithSignature
+   * @param signature
    * @return
    */
-  public static Constructor<?> getConstructorOf(Class<?> cls, String nameWithSignature) {
-    return CACHED_CONSTRUCTORS.get(cls).get(nameWithSignature);
+  public static Constructor<?> getConstructorOf(Class<?> cls, String signature) {
+    return CACHED_CONSTRUCTORS.get(cls).get(signature);
   }
 
   /**
@@ -81,5 +90,14 @@ public abstract class Helpers {
    */
   public static Field getFieldOf(Class<?> cls, String name) {
     return CACHED_FIELDS.get(cls).get(name);
+  }
+
+  /**
+   * @param annotatedElement
+   * @param annotationsType
+   * @return
+   */
+  public static <T extends Annotation> T getAnnotationOf(AnnotatedElement annotatedElement, Class<T> annotationsType) {
+    return annotatedElement.getAnnotation(annotationsType);
   }
 }

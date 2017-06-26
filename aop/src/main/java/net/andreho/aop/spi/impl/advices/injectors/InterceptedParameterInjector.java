@@ -14,7 +14,7 @@ import net.andreho.haxxor.spec.api.HxParameter;
 public final class InterceptedParameterInjector
   extends AbstractAnnotatedParameterInjector {
 
-  private static final String HELPERS_CLASS = "net/andreho/aop/spi/impl/advices/injectors/Helpers";
+  private static final String HELPERS_CLASS = "net/andreho/aop/spi/Helpers";
   public static final InterceptedParameterInjector INSTANCE = new InterceptedParameterInjector();
 
   public InterceptedParameterInjector() {
@@ -39,18 +39,16 @@ public final class InterceptedParameterInjector
                                  "(Ljava/lang/Object;)Ljava/lang/Class;", false);
     }
 
-    final String key = original.toDescriptor(new StringBuilder(original.getName())).toString();
-
-    stream.LDC(key);
+    String key;
 
     if (original.isConstructor()) {
-
-      stream.INVOKESTATIC(HELPERS_CLASS,
+      key = original.toDescriptor();
+      stream.LDC(key).INVOKESTATIC(HELPERS_CLASS,
                           "getConstructorOf",
                           "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/reflect/Constructor;", false);
     } else {
-
-      stream.INVOKESTATIC(HELPERS_CLASS,
+      key = original.toDescriptor(new StringBuilder(original.getName())).toString();
+      stream.LDC(key).INVOKESTATIC(HELPERS_CLASS,
                           "getMethodOf",
                           "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/reflect/Method;", false);
     }

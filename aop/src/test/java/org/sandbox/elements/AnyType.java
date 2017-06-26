@@ -18,7 +18,7 @@ public class AnyType {
 
   public static void staticFailingMethod(String message) {
     System.out.println(">>> staticFailingMethod(...)");
-    throw new RuntimeException(message);
+    //throw new RuntimeException(message);
   }
 
   public String complexMethod(String name, boolean bool, byte b, short s, char c, int i, float f, long l, double d, int ... rest) {
@@ -64,6 +64,7 @@ public class AnyType {
 
   public AnyType failingMethod() {
     System.out.println(">>> failingMethod(...)");
-    throw new RuntimeException();
+    //throw new RuntimeException();
+    return this;
   }
 }

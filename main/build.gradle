@@ -1,5 +1,5 @@
 group 'net.andreho'
-version '0.0.1'
+version projectVersion
 
 dependencies {
   compile project(':asm')

@@ -8,6 +8,8 @@ import net.andreho.haxxor.cgen.HxInstructionsType;
 import net.andreho.haxxor.cgen.HxLinkedMethodBody;
 import net.andreho.haxxor.cgen.HxLocalVariable;
 import net.andreho.haxxor.cgen.HxTryCatch;
+import net.andreho.haxxor.cgen.impl.HxLocalVariableImpl;
+import net.andreho.haxxor.cgen.impl.HxTryCatchImpl;
 import net.andreho.haxxor.cgen.impl.ExtendedInstructionCodeStream;
 import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractSimpleJumpInstruction;
@@ -73,7 +75,7 @@ public class HxMethodBodyImpl
       final LABEL end = remap(mapping, tryCatch.getEnd());
       final LABEL handler = remap(mapping, tryCatch.getHandler());
 
-      otherBody.addTryCatch(new HxTryCatch(start, end, handler, tryCatch.getType()));
+      otherBody.addTryCatch(new HxTryCatchImpl(start, end, handler, tryCatch.getType()));
     }
 
     for(HxLocalVariable localVariable : localVariables) {
@@ -81,7 +83,7 @@ public class HxMethodBodyImpl
       final LABEL end = remap(mapping, localVariable.getEnd());
 
       otherBody.addLocalVariable(
-        new HxLocalVariable(
+        new HxLocalVariableImpl(
           localVariable.getIndex(),
           localVariable.getName(),
           localVariable.getDescriptor(),

@@ -1,7 +1,7 @@
 package org.sandbox.examples.log;
 
 import net.andreho.aop.api.Aspect;
-import net.andreho.aop.api.Forwarding;
+import net.andreho.aop.api.Forward;
 import net.andreho.aop.api.Modify;
 import net.andreho.aop.api.injectable.Arg;
 import net.andreho.aop.api.injectable.Attribute;
@@ -91,32 +91,32 @@ public class LogAspect {
     return true;
   }
 
-  @Forwarding(@Methods(declaredBy = @Classes(@ClassWith(Logging.class)), named = @Named("info")))
+  @Forward(@Methods(declaredBy = @Classes(@ClassWith(Logging.class)), named = @Named("info")))
   public static void info(@Arg String message, @Attribute(LOGGER_ATTRIBUTE) Logger logger) {
     logger.info(message);
   }
 
-  @Forwarding(@Methods(declaredBy = @Classes(@ClassWith(Logging.class)), named = @Named("trace")))
+  @Forward(@Methods(declaredBy = @Classes(@ClassWith(Logging.class)), named = @Named("trace")))
   public static void trace(@Arg String message, @Attribute(LOGGER_ATTRIBUTE) Logger logger) {
     logger.trace(message);
   }
 
-  @Forwarding(@Methods(declaredBy = @Classes(@ClassWith(Logging.class)), named = @Named("debug")))
+  @Forward(@Methods(declaredBy = @Classes(@ClassWith(Logging.class)), named = @Named("debug")))
   public static void debug(@Arg String message, @Attribute(LOGGER_ATTRIBUTE) Logger logger) {
     logger.debug(message);
   }
 
-  @Forwarding(@Methods(declaredBy = @Classes(@ClassWith(Logging.class)), named = @Named("warn")))
+  @Forward(@Methods(declaredBy = @Classes(@ClassWith(Logging.class)), named = @Named("warn")))
   public static void warn(@Arg String message, @Attribute(LOGGER_ATTRIBUTE) Logger logger) {
     logger.warn(message);
   }
 
-  @Forwarding(@Methods(declaredBy = @Classes(@ClassWith(Logging.class)), named = @Named("error")))
+  @Forward(@Methods(declaredBy = @Classes(@ClassWith(Logging.class)), named = @Named("error")))
   public static void error(@Arg String message, @Attribute(LOGGER_ATTRIBUTE) Logger logger) {
     logger.error(message);
   }
 
-  @Forwarding(@Methods(declaredBy = @Classes(@ClassWith(Logging.class)), named = @Named("fatal")))
+  @Forward(@Methods(declaredBy = @Classes(@ClassWith(Logging.class)), named = @Named("fatal")))
   public static void fatal(@Arg String message, @Attribute(LOGGER_ATTRIBUTE) Logger logger) {
     logger.error(message);
   }

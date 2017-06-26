@@ -1,6 +1,7 @@
 package net.andreho.haxxor.cgen;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
+import net.andreho.haxxor.cgen.impl.HxLocalVariableImpl;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -24,7 +25,7 @@ public class HxLocals
     if (capacity < 0) {
       throw new IllegalArgumentException("Invalid capacity: " + capacity);
     }
-    this.slots = new HxLocalVariable[capacity];
+    this.slots = new HxLocalVariableImpl[capacity];
     this.length = this.maxLength = 0;
   }
 

@@ -387,6 +387,30 @@ public abstract class HxCgenUtils {
     }
   }
 
+  public static <S extends HxCodeStream<S>> S genericStoreSlot(final HxType type,
+                                                               final int slotId,
+                                                               final S stream) {
+    switch (type.getSort()) {
+      case VOID:
+        throw new IllegalArgumentException("Invalid parameter: " + type);
+
+      case BOOLEAN:
+      case BYTE:
+      case CHAR:
+      case SHORT:
+      case INT:
+        return stream.ISTORE(slotId);
+      case FLOAT:
+        return stream.FSTORE(slotId);
+      case LONG:
+        return stream.LSTORE(slotId);
+      case DOUBLE:
+        return stream.DSTORE(slotId);
+      default:
+        return stream.ASTORE(slotId);
+    }
+  }
+
   public static <S extends HxCodeStream<S>> S genericDuplicate(final HxType type,
                                                                final S stream) {
     switch (type.getSort()) {
@@ -424,29 +448,6 @@ public abstract class HxCgenUtils {
     }
   }
 
-  public static <S extends HxCodeStream<S>> S genericStoreSlot(final HxType type,
-                                                               final int slotId,
-                                                               final S stream) {
-    switch (type.getSort()) {
-      case VOID:
-        throw new IllegalArgumentException("Invalid parameter: " + type);
-
-      case BOOLEAN:
-      case BYTE:
-      case CHAR:
-      case SHORT:
-      case INT:
-        return stream.ISTORE(slotId);
-      case FLOAT:
-        return stream.FSTORE(slotId);
-      case LONG:
-        return stream.LSTORE(slotId);
-      case DOUBLE:
-        return stream.DSTORE(slotId);
-      default:
-        return stream.ASTORE(slotId);
-    }
-  }
 
   public static <S extends HxCodeStream<S>> S wrapIfNeeded(final HxType possiblyPrimitiveType,
                                                            final S stream) {

@@ -13,7 +13,7 @@ import net.andreho.haxxor.spec.api.HxParameter;
  */
 public final class DeclaringParameterInjector
   extends AbstractAnnotatedParameterInjector {
-  private static final String HELPERS_CLASS = "net/andreho/aop/spi/impl/advices/injectors/Helpers";
+  private static final String HELPERS_CLASS = "net/andreho/aop/spi/Helpers";
   public static final DeclaringParameterInjector INSTANCE = new DeclaringParameterInjector();
 
   public DeclaringParameterInjector() {

@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Order(StandardOrder.FORWARDING)
-public @interface Forwarding {
+public @interface Forward {
 
   /**
    * @return
