@@ -27,7 +27,8 @@ public final class ArityParameterInjector
                                            final HxParameter parameter,
                                            final HxInstruction instruction) {
 
-    instruction.asStream().LDC(original.getParametersCount());
+    instruction.asStream()
+               .LDC(original.getParametersCount());
     return true;
   }
 }

@@ -203,7 +203,7 @@ public interface HxInstruction
   @Override
   default Iterator<HxInstruction> iterator() {
     return new Iterator<HxInstruction>() {
-      HxInstruction visited;
+      HxInstruction last;
       HxInstruction current = HxInstruction.this;
 
       @Override
@@ -213,17 +213,17 @@ public interface HxInstruction
 
       @Override
       public void remove() {
-        if (this.visited == null) {
+        if (this.last == null) {
           throw new IllegalStateException();
         }
 
-        this.visited.remove();
-        this.visited = null;
+        this.last.remove();
+        this.last = null;
       }
 
       @Override
       public HxInstruction next() {
-        HxInstruction instruction = this.visited = this.current;
+        HxInstruction instruction = this.last = this.current;
 
         if (instruction == null) {
           throw new NoSuchElementException();
@@ -239,9 +239,9 @@ public interface HxInstruction
 
   Optional<HxInstruction> findLastWithType(final HxInstructionType instructionType);
 
-  Optional<HxInstruction> findFirstWithKind(final HxInstructionSort instructionSort);
+  Optional<HxInstruction> findFirstWithSort(final HxInstructionSort instructionSort);
 
-  Optional<HxInstruction> findLastWithKind(final HxInstructionSort instructionSort);
+  Optional<HxInstruction> findLastWithSort(final HxInstructionSort instructionSort);
 
   Optional<HxInstruction> findFirst(final Predicate<HxInstruction> predicate);
 
@@ -255,12 +255,25 @@ public interface HxInstruction
 
   void forEachPrevious(final Predicate<HxInstruction> predicate, final Consumer<HxInstruction> consumer);
 
+  void forNext(final Consumer<HxInstruction> consumer);
+
+  void forNext(final Predicate<HxInstruction> predicate, final Consumer<HxInstruction> consumer);
+
+  void forPrevious(final Consumer<HxInstruction> consumer);
+
+  void forPrevious(final Predicate<HxInstruction> predicate, final Consumer<HxInstruction> consumer);
+
   default HxExtendedCodeStream asStream() {
     return new InstructionCodeStream(this);
   }
-
   default <S extends HxCodeStream<S>> S asStream(Function<HxInstruction, S> factory) {
     return factory.apply(this);
   }
 
+  default HxExtendedCodeStream asAnchoredStream() {
+    return new InstructionCodeStream(this.getPrevious());
+  }
+  default <S extends HxCodeStream<S>> S asAnchoredStream(Function<HxInstruction, S> factory) {
+    return factory.apply(this.getPrevious());
+  }
 }

@@ -21,6 +21,7 @@ import java.util.function.Predicate;
 public abstract class AbstractInstruction extends HxAnnotatedDelegate<HxInstruction>
     implements HxInstruction {
 
+  public static final Predicate<HxInstruction> ANY_INSTRUCTION_PREDICATE = ins -> true;
   public static final List<Object> NO_STACK_PUSH = Collections.emptyList();
   protected static final int SINGLE_SLOT_SIZE = 1;
   protected static final int DOUBLE_SLOT_SIZE = SINGLE_SLOT_SIZE + SINGLE_SLOT_SIZE;
@@ -104,12 +105,12 @@ public abstract class AbstractInstruction extends HxAnnotatedDelegate<HxInstruct
   }
 
   @Override
-  public Optional<HxInstruction> findFirstWithKind(final HxInstructionSort instructionSort) {
+  public Optional<HxInstruction> findFirstWithSort(final HxInstructionSort instructionSort) {
     return findFirst(i -> i.hasSort(instructionSort));
   }
 
   @Override
-  public Optional<HxInstruction> findLastWithKind(final HxInstructionSort instructionSort) {
+  public Optional<HxInstruction> findLastWithSort(final HxInstructionSort instructionSort) {
     return findLast(i -> i.hasSort(instructionSort));
   }
 
@@ -141,48 +142,82 @@ public abstract class AbstractInstruction extends HxAnnotatedDelegate<HxInstruct
 
   @Override
   public void forEachNext(final Consumer<HxInstruction> consumer) {
-    Objects.requireNonNull(consumer, "Consumer can't be null.");
-    for(HxInstruction instruction = this;
-        !instruction.isEnd();
-        instruction = instruction.getNext()) {
-      consumer.accept(instruction);
-    }
+    forNext(ANY_INSTRUCTION_PREDICATE, consumer, Integer.MAX_VALUE);
   }
 
   @Override
   public void forEachNext(final Predicate<HxInstruction> predicate,
                           final Consumer<HxInstruction> consumer) {
-    Objects.requireNonNull(predicate, "Predicate can't be null.");
-    Objects.requireNonNull(consumer, "Consumer can't be null.");
-    for(HxInstruction instruction = this;
-        !instruction.isEnd();
-        instruction = instruction.getNext()) {
-      if(predicate.test(instruction)) {
-        consumer.accept(instruction);
-      }
-    }
+    forNext(predicate, consumer, Integer.MAX_VALUE);
   }
 
   @Override
   public void forEachPrevious(final Consumer<HxInstruction> consumer) {
-    Objects.requireNonNull(consumer, "Consumer can't be null.");
-    for(HxInstruction instruction = this;
-        !instruction.isBegin();
-        instruction = instruction.getPrevious()) {
-      consumer.accept(instruction);
-    }
+    forPrevious(ANY_INSTRUCTION_PREDICATE, consumer, Integer.MAX_VALUE);
   }
 
   @Override
   public void forEachPrevious(final Predicate<HxInstruction> predicate,
                               final Consumer<HxInstruction> consumer) {
+    forPrevious(predicate, consumer, Integer.MAX_VALUE);
+  }
+
+  @Override
+  public void forNext(final Consumer<HxInstruction> consumer) {
+    forNext(ANY_INSTRUCTION_PREDICATE, consumer, 1);
+  }
+
+  @Override
+  public void forNext(final Predicate<HxInstruction> predicate,
+                      final Consumer<HxInstruction> consumer) {
+    forNext(predicate, consumer, 1);
+  }
+
+  @Override
+  public void forPrevious(final Consumer<HxInstruction> consumer) {
+    forPrevious(ANY_INSTRUCTION_PREDICATE, consumer, 1);
+  }
+
+  @Override
+  public void forPrevious(final Predicate<HxInstruction> predicate,
+                          final Consumer<HxInstruction> consumer) {
+    forPrevious(predicate, consumer, 1);
+  }
+
+  private void forNext(final Predicate<HxInstruction> predicate,
+                      final Consumer<HxInstruction> consumer,
+                      int count) {
     Objects.requireNonNull(predicate, "Predicate can't be null.");
     Objects.requireNonNull(consumer, "Consumer can't be null.");
+
+    for(HxInstruction instruction = this;
+        !instruction.isEnd();
+        instruction = instruction.getNext()) {
+
+      if(predicate.test(instruction)) {
+        consumer.accept(instruction);
+        if(count-- <= 0) {
+          break;
+        }
+      }
+    }
+  }
+
+  private void forPrevious(final Predicate<HxInstruction> predicate,
+                          final Consumer<HxInstruction> consumer,
+                          int count) {
+    Objects.requireNonNull(predicate, "Predicate can't be null.");
+    Objects.requireNonNull(consumer, "Consumer can't be null.");
+
     for(HxInstruction instruction = this;
         !instruction.isBegin();
         instruction = instruction.getPrevious()) {
+
       if(predicate.test(instruction)) {
         consumer.accept(instruction);
+        if(count-- <= 0) {
+          break;
+        }
       }
     }
   }

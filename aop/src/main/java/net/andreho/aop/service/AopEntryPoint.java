@@ -1,7 +1,7 @@
 package net.andreho.aop.service;
 
 import net.andreho.aop.spi.Activator;
-import net.andreho.aop.spi.PackageFilter;
+import net.andreho.aop.spi.AspectPackageFilter;
 import net.andreho.aop.spi.impl.AspectClassVisitor;
 import net.andreho.aop.spi.impl.Constants;
 import net.andreho.asm.org.objectweb.asm.ClassReader;
@@ -39,11 +39,11 @@ import java.util.function.Supplier;
 public final class AopEntryPoint {
   private static final Logger LOG = LoggerFactory.getLogger(AopEntryPoint.class);
 
-  private static final PackageFilter[] EMPTY_PACKAGE_FILTERS = {};
+  private static final AspectPackageFilter[] EMPTY_PACKAGE_FILTERS = {};
   private static final Activator[] EMPTY_ACTIVATORS = {};
   private static final String SERVICE_LOADER_NAME = "java.util.ServiceLoader";
 
-  private volatile PackageFilter filter;
+  private volatile AspectPackageFilter filter;
   private volatile Activator activator;
   private volatile Collection<String> aspects;
 
@@ -58,8 +58,8 @@ public final class AopEntryPoint {
     return activator;
   }
 
-  private PackageFilter fetchTypeTransformerFilter(ClassLoader classLoader) {
-    PackageFilter filter = this.filter;
+  private AspectPackageFilter fetchTypeTransformerFilter(ClassLoader classLoader) {
+    AspectPackageFilter filter = this.filter;
     if (filter == null) {
       this.filter = filter = locateFilter(classLoader);
     }
@@ -141,9 +141,9 @@ public final class AopEntryPoint {
     return Activator.with(postProcess(iterable, EMPTY_ACTIVATORS));
   }
 
-  private PackageFilter locateFilter(final ClassLoader loader) {
-    Iterable<PackageFilter> iterable = perClassLoaderLookUp(loader, PackageFilter.class);
-    return PackageFilter.with(postProcess(iterable, EMPTY_PACKAGE_FILTERS));
+  private AspectPackageFilter locateFilter(final ClassLoader loader) {
+    Iterable<AspectPackageFilter> iterable = perClassLoaderLookUp(loader, AspectPackageFilter.class);
+    return AspectPackageFilter.with(postProcess(iterable, EMPTY_PACKAGE_FILTERS));
   }
 
   private <T extends Comparable<T>> T[] postProcess(final Iterable<T> iterable,

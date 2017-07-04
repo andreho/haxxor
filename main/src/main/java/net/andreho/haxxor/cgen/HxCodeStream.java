@@ -952,6 +952,18 @@ public interface HxCodeStream<Stream extends HxCodeStream<Stream>> {
 
   //----------------------------------------------------------------------------------------------------------------
 
+  /**
+   mv.visitInsn(ICONST_0);<br/>
+   mv.visitInsn(ICONST_1);<br/>
+   mv.visitInsn(ICONST_2);<br/>
+   mv.visitMultiANewArrayInsn("[[[Ljava/lang/String;", 3);<br/>
+   mv.visitVarInsn(ASTORE, 0);<br/>
+
+   mv.visitInsn(ICONST_0);<br/>
+   mv.visitInsn(ICONST_1);<br/>
+   mv.visitInsn(ICONST_2);<br/>
+   mv.visitMultiANewArrayInsn("[[[I", 3);<br/>
+   */
   Stream MULTIANEWARRAY(String internalType, int dims); //197
 
   //----------------------------------------------------------------------------------------------------------------

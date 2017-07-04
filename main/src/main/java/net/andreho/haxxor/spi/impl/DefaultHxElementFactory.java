@@ -39,7 +39,7 @@ public class DefaultHxElementFactory
 
   @Override
   public HxType createType(final String internalTypeName) {
-    if(haxxor.hasResolved(internalTypeName)) {
+    if(haxxor.hasType(internalTypeName)) {
       return haxxor.resolve(internalTypeName);
     }
     if(internalTypeName.endsWith("[]")) {

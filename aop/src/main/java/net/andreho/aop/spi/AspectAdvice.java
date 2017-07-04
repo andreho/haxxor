@@ -1,7 +1,5 @@
 package net.andreho.aop.spi;
 
-import java.util.Optional;
-
 /**
  * <br/>Created by a.hofmann on 17.06.2017 at 07:06.
  */
@@ -48,7 +46,7 @@ public interface AspectAdvice<T>
   /**
    * @return
    */
-  Optional<String> getProfileName();
+  String getProfileName();
 
   /**
    * @param ctx

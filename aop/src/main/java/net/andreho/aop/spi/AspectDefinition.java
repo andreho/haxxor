@@ -1,6 +1,5 @@
 package net.andreho.aop.spi;
 
-import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Collection;
@@ -21,6 +20,11 @@ public interface AspectDefinition {
   /**
    * @return
    */
+  String getProfile();
+
+  /**
+   * @return
+   */
   HxType getType();
 
   /**
@@ -31,12 +35,7 @@ public interface AspectDefinition {
   /**
    * @return
    */
-  Optional<HxMethod> getAspectFactory();
-
-  /**
-   * @return
-   */
-  boolean isFactoryReusable();
+  Optional<AspectFactory> getAspectFactory();
 
   /**
    * @return
@@ -47,7 +46,7 @@ public interface AspectDefinition {
    * @param originalMethodName
    * @return
    */
-  String formTargetMethodName(String originalMethodName);
+  String createShadowMethodName(String originalMethodName);
 
   /**
    * @return

@@ -83,11 +83,6 @@ public class HxMethodReferenceImpl
   }
 
   @Override
-  public HxMethod setBody(final HxMethodBody methodBody) {
-    return null;
-  }
-
-  @Override
   public Haxxor getHaxxor() {
     return declaringType.getHaxxor();
   }
@@ -98,6 +93,16 @@ public class HxMethodReferenceImpl
   }
 
   @Override
+  public String getName() {
+    return name;
+  }
+
+  @Override
+  public HxMethod setBody(final HxMethodBody methodBody) {
+    return toMethod().setBody(methodBody);
+  }
+
+  @Override
   public boolean hasBody() {
     return toMethod().hasBody();
   }
@@ -105,12 +110,6 @@ public class HxMethodReferenceImpl
   @Override
   public HxMethodBody getBody() {
     return toMethod().getBody();
-  }
-
-
-  @Override
-  public String getName() {
-    return name;
   }
 
   @Override
@@ -275,5 +274,10 @@ public class HxMethodReferenceImpl
   public HxMethod setDeclaringMember(HxMember declaringMember) {
     toMethod().setDeclaringMember(declaringMember);
     return this;
+  }
+
+  @Override
+  public boolean hasDescriptor(final String descriptor) {
+    return toMethod().hasDescriptor(descriptor);
   }
 }

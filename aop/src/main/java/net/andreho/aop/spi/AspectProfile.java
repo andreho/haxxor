@@ -1,6 +1,5 @@
 package net.andreho.aop.spi;
 
-import net.andreho.aop.api.spec.Site;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
@@ -17,18 +16,6 @@ public interface AspectProfile {
    * @return
    */
   String getName();
-
-  /**
-   *
-   * @return
-   */
-  Site getSite();
-
-  /**
-   *
-   * @return
-   */
-  boolean isSafely();
 
   /**
    *

@@ -2,14 +2,15 @@ package net.andreho.aop.spi.impl.advices.injectors;
 
 import net.andreho.aop.api.injectable.Result;
 import net.andreho.aop.spi.AspectAdvice;
-import net.andreho.aop.spi.AspectAttribute;
 import net.andreho.aop.spi.AspectContext;
+import net.andreho.aop.spi.AspectLocalAttribute;
+import net.andreho.aop.spi.AspectMethodContext;
 import net.andreho.aop.spi.impl.Constants;
-import net.andreho.haxxor.cgen.HxCgenUtils;
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxParameter;
+import net.andreho.haxxor.spec.api.HxSort;
 
 /**
  * <br/>Created by a.hofmann on 21.06.2017 at 00:49.
@@ -34,17 +35,20 @@ public final class ResultParameterInjector
                                            final HxInstruction instruction) {
     final HxExtendedCodeStream stream = instruction.asStream();
 
-    if (original.hasReturnType("void")) {
-      HxCgenUtils.genericLoadDefault(parameter.getType(), stream);
-    } else {
-      AspectAttribute attribute = context.getLocalAttribute(RESULT_ATTRIBUTES_NAME);
-      HxCgenUtils.genericLoadSlot(attribute.getType(), attribute.getIndex(), stream);
+    if (!original.hasReturnType(HxSort.VOID)) {
+      final AspectMethodContext methodContext = context.getAspectMethodContext();
+      final AspectLocalAttribute attribute = methodContext.getLocalAttribute(RESULT_ATTRIBUTES_NAME);
 
-      if(!parameter.getType().isPrimitive() && attribute.getType().isPrimitive()) {
-        HxCgenUtils.wrapIfNeeded(attribute.getType(), stream);
+      stream.GENERIC_LOAD(attribute.getType(), attribute.getIndex());
+
+      if(!parameter.getType().isPrimitive() &&
+         attribute.getType().isPrimitive()) {
+
+        stream.AUTOBOXING(attribute.getType());
       }
+      return true;
     }
 
-    return true;
+    return false;
   }
 }

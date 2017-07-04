@@ -11,8 +11,10 @@ public interface StandardOrder {
   int FORWARDING = 130_000_000;
   int FIELD_GET = 140_000_000;
   int FIELD_SET = 150_000_000;
-  int FINALLY = 160_000_000;
-  int CATCH = 170_000_000;
-  int BEFORE = 180_000_000;
-  int AFTER = 190_000_000;
+
+  int BEFORE = 160_000_000;
+  int AROUND = 170_000_000;
+  int AFTER = 180_000_000;
+  int CATCH = 190_000_000;
+  int FINALLY = 250_000_000;
 }

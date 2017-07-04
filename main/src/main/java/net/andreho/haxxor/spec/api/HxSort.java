@@ -39,4 +39,16 @@ public enum HxSort {
 
     return OBJECT;
   }
+
+  public boolean isObject() {
+    return OBJECT == this;
+  }
+
+  public boolean isArray() {
+    return ARRAY == this;
+  }
+
+  public boolean isPrimitive() {
+    return !isObject() && !isArray();
+  }
 }

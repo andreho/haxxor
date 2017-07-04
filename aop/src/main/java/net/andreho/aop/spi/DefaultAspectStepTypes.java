@@ -16,7 +16,6 @@ public enum DefaultAspectStepTypes {
 //  MODIFY_FIELD,
 //  MODIFY_METHOD,
 //  FORWARDING,
-  //  PATCH,
   BEFORE(new BeforeAspectAdviceType(fetchOrderFromAnnotation(Before.class))),
   AFTER(new AfterAspectAdviceType(fetchOrderFromAnnotation(After.class))),
 //  FINALLY,

@@ -1,6 +1,7 @@
 package net.andreho.haxxor.cgen;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
+import net.andreho.haxxor.spec.api.HxSort;
 
 import java.util.Collections;
 import java.util.List;
@@ -91,5 +92,19 @@ public enum HxArrayType {
         return LONG;
     }
     throw new IllegalArgumentException("Invalid array type name: " + name);
+  }
+
+  public static HxArrayType fromSort(HxSort sort) {
+    switch (sort) {
+      case BOOLEAN: return BOOLEAN;
+      case BYTE: return BYTE;
+      case SHORT: return SHORT;
+      case CHAR: return CHAR;
+      case INT: return INT;
+      case FLOAT: return FLOAT;
+      case LONG: return LONG;
+      case DOUBLE: return DOUBLE;
+    }
+    throw new IllegalArgumentException("Invalid component sort: " + sort);
   }
 }

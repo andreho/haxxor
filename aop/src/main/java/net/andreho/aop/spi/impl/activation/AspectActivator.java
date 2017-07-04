@@ -19,13 +19,18 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.Collections.unmodifiableCollection;
+import static java.util.Collections.unmodifiableList;
+import static java.util.Collections.unmodifiableMap;
 
 /**
  * <br/>Created by a.hofmann on 16.06.2017 at 19:03.
@@ -95,7 +100,9 @@ public class AspectActivator
       return;
     }
 
-    final Collection<AspectAdviceType> aspectAdviceTypes = Collections.unmodifiableCollection(getAspectStepTypes());
+    final Collection<AspectAdviceType> aspectAdviceTypes =
+      unmodifiableCollection(getAspectStepTypes());
+
     final AspectProfileFactory aspectProfileFactory = getAspectProfileFactory();
 
     final Haxxor haxxor = new Haxxor(Haxxor.Flags.SKIP_CODE);
@@ -108,10 +115,16 @@ public class AspectActivator
       aspectTypes.add(aspectType);
     }
 
+    final Map<String, AspectProfile> aspectProfileMap =
+      unmodifiableMap(
+        aspectProfiles.stream().collect(Collectors.toMap(AspectProfile::getName, Function.identity()))
+      );
     final List<AspectDefinition> aspectDefinitions = new ArrayList<>(aspects.size());
 
     for(HxType aspectType : aspectTypes) {
-      final AspectDefinition aspectDefinition = doActivation(aspectType, aspectProfiles, aspectAdviceTypes);
+      final AspectDefinition aspectDefinition =
+        doActivation(aspectType, aspectProfileMap, aspectAdviceTypes);
+
       if(aspectDefinition != null) {
         aspectDefinitions.add(aspectDefinition);
         if(LOG.isDebugEnabled()) {
@@ -124,11 +137,11 @@ public class AspectActivator
       }
     }
 
-    this.aspectDefinitions = aspectDefinitions;
+    this.aspectDefinitions = unmodifiableList(aspectDefinitions);
   }
 
   protected AspectDefinition doActivation(final HxType aspectType,
-                                          final Collection<AspectProfile> aspectProfiles,
+                                          final Map<String, AspectProfile> aspectProfiles,
                                           final Collection<AspectAdviceType> aspectAdviceTypes) {
 
     try {

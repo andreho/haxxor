@@ -2,6 +2,7 @@ package net.andreho.aop.spi;
 
 import net.andreho.haxxor.spec.api.HxType;
 
+import java.lang.annotation.Annotation;
 import java.util.Collection;
 
 /**
@@ -29,7 +30,13 @@ public interface AspectAdviceType
   /**
    * @return
    */
-  AspectAdviceResultHandler getResultHandler();
+  AspectAdvicePostProcessor getPostProcessor();
+
+  /**
+   * @param activatorAnnotation
+   * @return
+   */
+  boolean isActivatedThrough(Class<? extends Annotation> activatorAnnotation);
 
   /**
    * @param def

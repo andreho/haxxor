@@ -4,6 +4,7 @@ import net.andreho.aop.spi.AspectAdvice;
 import net.andreho.aop.spi.AspectAdviceType;
 import net.andreho.aop.spi.AspectContext;
 import net.andreho.aop.spi.AspectDefinition;
+import net.andreho.aop.spi.AspectFactory;
 import net.andreho.aop.spi.AspectProfile;
 import net.andreho.aop.spi.ElementMatcher;
 import net.andreho.aop.spi.ElementMatcherFactory;
@@ -19,11 +20,15 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static net.andreho.aop.spi.impl.Constants.DISABLE_ANNOTATION_TYPE;
+import static net.andreho.aop.spi.impl.Constants.EMPTY_FIELD_ARRAY;
+import static net.andreho.aop.spi.impl.Constants.EMPTY_METHOD_ARRAY;
 import static net.andreho.aop.spi.impl.Constants.EMPTY_TYPE_ARRAY;
 
 /**
@@ -32,40 +37,40 @@ import static net.andreho.aop.spi.impl.Constants.EMPTY_TYPE_ARRAY;
 public class AspectDefinitionImpl implements AspectDefinition {
 
   private final HxType type;
+  private final String profile;
   private final String prefix;
   private final String suffix;
   private final Collection<AspectAdviceType> aspectAdviceTypes;
   private final ElementMatcher<HxType> classMatcher;
   private final Map<String, List<String>> parameters;
-  private final HxMethod aspectFactory;
   private final ElementMatcherFactory elementMatcherFactory;
   private final Map<AspectAdvice.Target, List<AspectAdvice<?>>> aspectStepsMap;
   private final List<AspectAdvice<?>> aspectAdvices;
   private final Map<String, AspectProfile> aspectProfileMap;
-  private final boolean aspectFactoryReusable;
+  private final AspectFactory aspectFactory;
 
   public AspectDefinitionImpl(final HxType type,
+                              final String profile,
                               final String prefix,
                               final String suffix,
                               final Collection<AspectAdviceType> aspectAdviceTypes,
-                              final Map<String, List<String>> parameters,
                               final ElementMatcher<HxType> classMatcher,
+                              final Map<String, List<String>> parameters,
                               final ElementMatcherFactory elementMatcherFactory,
                               final Map<String, AspectProfile> aspectProfileMap,
-                              final HxMethod aspectFactory,
-                              final boolean aspectFactoryReusable) {
+                              final AspectFactory aspectFactory) {
     this.type = type;
+    this.profile = profile;
     this.prefix = prefix;
     this.suffix = suffix;
     this.aspectAdviceTypes = aspectAdviceTypes;
     this.classMatcher = classMatcher;
     this.parameters = parameters;
     this.aspectFactory = aspectFactory;
-    this.aspectFactoryReusable = aspectFactoryReusable;
     this.elementMatcherFactory = elementMatcherFactory;
     this.aspectProfileMap = aspectProfileMap;
 
-    this.aspectAdvices = collectAspectSteps(type);
+    this.aspectAdvices = collectAspectAdvices(type);
     this.aspectStepsMap = collectSupportedKinds(aspectAdvices);
   }
 
@@ -84,29 +89,48 @@ public class AspectDefinitionImpl implements AspectDefinition {
     return mappedSteps;
   }
 
-  protected List<AspectAdvice<?>> collectAspectSteps(final HxType type) {
-    final List<AspectAdvice<?>> allSteps = new ArrayList<>();
+  protected List<AspectAdvice<?>> collectAspectAdvices(final HxType type) {
+    final Set<AspectAdvice<?>> stepsSet = new LinkedHashSet<>();
+
+    final AspectFactory aspectFactory = getAspectFactory().orElse(null);
 
     for(AspectAdviceType stepType : getAspectAdviceTypes()) {
       Collection<AspectAdvice<?>> foundSteps = stepType.buildAdvices(this, type);
-      allSteps.addAll(foundSteps);
-    }
+      stepsSet.addAll(foundSteps);
 
-    Collections.sort(allSteps);
+      if(aspectFactory != null &&
+         !aspectFactory.getMethod().isConstructor() &&
+         !aspectFactory.getMethod().getReturnType().equals(type)) {
 
-    for (AspectAdvice<?> step : allSteps) {
-      if(step.needsAspectFactory() && !getAspectFactory().isPresent()) {
-        throw new IllegalStateException(
-          "Given aspect's step can only be used if an aspect-factory is provided via @Aspect.Factory annotation: "+step.getInterceptor());
+        foundSteps = stepType.buildAdvices(this, aspectFactory.getMethod().getReturnType());
+        stepsSet.addAll(foundSteps);
       }
     }
 
-    return allSteps;
+    final List<AspectAdvice<?>> stepsList = new ArrayList<>(stepsSet);
+    Collections.sort(stepsList);
+
+    for (AspectAdvice<?> step : stepsList) {
+      if(step.needsAspectFactory() &&
+         aspectFactory == null) {
+        throw new IllegalStateException(
+            "Current aspect expects to have a public static method that returns a " +
+            "valid instance of return type and must be marked with @Aspect.Factory: " +
+          step.getInterceptor());
+      }
+    }
+
+    return stepsList;
   }
 
   @Override
   public String getName() {
     return type.getName();
+  }
+
+  @Override
+  public String getProfile() {
+    return profile;
   }
 
   @Override
@@ -125,19 +149,16 @@ public class AspectDefinitionImpl implements AspectDefinition {
   }
 
   @Override
-  public String formTargetMethodName(final String originalMethodName) {
+  public String createShadowMethodName(final String originalMethodName) {
     return getPrefix() + originalMethodName + getSuffix();
   }
 
   @Override
-  public Optional<HxMethod> getAspectFactory() {
-    HxMethod aspectFactory = this.aspectFactory;
-    return aspectFactory == null? Optional.empty() : Optional.of(aspectFactory);
-  }
-
-  @Override
-  public boolean isFactoryReusable() {
-    return aspectFactoryReusable;
+  public Optional<AspectFactory> getAspectFactory() {
+    AspectFactory aspectFactory = this.aspectFactory;
+    return aspectFactory == null?
+           Optional.empty() :
+           Optional.of(aspectFactory);
   }
 
   @Override
@@ -174,41 +195,6 @@ public class AspectDefinitionImpl implements AspectDefinition {
     return aspectStepsMap.getOrDefault(target, Collections.emptyList());
   }
 
-  @Override
-  public boolean apply(final HxType type) {
-    if(!getTypeMatcher().match(type)) {
-      return false;
-    }
-    final AspectContext context = new AspectContextImpl(this);
-
-    boolean typesModified = applyAspectsForTypes(type, context, aspectStepsFor(AspectAdvice.Target.TYPE));
-    boolean fieldsModified = applyAspectsForFields(type, context, aspectStepsFor(AspectAdvice.Target.FIELD));
-    boolean methodsModified = applyAspectsForMethods(type, context, aspectStepsFor(AspectAdvice.Target.METHOD));
-    boolean constructorsModified = applyAspectsForConstructors(type, context, aspectStepsFor(AspectAdvice.Target.CONSTRUCTOR));
-
-    return typesModified || fieldsModified || methodsModified || constructorsModified;
-  }
-
-  private boolean applyAspectsForConstructors(final HxType type,
-                                              final AspectContext context,
-                                              final List<AspectAdvice<?>> aspectAdvices) {
-    boolean modified = false;
-    if(!aspectAdvices.isEmpty()) {
-      for(HxMethod constructor : type.getConstructors().toArray(new HxMethod[0])) {
-        if(isApplicable(constructor)) {
-          context.enterConstructor(constructor);
-
-          for(AspectAdvice step : aspectAdvices) {
-            if(step.apply(context, constructor)) {
-              modified = true;
-            }
-          }
-        }
-      }
-    }
-    return modified;
-  }
-
   private boolean isSyntheticAllowed(final HxMember<?> member) {
     return !member.hasModifiers(HxModifiers.SYNTHETIC);
   }
@@ -233,12 +219,47 @@ public class AspectDefinitionImpl implements AspectDefinition {
           .isPresent();
   }
 
+  @Override
+  public boolean apply(final HxType type) {
+    if(!getTypeMatcher().match(type)) {
+      return false;
+    }
+    final AspectContext context = new AspectContextImpl(this);
+
+    boolean typesModified = applyAspectsForTypes(type, context, aspectStepsFor(AspectAdvice.Target.TYPE));
+    boolean fieldsModified = applyAspectsForFields(type, context, aspectStepsFor(AspectAdvice.Target.FIELD));
+    boolean methodsModified = applyAspectsForMethods(type, context, aspectStepsFor(AspectAdvice.Target.METHOD));
+    boolean constructorsModified = applyAspectsForConstructors(type, context, aspectStepsFor(AspectAdvice.Target.CONSTRUCTOR));
+
+    return typesModified || fieldsModified || methodsModified || constructorsModified;
+  }
+
+  private boolean applyAspectsForConstructors(final HxType type,
+                                              final AspectContext context,
+                                              final List<AspectAdvice<?>> aspectAdvices) {
+    boolean modified = false;
+    if(!aspectAdvices.isEmpty()) {
+      for(HxMethod constructor : type.getConstructors().toArray(EMPTY_METHOD_ARRAY)) {
+        if(isApplicable(constructor)) {
+          context.enterConstructor(constructor);
+
+          for(AspectAdvice step : aspectAdvices) {
+            if(step.apply(context, constructor)) {
+              modified = true;
+            }
+          }
+        }
+      }
+    }
+    return modified;
+  }
+
   private boolean applyAspectsForMethods(final HxType type,
                                          final AspectContext context,
                                          final List<AspectAdvice<?>> aspectAdvices) {
     boolean modified = false;
     if(!aspectAdvices.isEmpty()) {
-      for(HxMethod method : type.getMethods().toArray(new HxMethod[0])) {
+      for(HxMethod method : type.getMethods().toArray(EMPTY_METHOD_ARRAY)) {
         if(!method.isConstructor() && isApplicable(method)) {
           context.enterMethod(method);
 
@@ -258,7 +279,7 @@ public class AspectDefinitionImpl implements AspectDefinition {
                                         final List<AspectAdvice<?>> aspectAdvices) {
     boolean modified = false;
     if(!aspectAdvices.isEmpty()) {
-      for(HxField field : type.getFields().toArray(new HxField[0])) {
+      for(HxField field : type.getFields().toArray(EMPTY_FIELD_ARRAY)) {
         if(isApplicable(field)) {
           context.enterField(field);
 

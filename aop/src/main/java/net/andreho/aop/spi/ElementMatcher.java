@@ -32,7 +32,7 @@ public interface ElementMatcher<T> {
    * @param condition to check; if positive then negate.
    * @return
    */
-  default ElementMatcher<T> negateIf(boolean condition) {
+  default ElementMatcher<T> negateIf(final boolean condition) {
     return condition? new NegatedMatcher<>(this) : this;
   }
 
@@ -40,7 +40,7 @@ public interface ElementMatcher<T> {
    * @param other
    * @return
    */
-  default ElementMatcher<T> or(ElementMatcher<T> other) {
+  default ElementMatcher<T> or(final ElementMatcher<T> other) {
     return or(this, other);
   }
 
@@ -48,7 +48,7 @@ public interface ElementMatcher<T> {
    * @param other
    * @return
    */
-  default ElementMatcher<T> and(ElementMatcher<T> other) {
+  default ElementMatcher<T> and(final ElementMatcher<T> other) {
     return and(this, other);
   }
 
@@ -76,7 +76,7 @@ public interface ElementMatcher<T> {
   /**
    * @return
    */
-  default ElementMatcher<T> minimize(ElementMatcher<T> alternative) {
+  default ElementMatcher<T> minimize(final ElementMatcher<T> alternative) {
     return isAny()? any() : alternative;
   }
 
@@ -98,7 +98,7 @@ public interface ElementMatcher<T> {
    * @param collection
    * @return
    */
-  static <T> ElementMatcher<T> or(Collection<ElementMatcher<T>> collection) {
+  static <T> ElementMatcher<T> or(final Collection<ElementMatcher<T>> collection) {
     return or(collection.toArray(new ElementMatcher[0]));
   }
 
@@ -110,14 +110,16 @@ public interface ElementMatcher<T> {
     if(array.length == 0) {
       return any();
     }
-    return new DisjunctionMatcher<>(Stream.of(array).filter(m -> !m.isAny()).toArray(ElementMatcher[]::new));
+    return new DisjunctionMatcher<>(
+      Stream.of(array).filter(m -> !m.isAny()).toArray(ElementMatcher[]::new)
+    );
   }
 
   /**
    * @param collection
    * @return
    */
-  static <T> ElementMatcher<T> and(Collection<ElementMatcher<T>> collection) {
+  static <T> ElementMatcher<T> and(final Collection<ElementMatcher<T>> collection) {
     return and(collection.toArray(new ElementMatcher[0]));
   }
 
@@ -129,6 +131,8 @@ public interface ElementMatcher<T> {
     if(array.length == 0) {
       return any();
     }
-    return new ConjunctionMatcher<>(Stream.of(array).filter(m -> !m.isAny()).toArray(ElementMatcher[]::new));
+    return new ConjunctionMatcher<>(
+      Stream.of(array).filter(m -> !m.isAny()).toArray(ElementMatcher[]::new)
+    );
   }
 }

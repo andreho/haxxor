@@ -5,22 +5,19 @@ import net.andreho.asm.org.objectweb.asm.Type;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.util.Collections.unmodifiableMap;
 
 /**
  * <br/>Created by a.hofmann on 21.06.2017 at 01:01.
  */
 public abstract class Helpers {
-  enum Sort {
-    TYPE,
-    FIELD,
-    METHOD,
-    CONSTRUCTOR
-  }
-
   private static final ClassValue<Map<String, Method>> CACHED_METHODS = new ClassValue<Map<String, Method>>() {
     @Override
     protected Map<String, Method> computeValue(final Class<?> type) {
@@ -28,7 +25,7 @@ public abstract class Helpers {
       for(Method method : type.getDeclaredMethods()) {
         cache.put(method.getName() + Type.getMethodDescriptor(method), method);
       }
-      return cache;
+      return unmodifiableMap(cache);
     }
   };
 
@@ -39,7 +36,7 @@ public abstract class Helpers {
       for(Constructor<?> constructor : type.getDeclaredConstructors()) {
         cache.put(Type.getConstructorDescriptor(constructor), constructor);
       }
-      return cache;
+      return unmodifiableMap(cache);
     }
   };
 
@@ -50,9 +47,10 @@ public abstract class Helpers {
       for(Field field : type.getDeclaredFields()) {
         cache.put(field.getName(), field);
       }
-      return cache;
+      return unmodifiableMap(cache);
     }
   };
+  private static final Class<Method> METHOD_CLASS = Method.class;
 
   private Helpers() {
   }
@@ -90,6 +88,15 @@ public abstract class Helpers {
    */
   public static Field getFieldOf(Class<?> cls, String name) {
     return CACHED_FIELDS.get(cls).get(name);
+  }
+
+  /**
+   * @param executable
+   * @param index
+   * @return
+   */
+  public static Parameter getParameterOf(Executable executable, int index) {
+    return executable.getParameters()[index];
   }
 
   /**

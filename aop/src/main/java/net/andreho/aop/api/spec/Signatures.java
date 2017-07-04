@@ -16,7 +16,7 @@ public @interface Signatures {
    * @implNote defaults to an array with a {@link Void#TYPE void} and so disables this matching
    */
   String[] classes() default "void";
-  //XOR - either class-names or values are used
+  //XOR - either classnames or classes itself are used for selection
 
   /**
    * Selection of signatures that are equal to given class list.<br/>

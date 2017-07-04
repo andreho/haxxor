@@ -10,6 +10,8 @@ import net.andreho.haxxor.spec.api.HxTypeReference;
 
 import java.lang.annotation.Annotation;
 
+import static net.andreho.haxxor.Utils.toClassNames;
+
 /**
  * <br/>Created by a.hofmann on 08.04.2017 at 08:50.
  */
@@ -49,6 +51,17 @@ public interface HxElementFactory extends HxProvider {
 
   /**
    * Creates a new unbound field with given type and name
+   * @param type of new field
+   * @param fieldName of new field
+   * @return a new unbound field instance
+   */
+  default HxField createField(final HxType type,
+                              final String fieldName) {
+    return createField(type.getName(), fieldName);
+  }
+
+  /**
+   * Creates a new unbound field with given type and name
    * @param className of new field
    * @param fieldName of new field
    * @return a new unbound field instance
@@ -69,11 +82,7 @@ public interface HxElementFactory extends HxProvider {
    * @return a new unbound constructor instance
    */
   default HxMethod createConstructor(final Class<?>... parameterTypes) {
-    String[] parameterNames = new String[parameterTypes.length];
-    for (int i = 0; i < parameterTypes.length; i++) {
-      parameterNames[i] = parameterTypes[i].getName();
-    }
-    return createConstructor(parameterNames);
+    return createConstructor(toClassNames(parameterTypes));
   }
 
   /**
@@ -105,11 +114,29 @@ public interface HxElementFactory extends HxProvider {
   default HxMethod createMethod(final Class<?> returnType,
                         final String methodName,
                         final Class<?>... parameterTypes) {
-    String[] parameterNames = new String[parameterTypes.length];
-    for (int i = 0; i < parameterTypes.length; i++) {
-      parameterNames[i] = parameterTypes[i].getName();
-    }
-    return createMethod(returnType.getName(), methodName, parameterNames);
+    return createMethod(returnType.getName(),
+                        methodName,
+                        toClassNames(parameterTypes));
+  }
+
+  /**
+   * Creates a new unbound method-reference with given name, return-type and parameters
+   * @param declaringType of new method-reference
+   * @param returnType of new method-reference
+   * @param methodName of new method-reference
+   * @param parameterTypes of new method-reference
+   * @return a new method-reference instance
+   */
+  default HxMethod createMethodReference(final Class<?> declaringType,
+                                 final Class<?> returnType,
+                                 final String methodName,
+                                 final Class<?>... parameterTypes) {
+    return createMethodReference(
+      declaringType.getName(),
+      returnType.getName(),
+      methodName,
+      toClassNames(parameterTypes)
+    );
   }
 
   /**

@@ -392,9 +392,8 @@ public class HxTypeImpl
   }
 
   @Override
-  public Collection<HxMethod> methods(Predicate<HxMethod> predicate, boolean recursive) {
-    List<HxMethod> result = new ArrayList<>();
-
+  public Collection<HxMethod> methods(final Predicate<HxMethod> predicate, final boolean recursive) {
+    final List<HxMethod> result = new ArrayList<>();
     HxType current = this;
 
     while (current != null) {
@@ -418,14 +417,12 @@ public class HxTypeImpl
       return result;
     }
 
-    while (current != null) {
+    //Any interface has java/lang/Object as supertype
+    while (current.hasSuperType()) {
       for (HxType itf : current.getInterfaces()) {
         result.addAll(itf.methods(predicate, recursive));
       }
       if (!recursive) {
-        break;
-      }
-      if(!current.hasSuperType()) {
         break;
       }
       current = current.getSuperType().get();
@@ -435,9 +432,8 @@ public class HxTypeImpl
   }
 
   @Override
-  public Collection<HxMethod> constructors(Predicate<HxMethod> predicate, boolean recursive) {
-    List<HxMethod> result = new ArrayList<>();
-
+  public Collection<HxMethod> constructors(final Predicate<HxMethod> predicate, final boolean recursive) {
+    final List<HxMethod> result = new ArrayList<>();
     HxType current = this;
 
     while (current != null) {
@@ -459,8 +455,8 @@ public class HxTypeImpl
   }
 
   @Override
-  public Collection<HxType> interfaces(Predicate<HxType> predicate, boolean recursive) {
-    List<HxType> result = new ArrayList<>();
+  public Collection<HxType> interfaces(final Predicate<HxType> predicate, final boolean recursive) {
+    final List<HxType> result = new ArrayList<>();
     HxType current = this;
     while (current != null) {
       for (HxType itf : current.getInterfaces()) {
@@ -471,7 +467,6 @@ public class HxTypeImpl
       if (!recursive) {
         break;
       }
-
       if(!current.hasSuperType()) {
         break;
       }
@@ -481,8 +476,8 @@ public class HxTypeImpl
   }
 
   @Override
-  public Collection<HxType> types(Predicate<HxType> predicate, boolean recursive) {
-    List<HxType> result = new ArrayList<>();
+  public Collection<HxType> types(final Predicate<HxType> predicate, final boolean recursive) {
+    final List<HxType> result = new ArrayList<>();
     HxType current = this;
     while (current != null) {
       if (predicate.test(current)) {

@@ -2,9 +2,9 @@ package net.andreho.aop.spi.impl.advices.injectors;
 
 import net.andreho.aop.api.injectable.Attribute;
 import net.andreho.aop.spi.AspectAdvice;
-import net.andreho.aop.spi.AspectAttribute;
 import net.andreho.aop.spi.AspectContext;
-import net.andreho.haxxor.cgen.HxCgenUtils;
+import net.andreho.aop.spi.AspectLocalAttribute;
+import net.andreho.aop.spi.AspectMethodContext;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxMethod;
@@ -16,11 +16,11 @@ import net.andreho.haxxor.spec.api.HxParameter;
 public class LocalAttributeParameterInjector
   extends AbstractAnnotatedParameterInjector {
 
-  public static final LocalAttributeParameterInjector INSTANCE = new LocalAttributeParameterInjector();
   private static final String ATTRIBUTE_ANNOTATION_TYPE_NAME = Attribute.class.getName();
+  public static final LocalAttributeParameterInjector INSTANCE = new LocalAttributeParameterInjector();
 
   public LocalAttributeParameterInjector() {
-    super(Attribute.class.getName());
+    super(ATTRIBUTE_ANNOTATION_TYPE_NAME);
   }
 
   @Override
@@ -33,17 +33,18 @@ public class LocalAttributeParameterInjector
                                               final HxInstruction instruction) {
     final HxAnnotation attributeAnnotation = parameter.getAnnotation(ATTRIBUTE_ANNOTATION_TYPE_NAME).get();
     final String attributeName = attributeAnnotation.getAttribute("value", "");
+    final AspectMethodContext methodContext = context.getAspectMethodContext();
 
     if (attributeName.isEmpty()) {
       throw new IllegalStateException("Attribute's name is invalid.");
     }
 
-    if (!context.hasLocalAttribute(attributeName)) {
+    if (!methodContext.hasLocalAttribute(attributeName)) {
       return false;
     }
 
-    final AspectAttribute attribute = context.getLocalAttribute(attributeName);
-    HxCgenUtils.genericLoadSlot(attribute.getType(), attribute.getIndex(), instruction.asStream());
+    final AspectLocalAttribute attribute = methodContext.getLocalAttribute(attributeName);
+    instruction.asStream().GENERIC_LOAD(attribute.getType(), attribute.getIndex());
 
     return true;
   }

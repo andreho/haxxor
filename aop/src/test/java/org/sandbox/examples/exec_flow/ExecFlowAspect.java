@@ -1,7 +1,6 @@
 package org.sandbox.examples.exec_flow;
 
 import net.andreho.aop.api.After;
-import net.andreho.aop.api.Aspect;
 import net.andreho.aop.api.Before;
 import net.andreho.aop.api.Profile;
 import net.andreho.aop.api.injectable.Args;
@@ -20,11 +19,12 @@ import java.util.Arrays;
 
 import static org.sandbox.examples.exec_flow.ExecFlowAspect.ALL_PUBLIC_METHODS;
 import static org.sandbox.examples.exec_flow.ExecFlowAspect.ANNOTATED_WITH_CONTROL;
+import static org.sandbox.examples.exec_flow.ExecFlowAspect.TARGET_CLASSES;
 
 /**
  * <br/>Created by a.hofmann on 18.06.2017 at 08:36.
  */
-@Aspect(
+@Profile(name = TARGET_CLASSES,
   classes = @Classes(
     @ClassWith(
       modifiers = @Modifier(value = Modifiers.ABSTRACT | Modifiers.INTERFACE, negate = true)
@@ -50,9 +50,12 @@ import static org.sandbox.examples.exec_flow.ExecFlowAspect.ANNOTATED_WITH_CONTR
     )
   }
 )
+//@Aspect(TARGET_CLASSES)
 public class ExecFlowAspect {
   public static final String ALL_PUBLIC_METHODS = "all.public.methods";
   public static final String ANNOTATED_WITH_CONTROL = "@Control";
+  public static final String TARGET_CLASSES = "target_classes";
+
   private static final String STATE = "start.time.ms";
 
   public static class State {
@@ -70,7 +73,7 @@ public class ExecFlowAspect {
 //    return new ExecFlowAspect();
 //  }
 
-  @Before(profile = ANNOTATED_WITH_CONTROL)
+  @Before(ANNOTATED_WITH_CONTROL)
   public static
   @Attribute(STATE) State
   beforeMethodExecution(
@@ -81,7 +84,7 @@ public class ExecFlowAspect {
     return new State(System.currentTimeMillis());
   }
 
-  @After(profile = ANNOTATED_WITH_CONTROL)
+  @After(ANNOTATED_WITH_CONTROL)
   public static void
   afterMethodExecution(@Intercepted Method method, @Attribute(STATE) State state, @Result Object result) {
     System.out.printf("After: %s with time %d and result %s\n", method, state.diff(), result);

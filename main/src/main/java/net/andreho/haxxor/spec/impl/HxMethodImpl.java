@@ -1,5 +1,6 @@
 package net.andreho.haxxor.spec.impl;
 
+import net.andreho.haxxor.Utils;
 import net.andreho.haxxor.spec.api.HxConstants;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
@@ -142,5 +143,124 @@ public class HxMethodImpl
   public String toString() {
     return (getDeclaringMember() == null ? HxConstants.UNDEFINED_TYPE : getDeclaringMember()) + "."
            + getName() + super.toString() + getReturnType().getName();
+  }
+
+  @Override
+  public boolean hasDescriptor(final String descriptor) {
+    final int arity = this.getParametersCount();
+    final int returnIndex = descriptor.lastIndexOf(')');
+    final int length = descriptor.length();
+
+    if (descriptor.charAt(0) != '(' || returnIndex < 1) {
+      throw new IllegalArgumentException("Invalid descriptor: " + descriptor);
+    }
+
+    int parameters = 0;
+    if (descriptor.charAt(1) != ')') {
+      if (arity == 0) {
+        return false;
+      }
+      for (int i = 1; i < returnIndex; ) {
+        if(parameters >= arity) {
+          return false;
+        }
+        int result = checkDescriptorsParameters(this.getParameterTypeAt(parameters), descriptor, i, returnIndex);
+        if (result < 0) {
+          return false;
+        } else {
+          parameters++;
+        }
+        i = result;
+      }
+    }
+
+    if (parameters != arity) {
+      return false;
+    }
+
+    return checkDescriptorsParameters(this.getReturnType(), descriptor, returnIndex + 1, length) >= 0;
+  }
+
+  private static int checkDescriptorsParameters(final HxType type,
+                                                final String desc,
+                                                int index,
+                                                final int length) {
+    int dim = 0;
+    while (index < length) {
+      char c = desc.charAt(index);
+      switch (c) {
+        case '[':
+          dim++;
+          break;
+        case 'V':
+        case 'Z':
+        case 'B':
+        case 'S':
+        case 'C':
+        case 'I':
+        case 'F':
+        case 'J':
+        case 'D':
+          if (!isTypeWithDimension(type, Utils.toPrimitiveClassname(c), dim)) {
+            return -1;
+          }
+          return index + 1;
+        case 'L':
+          int sc = desc.indexOf(';', index + 2);
+          if (sc < 0) {
+            throw new IllegalArgumentException("Invalid descriptor: " + desc);
+          }
+          if (!isTypeWithDescriptorAndDimension(
+            type,
+            desc,
+            dim,
+            index + 1,
+            sc)) {
+            return -1;
+          }
+          return sc + 1;
+      }
+      index++;
+    }
+    return -1;
+  }
+
+  private static boolean isTypeWithDimension(final HxType type,
+                                             final String className,
+                                             final int dim) {
+    HxType componentType = type;
+    while (componentType.isArray()) {
+      componentType = componentType.getComponentType().get();
+    }
+    return type.getDimension() == dim && className.equals(componentType.getName());
+  }
+
+  private static boolean isTypeWithDescriptorAndDimension(final HxType type,
+                                                          final String descriptor,
+                                                          final int dim,
+                                                          final int from,
+                                                          final int to) {
+    HxType componentType = type;
+    while (componentType.isArray()) {
+      componentType = componentType.getComponentType().get();
+    }
+
+    final String classname = componentType.getName();
+    if (type.getDimension() != dim || classname.length() != (to - from)) {
+      return false;
+    }
+
+    for (int i = 0, len = classname.length(); i < len; i++) {
+      char a = classname.charAt(i);
+      char b = descriptor.charAt(i + from);
+
+      if (a == '.' && (a == b || b == '/')) {
+        continue;
+      }
+      if (a != b) {
+        return false;
+      }
+    }
+    return true;
   }
 }

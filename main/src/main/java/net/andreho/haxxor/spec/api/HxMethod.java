@@ -1,7 +1,6 @@
 package net.andreho.haxxor.spec.api;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.Utils;
 import net.andreho.haxxor.misc.MappedList;
 import net.andreho.haxxor.spec.impl.HxParameterImpl;
 
@@ -137,6 +136,14 @@ public interface HxMethod
   }
 
   /**
+   * @param sort
+   * @return
+   */
+  default boolean hasReturnType(HxSort sort) {
+    return getReturnType().getSort() == sort;
+  }
+
+  /**
    * @return the return value of this method
    */
   HxType getReturnType();
@@ -189,6 +196,13 @@ public interface HxMethod
   }
 
   /**
+   * @return <b>true</b> if this method is a static class-initializer, <b>false</b> otherwise.
+   */
+  default boolean isStaticClassInitializer() {
+    return "<clinit>".equals(getName());
+  }
+
+  /**
    * @param index
    * @return
    */
@@ -225,10 +239,10 @@ public interface HxMethod
    * @return number of slots on local variable table to hold this parameters' list;
    * <b>this</b> for member methods isn't included.
    */
-  default int getParametersSlots() {
+  default int getParametersSlotSize() {
     int slots = 0;
     for (HxParameter parameter : getParameters()) {
-      slots += parameter.getType().getSlotsCount();
+      slots += parameter.getType().getSlotSize();
     }
     return slots;
   }
@@ -281,7 +295,22 @@ public interface HxMethod
    * @return this
    */
   HxMethod setParameterAt(int index,
-                   HxParameter parameter);
+                          HxParameter parameter);
+
+  /**
+   * @param index
+   * @return
+   */
+  default int getParametersSlotAt(int index) {
+    if(index < 0 || index >= getParametersCount()) {
+      throw new IndexOutOfBoundsException("Invalid index: "+index+", method's arity is: "+getParametersCount());
+    }
+    int slot = isStatic()? 0 : 1;
+    for(int i = 0; i <= index; i++) {
+      slot += getParameterAt(i).getType().getSlotSize();
+    }
+    return slot;
+  }
 
   /**
    * @param type
@@ -463,9 +492,7 @@ public interface HxMethod
    * @param descriptor
    * @return
    */
-  default boolean hasDescriptor(String descriptor) {
-    return Utils.hasDescriptor(this, descriptor);
-  }
+  boolean hasDescriptor(String descriptor);
 
   /**
    * @return default value of this annotation attribute

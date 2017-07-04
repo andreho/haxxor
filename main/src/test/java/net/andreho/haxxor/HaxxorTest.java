@@ -59,22 +59,22 @@ class HaxxorTest {
 
   @Test
   void hasResolved() {
-    assertTrue(haxxor.hasResolved("void"));
-    assertTrue(haxxor.hasResolved("boolean"));
-    assertTrue(haxxor.hasResolved("byte"));
-    assertTrue(haxxor.hasResolved("char"));
-    assertTrue(haxxor.hasResolved("short"));
-    assertTrue(haxxor.hasResolved("int"));
-    assertTrue(haxxor.hasResolved("float"));
-    assertTrue(haxxor.hasResolved("long"));
-    assertTrue(haxxor.hasResolved("double"));
+    assertTrue(haxxor.hasType("void"));
+    assertTrue(haxxor.hasType("boolean"));
+    assertTrue(haxxor.hasType("byte"));
+    assertTrue(haxxor.hasType("char"));
+    assertTrue(haxxor.hasType("short"));
+    assertTrue(haxxor.hasType("int"));
+    assertTrue(haxxor.hasType("float"));
+    assertTrue(haxxor.hasType("long"));
+    assertTrue(haxxor.hasType("double"));
 
-    assertFalse(haxxor.hasResolved("java.lang.Object"));
+    assertFalse(haxxor.hasType("java.lang.Object"));
 
     HxTypeReference reference = haxxor.reference("java.lang.Object");
     HxType resolvedType = haxxor.resolve("java.lang.Object");
 
-    assertTrue(haxxor.hasResolved("java.lang.Object"));
+    assertTrue(haxxor.hasType("java.lang.Object"));
     assertEquals(resolvedType, haxxor.resolve("java.lang.Object"));
   }
 
@@ -151,7 +151,7 @@ class HaxxorTest {
     final String typeName = TEST_BEAN_CLASSNAME;
     final HxType type = haxxor.resolve(typeName);
     assertEquals(haxxor.toNormalizedClassname(typeName), type.getName());
-    assertTrue(haxxor.hasResolved(typeName));
+    assertTrue(haxxor.hasType(typeName));
   }
 
   @Test
@@ -163,7 +163,7 @@ class HaxxorTest {
     assertEquals(typeName, type.getName());
     assertEquals(typeName.replace('.','/'), type.toInternalName());
     assertEquals("L"+typeName.replace('.','/')+";", type.toDescriptor());
-    assertFalse(haxxor.hasResolved(typeName));
+    assertFalse(haxxor.hasType(typeName));
     assertFalse(haxxor.hasReference(typeName));
   }
 
@@ -178,7 +178,7 @@ class HaxxorTest {
     assertEquals(typeName.replace('.','/'), type.toInternalName());
     assertEquals("L"+typeName.replace('.','/')+";", type.toDescriptor());
 
-    assertFalse(haxxor.hasResolved(typeName));
+    assertFalse(haxxor.hasType(typeName));
     assertFalse(haxxor.hasReference(typeName));
   }
 

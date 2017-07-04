@@ -5,7 +5,9 @@ import net.andreho.aop.spi.AspectAdviceType;
 import net.andreho.aop.spi.AspectContext;
 import net.andreho.aop.spi.ElementMatcher;
 
-import java.util.Optional;
+import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * <br/>Created by a.hofmann on 19.06.2017 at 00:34.
@@ -16,16 +18,16 @@ public abstract class AbstractAspectAdvice<T>
   private final int index;
   private final AspectAdviceType type;
   private final ElementMatcher<T> elementMatcher;
-  private final Optional<String> profileName;
+  private final String profileName;
 
   public AbstractAspectAdvice(final int index,
                               final AspectAdviceType type,
                               final ElementMatcher<T> elementMatcher,
-                              final Optional<String> profileName) {
+                              final String profileName) {
     this.index = index;
-    this.type = type;
-    this.elementMatcher = elementMatcher;
-    this.profileName = profileName;
+    this.type = requireNonNull(type);
+    this.profileName = requireNonNull(profileName);
+    this.elementMatcher = requireNonNull(elementMatcher);
   }
 
   @Override
@@ -44,7 +46,7 @@ public abstract class AbstractAspectAdvice<T>
   }
 
   @Override
-  public Optional<String> getProfileName() {
+  public String getProfileName() {
     return profileName;
   }
 
@@ -67,5 +69,23 @@ public abstract class AbstractAspectAdvice<T>
   @Override
   public ElementMatcher<T> getMatcher() {
     return elementMatcher;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof AspectAdvice)) {
+      return false;
+    }
+
+    final AspectAdvice<?> that = (AspectAdvice<?>) o;
+    return Objects.equals(type, that.getType());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(type);
   }
 }

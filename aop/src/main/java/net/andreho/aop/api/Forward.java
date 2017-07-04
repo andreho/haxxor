@@ -9,8 +9,7 @@ import net.andreho.aop.api.injectable.Line;
 import net.andreho.aop.api.injectable.Marker;
 import net.andreho.aop.api.injectable.Result;
 import net.andreho.aop.api.injectable.This;
-import net.andreho.aop.api.spec.CanInject;
-import net.andreho.aop.api.spec.Methods;
+import net.andreho.aop.api.spec.Supports;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -20,7 +19,7 @@ import java.lang.annotation.Target;
 /**
  * <br/>Created by a.hofmann on 16.06.2017 at 04:12.
  */
-@CanInject({
+@Supports(injectionOf = {
              Arg.class,
              Args.class,
              Arity.class,
@@ -36,8 +35,8 @@ import java.lang.annotation.Target;
 public @interface Forward {
 
   /**
-   * @return
-   * @apiNote elements are bound via an OR (disjunction)
+   * @return an unique name of a globally available profile
+   * @see Profile
    */
-  Methods[] value();
+  String value();
 }

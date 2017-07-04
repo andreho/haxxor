@@ -16,11 +16,12 @@ import java.util.Optional;
  */
 public final class LineParameterInjector
   extends AbstractAnnotatedParameterInjector {
+
   private static final String LINE_ANNOTATION_TYPE_NAME = Line.class.getName();
   public static final LineParameterInjector INSTANCE = new LineParameterInjector();
 
   public LineParameterInjector() {
-    super(Line.class.getName());
+    super(LINE_ANNOTATION_TYPE_NAME);
   }
 
   @Override
@@ -33,8 +34,9 @@ public final class LineParameterInjector
                                               final HxInstruction instruction) {
 
     if (parameter.isAnnotationPresent(LINE_ANNOTATION_TYPE_NAME)) {
-      Optional<HxInstruction> lineNumber = instruction.findFirst(ins -> ins.hasType(HxInstructionsType.Special.LINE_NUMBER));
-      if(lineNumber.isPresent()) {
+      Optional<HxInstruction> lineNumber = instruction.findFirst(
+        ins -> ins.hasType(HxInstructionsType.Special.LINE_NUMBER));
+      if (lineNumber.isPresent()) {
         LINE_NUMBER ln = (LINE_NUMBER) lineNumber.get();
         instruction.asStream().LDC(ln.getLine());
         return true;

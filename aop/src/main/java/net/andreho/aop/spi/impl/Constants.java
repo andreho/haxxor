@@ -8,6 +8,8 @@ import net.andreho.aop.api.injectable.Result;
 import net.andreho.aop.api.spec.Disable;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxEnum;
+import net.andreho.haxxor.spec.api.HxField;
+import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 
 /**
@@ -17,6 +19,9 @@ public interface Constants {
   HxAnnotation[] EMPTY_ANNOTATION_ARRAY = new HxAnnotation[0];
   HxType[] EMPTY_TYPE_ARRAY = new HxType[0];
   HxEnum[] EMPTY_ENUM_ARRAY = new HxEnum[0];
+  HxMethod[] EMPTY_METHOD_ARRAY = new HxMethod[0];
+  HxField[] EMPTY_FIELD_ARRAY = new HxField[0];
+
   String[] EMPTY_STRING_ARRAY = new String[0];
   int[] EMPTY_INT_ARRAY = new int[0];
 
@@ -29,7 +34,11 @@ public interface Constants {
   String INJECT_RESULT_ANNOTATION_TYPE = Result.class.getName();
   String DISABLE_ANNOTATION_TYPE = Disable.class.getName();
 
+  String VOID_PARAMETER_NAME =
+    "$$_void_";
   String RESULT_ATTRIBUTES_NAME =
-    "__$result";
+    "$$_result_";
+  String DEFAULT_ASPECT_ATTRIBUTE_NAME_PREFIX =
+    "$$_";
   int UNORDERED_ELEMENT_INDEX = 1_000_000;
 }

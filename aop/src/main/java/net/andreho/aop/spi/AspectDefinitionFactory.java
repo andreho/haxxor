@@ -4,6 +4,7 @@ import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * <br/>Created by a.hofmann on 18.06.2017 at 02:40.
@@ -19,7 +20,7 @@ public interface AspectDefinitionFactory {
    */
   AspectDefinition create(Haxxor haxxor,
                           HxType type,
-                          Collection<AspectProfile> aspectProfiles,
+                          Map<String, AspectProfile> aspectProfiles,
                           Collection<AspectAdviceType> aspectAdviceTypes
   );
 }

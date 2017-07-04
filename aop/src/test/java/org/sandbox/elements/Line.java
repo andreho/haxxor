@@ -11,25 +11,25 @@ public class Line
   extends Figure
   implements Comparable<Line> {
 
-  private Point begin;
+  private Point start;
   private Point end;
 
   public Line() {
     this(Point.ZERO, Point.ZERO);
   }
 
-  public Line(final Point begin,
+  public Line(final Point start,
               final Point end) {
-    setBegin(begin);
+    setStart(start);
     setEnd(end);
   }
 
-  public Point getBegin() {
-    return begin;
+  public Point getStart() {
+    return start;
   }
 
-  public void setBegin(final Point begin) {
-    this.begin = requireNonNull(begin);
+  public void setStart(final Point start) {
+    this.start = requireNonNull(start);
   }
 
   public Point getEnd() {
@@ -42,7 +42,7 @@ public class Line
 
   @Override
   public int compareTo(final Line o) {
-    int result = begin.compareTo(o.begin);
+    int result = start.compareTo(o.start);
     return result == 0? end.compareTo(o.end) : result;
   }
 
@@ -57,24 +57,22 @@ public class Line
 
     final Line other = (Line) o;
 
-    if (!Objects.equals(begin, other.begin)) {
+    if (!Objects.equals(start, other.start)) {
       return false;
     }
-
     if (!Objects.equals(end, other.end)) {
       return false;
     }
-
     return true;
   }
 
   @Override
   public int hashCode() {
-    return begin.hashCode() * 31 + end.hashCode();
+    return start.hashCode() * 31 + end.hashCode();
   }
 
   @Override
   public String toString() {
-    return "(" + begin +" <-> " + end +")";
+    return "(" + start + " <-> " + end + ")";
   }
 }

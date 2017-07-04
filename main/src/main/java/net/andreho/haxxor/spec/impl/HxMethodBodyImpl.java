@@ -8,9 +8,9 @@ import net.andreho.haxxor.cgen.HxInstructionsType;
 import net.andreho.haxxor.cgen.HxLinkedMethodBody;
 import net.andreho.haxxor.cgen.HxLocalVariable;
 import net.andreho.haxxor.cgen.HxTryCatch;
+import net.andreho.haxxor.cgen.impl.ExtendedInstructionCodeStream;
 import net.andreho.haxxor.cgen.impl.HxLocalVariableImpl;
 import net.andreho.haxxor.cgen.impl.HxTryCatchImpl;
-import net.andreho.haxxor.cgen.impl.ExtendedInstructionCodeStream;
 import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractSimpleJumpInstruction;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractSwitchJumpInstruction;
@@ -47,10 +47,10 @@ public class HxMethodBodyImpl
   public HxMethodBody moveTo(final HxMethod newOwner) {
     HxMethodBodyImpl newBody = new HxMethodBodyImpl(newOwner);
 
-    newBody.tryCatches = tryCatches;
-    newBody.localVariables = localVariables;
     newBody.first = first;
     newBody.last = last;
+    newBody.tryCatches = tryCatches;
+    newBody.localVariables = localVariables;
     newBody.maxLocals = maxLocals;
     newBody.maxStack = maxStack;
 

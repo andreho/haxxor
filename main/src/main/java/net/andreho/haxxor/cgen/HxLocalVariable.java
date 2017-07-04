@@ -1,56 +1,113 @@
 package net.andreho.haxxor.cgen;
 
+import net.andreho.haxxor.cgen.impl.HxLocalVariableImpl;
 import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.spec.api.HxAnnotated;
 
 /**
  * Created by 666 on 25.06.2017.
  */
-public interface HxLocalVariable extends HxVisitable, HxAnnotated<HxLocalVariable> {
-   /**
-    * @return index of this local variable
-    */
-   int getIndex();
+public interface HxLocalVariable
+  extends HxVisitable,
+          HxAnnotated<HxLocalVariable> {
 
-   /**
-    * @param index of this variable
-    */
-   void setIndex(final int index);
+  /**
+   * @return
+   */
+  static HxLocalVariable createLocalVariable() {
+    return new HxLocalVariableImpl();
+  }
 
-   /**
-    * @return descriptor of this local variable
-    */
-   String getDescriptor();
+  /**
+   * @return
+   */
+  static HxLocalVariable createLocalVariable(int index, String name, LABEL start, LABEL end, String descriptor, String signature) {
+    return new HxLocalVariableImpl()
+      .setIndex(index)
+      .setName(name)
+      .setStart(start)
+      .setEnd(end)
+      .setDescriptor(descriptor)
+      .setSignature(signature);
+  }
 
-   /**
-    * @return name of this local variable
-    */
-   String getName();
+  /**
+   * @return index of this local variable
+   */
+  int getIndex();
 
-   /**
-    * @return full signature of this local variable
-    */
-   String getSignature();
+  /**
+   * @param index of this variable
+   */
+  HxLocalVariable setIndex(final int index);
 
-   /**
-    * @return start asmLabel of this local variable
-    */
-   LABEL getStart();
+  /**
+   * @param delta
+   */
+  default HxLocalVariable shift(int delta) {
+    return setIndex(getIndex() + delta);
+  }
 
-   /**
-    * @return end asmLabel of this local variable
-    */
-   LABEL getEnd();
+  /**
+   * @return descriptor of this local variable
+   */
+  String getDescriptor();
 
-   /**
-    * Checks whether this local variable is visible for given asmLabel or not.
-    *
-    * @return <b>true</b> if it's visible and accessible, <bfalse></b> otherwise.
-    */
-   boolean isVisible(HxInstruction instruction);
+  /**
+   * @param descriptor
+   * @return
+   */
+  HxLocalVariable setDescriptor(String descriptor);
 
-   /**
-    * @return count of slots that reserved by this local variable (2 for long and double, otherwise 1 always)
-    */
-   int size();
+  /**
+   * @return name of this local variable
+   */
+  String getName();
+
+  /**
+   * @param name
+   */
+  HxLocalVariable setName(String name);
+
+  /**
+   * @return full signature of this local variable
+   */
+  String getSignature();
+
+  /**
+   * @param signature
+   */
+  HxLocalVariable setSignature(String signature);
+
+  /**
+   * @return start asmLabel of this local variable
+   */
+  LABEL getStart();
+
+  /**
+   * @param start
+   */
+  HxLocalVariable setStart(LABEL start);
+
+  /**
+   * @return end asmLabel of this local variable
+   */
+  LABEL getEnd();
+
+  /**
+   * @param end
+   */
+  HxLocalVariable setEnd(LABEL end);
+
+  /**
+   * Checks whether this local variable is visible for given asmLabel or not.
+   *
+   * @return <b>true</b> if it's visible and accessible, <bfalse></b> otherwise.
+   */
+  boolean isVisible(HxInstruction instruction);
+
+  /**
+   * @return count of slots that reserved by this local variable (2 for long and double, otherwise 1 always)
+   */
+  int size();
 }

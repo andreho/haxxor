@@ -3,19 +3,14 @@ package net.andreho.haxxor;
 
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.model.AbstractBean;
-import net.andreho.haxxor.model.AnnotationC;
 import net.andreho.haxxor.model.CodeAnnotationBean;
 import net.andreho.haxxor.model.EnumC;
 import net.andreho.haxxor.spec.api.HxType;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
+import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,28 +19,45 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * <br/>Created by a.hofmann on 31.05.2017 at 00:28.
  */
 public class SandBoxTest {
+
   public static final Class<AbstractBean> ABSTRACT_ITEM_CLASS = AbstractBean.class;
 
-  public static class DebugCode {
-    public String[] debugStringArray(Object o) {
-      if(!(o instanceof String[])) {
-        throw new IllegalArgumentException();
-      }
-      return (String[]) o;
+  public SandBoxTest() {
+    super();
+    try {
+
+    } catch (Throwable t) {
+      System.out.println(t);
+    } finally {
+      System.out.println("finally");
+    }
+  }
+
+  @FunctionalInterface
+  interface VOSJ<R, A, B, C> {
+
+    default R invoke(Object... args) {
+      execute((A) args[0], ((Number) args[1]).shortValue(), ((Number) args[2]).longValue());
+      return null;
     }
 
-    public int[] debugIntArray(Object o) {
-      if(!(o instanceof int[])) {
-        throw new IllegalArgumentException();
-      }
-      return (int[]) o;
+    default R execute(A a,
+                      B b,
+                      C c) {
+      execute(a, ((Number) b).shortValue(), ((Number) c).longValue());
+      return null;
     }
 
-    public String debugString(Object o) {
-      if(!(o instanceof String)) {
-        throw new IllegalArgumentException();
-      }
-      return (String) o;
+    void execute(A o,
+                 short i,
+                 long l);
+
+    default Callable<R> toCallable(final Object... args) {
+      return () -> invoke(args);
+    }
+
+    default Runnable toRunnable(final Object... args) {
+      return () -> invoke(args);
     }
   }
 
@@ -80,28 +92,6 @@ public class SandBoxTest {
     Debugger.trace(CodeAnnotationBean.class, Debugger.SKIP_DEBUG);
   }
 
-  public class MemberTesting {
-    public class DeeperMemberTesting {
-
-    }
-  }
-
-  public static class Testing {
-    static void foo()
-    throws FileNotFoundException {
-      @AnnotationC("x") String name = "";
-      try(@AnnotationC("y") InputStream inputStream = new FileInputStream(new File("."))){
-
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
-
-    public static class DeeperTesting {
-
-    }
-  }
-
   @Test
   @Disabled
   void arrayToString() {
@@ -112,14 +102,21 @@ public class SandBoxTest {
   @Test
   @Disabled
   void cornerCases() {
-    Debugger.trace(Testing.class);
+    Debugger.trace(this.getClass());
   }
 
-  static class SyntheticException implements Consumer<String> {
-    @Override
-    public void accept(final String s) {
-      throw new RuntimeException(s);
-    }
+  void lambda()
+  throws Exception {
+    final Object[] args = new Object[]{"a", 1, 2L};
+    final VOSJ<Void, String, Short, Long> adapter = this::__lambda__;
+    Callable<Void> callable = adapter.toCallable(args);
+    callable.call();
+  }
+
+  private void __lambda__(String a,
+                          short b,
+                          long c) {
+
   }
 
   @Test
@@ -127,5 +124,38 @@ public class SandBoxTest {
   void syntheticException() {
     Debugger.trace(SyntheticException.class);
     new SyntheticException().accept("test");
+  }
+
+  public static class DebugCode {
+
+    public String[] debugStringArray(Object o) {
+      if (!(o instanceof String[])) {
+        throw new IllegalArgumentException();
+      }
+      return (String[]) o;
+    }
+
+    public int[] debugIntArray(Object o) {
+      if (!(o instanceof int[])) {
+        throw new IllegalArgumentException();
+      }
+      return (int[]) o;
+    }
+
+    public String debugString(Object o) {
+      if (!(o instanceof String)) {
+        throw new IllegalArgumentException();
+      }
+      return (String) o;
+    }
+  }
+
+  static class SyntheticException
+    implements Consumer<String> {
+
+    @Override
+    public void accept(final String s) {
+      throw new RuntimeException(s);
+    }
   }
 }

@@ -3,7 +3,6 @@ package net.andreho.aop.spi.impl.advices.injectors;
 import net.andreho.aop.api.injectable.Args;
 import net.andreho.aop.spi.AspectAdvice;
 import net.andreho.aop.spi.AspectContext;
-import net.andreho.haxxor.cgen.HxCgenUtils;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxParameter;
@@ -28,7 +27,8 @@ public final class ArgsParameterInjector
                                            final HxParameter parameter,
                                            final HxInstruction instruction) {
 
-    HxCgenUtils.packArguments(original.getParameterTypes(), original.isStatic() ? 0 : 1, instruction.asStream());
+    instruction.asStream()
+               .PACK_ARGUMENTS(original.getParameterTypes(), original.isStatic()? 0 : 1);
     return true;
   }
 }

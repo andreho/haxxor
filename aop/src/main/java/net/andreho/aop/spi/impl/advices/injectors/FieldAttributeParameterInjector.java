@@ -3,6 +3,7 @@ package net.andreho.aop.spi.impl.advices.injectors;
 import net.andreho.aop.api.injectable.Attribute;
 import net.andreho.aop.spi.AspectAdvice;
 import net.andreho.aop.spi.AspectContext;
+import net.andreho.haxxor.cgen.HxExtendedCodeStream;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxField;
@@ -18,11 +19,11 @@ import java.util.Collection;
 public class FieldAttributeParameterInjector
   extends AbstractAnnotatedParameterInjector {
 
-  public static final FieldAttributeParameterInjector INSTANCE = new FieldAttributeParameterInjector();
   private static final String ATTRIBUTE_ANNOTATION_TYPE_NAME = Attribute.class.getName();
+  public static final FieldAttributeParameterInjector INSTANCE = new FieldAttributeParameterInjector();
 
   public FieldAttributeParameterInjector() {
-    super(Attribute.class.getName());
+    super(ATTRIBUTE_ANNOTATION_TYPE_NAME);
   }
 
   @Override
@@ -46,26 +47,29 @@ public class FieldAttributeParameterInjector
       (field) ->
         field.getAnnotation(ATTRIBUTE_ANNOTATION_TYPE_NAME)
              .filter(hxAnnotation ->
-                       attributeAnnotation
+                       attributeName
                          .equals(hxAnnotation.getAttribute("value", ""))
              )
-             .isPresent()
+             .isPresent(), true
     );
 
-    if(fields.isEmpty()) {
+    if (fields.isEmpty()) {
+      return false;
+    }
+    final HxField field = fields.iterator().next();
+
+    if (!field.isAccessibleFrom(original)) {
       return false;
     }
 
-    final HxField field = fields.iterator().next();
+    final HxExtendedCodeStream stream = instruction.asStream();
 
-    if(field.isAccesibleFrom(original.getDeclaringMember())) {
-      if(field.isStatic()) {
-        instruction.asStream().GETSTATIC(field);
-      } else {
-        instruction.asStream().THIS().GETFIELD(field);
-      }
+    if (field.isStatic()) {
+      stream.GETSTATIC(field);
+    } else {
+      stream.THIS().GETFIELD(field);
     }
 
-    return false;
+    return true;
   }
 }

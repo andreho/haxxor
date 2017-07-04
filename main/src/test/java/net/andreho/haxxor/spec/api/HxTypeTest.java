@@ -352,9 +352,9 @@ class HxTypeTest {
     int slots = ("long".equals(typeName) || "double".equals(typeName)) ? 2 : 1;
 
     assertEquals(slots, haxxor.reference(typeName)
-                              .getSlotsCount());
+                              .getSlotSize());
     assertEquals(slots, haxxor.resolve(typeName)
-                              .getSlotsCount());
+                              .getSlotSize());
   }
 
   @ParameterizedTest

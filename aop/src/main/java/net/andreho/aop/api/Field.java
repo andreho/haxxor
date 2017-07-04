@@ -10,9 +10,7 @@ import net.andreho.aop.api.injectable.Intercepted;
 import net.andreho.aop.api.injectable.Line;
 import net.andreho.aop.api.injectable.Result;
 import net.andreho.aop.api.injectable.This;
-import net.andreho.aop.api.spec.CanInject;
-import net.andreho.aop.api.spec.Fields;
-import net.andreho.aop.api.spec.Methods;
+import net.andreho.aop.api.spec.Supports;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -30,7 +28,7 @@ public @interface Field {
    * Allows to intercept reading access of a field
    * <br/>Created by a.hofmann on 18.09.2015.<br/>
    */
-  @CanInject({
+  @Supports(injectionOf = {
                Arg.class,
                Args.class,
                Arity.class,
@@ -49,28 +47,14 @@ public @interface Field {
      * @return an unique name of a globally available profile
      * @see Profile
      */
-    String profile() default "";
-
-    /**
-     * Which read-access should be intercepted
-     *
-     * @return
-     */
-    Fields[] fields() default {};
-
-    /**
-     * Which methods, accessing wanted fields, should be processed
-     *
-     * @return
-     */
-    Methods[] methods() default {};
+    String value();
   }
 
   /**
    * Allows an aspect to intercept writing access of a field
    * <br/>Created by a.hofmann on 18.09.2015.<br/>
    */
-  @CanInject({
+  @Supports(injectionOf = {
                Arg.class,
                Args.class,
                Arity.class,
@@ -89,20 +73,6 @@ public @interface Field {
      * @return an unique name of a globally available profile
      * @see Profile
      */
-    String profile() default "";
-
-    /**
-     * Which fields should be processed
-     *
-     * @return
-     */
-    Fields[] fields() default {};
-
-    /**
-     * Which methods accessing wanted field should be processed
-     *
-     * @return
-     */
-    Methods[] methods() default {};
+    String value();
   }
 }

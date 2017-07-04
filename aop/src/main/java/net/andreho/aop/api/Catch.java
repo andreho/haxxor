@@ -8,9 +8,8 @@ import net.andreho.aop.api.injectable.Declaring;
 import net.andreho.aop.api.injectable.Intercepted;
 import net.andreho.aop.api.injectable.Line;
 import net.andreho.aop.api.injectable.This;
-import net.andreho.aop.api.spec.CanInject;
-import net.andreho.aop.api.spec.Methods;
 import net.andreho.aop.api.spec.Site;
+import net.andreho.aop.api.spec.Supports;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -21,7 +20,7 @@ import java.lang.annotation.Target;
  * Allows to install additional <code>catch</code> blocks into intercepted method
  * <br/>Created by a.hofmann on 18.09.2015.<br/>
  */
-@CanInject({
+@Supports(injectionOf = {
 //            Arg.class,
             Args.class,
             Arity.class,
@@ -39,24 +38,10 @@ public @interface Catch {
    * @return an unique name of a globally available profile
    * @see Profile
    */
-  String profile() default "";
+  String value();
 
   /**
    * @return
    */
   Site site() default Site.CALLEE;
-
-  /**
-   * @return {@link Throwable} types of expected exceptions, that need to be handled by this aspect
-   */
-  Class<? extends Throwable>[] value() default {Throwable.class};
-
-  /**
-   * Which methods should be processed
-   *
-   * @return a set of method-selectors that select matched methods
-   * @apiNote elements are bound via an OR (disjunction);
-   * empty array means any field will be selected
-   */
-  Methods[] methods() default {};
 }

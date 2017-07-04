@@ -2,7 +2,7 @@ package net.andreho.aop.spi.impl.advices;
 
 import net.andreho.aop.spi.AspectAdvice;
 import net.andreho.aop.spi.AspectAdviceParameterInjector;
-import net.andreho.aop.spi.AspectAdviceResultHandler;
+import net.andreho.aop.spi.AspectAdvicePostProcessor;
 import net.andreho.aop.spi.AspectAdviceType;
 import net.andreho.aop.spi.AspectDefinition;
 import net.andreho.aop.spi.AspectProfile;
@@ -32,11 +32,11 @@ public abstract class AbstractAspectAdviceType
 
   private final int order;
   private final AspectAdviceParameterInjector parameterInjector;
-  private final AspectAdviceResultHandler resultHandler;
+  private final AspectAdvicePostProcessor resultHandler;
 
   public AbstractAspectAdviceType(final int order,
                                   final AspectAdviceParameterInjector parameterInjector,
-                                  final AspectAdviceResultHandler resultHandler) {
+                                  final AspectAdvicePostProcessor resultHandler) {
     this.order = order;
     this.parameterInjector = parameterInjector;
     this.resultHandler = resultHandler;
@@ -53,7 +53,7 @@ public abstract class AbstractAspectAdviceType
   }
 
   @Override
-  public AspectAdviceResultHandler getResultHandler() {
+  public AspectAdvicePostProcessor getPostProcessor() {
     return resultHandler;
   }
 
@@ -67,33 +67,19 @@ public abstract class AbstractAspectAdviceType
     throw new UnsupportedOperationException();
   }
 
-  protected Collection<HxMethod> locateJoinPointsWith(final HxType type, final String markerAnnotationType) {
+  protected Collection<HxMethod> locateAdvicesWith(final HxType type, final String markerAnnotationType) {
     return type.methods(m ->
                           m.isPublic() &&
                           m.isAnnotationPresent(markerAnnotationType));
   }
 
   protected ElementMatcher<HxMethod> obtainMethodsMatcher(final AspectDefinition def,
-                                                          final HxAnnotation annotation,
                                                           final String profileName) {
-    return obtainMethodsMatcher(def, profileName, annotation.getAttribute("methods", Constants.EMPTY_ANNOTATION_ARRAY));
-  }
-
-  protected ElementMatcher<HxMethod> obtainMethodsMatcher(final AspectDefinition def,
-                                                          final String profileName,
-                                                          final HxAnnotation[] methods) {
-    ElementMatcher<HxMethod> affectedMethodsMatcher;
-
-    if(!profileName.isEmpty()) {
-      final Optional<AspectProfile> aspectProfile = def.getAspectProfile(profileName);
-      affectedMethodsMatcher = aspectProfile.orElseThrow(IllegalStateException::new).getMethodsMatcher();
-    } else {
-      affectedMethodsMatcher = def.getElementMatcherFactory().createMethodsFilter(methods);
-    }
-    return affectedMethodsMatcher;
+    final Optional<AspectProfile> aspectProfile = def.getAspectProfile(profileName);
+    return aspectProfile.orElseThrow(IllegalStateException::new).getMethodsMatcher();
   }
 
   protected String fetchProfileName(final HxAnnotation annotation) {
-    return annotation.getAttribute("profile", "");
+    return annotation.getAttribute("value", "");
   }
 }

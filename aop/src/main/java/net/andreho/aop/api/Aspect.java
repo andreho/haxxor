@@ -1,8 +1,17 @@
 package net.andreho.aop.api;
 
-import net.andreho.aop.api.spec.CanInject;
-import net.andreho.aop.api.spec.Classes;
+import net.andreho.aop.api.injectable.Arg;
+import net.andreho.aop.api.injectable.Args;
+import net.andreho.aop.api.injectable.Arity;
+import net.andreho.aop.api.injectable.Attribute;
+import net.andreho.aop.api.injectable.Current;
+import net.andreho.aop.api.injectable.Declaring;
+import net.andreho.aop.api.injectable.Intercepted;
+import net.andreho.aop.api.injectable.Line;
+import net.andreho.aop.api.injectable.Marker;
+import net.andreho.aop.api.injectable.This;
 import net.andreho.aop.api.spec.Parameter;
+import net.andreho.aop.api.spec.Supports;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,7 +19,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation marks a class as aspect.
+ * This annotation marks a <b>public class</b> as aspect.
  * <br/>Created by a.hofmann on 18.09.2015.<br/>
  *
  * @see Order
@@ -25,17 +34,38 @@ public @interface Aspect {
    * This annotation must be used inside of the matching aspect on exactly one <b>public static</b> method
    * that returns the aspect's type. The static factory method must return a valid instance of the matching aspect.
    */
-  @CanInject({/* DEPENDS ON ASPECT'S TYPE */})
+  @Supports(
+    injectionOf = {
+      Arg.class,
+      Args.class,
+      Arity.class,
+      Attribute.class,
+      Current.class,
+      Declaring.class,
+      Intercepted.class,
+      Line.class,
+      Marker.class,
+      This.class
+    }, postProcessingWith = {
+    Attribute.class
+  })
   @Retention(RetentionPolicy.RUNTIME)
   @Target({ElementType.METHOD, ElementType.CONSTRUCTOR})
   @interface Factory {
 
     /**
-     * @return <b>true</b> if the returned aspect instance must be saved locally and reused for later usage;
-     * <b>false</b> to fetch factory-executable each time it's needed
+     * @return <b>true</b> if the returned aspect instance must be saved as local variable
+     * and reused for possible later usage;
+     * <b>false</b> to fetch aspect-factory each time it's needed
      */
     boolean reuse() default true;
   }
+
+  /**
+   * @return an unique name of a globally available profile
+   * @see Profile
+   */
+  String value();
 
   /**
    * Additional parameters for this aspect
@@ -43,15 +73,5 @@ public @interface Aspect {
    * @return
    */
   Parameter[] parameters() default {};
-
-  /**
-   * Explicit pre-filter of classes that need to be processed by this aspect definition
-   *
-   * @return
-   * @implNote this should speed-up the overall performance
-   * @apiNote elements are bound via an OR (disjunction);
-   * empty array means any loaded classes will be selected at this stage
-   */
-  Classes[] classes() default {}; //(... OR ...)
 }
 

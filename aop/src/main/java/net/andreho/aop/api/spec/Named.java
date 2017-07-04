@@ -18,7 +18,7 @@ public @interface Named {
   /**
    * @return a pattern for name selection. This can be either an ANT-style selector or Java
    * {@link java.util.regex.Pattern regexp}.
-   * @implNote for example: <code>'my.company.foo.*.bar'</code>, <code>'set?*Service'</code> or as RegExp:
+   * @implNote for example: <code>'my.company.foo.*.Bar'</code>, <code>'set?*Service'</code> or as RegExp:
    * <code>'my\.domain\.services\..*'</code>
    */
   String value() default "";

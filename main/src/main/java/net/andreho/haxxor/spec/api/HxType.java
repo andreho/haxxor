@@ -197,7 +197,7 @@ public interface HxType
    * @return count of slots that are needed to store a value of this type on stack or as local variable
    * @implSpec <code>long</code> and <code>double</code> take two slots and all other only one
    */
-  default int getSlotsCount() {
+  default int getSlotSize() {
     final String name = getName();
     return "void".equals(name) ? 0 :
            ("long".equals(name) || "double".equals(name)) ? 2 : 1;
@@ -948,6 +948,15 @@ public interface HxType
    */
   default boolean isVoid() {
     return "void".equals(getName());
+  }
+
+  /**
+   * @return <b>true</b> if this type can be instantiated, <b>false</b> otherwise.
+   */
+  default boolean isInstantiable() {
+    return !isPrimitive() &&
+      !hasModifiers(Modifiers.ABSTRACT) &&
+      !hasModifiers(Modifiers.INTERFACE);
   }
 
   /**

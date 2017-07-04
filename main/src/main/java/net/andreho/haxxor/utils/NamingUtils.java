@@ -132,10 +132,20 @@ public abstract class NamingUtils {
     return OBJECT;
   }
 
+  /**
+   * @param value
+   * @return
+   */
   public static boolean isDescriptor(String value) {
     return isDescriptor(value, 0, value.length());
   }
 
+  /**
+   * @param value
+   * @param offset
+   * @param length
+   * @return
+   */
   public static boolean isDescriptor(String value,
                                      int offset,
                                      int length) {
@@ -275,9 +285,8 @@ public abstract class NamingUtils {
     if (dims > 0) {
       final String componentClassname =
         className.substring(0, className.length() - dims * ARRAY_DIMENSION.length());
-      final StringBuilder builder = new StringBuilder(
-        toSimpleName(componentClassname)
-      );
+      final StringBuilder builder = new StringBuilder(toSimpleName(componentClassname));
+
       for (int i = 0; i < dims; i++) {
         builder.append(ARRAY_DIMENSION);
       }

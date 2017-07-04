@@ -23,7 +23,7 @@ public @interface Attribute {
   /**
    * @return <b>true</b> if this attribute must be visible for sub-classes, <b>false</b> otherwise.
    * @apiNote if set to <b>true</b> the user must ensure
-   * that the marked element has proper visibility-level for calling method/constructor.
+   * that the marked element has proper visibility-level for intercepted method's or constructor's call.
    */
   boolean inheritable() default false;
 }

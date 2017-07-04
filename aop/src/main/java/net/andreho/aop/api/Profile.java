@@ -3,7 +3,6 @@ package net.andreho.aop.api;
 import net.andreho.aop.api.spec.Classes;
 import net.andreho.aop.api.spec.Fields;
 import net.andreho.aop.api.spec.Methods;
-import net.andreho.aop.api.spec.Site;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
@@ -19,28 +18,19 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Profile {
   /**
-   * @return
+   * Defines an unique name of this globally available profile
+   * @return an unique name of this profile
    */
   String name();
 
   /**
-   * @return
-   */
-  Site site() default Site.CALLEE;
-
-  /**
-   * Should we install the call to the corresponding before-advice inside of a try-(catch)/finally block or not.
+   * Defines a set with classes that should be processed
    *
-   * @return
-   * @apiNote Applies only if your aspect-stack defines additional {@link Catch @Catch} and/or
-   * {@link Finally @Finally} interceptors
+   * @apiNote elements are bound via an OR (disjunction);
+   * empty array means any class will be selected
+   * @see Aspect
    */
-  boolean safely() default false;
-
-  /**
-   * @return {@link Throwable} types of expected exceptions, that need to be handled by this aspect
-   */
-  Class<? extends Throwable>[] throwable() default {Throwable.class};
+  Classes[] classes() default {};
 
   /**
    * Defines a set with methods that should be processed
@@ -48,6 +38,12 @@ public @interface Profile {
    * @return an array of method selectors
    * @apiNote elements are bound via an OR (disjunction);
    * empty array means any method/constructor will be selected
+   * @see Before
+   * @see After
+   * @see Around
+   * @see Finally
+   * @see Field.Get
+   * @see Field.Set
    */
   Methods[] methods() default {};
 
@@ -56,14 +52,16 @@ public @interface Profile {
    *
    * @apiNote elements are bound via an OR (disjunction);
    * empty array means any field will be selected
+   * @see Field.Get
+   * @see Field.Set
    */
   Fields[] fields() default {};
 
   /**
-   * Defines a set with classes that should be processed
+   * Defines a set of {@link Throwable} classes that should be processed by a referencing {@link Catch} advice
    *
-   * @apiNote elements are bound via an OR (disjunction);
-   * empty array means any class will be selected
+   * @return {@link Throwable} types of expected exceptions, that need to be handled by this aspect
+   * @see Catch
    */
-  Classes[] classes() default {};
+  Class<? extends Throwable>[] throwable() default {Throwable.class};
 }

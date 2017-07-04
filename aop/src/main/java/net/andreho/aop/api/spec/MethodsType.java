@@ -19,7 +19,7 @@ public enum MethodsType
     }
   },
   /**
-   * All methods and constructors except static class-initializer
+   * All methods and constructors except the static class-initializer
    */
   ALL() {
     @Override
@@ -28,7 +28,7 @@ public enum MethodsType
     }
   },
   /**
-   * All methods without any constructor and static class-initializer
+   * All methods without any constructors and the static class-initializer
    */
   METHODS() {
     @Override
@@ -38,7 +38,7 @@ public enum MethodsType
     }
   },
   /**
-   * All constructors without any methods and static class-initializer
+   * All constructors without any methods and the static class-initializer
    */
   CONSTRUCTORS() {
     @Override

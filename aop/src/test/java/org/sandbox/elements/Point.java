@@ -6,7 +6,7 @@ package org.sandbox.elements;
 public class Point
   extends Figure
   implements Comparable<Point> {
-  static final Point ZERO = new Point();
+  public static final Point ZERO = new Point();
 
   private int x;
   private int y;
@@ -14,7 +14,6 @@ public class Point
   public Point() {
     this(0, 0);
   }
-
   public Point(final int x,
                final int y) {
     this.x = x;
@@ -24,7 +23,6 @@ public class Point
   public void setX(final int x) {
     this.x = x;
   }
-
   public void setY(final int y) {
     this.y = y;
   }
@@ -32,7 +30,6 @@ public class Point
   public int getX() {
     return x;
   }
-
   public int getY() {
     return y;
   }
@@ -54,10 +51,11 @@ public class Point
 
     final Point point = (Point) o;
 
-    if (x != point.x) {
+    if (x != point.x ||
+        y != point.y) {
       return false;
     }
-    return y == point.y;
+    return true;
   }
 
   @Override

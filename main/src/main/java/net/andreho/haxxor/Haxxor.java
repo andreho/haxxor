@@ -295,7 +295,7 @@ public class Haxxor
    * @param typeName to look for
    * @return <b>true</b> if there is a resolved type with given typename in this instance, <b>false</b> otherwise
    */
-  public boolean hasResolved(String typeName) {
+  public boolean hasType(String typeName) {
     typeName = toNormalizedClassname(typeName);
     return this.resolvedCache.containsKey(typeName);
   }
@@ -309,7 +309,7 @@ public class Haxxor
   public HxTypeReference reference(String typeName) {
     checkClassLoaderAvailability();
     typeName = toNormalizedClassname(typeName);
-    HxTypeReference reference = fetchSynchronizedReferenceCache(typeName);
+    HxTypeReference reference = fetchReferenceCache(typeName);
 
     if (reference == null) {
       if (LOG.isDebugEnabled()) {
@@ -380,7 +380,7 @@ public class Haxxor
                         int options) {
     checkClassLoaderAvailability();
     typeName = toNormalizedClassname(typeName);
-    HxType type = fetchSynchronizedResolvedCache(typeName);
+    HxType type = fetchResolvedCache(typeName);
 
     if (type != null) {
       return type;
@@ -407,7 +407,7 @@ public class Haxxor
                         byte[] byteCode) {
     checkClassLoaderAvailability();
     typeName = toNormalizedClassname(typeName);
-    HxType type = fetchSynchronizedResolvedCache(typeName);
+    HxType type = fetchResolvedCache(typeName);
 
     if (type != null) {
       return type;
@@ -416,7 +416,7 @@ public class Haxxor
     return readClass(byteCode, options);
   }
 
-  protected HxType fetchSynchronizedResolvedCache(final String typeName) {
+  protected HxType fetchResolvedCache(final String typeName) {
     if(!concurrent) {
       return readResolvedCache(typeName);
     }
@@ -438,7 +438,7 @@ public class Haxxor
     return this.resolvedCache.get(typeName);
   }
 
-  protected HxTypeReference fetchSynchronizedReferenceCache(final String typeName) {
+  protected HxTypeReference fetchReferenceCache(final String typeName) {
     if(!concurrent) {
       return readReferenceCache(typeName);
     }
