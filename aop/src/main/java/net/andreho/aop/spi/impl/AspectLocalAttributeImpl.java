@@ -14,6 +14,7 @@ public class AspectLocalAttributeImpl
 
   private final HxLocalVariable localVariable;
   private final HxType type;
+  private boolean handled;
 
   public AspectLocalAttributeImpl(final HxLocalVariable localVariable,
                                   final HxType type) {
@@ -39,6 +40,16 @@ public class AspectLocalAttributeImpl
   @Override
   public int getIndex() {
     return getLocalVariable().getIndex();
+  }
+
+  @Override
+  public boolean wasHandled() {
+    return handled;
+  }
+
+  @Override
+  public void markAsHandled() {
+    this.handled = true;
   }
 
   @Override

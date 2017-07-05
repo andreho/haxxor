@@ -17,21 +17,9 @@ import java.util.function.Predicate;
 public abstract class AbstractPseudoInstruction
     implements HxInstruction {
 
-  private int index;
-
   @Override
   public int getOpcode() {
     return -1;
-  }
-
-  @Override
-  public int getIndex() {
-    return index;
-  }
-
-  @Override
-  public void setIndex(final int index) {
-    this.index = index;
   }
 
   @Override

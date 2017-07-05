@@ -100,13 +100,6 @@ public interface HxLocalVariable
   HxLocalVariable setEnd(LABEL end);
 
   /**
-   * Checks whether this local variable is visible for given asmLabel or not.
-   *
-   * @return <b>true</b> if it's visible and accessible, <bfalse></b> otherwise.
-   */
-  boolean isVisible(HxInstruction instruction);
-
-  /**
    * @return count of slots that reserved by this local variable (2 for long and double, otherwise 1 always)
    */
   int size();

@@ -1,7 +1,6 @@
 package net.andreho.haxxor.cgen.impl;
 
 import net.andreho.haxxor.cgen.HxCodeStream;
-import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxLocalVariable;
 import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.spec.impl.HxAnnotatedDelegate;
@@ -111,15 +110,23 @@ public class HxLocalVariableImpl
     return this;
   }
 
-  public boolean isVisible(HxInstruction instruction) {
-    return getStart().getIndex() < instruction.getIndex() && instruction.getIndex() < getEnd().getIndex();
-  }
-
   public int size() {
     final Object type = getDescriptor();
     if ("D".equals(type) || "J".equals(type)) {
       return 2;
     }
     return 1;
+  }
+
+  @Override
+  public String toString() {
+    return "VARIABLE (" +
+           "index=" + index +
+           ", name='" + name + '\'' +
+           ", descriptor='" + descriptor + '\'' +
+           ", signature='" + signature + '\'' +
+           ", start=" + start.print() +
+           ", end=" + end.print() +
+           ')';
   }
 }

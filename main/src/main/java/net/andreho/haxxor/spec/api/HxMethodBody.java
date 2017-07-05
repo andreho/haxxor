@@ -107,7 +107,20 @@ public interface HxMethodBody
    * @return <b>true</b> if there is some information about local variables, <b>false</b> otherwise.
    */
   default boolean hasLocalVariables() {
-    return getLocalVariables().isEmpty();
+    return !getLocalVariables().isEmpty();
+  }
+
+  /**
+   * @param name
+   * @return
+   */
+  default boolean hasLocalVariable(String name) {
+    for (HxLocalVariable variable : getLocalVariables()) {
+      if(name.equals(variable.getName())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -132,7 +145,7 @@ public interface HxMethodBody
    * @return
    */
   default boolean hasTryCatch() {
-    return getTryCatches().isEmpty();
+    return !getTryCatches().isEmpty();
   }
 
   /**
@@ -154,9 +167,7 @@ public interface HxMethodBody
   HxInstructionFactory getInstructionFactory();
 
   /**
-   * Recomputes the {@link HxInstruction#getIndex() index} for each instruction of this code
-   * @return total count of instructions in this code
+   * @return
    */
-  int computeIndex();
-
+  String toString();
 }

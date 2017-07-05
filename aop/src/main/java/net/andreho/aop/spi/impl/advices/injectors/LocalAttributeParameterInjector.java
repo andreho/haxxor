@@ -30,7 +30,7 @@ public class LocalAttributeParameterInjector
                                               final HxMethod original,
                                               final HxMethod shadow,
                                               final HxParameter parameter,
-                                              final HxInstruction instruction) {
+                                              final HxInstruction anchor) {
     final HxAnnotation attributeAnnotation = parameter.getAnnotation(ATTRIBUTE_ANNOTATION_TYPE_NAME).get();
     final String attributeName = attributeAnnotation.getAttribute("value", "");
     final AspectMethodContext methodContext = context.getAspectMethodContext();
@@ -44,7 +44,8 @@ public class LocalAttributeParameterInjector
     }
 
     final AspectLocalAttribute attribute = methodContext.getLocalAttribute(attributeName);
-    instruction.asStream().GENERIC_LOAD(attribute.getType(), attribute.getIndex());
+    anchor.asAnchoredStream()
+          .GENERIC_LOAD(attribute.getType(), attribute.getIndex());
 
     return true;
   }

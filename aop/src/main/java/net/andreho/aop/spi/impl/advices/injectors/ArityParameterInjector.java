@@ -25,10 +25,10 @@ public final class ArityParameterInjector
                                            final HxMethod original,
                                            final HxMethod shadow,
                                            final HxParameter parameter,
-                                           final HxInstruction instruction) {
+                                           final HxInstruction anchor) {
 
-    instruction.asStream()
-               .LDC(original.getParametersCount());
+    anchor.asAnchoredStream()
+          .LDC(original.getParametersCount());
     return true;
   }
 }

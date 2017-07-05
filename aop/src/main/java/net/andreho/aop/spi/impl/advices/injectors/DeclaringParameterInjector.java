@@ -27,10 +27,11 @@ public final class DeclaringParameterInjector
                                            final HxMethod original,
                                            final HxMethod shadow,
                                            final HxParameter parameter,
-                                           final HxInstruction instruction) {
-    final HxExtendedCodeStream stream = instruction.asStream();
+                                           final HxInstruction anchor) {
+    final HxExtendedCodeStream stream = anchor.asAnchoredStream();
 
-    if(original.isStatic()) {
+    if(original.isStatic() ||
+       original.isConstructor()) {
       stream.TYPE(original.getDeclaringMember());
     } else {
       stream.THIS().INVOKESTATIC(HELPERS_CLASS,

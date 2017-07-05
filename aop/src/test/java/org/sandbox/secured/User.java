@@ -1,16 +1,30 @@
 package org.sandbox.secured;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * <br/>Created by a.hofmann on 04.07.2017 at 17:08.
  */
 public class User {
+
   private final String username;
   private final String password;
+  private final Set<String> permissions = new HashSet<>();
 
   public User(final String username,
               final String password) {
     this.username = username;
     this.password = password;
+  }
+
+  public User(final String username,
+              final String password,
+              final String... permissions) {
+    this(username, password);
+    for (String permission : permissions) {
+      addPermission(permission);
+    }
   }
 
   public String getUsername() {
@@ -19,6 +33,20 @@ public class User {
 
   public String getPassword() {
     return password;
+  }
+
+  public User addPermission(String permission) {
+    permissions.add(permission);
+    return this;
+  }
+
+  public User removePermission(String permission) {
+    permissions.remove(permission);
+    return this;
+  }
+
+  public boolean hasPermission(String permission) {
+    return permissions.contains(permission);
   }
 
   @Override
@@ -47,7 +75,7 @@ public class User {
 
   @Override
   public String toString() {
-    return getClass().getSimpleName() +" {" +
+    return getClass().getSimpleName() + " {" +
            "username='" + username + '\'' +
            ", password='" + password + '\'' +
            '}';

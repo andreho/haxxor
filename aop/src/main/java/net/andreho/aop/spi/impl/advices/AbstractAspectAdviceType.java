@@ -14,7 +14,9 @@ import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxOrdered;
 import net.andreho.haxxor.spec.api.HxType;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Optional;
 
 /**
@@ -31,15 +33,18 @@ public abstract class AbstractAspectAdviceType
   }
 
   private final int order;
+  private final EnumSet<AspectAdvice.Target> targets;
   private final AspectAdviceParameterInjector parameterInjector;
   private final AspectAdvicePostProcessor resultHandler;
 
   public AbstractAspectAdviceType(final int order,
                                   final AspectAdviceParameterInjector parameterInjector,
-                                  final AspectAdvicePostProcessor resultHandler) {
+                                  final AspectAdvicePostProcessor resultHandler,
+                                  final AspectAdvice.Target ... targets) {
     this.order = order;
     this.parameterInjector = parameterInjector;
     this.resultHandler = resultHandler;
+    this.targets = EnumSet.copyOf(Arrays.asList(targets));
   }
 
   @Override
@@ -59,7 +64,7 @@ public abstract class AbstractAspectAdviceType
 
   @Override
   public boolean hasTarget(final AspectAdvice.Target target) {
-    return false;
+    return targets.contains(target);
   }
 
   @Override

@@ -31,14 +31,17 @@ public final class LineParameterInjector
                                               final HxMethod original,
                                               final HxMethod shadow,
                                               final HxParameter parameter,
-                                              final HxInstruction instruction) {
+                                              final HxInstruction anchor) {
 
     if (parameter.isAnnotationPresent(LINE_ANNOTATION_TYPE_NAME)) {
-      Optional<HxInstruction> lineNumber = instruction.findFirst(
+      Optional<HxInstruction> lineNumber = anchor.findFirst(
         ins -> ins.hasType(HxInstructionsType.Special.LINE_NUMBER));
+
       if (lineNumber.isPresent()) {
         LINE_NUMBER ln = (LINE_NUMBER) lineNumber.get();
-        instruction.asStream().LDC(ln.getLine());
+        anchor.asAnchoredStream()
+              .LDC(ln.getLine());
+
         return true;
       }
     }

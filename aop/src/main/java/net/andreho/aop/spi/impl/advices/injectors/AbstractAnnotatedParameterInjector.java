@@ -36,12 +36,12 @@ public abstract class AbstractAnnotatedParameterInjector
                                        final HxMethod original,
                                        final HxMethod shadow,
                                        final HxParameter parameter,
-                                       final HxInstruction instruction) {
+                                       final HxInstruction anchor) {
     if(!isInjectable(context, interceptor, original, shadow, parameter)) {
       return false;
     }
 
-    return checkedParameterInjection(aspectAdvice, context, interceptor, original, shadow, parameter, instruction);
+    return checkedParameterInjection(aspectAdvice, context, interceptor, original, shadow, parameter, anchor);
   }
 
   protected abstract boolean checkedParameterInjection(final AspectAdvice<?> aspectAdvice,
@@ -50,5 +50,5 @@ public abstract class AbstractAnnotatedParameterInjector
                                                     final HxMethod original,
                                                     final HxMethod shadow,
                                                     final HxParameter parameter,
-                                                    final HxInstruction instruction);
+                                                    final HxInstruction anchor);
 }

@@ -33,7 +33,7 @@ public class FieldAttributeParameterInjector
                                               final HxMethod original,
                                               final HxMethod shadow,
                                               final HxParameter parameter,
-                                              final HxInstruction instruction) {
+                                              final HxInstruction anchor) {
 
     final HxAnnotation attributeAnnotation = parameter.getAnnotation(ATTRIBUTE_ANNOTATION_TYPE_NAME).get();
     final String attributeName = attributeAnnotation.getAttribute("value", "");
@@ -62,7 +62,7 @@ public class FieldAttributeParameterInjector
       return false;
     }
 
-    final HxExtendedCodeStream stream = instruction.asStream();
+    final HxExtendedCodeStream stream = anchor.asAnchoredStream();
 
     if (field.isStatic()) {
       stream.GETSTATIC(field);

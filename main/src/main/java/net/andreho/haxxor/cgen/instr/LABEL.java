@@ -41,6 +41,10 @@ public class LABEL
     }
   }
 
+  protected String prefix() {
+    return "L";
+  }
+
   @Override
   public HxInstructionType getInstructionType() {
     return HxInstructionsType.Special.LABEL;
@@ -70,8 +74,7 @@ public class LABEL
     return instruction;
   }
 
-  @Override
-  public String toString() {
+  public String print() {
     int count = 0;
     HxInstruction instruction = getPrevious();
     while (instruction != null && !instruction.isBegin()) {
@@ -80,8 +83,13 @@ public class LABEL
       }
       instruction = instruction.getPrevious();
     }
+    final String prefix = prefix();
+    return ("L".equals(prefix)? "L" : prefix + "#") + count;
+  }
 
-    return "  L" + count;
+  @Override
+  public String toString() {
+    return "  " + print();
   }
 
   @Override

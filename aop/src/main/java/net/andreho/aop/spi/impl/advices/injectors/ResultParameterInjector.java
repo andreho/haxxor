@@ -32,10 +32,11 @@ public final class ResultParameterInjector
                                            final HxMethod original,
                                            final HxMethod shadow,
                                            final HxParameter parameter,
-                                           final HxInstruction instruction) {
-    final HxExtendedCodeStream stream = instruction.asStream();
+                                           final HxInstruction anchor) {
 
     if (!original.hasReturnType(HxSort.VOID)) {
+      final HxExtendedCodeStream stream = anchor.asAnchoredStream();
+
       final AspectMethodContext methodContext = context.getAspectMethodContext();
       final AspectLocalAttribute attribute = methodContext.getLocalAttribute(RESULT_ATTRIBUTES_NAME);
 

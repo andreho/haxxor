@@ -84,7 +84,7 @@ public class HxTypeVisitor
     if(!this.type.hasName(name)) {
       this.type.addInnerType(haxxor.reference(name).setModifiers(access));
     } else {
-      System.out.println(HxType.Modifiers.toSet(this.type.getModifiers()) + name);
+//      System.out.println(HxType.Modifiers.toSet(this.type.getModifiers()) + " " + name);
     }
   }
 

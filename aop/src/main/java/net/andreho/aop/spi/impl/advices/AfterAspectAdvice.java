@@ -9,8 +9,6 @@ import net.andreho.aop.spi.impl.Constants;
 import net.andreho.haxxor.cgen.HxCgenUtils;
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
 import net.andreho.haxxor.cgen.HxInstruction;
-import net.andreho.haxxor.cgen.HxInstructionSort;
-import net.andreho.haxxor.cgen.HxInstructionsType;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxSort;
 import net.andreho.haxxor.spec.api.HxType;
@@ -51,42 +49,39 @@ public class AfterAspectAdvice
     final HxMethod interceptor = getInterceptor();
     final AspectMethodContext methodContext = context.getAspectMethodContext();
 
-    final boolean injectsResult =
-      interceptor.hasParameterWithAnnotation(Constants.INJECT_RESULT_ANNOTATION_TYPE);
+//    methodContext.getDelegationEnd().forPrevious(
+//      ins -> ins.hasSort(HxInstructionSort.Exit) && ins.hasNot(HxInstructionsType.Exit.ATHROW),
+//      ins -> handleReturnOpcode(context, interceptor, original, shadow, ins)
+//    );
 
-    methodContext.getEnd().forPrevious(
-      ins ->
-        ins.hasSort(HxInstructionSort.Exit) &&
-        ins.hasNot(HxInstructionsType.Exit.ATHROW),
-      ins ->
-        handleReturnOpcode(context, injectsResult, interceptor, original, shadow, ins.getPrevious())
-    );
+    handleReturnOpcode(context, interceptor, original, shadow, methodContext.getDelegationEnd());
 
     return true;
   }
 
   private void handleReturnOpcode(final AspectContext context,
-                                  final boolean injectsResult,
                                   final HxMethod interceptor,
                                   final HxMethod original,
                                   final HxMethod shadow,
-                                  final HxInstruction instruction) {
+                                  final HxInstruction anchor) {
 
-    final HxInstruction anchor = instruction.getNext();
-
-    if(injectsResult) {
+    if(interceptor.hasParameterWithAnnotation(Constants.INJECT_RESULT_ANNOTATION_TYPE)) {
       storeResultOfShadow(context, original, anchor);
     }
 
     if(needsAspectFactory()) {
-      instantiateAspectInstance(context, anchor.getPrevious());
+      instantiateAspectInstance(context, anchor);
     }
 
-    injectParameters(context, interceptor, original, shadow, anchor.getPrevious());
+    injectParameters(context, interceptor, original, shadow, anchor);
 
     anchor.asAnchoredStream().INVOKE(interceptor);
 
-    postProcessResult(context, interceptor, original, shadow, anchor.getPrevious());
+    postProcessResult(context, interceptor, original, shadow, anchor);
+
+//    addNewLocalAttributes(original, context.getAspectMethodContext());
+
+//    System.out.println(original.getBody());
   }
 
   private void storeResultOfShadow(final AspectContext context,

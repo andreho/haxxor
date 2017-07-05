@@ -28,14 +28,14 @@ public final class ArgParameterInjector
                                            final HxMethod original,
                                            final HxMethod shadow,
                                            final HxParameter parameter,
-                                           final HxInstruction instruction) {
+                                           final HxInstruction anchor) {
 
     final HxAnnotation argAnnotation = parameter.getAnnotation(ANNOTATION_TYPE).get();
     final int injectableIndex = argAnnotation.getAttribute("value", -1);
 
     if(injectableIndex > -1 && original.hasParameterAt(injectableIndex)) {
       final HxParameter injectableArg = original.getParameterAt(injectableIndex);
-      final HxExtendedCodeStream stream = instruction.asStream();
+      final HxExtendedCodeStream stream = anchor.asAnchoredStream();
 
       stream
         .GENERIC_LOAD(injectableArg.getType().getSort(), original.getParametersSlotAt(injectableIndex))

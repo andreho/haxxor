@@ -21,7 +21,8 @@ public class AspectMethodContextImpl implements AspectMethodContext {
 
   private LABEL start;
   private LABEL end;
-  private LABEL delegation;
+  private LABEL delegationStart;
+  private LABEL delegationEnd;
   private HxMethod originalMethod;
   private HxMethod shadowMethod;
   private int nextSlotIndex;
@@ -38,13 +39,23 @@ public class AspectMethodContextImpl implements AspectMethodContext {
   }
 
   @Override
-  public LABEL getDelegation() {
-    return delegation;
+  public LABEL getDelegationStart() {
+    return delegationStart;
   }
 
   @Override
-  public void setDelegation(final LABEL delegation) {
-    this.delegation = requireNonNull(delegation);
+  public void setDelegationStart(final LABEL delegationStart) {
+    this.delegationStart = requireNonNull(delegationStart);
+  }
+
+  @Override
+  public LABEL getDelegationEnd() {
+    return delegationEnd;
+  }
+
+  @Override
+  public void setDelegationEnd(final LABEL delegationEnd) {
+    this.delegationEnd = requireNonNull(delegationEnd);
   }
 
   @Override
@@ -153,6 +164,7 @@ public class AspectMethodContextImpl implements AspectMethodContext {
     this.nextSlotIndex = 0;
     this.start = this.end = null;
     this.shadowMethod = this.originalMethod = null;
+    this.start = this.end = this.delegationStart = this.delegationEnd = null;
 
     if(!this.localAttributes.isEmpty()) {
       this.localAttributes.clear();

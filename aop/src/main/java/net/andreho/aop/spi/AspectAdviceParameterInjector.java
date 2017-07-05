@@ -39,7 +39,8 @@ public interface AspectAdviceParameterInjector {
    * @param original that should be modified
    * @param shadow that should be executed
    * @param parameter that must be populated with a suitable value
-   * @param instruction for injection   @return <b>true</b> if injection was successful or
+   * @param anchor for injection
+   * @return <b>true</b> if injection was successful or
    * <b>false</b> to signal that the injection value isn't available, which leads to default injection.
    */
   boolean injectParameter(
@@ -49,7 +50,7 @@ public interface AspectAdviceParameterInjector {
     HxMethod original,
     HxMethod shadow,
     HxParameter parameter,
-    HxInstruction instruction);
+    HxInstruction anchor);
 
   static AspectAdviceParameterInjector with(final Collection<AspectAdviceParameterInjector> list) {
     return with(list.toArray(new AspectAdviceParameterInjector[0]));

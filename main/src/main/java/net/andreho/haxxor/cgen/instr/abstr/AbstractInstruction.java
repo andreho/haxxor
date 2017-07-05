@@ -43,7 +43,6 @@ public abstract class AbstractInstruction extends HxAnnotatedDelegate<HxInstruct
   protected final int opcode;
   protected HxInstruction next;
   protected HxInstruction previous;
-  private int index = -1;
 
   public AbstractInstruction(int opcode) {
     this.opcode = opcode;
@@ -52,16 +51,6 @@ public abstract class AbstractInstruction extends HxAnnotatedDelegate<HxInstruct
   @Override
   public int getOpcode() {
     return opcode;
-  }
-
-  @Override
-  public int getIndex() {
-    return index;
-  }
-
-  @Override
-  public void setIndex(final int index) {
-    this.index = index;
   }
 
   @Override

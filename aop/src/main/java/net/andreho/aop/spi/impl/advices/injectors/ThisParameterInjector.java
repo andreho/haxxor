@@ -29,19 +29,17 @@ public final class ThisParameterInjector
                                               final HxMethod original,
                                               final HxMethod shadow,
                                               final HxParameter parameter,
-                                              final HxInstruction instruction) {
-    final HxExtendedCodeStream stream = instruction.asStream();
+                                              final HxInstruction anchor) {
+    final HxExtendedCodeStream stream = anchor.asAnchoredStream();
 
     if (!original.isStatic()) {
-      if (original.isConstructor()) {
-        final AspectAdviceType adviceType = aspectAdvice.getType();
-        //don't allow an uninitialized instance to be used elsewhere
-        if (adviceType.isActivatedThrough(Before.class)) {
-          stream.ACONST_NULL();
-        }
+      final AspectAdviceType adviceType = aspectAdvice.getType();
+      if (!original.isConstructor() ||
+          !adviceType.isActivatedThrough(Before.class)) {
+        //don't allow an uninitialized instance to be used elsewhere: uninitializedThis
+        stream.THIS();
+        return true;
       }
-      stream.THIS();
-      return true;
     }
 
     return false;

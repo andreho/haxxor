@@ -153,18 +153,11 @@ public class HxMethodBodyImpl
   }
 
   @Override
-  public int computeIndex() {
-    int i = 0;
-    for(HxInstruction inst = getFirst().getNext(), end = getLast(); inst != end; inst = inst.getNext()) {
-      inst.setIndex(i++);
-    }
-    return i;
-  }
-
-  @Override
   public HxInstructionFactory getInstructionFactory() {
     return DEFAULT_INSTRUCTION_FACTORY;
   }
+
+
 
   @Override
   public <S extends HxCodeStream<S>> S build(final boolean rebuild) {
@@ -181,5 +174,37 @@ public class HxMethodBodyImpl
       reset();
     }
     return streamFactory.apply(this);
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder builder = new StringBuilder();
+    builder.append(getFirst()).append('\n');
+
+    //TRY-CATCH
+    if(hasTryCatch()) {
+      builder.append('\n');
+      for(HxTryCatch tryCatch : getTryCatches()) {
+        builder.append(tryCatch).append('\n');
+      }
+      builder.append('\n');
+    }
+
+    //CODE
+    for(HxInstruction instruction : getFirst().getNext()) {
+      if(instruction.isEnd()) {
+        //LOCAL-VARIABLES
+        if(hasLocalVariables()) {
+          builder.append('\n');
+          for(HxLocalVariable localVariable : getLocalVariables()) {
+            builder.append(localVariable).append('\n');
+          }
+          builder.append('\n');
+        }
+        builder.append("MAX(").append(getMaxStack()).append(",").append(getMaxLocals()).append(")\n");
+      }
+      builder.append(instruction).append('\n');
+    }
+    return builder.toString();
   }
 }

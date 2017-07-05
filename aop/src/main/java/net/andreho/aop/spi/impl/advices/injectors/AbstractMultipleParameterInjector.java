@@ -45,10 +45,10 @@ public abstract class AbstractMultipleParameterInjector
                                  final HxMethod original,
                                  final HxMethod shadow,
                                  final HxParameter parameter,
-                                 final HxInstruction instruction) {
+                                 final HxInstruction anchor) {
     for (AspectAdviceParameterInjector injector : array) {
       if(injector.isInjectable(context, interceptor, original, shadow, parameter) &&
-        injector.injectParameter(aspectAdvice, context, interceptor, original, shadow, parameter, instruction)) {
+        injector.injectParameter(aspectAdvice, context, interceptor, original, shadow, parameter, anchor)) {
         return true;
       }
     }

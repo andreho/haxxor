@@ -28,15 +28,13 @@ public final class MarkerParameterInjector
                                               final HxMethod original,
                                               final HxMethod shadow,
                                               final HxParameter parameter,
-                                              final HxInstruction instruction) {
-
-    final HxInstruction anchor = instruction.getNext();
+                                              final HxInstruction anchor) {
 
     InterceptedParameterInjector
       .INSTANCE
-      .checkedParameterInjection(aspectAdvice, context, interceptor, original, shadow, parameter, instruction);
+      .checkedParameterInjection(aspectAdvice, context, interceptor, original, shadow, parameter, anchor);
 
-    final HxExtendedCodeStream stream = anchor.getPrevious().asStream();
+    final HxExtendedCodeStream stream = anchor.asAnchoredStream();
 
     stream
       .TYPE(parameter.getType())

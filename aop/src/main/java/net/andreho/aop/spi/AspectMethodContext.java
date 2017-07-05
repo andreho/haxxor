@@ -25,12 +25,22 @@ public interface AspectMethodContext {
   /**
    * @return
    */
-  LABEL getDelegation();
+  LABEL getDelegationStart();
 
   /**
-   * @param delegation
+   * @param delegationStart
    */
-  void setDelegation(LABEL delegation);
+  void setDelegationStart(LABEL delegationStart);
+
+  /**
+   * @return
+   */
+  LABEL getDelegationEnd();
+
+  /**
+   * @param delegationEnd
+   */
+  void setDelegationEnd(LABEL delegationEnd);
 
   /**
    * @return

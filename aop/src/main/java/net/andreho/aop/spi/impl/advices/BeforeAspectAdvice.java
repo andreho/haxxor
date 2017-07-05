@@ -42,19 +42,20 @@ public class BeforeAspectAdvice
 
     final HxMethod interceptor = getInterceptor();
     final AspectMethodContext methodContext = context.getAspectMethodContext();
-    final HxInstruction anchor = methodContext.getDelegation().getNext();
+    final HxInstruction anchor = methodContext.getDelegationStart();
 
-    final boolean needsAspectFactory = needsAspectFactory();
-
-    if(needsAspectFactory) {
-      instantiateAspectInstance(context, anchor.getPrevious());
+    if(needsAspectFactory()) {
+      instantiateAspectInstance(context, anchor);
     }
 
-    injectParameters(context, interceptor, original, shadow, anchor.getPrevious());
+    injectParameters(context, interceptor, original, shadow, anchor);
 
     anchor.asAnchoredStream().INVOKE(interceptor);
 
-    postProcessResult(context, interceptor, original, shadow, anchor.getPrevious());
+    postProcessResult(context, interceptor, original, shadow, anchor);
+
+//    final HxMethodBody body = addNewLocalAttributes(original, methodContext);
+//    System.out.println(body);
 
     return true;
   }

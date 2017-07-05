@@ -28,29 +28,28 @@ public final class InterceptedParameterInjector
                                            final HxMethod original,
                                            final HxMethod shadow,
                                            final HxParameter parameter,
-                                           final HxInstruction instruction) {
-    final HxExtendedCodeStream stream = instruction.asStream();
+                                           final HxInstruction anchor) {
 
-    if (original.isStatic()) {
-      stream.TYPE(original.getDeclaringMember());
-    } else {
-      stream.THIS().INVOKESTATIC(HELPERS_CLASS,
-                                 "getClassOf",
-                                 "(Ljava/lang/Object;)Ljava/lang/Class;", false);
-    }
+    DeclaringParameterInjector.INSTANCE
+      .checkedParameterInjection(aspectAdvice, context, interceptor, original, shadow, parameter, anchor);
 
     String key;
+    final HxExtendedCodeStream stream = anchor.asAnchoredStream();
 
     if (original.isConstructor()) {
       key = original.toDescriptor();
-      stream.LDC(key).INVOKESTATIC(HELPERS_CLASS,
-                          "getConstructorOf",
-                          "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/reflect/Constructor;", false);
+      stream
+        .LDC(key)
+        .INVOKESTATIC(HELPERS_CLASS,
+          "getConstructorOf",
+          "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/reflect/Constructor;", false);
     } else {
       key = original.toDescriptor(new StringBuilder(original.getName())).toString();
-      stream.LDC(key).INVOKESTATIC(HELPERS_CLASS,
-                          "getMethodOf",
-                          "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/reflect/Method;", false);
+      stream
+        .LDC(key)
+        .INVOKESTATIC(HELPERS_CLASS,
+          "getMethodOf",
+          "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/reflect/Method;", false);
     }
 
     return true;

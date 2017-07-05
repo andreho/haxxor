@@ -24,17 +24,17 @@ public enum MethodsType
   ALL() {
     @Override
     public boolean match(final HxMethod element) {
-      return !"<clinit>".equals(element.getName());
+      return !element.isStaticClassInitializer();
     }
   },
   /**
-   * All methods without any constructors and the static class-initializer
+   * All methods without any constructors and without the static class-initializer
    */
   METHODS() {
     @Override
     public boolean match(final HxMethod element) {
-      return !"<clinit>".equals(element.getName()) &&
-             !"<init>".equals(element.getName());
+      return !element.isStaticClassInitializer() &&
+             !element.isConstructor();
     }
   },
   /**
@@ -43,7 +43,7 @@ public enum MethodsType
   CONSTRUCTORS() {
     @Override
     public boolean match(final HxMethod element) {
-      return "<init>".equals(element.getName());
+      return element.isConstructor();
     }
   }
 }

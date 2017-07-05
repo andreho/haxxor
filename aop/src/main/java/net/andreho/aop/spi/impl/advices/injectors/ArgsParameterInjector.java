@@ -25,10 +25,10 @@ public final class ArgsParameterInjector
                                            final HxMethod original,
                                            final HxMethod shadow,
                                            final HxParameter parameter,
-                                           final HxInstruction instruction) {
+                                           final HxInstruction anchor) {
 
-    instruction.asStream()
-               .PACK_ARGUMENTS(original.getParameterTypes(), original.isStatic()? 0 : 1);
+    anchor.asAnchoredStream()
+          .PACK_ARGUMENTS(original.getParameterTypes(), original.isStatic()? 0 : 1);
     return true;
   }
 }

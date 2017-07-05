@@ -21,8 +21,8 @@ public final class DefaultInjector
                                  final HxMethod original,
                                  final HxMethod shadow,
                                  final HxParameter parameter,
-                                 final HxInstruction instruction) {
-    instruction.asStream().GENERIC_DEFAULT_VALUE(parameter.getType());
+                                 final HxInstruction anchor) {
+    anchor.asAnchoredStream().GENERIC_DEFAULT_VALUE(parameter.getType());
     return true;
   }
 }

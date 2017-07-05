@@ -27,4 +27,13 @@ public interface AspectLocalAttribute {
    * @return
    */
   int getIndex();
+
+  /**
+   * @return
+   */
+  boolean wasHandled();
+
+  /**
+   */
+  void markAsHandled();
 }

@@ -31,16 +31,6 @@ public interface HxInstruction
   boolean hasAnnotations();
 
   /**
-   * @return index of this instruction
-   */
-  int getIndex();
-
-  /**
-   * @param index of this instruction
-   */
-  void setIndex(int index);
-
-  /**
    * @return <b>true</b> if there isn't any further instructions in backward iteration's direction, <b>false</b> otherwise.
    */
   default boolean isBegin() {
@@ -233,6 +223,12 @@ public interface HxInstruction
         return instruction;
       }
     };
+  }
+
+  default void print(Consumer<HxInstruction> consumer) {
+    for(HxInstruction instruction : this) {
+      consumer.accept(instruction);
+    }
   }
 
   Optional<HxInstruction> findFirstWithType(final HxInstructionType instructionType);

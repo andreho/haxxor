@@ -27,7 +27,7 @@ public class LocalAttributePostProcessor
                          final HxMethod interceptor,
                          final HxMethod original,
                          final HxMethod shadow,
-                         final HxInstruction instruction) {
+                         final HxInstruction anchor) {
     final Optional<HxAnnotation> optional = interceptor.getAnnotation(ATTRIBUTE_ANNOTATION_TYPE_NAME);
     if(!optional.isPresent()) {
       return false;
@@ -50,9 +50,9 @@ public class LocalAttributePostProcessor
     final HxType returnType = interceptor.getReturnType();
     final int variableSize = returnType.getSlotSize();
 
-    HxCgenUtils.shiftAccessToLocalVariable(instruction, slotOffset, variableSize);
+    HxCgenUtils.shiftAccessToLocalVariable(anchor, slotOffset, variableSize);
     methodContext.createLocalAttribute(returnType, attributeName, slotOffset);
-    instruction.asStream().GENERIC_STORE(returnType, slotOffset);
+    anchor.asAnchoredStream().GENERIC_STORE(returnType, slotOffset);
 
     return true;
   }

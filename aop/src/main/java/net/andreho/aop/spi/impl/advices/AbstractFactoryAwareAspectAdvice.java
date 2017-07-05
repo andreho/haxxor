@@ -30,42 +30,43 @@ public class AbstractFactoryAwareAspectAdvice<T> extends AbstractShadowingAspect
   }
 
   protected void instantiateAspectInstance(final AspectContext context,
-                                           final HxInstruction instruction) {
+                                           final HxInstruction anchor) {
 
     final AspectMethodContext methodContext = context.getAspectMethodContext();
     final AspectFactory aspectFactory = context.getAspectDefinition().getAspectFactory().get();
     final HxMethod aspectFactoryMethod = aspectFactory.getMethod();
-    final HxInstruction anchor = instruction.getNext();
-    final HxExtendedCodeStream stream = instruction.asStream();
-
+    final HxExtendedCodeStream stream = anchor.asAnchoredStream();
     final String aspectAttributeName = aspectFactory.getAspectAttributeName();
-    if(methodContext.hasLocalAttribute(aspectAttributeName)) {
-      final AspectLocalAttribute localAttribute = methodContext.getLocalAttribute(aspectAttributeName);
-      stream.GENERIC_LOAD(localAttribute.getType(), localAttribute.getIndex());
-    }
-    HxType aspectType;
-    if(aspectFactoryMethod.isConstructor()) {
-      aspectType = aspectFactoryMethod.getDeclaringMember();
-      stream
-        .NEW(aspectType)
-        .DUP();
-    } else {
-      aspectType = aspectFactoryMethod.getReturnType();
-    }
 
-    injectParameters(context,
-                     aspectFactoryMethod,
-                     methodContext.getOriginalMethod(),
-                     methodContext.getShadowMethod(),
-                     anchor.getPrevious());
-    stream.INVOKE(aspectFactoryMethod);
+    if(!methodContext.hasLocalAttribute(aspectAttributeName)) {
+      HxType aspectType;
+      if(aspectFactoryMethod.isConstructor()) {
+        aspectType = aspectFactoryMethod.getDeclaringMember();
+        stream
+          .NEW(aspectType)
+          .DUP();
+      } else {
+        aspectType = aspectFactoryMethod.getReturnType();
+      }
 
-    if(aspectFactory.isReusable()) {
+      injectParameters(context,
+                       aspectFactoryMethod,
+                       methodContext.getOriginalMethod(),
+                       methodContext.getShadowMethod(),
+                       anchor);
+
+      stream.INVOKE(aspectFactoryMethod);
+
+      if(!aspectFactory.isReusable()) {
+        return;
+      }
+
       final int slotIndex = methodContext.getNextSlotIndex();
       HxCgenUtils.shiftAccessToLocalVariable(methodContext.getStart(), slotIndex, 1);
       methodContext.createLocalAttribute(aspectType, aspectAttributeName, slotIndex);
-      stream.DUP()
-            .GENERIC_STORE(aspectType, slotIndex);
+      stream.GENERIC_STORE(aspectType, slotIndex);
     }
+    final AspectLocalAttribute localAttribute = methodContext.getLocalAttribute(aspectAttributeName);
+    stream.GENERIC_LOAD(localAttribute.getType(), localAttribute.getIndex());
   }
 }

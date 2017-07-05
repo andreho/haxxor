@@ -100,21 +100,4 @@ public class HxLinkedMethodBody
   public Iterator<HxInstruction> iterator() {
     return getFirst().iterator();
   }
-
-  @Override
-  public String toString() {
-    StringBuilder builder = new StringBuilder();
-
-    for (HxTryCatch tryCatch : getTryCatches()) {
-      builder.append(tryCatch)
-             .append('\n');
-    }
-
-    for (HxInstruction inst : getFirst()) {
-      builder.append(inst.toString())
-             .append('\n');
-    }
-
-    return builder.toString();
-  }
 }

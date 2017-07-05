@@ -8,16 +8,14 @@ import java.util.Optional;
 public interface SubjectService {
 
   /**
-   * @param username
-   * @param password
+   * @param user
    */
-  void login(String username, String password);
+  void login(User user);
 
   /**
-   * @param username
-   * @param password
+   * @param user
    */
-  void logout(String username, String password);
+  void logout(User user);
 
   /**
    *

@@ -59,7 +59,6 @@ public class LINE_NUMBER
 
   @Override
   public String toString() {
-    return super.toString() + " (" + this.line + ", " + this.start + ")";
+    return super.toString() + " (" + this.line + ", " + this.start.print() + ")";
   }
-
 }

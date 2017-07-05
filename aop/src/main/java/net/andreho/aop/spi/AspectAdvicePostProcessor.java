@@ -17,7 +17,8 @@ public interface AspectAdvicePostProcessor {
    * @param interceptor
    * @param original
    * @param shadow
-   *@param instruction  @return
+   * @param anchor
+   * @return
    */
   boolean process(
     final AspectAdvice<?> aspectAdvice,
@@ -25,7 +26,7 @@ public interface AspectAdvicePostProcessor {
     final HxMethod interceptor,
     final HxMethod original,
     final HxMethod shadow,
-    final HxInstruction instruction);
+    final HxInstruction anchor);
 
   static AspectAdvicePostProcessor with(final Collection<AspectAdvicePostProcessor> list) {
     return with(list.toArray(new AspectAdvicePostProcessor[0]));

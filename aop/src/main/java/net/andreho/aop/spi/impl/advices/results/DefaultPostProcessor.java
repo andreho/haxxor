@@ -19,14 +19,14 @@ public class DefaultPostProcessor
                          final HxMethod interceptor,
                          final HxMethod original,
                          final HxMethod shadow,
-                         final HxInstruction instruction) {
+                         final HxInstruction anchor) {
 
     switch (interceptor.getReturnType().getSlotSize()) {
       case 1:
-        instruction.asStream().POP();
+        anchor.asAnchoredStream().POP();
         break;
       case 2:
-        instruction.asStream().POP2();
+        anchor.asAnchoredStream().POP2();
         break;
     }
     return true;

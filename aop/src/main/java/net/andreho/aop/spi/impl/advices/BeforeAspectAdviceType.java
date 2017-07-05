@@ -14,6 +14,7 @@ import net.andreho.aop.spi.impl.advices.injectors.DeclaringParameterInjector;
 import net.andreho.aop.spi.impl.advices.injectors.DefaultInjector;
 import net.andreho.aop.spi.impl.advices.injectors.InterceptedParameterInjector;
 import net.andreho.aop.spi.impl.advices.injectors.LineParameterInjector;
+import net.andreho.aop.spi.impl.advices.injectors.MarkerParameterInjector;
 import net.andreho.aop.spi.impl.advices.injectors.ThisParameterInjector;
 import net.andreho.aop.spi.impl.advices.results.DefaultPostProcessor;
 import net.andreho.aop.spi.impl.advices.results.LocalAttributePostProcessor;
@@ -32,6 +33,9 @@ import java.util.List;
  */
 public class BeforeAspectAdviceType
   extends AbstractAspectAdviceType {
+  private static final AspectAdvice.Target[] TARGETS = {
+    AspectAdvice.Target.METHOD, AspectAdvice.Target.CONSTRUCTOR
+  };
 
   public BeforeAspectAdviceType(final int order) {
     super(
@@ -43,19 +47,16 @@ public class BeforeAspectAdviceType
         InterceptedParameterInjector.INSTANCE,
         DeclaringParameterInjector.INSTANCE,
         ArityParameterInjector.INSTANCE,
+        MarkerParameterInjector.INSTANCE,
         LineParameterInjector.INSTANCE,
         DefaultInjector.INSTANCE
       ),
       AspectAdvicePostProcessor.with(
         LocalAttributePostProcessor.INSTANCE,
         DefaultPostProcessor.INSTANCE
-      )
+      ),
+      TARGETS
     );
-  }
-
-  @Override
-  public boolean hasTarget(final AspectAdvice.Target target) {
-    return target == AspectAdvice.Target.METHOD;
   }
 
   @Override
