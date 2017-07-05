@@ -1,5 +1,6 @@
 package org.sandbox.secured;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -8,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * -ea -javaagent:C:/Workspace/java/haxxor/agent/build/libs/agent-1.0.0.jar
  * <br/>Created by a.hofmann on 04.07.2017 at 22:39.
  */
+@DisplayName("Control access to specifically annotated elements of a class")
 public class TestCase {
   static void login(String username,
                     String password,
@@ -21,6 +23,7 @@ public class TestCase {
   }
 
   @Test
+  @DisplayName("Access to a secured object with fully granted user")
   void successfulTest() {
     login("ralf", "123"
           ,SubjectImpl.SUBJECT_CREATION
@@ -36,6 +39,7 @@ public class TestCase {
   }
 
   @Test
+  @DisplayName("Access to a secured object without fully granted user")
   void failingTest() {
     login("andre", "123"
       ,SubjectImpl.SUBJECT_CREATION
