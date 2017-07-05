@@ -56,7 +56,7 @@ class CodeTest {
   }
 
   @ParameterizedTest
-  @MethodSource(names = "classes")
+  @MethodSource("classes")
   @DisplayName("Check the stored byte-code for correctness.")
   void codeTest()
   throws IOException {

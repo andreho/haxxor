@@ -3,6 +3,7 @@ package net.andreho.aop.spi.impl;
 import net.andreho.aop.api.After;
 import net.andreho.aop.api.Aspect;
 import net.andreho.aop.api.Before;
+import net.andreho.aop.api.Modify;
 import net.andreho.aop.api.Order;
 import net.andreho.aop.api.injectable.Result;
 import net.andreho.aop.api.spec.Disable;
@@ -25,12 +26,16 @@ public interface Constants {
   String[] EMPTY_STRING_ARRAY = new String[0];
   int[] EMPTY_INT_ARRAY = new int[0];
 
+  String ANY_SELECTION_PROFILE_NAME = "*";
   String ASPECT_ANNOTATION_TYPE = Aspect.class.getName();
   String ASPECT_FACTORY_ANNOTATION_TYPE = Aspect.Factory.class.getName();
 
   String ORDER_ANNOTATION_TYPE = Order.class.getName();
   String BEFORE_ANNOTATION_TYPE = Before.class.getName();
   String AFTER_ANNOTATION_TYPE = After.class.getName();
+  String MODIFY_TYPE_ANNOTATION_TYPE = Modify.Type.class.getName();
+  String MODIFY_METHOD_ANNOTATION_TYPE = Modify.Method.class.getName();
+  String MODIFY_FIELD_ANNOTATION_TYPE = Modify.Field.class.getName();
   String INJECT_RESULT_ANNOTATION_TYPE = Result.class.getName();
   String DISABLE_ANNOTATION_TYPE = Disable.class.getName();
 

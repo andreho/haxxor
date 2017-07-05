@@ -17,8 +17,8 @@ public interface SecurityManager {
   @After(SecurityAspect.SECURED_CONSTRUCTORS)
   void verifyAccessTo(
     @This Subject target,
-    @Intercepted Executable method,
-    @Marker Secured secured
+    @Marker Secured secured,
+    @Intercepted Executable method
   )
   throws IllegalAccessException;
 }

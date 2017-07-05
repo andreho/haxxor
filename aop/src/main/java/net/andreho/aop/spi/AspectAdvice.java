@@ -49,11 +49,11 @@ public interface AspectAdvice<T>
   String getProfileName();
 
   /**
-   * @param ctx
+   * @param context
    * @param element
    * @return
    */
-  boolean apply(final AspectContext ctx,
+  boolean apply(final AspectContext context,
                 final T element);
 
   /**

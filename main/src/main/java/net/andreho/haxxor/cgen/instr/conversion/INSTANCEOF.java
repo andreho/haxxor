@@ -26,9 +26,4 @@ public class INSTANCEOF
   public List<Object> getStackPushList(final HxComputingContext context) {
     return PUSH_INT;
   }
-
-  @Override
-  public String toString() {
-    return super.toString() + " " + getOperand();
-  }
 }

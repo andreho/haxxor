@@ -85,6 +85,10 @@ public abstract class AbstractAspectAdviceType
   }
 
   protected String fetchProfileName(final HxAnnotation annotation) {
-    return annotation.getAttribute("value", "");
+    String profileName = annotation.getAttribute("value", "");
+    if(profileName == null || profileName.isEmpty()) {
+      throw new IllegalStateException("Invalid name of referenced profile: "+profileName);
+    }
+    return profileName;
   }
 }

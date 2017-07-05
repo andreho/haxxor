@@ -116,15 +116,14 @@ public interface HxMethod
   }
 
   /**
-   * @param returnType
+   * @param returnClassname
    * @return
    */
-  default boolean hasReturnType(String returnType) {
+  default boolean hasReturnType(String returnClassname) {
     if (getReturnType() == null) {
-      return returnType == null;
+      return returnClassname == null;
     }
-    return getReturnType().getName()
-                          .equals(returnType);
+    return getReturnType().hasName(returnClassname);
   }
 
   /**
@@ -133,6 +132,14 @@ public interface HxMethod
    */
   default boolean hasReturnType(HxType returnType) {
     return hasReturnType(Objects.requireNonNull(returnType).getName());
+  }
+
+  /**
+   * @param cls
+   * @return
+   */
+  default boolean hasReturnType(Class<?> cls) {
+    return getReturnType().hasName(cls.getName());
   }
 
   /**
@@ -578,6 +585,34 @@ public interface HxMethod
    */
   default boolean isFinal() {
     return hasModifiers(Modifiers.FINAL);
+  }
+
+  /**
+   * @param index
+   * @param classname
+   * @return
+   */
+  default boolean hasParameterWithTypeAt(int index, String classname) {
+    return hasParametersCount(index + 1, Integer.MAX_VALUE) &&
+           getParameterTypeAt(index).hasName(classname);
+  }
+
+  /**
+   * @param index
+   * @param type
+   * @return
+   */
+  default boolean hasParameterWithTypeAt(int index, HxType type) {
+    return hasParameterWithTypeAt(index, type.getName());
+  }
+
+  /**
+   * @param index
+   * @param cls
+   * @return
+   */
+  default boolean hasParameterWithTypeAt(int index, Class<?> cls) {
+    return hasParameterWithTypeAt(index, cls.getName());
   }
 
   /**

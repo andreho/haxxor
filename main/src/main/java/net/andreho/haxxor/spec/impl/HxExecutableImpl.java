@@ -28,7 +28,7 @@ public abstract class HxExecutableImpl
 
   protected List<HxParameter> parameters = DEFAULT_EMPTY_PARAMETERS;
   protected List<HxType> exceptions = DEFAULT_EMPTY_EXCEPTIONS;
-  protected Optional<String> genericSignature;
+  protected Optional<String> genericSignature = Optional.empty();
   protected HxMethodBody body;
 
   public HxExecutableImpl() {

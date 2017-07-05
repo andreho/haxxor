@@ -31,9 +31,4 @@ public class CHECKCAST
                   .push(getOperand())
                   .get();
   }
-
-  @Override
-  public String toString() {
-    return super.toString() + " " + getOperand();
-  }
 }

@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ObjectArrayArguments;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
@@ -133,13 +132,13 @@ class HxTypeTest {
 
   private static Iterable<Arguments> classes() {
     return shuffledClasses(CLASSES).stream()
-                            .map(ObjectArrayArguments::create)
+                            .map(Arguments::of)
                             .collect(Collectors.toList());
   }
 
   private static Iterable<Arguments> arrays() {
     return shuffledClasses(ARRAYS).stream()
-                            .map(ObjectArrayArguments::create)
+                            .map(Arguments::of)
                             .collect(Collectors.toList());
   }
 
@@ -267,7 +266,7 @@ class HxTypeTest {
   }
 
   @ParameterizedTest
-  @MethodSource(names = TEST_CLASSES)
+  @MethodSource(TEST_CLASSES)
   @DisplayName("Computed simple classnames must equal to those from original Reflection-API")
   void getSimpleName(final Class<?> cls) {
     HxType type = haxxor.resolve(cls.getName());
@@ -275,7 +274,7 @@ class HxTypeTest {
   }
 
   @ParameterizedTest
-  @MethodSource(names = TEST_CLASSES)
+  @MethodSource(TEST_CLASSES)
   @DisplayName("Computed package-names must equal to those from original Reflection-API")
   void getPackageName(final Class<?> cls) {
     HxType hxType = haxxor.resolve(cls.getName());
@@ -289,7 +288,7 @@ class HxTypeTest {
   }
 
   @ParameterizedTest
-  @MethodSource(names = TEST_CLASSES)
+  @MethodSource(TEST_CLASSES)
   @DisplayName("Computed super-types must equal to those from original Reflection-API")
   void getSuperType(final Class<?> cls) {
     HxType type = haxxor.resolve(cls.getName());
@@ -318,7 +317,7 @@ class HxTypeTest {
   }
 
   @ParameterizedTest
-  @MethodSource(names = TEST_CLASSES)
+  @MethodSource(TEST_CLASSES)
   @DisplayName("Computed interfaces must equal to those from original Reflection-API")
   void getInterfaces(final Class<?> cls) {
     final HxType type = haxxor.resolve(cls.getName());
@@ -346,7 +345,7 @@ class HxTypeTest {
   }
 
   @ParameterizedTest
-  @MethodSource(names = TEST_CLASSES_AND_PRIMITIVES)
+  @MethodSource(TEST_CLASSES_AND_PRIMITIVES)
   @DisplayName("Only long and double primitive types allocates two slots on stack or as local variables")
   void getSlotsCount(String typeName) {
     int slots = ("long".equals(typeName) || "double".equals(typeName)) ? 2 : 1;
@@ -358,7 +357,7 @@ class HxTypeTest {
   }
 
   @ParameterizedTest
-  @MethodSource(names = TEST_CLASSES_AND_PRIMITIVES)
+  @MethodSource(TEST_CLASSES_AND_PRIMITIVES)
   @DisplayName("References must be computed and reported properly")
   void isReference(String typeName) {
     HxTypeReference reference = haxxor.reference(typeName);
@@ -375,7 +374,7 @@ class HxTypeTest {
   }
 
   @ParameterizedTest
-  @MethodSource(names = TEST_CLASSES)
+  @MethodSource(TEST_CLASSES)
   @DisplayName("Collection with declared-types must be equal to the analog array from Reflection-API")
   void getDeclaredTypes(final Class<?> cls) {
     final Class<?>[] declaredClasses = cls.getDeclaredClasses();
@@ -400,7 +399,7 @@ class HxTypeTest {
   }
 
   @ParameterizedTest
-  @MethodSource(names = TEST_CLASSES)
+  @MethodSource(TEST_CLASSES)
   @DisplayName("Computed fields must be equal to those from Reflection-API")
   void getField(final Class<?> cls) {
     HxType type = haxxor.resolve(cls.getName());
@@ -472,7 +471,7 @@ class HxTypeTest {
   }
 
   @ParameterizedTest
-  @MethodSource(names = TEST_CLASSES)
+  @MethodSource(TEST_CLASSES)
   @DisplayName("Removal of fields must be rendered properly")
   void removeField(final Class<?> cls) {
     HxType type = haxxor.resolve(cls.getName());
@@ -498,7 +497,7 @@ class HxTypeTest {
   }
 
   @ParameterizedTest
-  @MethodSource(names = TEST_CLASSES)
+  @MethodSource(TEST_CLASSES)
   @DisplayName("Presence of fields must be rendered properly and equal to those from Reflection-API")
   void hasField(final Class<?> cls) {
     HxType type = haxxor.resolve(cls.getName());
@@ -508,7 +507,7 @@ class HxTypeTest {
   }
 
   @ParameterizedTest
-  @MethodSource(names = TEST_CLASSES)
+  @MethodSource(TEST_CLASSES)
   @DisplayName("Getting fields must return a field-list that is equal to the one from Reflection-API")
   void getFields(final Class<?> cls) {
     HxType type = haxxor.resolve(cls.getName());
@@ -525,7 +524,7 @@ class HxTypeTest {
   }
 
   @ParameterizedTest
-  @MethodSource(names = TEST_CLASSES)
+  @MethodSource(TEST_CLASSES)
   @DisplayName("Setting fields of a type must work properly and follow contract")
   void setFields(final Class<?> cls) {
     HxType type = haxxor.resolve(cls.getName());
@@ -564,7 +563,7 @@ class HxTypeTest {
   }
 
   @ParameterizedTest
-  @MethodSource(names = TEST_CLASSES)
+  @MethodSource(TEST_CLASSES)
   @DisplayName("Getting methods must return a method-list that is equal to the one from Reflection-API")
   void getMethods(final Class<?> cls) {
     final Method[] clsMethods = cls.getDeclaredMethods();
@@ -603,7 +602,7 @@ class HxTypeTest {
   }
 
   @ParameterizedTest
-  @MethodSource(names = TEST_CLASSES)
+  @MethodSource(TEST_CLASSES)
   @DisplayName("Setting methods of a type must work properly and follow contract")
   void setMethods(final Class<?> cls) {
     HxType type = haxxor.resolve(cls.getName());
@@ -728,7 +727,7 @@ class HxTypeTest {
   }
 
   @ParameterizedTest
-  @MethodSource(names = TEST_CLASSES)
+  @MethodSource(TEST_CLASSES)
   @DisplayName("Setting methods of a type must work properly and follow contract")
   void findMethodDirectly(final Class<?> cls) {
     HxType hxType = haxxor.resolve(cls.getName());
@@ -797,7 +796,7 @@ class HxTypeTest {
   }
 
   @ParameterizedTest
-  @MethodSource(names = TEST_CLASSES)
+  @MethodSource(TEST_CLASSES)
   @DisplayName("Class- or interface-inheritance must be rendered properly")
   void isAssignableFrom(final Class<?> cls) {
     isAssignableFrom(cls, haxxor.resolve(cls.getName()));
@@ -833,7 +832,7 @@ class HxTypeTest {
   }
 
   @ParameterizedTest
-  @MethodSource(names = TEST_CLASSES)
+  @MethodSource(TEST_CLASSES)
   @DisplayName("Class-hierarchy must be rendered properly")
   void checkClassHierarchy(final Class<?> cls) {
     HxType hxType = haxxor.resolve(cls.getName());
@@ -883,7 +882,7 @@ class HxTypeTest {
   }
 
   @ParameterizedTest
-  @MethodSource(names = TEST_ARRAYS)
+  @MethodSource(TEST_ARRAYS)
   @DisplayName("Array-classes must be handled and rendered properly")
   void getComponentType(final Class<?> cls) {
     HxType hxType = haxxor.resolve(cls.getName());

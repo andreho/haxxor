@@ -44,7 +44,7 @@ class DefaultHxTypeInterpreterTest {
   }
 
   @ParameterizedTest
-  @MethodSource(names = "testClasses")
+  @MethodSource("testClasses")
   void test(Class<?> cls)
   throws PatchFailedException {
     Haxxor haxxor = new Haxxor();

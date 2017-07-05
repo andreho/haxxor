@@ -52,13 +52,23 @@ public abstract class Utils {
   /**
    * Extracts names of given classes
    *
+   * @param cls to process
+   * @return
+   */
+  public static String toClassName(final Class<?> cls) {
+    return cls.getName();
+  }
+
+  /**
+   * Extracts names of given classes
+   *
    * @param classes to process
    * @return
    */
   public static String[] toClassNames(final Class<?>... classes) {
     final String[] names = new String[classes.length];
     for (int i = 0; i < classes.length; i++) {
-      names[i] = classes[i].getName();
+      names[i] = toClassName(classes[i]);
     }
     return names;
   }
@@ -66,6 +76,7 @@ public abstract class Utils {
   /**
    * Extracts names of given classes
    *
+   * @param classNameProvider to use
    * @param classes to process
    * @return
    */

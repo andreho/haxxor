@@ -24,7 +24,7 @@ public interface HxExtendedCodeStream
   }
 
   default HxExtendedCodeStream GETFIELD(HxField field) {
-    if(!field.isStatic()) {
+    if(field.isStatic()) {
       throw new IllegalStateException("Invalid GETFIELD operation on static field: "+field);
     }
     final HxType declaring = field.getDeclaringMember();

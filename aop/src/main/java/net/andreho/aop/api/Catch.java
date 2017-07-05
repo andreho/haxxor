@@ -1,5 +1,6 @@
 package net.andreho.aop.api;
 
+import net.andreho.aop.api.injectable.Arg;
 import net.andreho.aop.api.injectable.Args;
 import net.andreho.aop.api.injectable.Arity;
 import net.andreho.aop.api.injectable.Attribute;
@@ -21,7 +22,7 @@ import java.lang.annotation.Target;
  * <br/>Created by a.hofmann on 18.09.2015.<br/>
  */
 @Supports(injectionOf = {
-//            Arg.class,
+            Arg.class,
             Args.class,
             Arity.class,
             Declaring.class,

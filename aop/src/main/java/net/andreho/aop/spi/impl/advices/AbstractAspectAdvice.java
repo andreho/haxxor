@@ -51,7 +51,7 @@ public abstract class AbstractAspectAdvice<T>
   }
 
   @Override
-  public boolean apply(final AspectContext ctx,
+  public boolean apply(final AspectContext context,
                        final T element) {
     return false;
   }

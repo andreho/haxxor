@@ -35,7 +35,7 @@ public class CgenTest {
   private static Haxxor haxxor;
 
   @ParameterizedTest
-  @MethodSource(names = "availableClasses")
+  @MethodSource("availableClasses")
   void checkClass(final Resource resource)
   throws IOException, PatchFailedException {
     String name = resource.getName();

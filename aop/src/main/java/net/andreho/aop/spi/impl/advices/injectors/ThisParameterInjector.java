@@ -5,7 +5,6 @@ import net.andreho.aop.api.injectable.This;
 import net.andreho.aop.spi.AspectAdvice;
 import net.andreho.aop.spi.AspectAdviceType;
 import net.andreho.aop.spi.AspectContext;
-import net.andreho.haxxor.cgen.HxExtendedCodeStream;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxParameter;
@@ -30,14 +29,13 @@ public final class ThisParameterInjector
                                               final HxMethod shadow,
                                               final HxParameter parameter,
                                               final HxInstruction anchor) {
-    final HxExtendedCodeStream stream = anchor.asAnchoredStream();
 
     if (!original.isStatic()) {
       final AspectAdviceType adviceType = aspectAdvice.getType();
+      //don't allow an uninitialized instance to be used elsewhere: uninitializedThis
       if (!original.isConstructor() ||
           !adviceType.isActivatedThrough(Before.class)) {
-        //don't allow an uninitialized instance to be used elsewhere: uninitializedThis
-        stream.THIS();
+        anchor.asAnchoredStream().THIS();
         return true;
       }
     }

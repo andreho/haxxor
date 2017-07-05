@@ -30,6 +30,6 @@ public abstract class AbstractJumpInstruction
 
   @Override
   public String toString() {
-    return super.toString() + " " + this.label;
+    return super.toString() + " " + this.label.print();
   }
 }

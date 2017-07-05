@@ -44,7 +44,7 @@ public class HxAbstractGenericTest
   }
 
   @ParameterizedTest
-  @MethodSource(names = TEST_CLASSES)
+  @MethodSource(TEST_CLASSES)
   void checkSignatureParsing(Class<?> cls)
   throws IOException {
     final ClassReader cr = new ClassReader(cls.getName());

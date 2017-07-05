@@ -221,9 +221,13 @@ public class AspectDefinitionImpl implements AspectDefinition {
 
   @Override
   public boolean apply(final HxType type) {
+    if(type.isAnnotationPresent(Constants.ASPECT_ANNOTATION_TYPE)) {
+      return false;
+    }
     if(!getTypeMatcher().match(type)) {
       return false;
     }
+
     final AspectContext context = new AspectContextImpl(this);
 
     boolean typesModified = applyAspectsForTypes(type, context, aspectStepsFor(AspectAdvice.Target.TYPE));

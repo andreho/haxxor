@@ -1,7 +1,6 @@
 package net.andreho.haxxor.spec.api;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.Utils;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -492,6 +491,30 @@ public interface HxType
   }
 
   /**
+   * @param returnType
+   * @param name
+   * @param parameters
+   * @return
+   */
+  default Optional<HxMethod> findMethod(Class<?> returnType,
+                                        String name,
+                                        Class<?> ... parameters) {
+    return findMethod(getHaxxor().reference(returnType.getName()),
+                      name,
+                      getHaxxor().referencesAsArray(toClassNames(parameters)));
+  }
+
+  /**
+   * @param name
+   * @param parameters
+   * @return
+   */
+  default Optional<HxMethod> findMethod(String name,
+                                        Class<?> ... parameters) {
+    return findMethod(name, getHaxxor().referencesAsArray(toClassNames(parameters)));
+  }
+
+  /**
    * @param method
    * @return
    */
@@ -541,6 +564,29 @@ public interface HxType
                     String name,
                     List<HxType> parameters) {
     return findMethod(returnType, name, parameters).isPresent();
+  }
+
+  /**
+   * @param name
+   * @param parameters
+   * @return
+   */
+  default boolean hasMethod(String name,
+                            Class<?>... parameters) {
+    return findMethod(name, parameters).isPresent();
+  }
+
+  /**
+   * @param name
+   * @param parameters
+   * @return
+   */
+  default boolean hasMethod(Class<?> returnType,
+                            String name,
+                            Class<?>... parameters) {
+    return findMethod(returnType,
+                      name,
+                      parameters).isPresent();
   }
 
   /**
@@ -622,7 +668,7 @@ public interface HxType
    * @return
    */
   default Optional<HxMethod> findConstructor(Constructor<?> constructor) {
-    return findConstructor(Utils.toClassNames(getHaxxor(), constructor.getParameterTypes()));
+    return findConstructor(toClassNames(getHaxxor(), constructor.getParameterTypes()));
   }
 
   /**
@@ -656,11 +702,27 @@ public interface HxType
   }
 
   /**
+   * @param signature of wanted constructor as an array of type names
+   * @return
+   */
+  default Optional<HxMethod> findConstructor(Class<?>... signature) {
+    return findConstructor(getHaxxor().referencesAsArray(toClassNames(signature)));
+  }
+
+  /**
    * @param constructor
    * @return
    */
   default boolean hasConstructor(Constructor<?> constructor) {
-    return hasConstructor(Utils.toClassNames(getHaxxor(), constructor.getParameterTypes()));
+    return hasConstructor(toClassNames(getHaxxor(), constructor.getParameterTypes()));
+  }
+
+  /**
+   * @param parameters
+   * @return
+   */
+  default boolean hasConstructor(Class<?> ... parameters) {
+    return findConstructor(parameters).isPresent();
   }
 
   /**

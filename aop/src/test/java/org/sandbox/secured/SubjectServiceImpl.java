@@ -37,16 +37,16 @@ public class SubjectServiceImpl implements SecurityManager, SubjectService {
 
   @Override
   public void verifyAccessTo(final Subject target,
-                             final Executable method,
-                             final Secured secured)
+                             final Secured secured,
+                             final Executable method)
   throws IllegalAccessException {
     User user = current().orElseThrow(() -> new IllegalAccessException("There aren't any logged in users."));
 
-    LOG.info("Checking access to: '"+target.getName()+ "' with user: '"+user.getUsername()+"' via: "+method);
+    LOG.info("Checking access to: '"+target.getName()+"' with user: '"+user.getUsername()+"' via: "+method);
 
     if(!target.isOwnedBy(user.getUsername())) {
-      String message = "Current user '" + user.getUsername() + "' isn't an owner of the given subject: '" +
-                 target.getName() + "' and can't access: " + method;
+      String message = "Current user '"+user.getUsername()+"' isn't an owner of the given subject: '"+
+                 target.getName()+"' and can't access: " + method;
 
       LOG.error(message);
       throw new IllegalAccessException(message);

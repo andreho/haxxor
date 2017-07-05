@@ -2,9 +2,11 @@ package net.andreho.aop.spi;
 
 import net.andreho.aop.api.After;
 import net.andreho.aop.api.Before;
+import net.andreho.aop.api.Modify;
 import net.andreho.aop.api.Order;
 import net.andreho.aop.spi.impl.advices.AfterAspectAdviceType;
 import net.andreho.aop.spi.impl.advices.BeforeAspectAdviceType;
+import net.andreho.aop.spi.impl.advices.ModifyTypeAspectAdviceType;
 
 import java.lang.annotation.Annotation;
 
@@ -12,7 +14,7 @@ import java.lang.annotation.Annotation;
  * <br/>Created by a.hofmann on 17.06.2017 at 07:33.
  */
 public enum DefaultAspectStepTypes {
-//  MODIFY_TYPE,
+  MODIFY_TYPE(new ModifyTypeAspectAdviceType(fetchOrderFromAnnotation(Modify.Type.class))),
 //  MODIFY_FIELD,
 //  MODIFY_METHOD,
 //  FORWARDING,
