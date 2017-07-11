@@ -15,22 +15,22 @@ public interface AspectMethodContext {
   /**
    * @return
    */
-  LABEL getStart();
+  LABEL getBegin();
 
   /**
-   * @param start
+   * @param begin
    */
-  void setStart(LABEL start);
+  void setBegin(LABEL begin);
 
   /**
    * @return
    */
-  LABEL getDelegationStart();
+  LABEL getDelegationBegin();
 
   /**
-   * @param delegationStart
+   * @param delegationBegin
    */
-  void setDelegationStart(LABEL delegationStart);
+  void setDelegationBegin(LABEL delegationBegin);
 
   /**
    * @return
@@ -73,6 +73,11 @@ public interface AspectMethodContext {
   void setShadowMethod(HxMethod shadowMethod);
 
   /**
+   * @return
+   */
+  AspectLocalAttribute getResultLocalAttribute();
+
+  /**
    * @param name
    * @return
    */
@@ -99,14 +104,43 @@ public interface AspectMethodContext {
   AspectLocalAttribute createLocalAttribute(HxType type, String name, int index);
 
   /**
+   * @param type
+   * @param name
+   * @param index
+   * @param begin
+   * @param end
+   * @return
+   */
+  AspectLocalAttribute createLocalAttribute(HxType type, String name, int index, LABEL begin, LABEL end);
+
+  /**
    * @return
    */
   Map<String, AspectLocalAttribute> getLocalAttributes();
+
+  /**
+   * @param exceptionType
+   */
+  boolean hasTryCatchBlock(String exceptionType);
+
+  /**
+   * @param tryCatch
+   */
+  void createTryCatchBlock(AspectTryCatch tryCatch);
+
+  /**
+   * @param exceptionType
+   */
+  AspectTryCatch getTryCatchBlock(String exceptionType);
 
   /**
    * @return
    */
   int getNextSlotIndex();
 
+  /**
+   * Resets this method's state to an initial state
+   */
   void reset();
+
 }

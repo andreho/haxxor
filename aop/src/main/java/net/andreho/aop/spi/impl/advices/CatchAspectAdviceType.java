@@ -11,12 +11,12 @@ import net.andreho.aop.spi.impl.advices.injectors.ArgParameterInjector;
 import net.andreho.aop.spi.impl.advices.injectors.ArgsParameterInjector;
 import net.andreho.aop.spi.impl.advices.injectors.ArityParameterInjector;
 import net.andreho.aop.spi.impl.advices.injectors.AttributeParameterInjector;
+import net.andreho.aop.spi.impl.advices.injectors.CaughtParameterInjector;
 import net.andreho.aop.spi.impl.advices.injectors.DeclaringParameterInjector;
 import net.andreho.aop.spi.impl.advices.injectors.DefaultInjector;
 import net.andreho.aop.spi.impl.advices.injectors.InterceptedParameterInjector;
 import net.andreho.aop.spi.impl.advices.injectors.LineParameterInjector;
 import net.andreho.aop.spi.impl.advices.injectors.MarkerParameterInjector;
-import net.andreho.aop.spi.impl.advices.injectors.ResultParameterInjector;
 import net.andreho.aop.spi.impl.advices.injectors.ThisParameterInjector;
 import net.andreho.aop.spi.impl.advices.results.DefaultPostProcessor;
 import net.andreho.aop.spi.impl.advices.results.LocalAttributePostProcessor;
@@ -34,13 +34,13 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 19.06.2017 at 00:35.
  */
-public class AfterAspectAdviceType
+public class CatchAspectAdviceType
   extends AbstractAspectAdviceType {
   private static final AspectAdvice.Target[] TARGETS = {
     AspectAdvice.Target.METHOD, AspectAdvice.Target.CONSTRUCTOR
   };
 
-  public AfterAspectAdviceType(final int order) {
+  public CatchAspectAdviceType(final int order) {
     super(
       order,
       AspectAdviceParameterInjector.with(
@@ -53,7 +53,7 @@ public class AfterAspectAdviceType
         ArityParameterInjector.INSTANCE,
         MarkerParameterInjector.INSTANCE,
         AttributeParameterInjector.INSTANCE,
-        ResultParameterInjector.INSTANCE,
+        CaughtParameterInjector.INSTANCE,
         DefaultInjector.INSTANCE
       ),
       AspectAdvicePostProcessor.with(
@@ -72,7 +72,7 @@ public class AfterAspectAdviceType
 
   @Override
   public Collection<AspectAdvice<?>> buildAdvices(final AspectDefinition def, final HxType type) {
-    final Collection<HxMethod> afterAdvices = locateAdvicesWith(type, Constants.AFTER_ANNOTATION_TYPE);
+    final Collection<HxMethod> afterAdvices = locateAdvicesWith(type, Constants.CATCH_ANNOTATION_TYPE);
 
     if (afterAdvices.isEmpty()) {
       return Collections.emptyList();
@@ -80,13 +80,18 @@ public class AfterAspectAdviceType
 
     final List<AspectAdvice<?>> steps = new ArrayList<>();
 
-    for (HxMethod afterAdvice : afterAdvices) {
-      final int index = getIndex(afterAdvice);
-      final HxAnnotation afterAnnotation = afterAdvice.getAnnotation(Constants.AFTER_ANNOTATION_TYPE).get();
-      final String profileName = fetchProfileName(afterAnnotation);
+    for (HxMethod catchAdvice : afterAdvices) {
+      final int index = getIndex(catchAdvice);
+      final HxAnnotation catchAnnotation = catchAdvice.getAnnotation(Constants.CATCH_ANNOTATION_TYPE).get();
+      final String profileName = fetchProfileName(catchAnnotation);
+      final HxType exceptionType = catchAnnotation.getAttribute("exception", (HxType) null);
       final ElementMatcher<HxMethod> affectedMethodsMatcher = obtainMethodsMatcher(def, profileName);
 
-      steps.add(new AfterAspectAdvice(index, profileName, this, affectedMethodsMatcher, afterAdvice));
+      steps.add(
+        new CatchAspectAdvice(
+          index, profileName, this, affectedMethodsMatcher, catchAdvice, exceptionType.getName()
+        )
+      );
     }
     return steps;
   }

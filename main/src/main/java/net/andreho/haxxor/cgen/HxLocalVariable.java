@@ -82,7 +82,7 @@ public interface HxLocalVariable
   /**
    * @return start asmLabel of this local variable
    */
-  LABEL getStart();
+  LABEL getBegin();
 
   /**
    * @param start

@@ -2,6 +2,7 @@ package net.andreho.aop.spi.impl;
 
 import net.andreho.aop.spi.AspectLocalAttribute;
 import net.andreho.aop.spi.AspectMethodContext;
+import net.andreho.aop.spi.AspectTryCatch;
 import net.andreho.haxxor.cgen.HxLocalVariable;
 import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.spec.api.HxMethod;
@@ -19,33 +20,34 @@ import static net.andreho.haxxor.cgen.HxLocalVariable.createLocalVariable;
  */
 public class AspectMethodContextImpl implements AspectMethodContext {
 
-  private LABEL start;
+  private LABEL begin;
   private LABEL end;
-  private LABEL delegationStart;
+  private LABEL delegationBegin;
   private LABEL delegationEnd;
   private HxMethod originalMethod;
   private HxMethod shadowMethod;
   private int nextSlotIndex;
   private Map<String, AspectLocalAttribute> localAttributes = Collections.emptyMap();
+  private Map<String, AspectTryCatch> tryCatchBlockMap = Collections.emptyMap();
 
   @Override
-  public LABEL getStart() {
-    return start;
+  public LABEL getBegin() {
+    return begin;
   }
 
   @Override
-  public void setStart(final LABEL start) {
-    this.start = requireNonNull(start);
+  public void setBegin(final LABEL begin) {
+    this.begin = requireNonNull(begin);
   }
 
   @Override
-  public LABEL getDelegationStart() {
-    return delegationStart;
+  public LABEL getDelegationBegin() {
+    return delegationBegin;
   }
 
   @Override
-  public void setDelegationStart(final LABEL delegationStart) {
-    this.delegationStart = requireNonNull(delegationStart);
+  public void setDelegationBegin(final LABEL delegationBegin) {
+    this.delegationBegin = requireNonNull(delegationBegin);
   }
 
   @Override
@@ -91,6 +93,11 @@ public class AspectMethodContextImpl implements AspectMethodContext {
   }
 
   @Override
+  public AspectLocalAttribute getResultLocalAttribute() {
+    return getLocalAttribute(Constants.RESULT_ATTRIBUTES_NAME);
+  }
+
+  @Override
   public boolean hasLocalAttribute(final String name) {
     return getLocalAttribute(name) != null;
   }
@@ -112,7 +119,18 @@ public class AspectMethodContextImpl implements AspectMethodContext {
                                                    final int index) {
     return createLocalAttribute(type,
                                 createLocalVariable(
-                                  index, name, getStart(), getEnd(), type.toDescriptor(), null));
+                                  index, name, getBegin(), getEnd(), type.toDescriptor(), null));
+  }
+
+  @Override
+  public AspectLocalAttribute createLocalAttribute(final HxType type,
+                                                   final String name,
+                                                   final int index,
+                                                   final LABEL begin,
+                                                   final LABEL end) {
+    return createLocalAttribute(type,
+                                createLocalVariable(
+                                  index, name, begin, end, type.toDescriptor(), null));
   }
 
   private AspectLocalAttribute addLocalAttribute(AspectLocalAttribute variable) {
@@ -140,7 +158,7 @@ public class AspectMethodContextImpl implements AspectMethodContext {
                                final int delta) {
     int maxSlotIndex = this.nextSlotIndex;
     for(AspectLocalAttribute attribute : getLocalAttributes().values()) {
-      final HxLocalVariable localVariable = attribute.getLocalVariable();
+      final HxLocalVariable localVariable = attribute.getHxLocalVariable();
 
       if(localVariable.getIndex() >= from) {
         localVariable.shift(delta);
@@ -160,14 +178,45 @@ public class AspectMethodContextImpl implements AspectMethodContext {
   }
 
   @Override
+  public boolean hasTryCatchBlock(final String exceptionType) {
+    return tryCatchBlockMap.containsKey(exceptionType);
+  }
+
+  @Override
+  public void createTryCatchBlock(final AspectTryCatch tryCatch) {
+    Map<String, AspectTryCatch> tryCatchBlockMap = this.tryCatchBlockMap;
+    if(tryCatchBlockMap == Collections.EMPTY_MAP) {
+      this.tryCatchBlockMap = tryCatchBlockMap = new LinkedHashMap<>();
+    }
+
+    final String handledException = tryCatch.getHxTryCatch().getExceptionType();
+
+    if(null != tryCatchBlockMap.putIfAbsent(handledException, tryCatch)) {
+      throw new IllegalStateException("Try-Catch block was already added: "+handledException);
+    }
+  }
+
+  @Override
+  public AspectTryCatch getTryCatchBlock(final String exceptionType) {
+    AspectTryCatch tryCatch = tryCatchBlockMap.get(exceptionType);
+    if(tryCatch == null) {
+      throw new IllegalStateException("Try-Catch block isn't available: "+exceptionType);
+    }
+    return tryCatch;
+  }
+
+  @Override
   public void reset() {
     this.nextSlotIndex = 0;
-    this.start = this.end = null;
+    this.begin = this.end = null;
     this.shadowMethod = this.originalMethod = null;
-    this.start = this.end = this.delegationStart = this.delegationEnd = null;
+    this.begin = this.end = this.delegationBegin = this.delegationEnd = null;
 
     if(!this.localAttributes.isEmpty()) {
       this.localAttributes.clear();
+    }
+    if(!this.tryCatchBlockMap.isEmpty()) {
+      this.tryCatchBlockMap.clear();
     }
   }
 }

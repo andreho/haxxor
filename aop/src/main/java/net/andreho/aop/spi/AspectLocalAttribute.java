@@ -11,7 +11,7 @@ public interface AspectLocalAttribute {
   /**
    * @return
    */
-  HxLocalVariable getLocalVariable();
+  HxLocalVariable getHxLocalVariable();
 
   /**
    * @return

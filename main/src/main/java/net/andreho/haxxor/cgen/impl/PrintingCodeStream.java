@@ -1446,13 +1446,13 @@ public class PrintingCodeStream extends DelegatingCodeStream {
   public HxCodeStream TRY_CATCH(final LABEL startLabel,
                                 final LABEL endLabel,
                                 final LABEL handler,
-                                final String type) {
-    super.TRY_CATCH(startLabel, endLabel, handler, type);
+                                final String exceptionTypename) {
+    super.TRY_CATCH(startLabel, endLabel, handler, exceptionTypename);
     append(".TRY_CATCH(")
-        .append(startLabel).append(",")
-        .append(endLabel).append(",")
-        .append(handler).append(",\"")
-        .append(type).append("\")\n");
+      .append(startLabel).append(",")
+      .append(endLabel).append(",")
+      .append(handler).append(",\"")
+      .append(exceptionTypename).append("\")\n");
     return this;
   }
 
@@ -1469,12 +1469,12 @@ public class PrintingCodeStream extends DelegatingCodeStream {
 
   @Override
   public HxCodeStream LOCAL_VARIABLE(final String name,
+                                     final int index,
                                      final String desc,
                                      final String signature,
                                      final LABEL start,
-                                     final LABEL end,
-                                     final int index) {
-    super.LOCAL_VARIABLE(name, desc, signature, start, end, index);
+                                     final LABEL end) {
+    super.LOCAL_VARIABLE(name, index, desc, signature, start, end);
     append(".LOCAL_VARIABLE(\"").append(name)
                                 .append("\",\"").append(desc)
                                 .append("\",\"").append(signature)

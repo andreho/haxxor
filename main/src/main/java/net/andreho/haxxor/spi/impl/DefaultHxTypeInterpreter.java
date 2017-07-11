@@ -239,7 +239,7 @@ public class DefaultHxTypeInterpreter
 //    final TypeReference typeReference = TypeReference.newTypeReference(TypeReference.FIELD);
 //    final TypePath typePath = TypePath.fromString();
 //    final AnnotationVisitor av = fv.visitTypeAnnotation(typeReference.getValue(), typePath,
-//                                                        annotation.getType().toDescriptor(),
+//                                                        annotation.getExceptionType().toDescriptor(),
 //                                                        annotation.isVisible());
   }
 
@@ -452,12 +452,11 @@ public class DefaultHxTypeInterpreter
                                      final MethodVisitor mv) {
     for (HxLocalVariable var : code.getLocalVariables()) {
       codeStream.LOCAL_VARIABLE(
-          var.getName(),
-          var.getDescriptor(),
-          var.getSignature(),
-          var.getStart(),
-          var.getEnd(),
-          var.getIndex()
+        var.getName(),
+        var.getIndex(), var.getDescriptor(),
+        var.getSignature(),
+        var.getBegin(),
+        var.getEnd()
       );
 //      visitAnnotations(var, mv::visitLocalVariableAnnotation);
     }
@@ -468,10 +467,10 @@ public class DefaultHxTypeInterpreter
                                      final MethodVisitor mv) {
     for (HxTryCatch tryCatch : code.getTryCatches()) {
       codeStream.TRY_CATCH(
-          tryCatch.getStart(),
+          tryCatch.getBegin(),
           tryCatch.getEnd(),
-          tryCatch.getHandler(),
-          tryCatch.getType()
+          tryCatch.getCatch(),
+          tryCatch.getExceptionType()
       );
 //      visitAnnotations(tryCatch, mv::visitTryCatchAnnotation);
     }

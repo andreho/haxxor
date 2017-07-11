@@ -976,11 +976,11 @@ public interface HxCodeStream<Stream extends HxCodeStream<Stream>> {
 
   Stream LABEL(LABEL label);
 
-  Stream TRY_CATCH(LABEL startLabel, LABEL endLabel, LABEL handler, String type);
+  Stream TRY_CATCH(LABEL startLabel, LABEL endLabel, LABEL handler, String exceptionTypename);
 
   Stream FRAME(HxFrames type, int nLocal, Object[] local, int nStack, Object[] stack);
 
-  Stream LOCAL_VARIABLE(String name, String desc, String signature, LABEL start, LABEL end, int index);
+  Stream LOCAL_VARIABLE(String name, int index, String desc,  String signature, LABEL start,LABEL end);
 
   Stream LINE_NUMBER(int line, LABEL start);
 

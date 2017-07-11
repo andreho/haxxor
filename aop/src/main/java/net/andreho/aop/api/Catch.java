@@ -44,5 +44,10 @@ public @interface Catch {
   /**
    * @return
    */
+  Class<? extends Throwable> exception();
+
+  /**
+   * @return
+   */
   Site site() default Site.CALLEE;
 }

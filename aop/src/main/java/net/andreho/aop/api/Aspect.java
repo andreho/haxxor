@@ -26,6 +26,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@Order(StandardOrder.ASPECT)
 public @interface Aspect {
 
   /**
@@ -56,7 +57,7 @@ public @interface Aspect {
     /**
      * @return <b>true</b> if the returned aspect instance must be saved as local variable
      * and reused for possible later usage;
-     * <b>false</b> to fetch aspect-factory each time it's needed
+     * <b>false</b> to fetch aspect-factory each time as it's needed
      */
     boolean reuse() default true;
   }

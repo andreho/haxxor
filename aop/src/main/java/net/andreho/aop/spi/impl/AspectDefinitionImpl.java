@@ -36,42 +36,47 @@ import static net.andreho.aop.spi.impl.Constants.EMPTY_TYPE_ARRAY;
  */
 public class AspectDefinitionImpl implements AspectDefinition {
 
+  private final int order;
   private final HxType type;
   private final String profile;
   private final String prefix;
   private final String suffix;
-  private final Collection<AspectAdviceType> aspectAdviceTypes;
+  private final Collection<AspectAdviceType> adviceTypes;
   private final ElementMatcher<HxType> classMatcher;
   private final Map<String, List<String>> parameters;
   private final ElementMatcherFactory elementMatcherFactory;
   private final Map<AspectAdvice.Target, List<AspectAdvice<?>>> aspectStepsMap;
-  private final List<AspectAdvice<?>> aspectAdvices;
+  private final List<AspectAdvice<?>> advices;
   private final Map<String, AspectProfile> aspectProfileMap;
   private final AspectFactory aspectFactory;
 
-  public AspectDefinitionImpl(final HxType type,
-                              final String profile,
-                              final String prefix,
-                              final String suffix,
-                              final Collection<AspectAdviceType> aspectAdviceTypes,
-                              final ElementMatcher<HxType> classMatcher,
-                              final Map<String, List<String>> parameters,
-                              final ElementMatcherFactory elementMatcherFactory,
-                              final Map<String, AspectProfile> aspectProfileMap,
-                              final AspectFactory aspectFactory) {
+  public AspectDefinitionImpl(
+    final int order,
+    final HxType type,
+    final String profile,
+    final String prefix,
+    final String suffix,
+    final Collection<AspectAdviceType> adviceTypes,
+    final ElementMatcher<HxType> classMatcher,
+    final Map<String, List<String>> parameters,
+    final ElementMatcherFactory elementMatcherFactory,
+    final Map<String, AspectProfile> aspectProfileMap,
+    final AspectFactory aspectFactory) {
+
+    this.order = order;
     this.type = type;
     this.profile = profile;
     this.prefix = prefix;
     this.suffix = suffix;
-    this.aspectAdviceTypes = aspectAdviceTypes;
+    this.adviceTypes = adviceTypes;
     this.classMatcher = classMatcher;
     this.parameters = parameters;
     this.aspectFactory = aspectFactory;
     this.elementMatcherFactory = elementMatcherFactory;
     this.aspectProfileMap = aspectProfileMap;
 
-    this.aspectAdvices = collectAspectAdvices(type);
-    this.aspectStepsMap = collectSupportedKinds(aspectAdvices);
+    this.advices = collectPresentAdvices(type);
+    this.aspectStepsMap = collectSupportedKinds(advices);
   }
 
   private Map<AspectAdvice.Target, List<AspectAdvice<?>>> collectSupportedKinds(final List<AspectAdvice<?>> aspectAdvices) {
@@ -89,12 +94,12 @@ public class AspectDefinitionImpl implements AspectDefinition {
     return mappedSteps;
   }
 
-  protected List<AspectAdvice<?>> collectAspectAdvices(final HxType type) {
+  protected List<AspectAdvice<?>> collectPresentAdvices(final HxType type) {
     final Set<AspectAdvice<?>> stepsSet = new LinkedHashSet<>();
 
     final AspectFactory aspectFactory = getAspectFactory().orElse(null);
 
-    for(AspectAdviceType stepType : getAspectAdviceTypes()) {
+    for(AspectAdviceType stepType : getAdviceTypes()) {
       Collection<AspectAdvice<?>> foundSteps = stepType.buildAdvices(this, type);
       stepsSet.addAll(foundSteps);
 
@@ -124,8 +129,13 @@ public class AspectDefinitionImpl implements AspectDefinition {
   }
 
   @Override
+  public int getOrder() {
+    return order;
+  }
+
+  @Override
   public String getName() {
-    return type.getName();
+    return type.getSimpleName();
   }
 
   @Override
@@ -167,8 +177,8 @@ public class AspectDefinitionImpl implements AspectDefinition {
   }
 
   @Override
-  public Collection<AspectAdviceType> getAspectAdviceTypes() {
-    return aspectAdviceTypes;
+  public Collection<AspectAdviceType> getAdviceTypes() {
+    return adviceTypes;
   }
 
   @Override
@@ -182,8 +192,8 @@ public class AspectDefinitionImpl implements AspectDefinition {
   }
 
   @Override
-  public List<AspectAdvice<?>> getAspectAdvices() {
-    return aspectAdvices;
+  public List<AspectAdvice<?>> getAdvices() {
+    return advices;
   }
 
   @Override
@@ -319,5 +329,10 @@ public class AspectDefinitionImpl implements AspectDefinition {
   @Override
   public String toString() {
     return "@Aspect("+getName()+")";
+  }
+
+  @Override
+  public int compareTo(final AspectDefinition o) {
+    return Integer.compare(order, o.getOrder());
   }
 }

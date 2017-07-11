@@ -12,24 +12,24 @@ import java.util.Objects;
 public class AspectLocalAttributeImpl
   implements AspectLocalAttribute {
 
-  private final HxLocalVariable localVariable;
+  private final HxLocalVariable hxLocalVariable;
   private final HxType type;
   private boolean handled;
 
-  public AspectLocalAttributeImpl(final HxLocalVariable localVariable,
+  public AspectLocalAttributeImpl(final HxLocalVariable hxLocalVariable,
                                   final HxType type) {
-    this.localVariable = Objects.requireNonNull(localVariable);
+    this.hxLocalVariable = Objects.requireNonNull(hxLocalVariable);
     this.type = Objects.requireNonNull(type);
   }
 
   @Override
-  public HxLocalVariable getLocalVariable() {
-    return localVariable;
+  public HxLocalVariable getHxLocalVariable() {
+    return hxLocalVariable;
   }
 
   @Override
   public String getName() {
-    return localVariable.getName();
+    return hxLocalVariable.getName();
   }
 
   @Override
@@ -39,7 +39,7 @@ public class AspectLocalAttributeImpl
 
   @Override
   public int getIndex() {
-    return getLocalVariable().getIndex();
+    return getHxLocalVariable().getIndex();
   }
 
   @Override

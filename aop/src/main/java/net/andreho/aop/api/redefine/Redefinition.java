@@ -1,4 +1,4 @@
-package net.andreho.aop.spi.redefine;
+package net.andreho.aop.api.redefine;
 
 /**
  * <br/>Created by a.hofmann on 23.03.2017 at 17:49.
@@ -17,6 +17,16 @@ public abstract class Redefinition<T> {
     }
   };
 
+  /**
+   * Checks whether the underlying redefinition instance is compatible with given type or not
+   * @param type to test against
+   * @return <b>true</b> if compatible; <b>false</b> otherwise.
+   */
+  public abstract boolean isCompatibleWith(Class<?> type);
+
+  /**
+   * @return <b>true</b> if the redefinition must be done or <b>false</b> to do nothing.
+   */
   public boolean isNeeded() {
     return true;
   }
@@ -57,7 +67,87 @@ public abstract class Redefinition<T> {
     throw new UnsupportedOperationException();
   }
 
-  public abstract boolean isCompatibleWith(Class<?> type);
+  /**
+   * This method is going be called from intercepted method-call
+   * @param value is the current result value
+   * @return a new result value if needed
+   */
+  public final boolean asBoolean(boolean value) {
+    return isNeeded()? toBoolean() : value;
+  }
+
+  /**
+   * This method is going be called from intercepted method-call
+   * @param value is the current result value
+   * @return a new result value if needed
+   */
+  public final byte asByte(byte value) {
+    return isNeeded()? toByte() : value;
+  }
+
+  /**
+   * This method is going be called from intercepted method-call
+   * @param value is the current result value
+   * @return a new result value if needed
+   */
+  public final short toShort(short value) {
+    return isNeeded()? toShort() : value;
+  }
+
+  /**
+   * This method is going be called from intercepted method-call
+   * @param value is the current result value
+   * @return a new result value if needed
+   */
+  public final char toChar(char value) {
+    return isNeeded()? toChar() : value;
+  }
+
+  /**
+   * This method is going be called from intercepted method-call
+   * @param value is the current result value
+   * @return a new result value if needed
+   */
+  public final int toInt(int value) {
+    return isNeeded()? toInt() : value;
+  }
+
+  /**
+   * This method is going be called from intercepted method-call
+   * @param value is the current result value
+   * @return a new result value if needed
+   */
+  public final float toFloat(float value) {
+    return isNeeded()? toFloat() : value;
+  }
+
+  /**
+   * This method is going be called from intercepted method-call
+   * @param value is the current result value
+   * @return a new result value if needed
+   */
+  public final long toLong(long value) {
+    return isNeeded()? toLong() : value;
+  }
+
+  /**
+   * This method is going be called from intercepted method-call
+   * @param value is the current result value
+   * @return a new result value if needed
+   */
+  public final double asDouble(double value) {
+    return isNeeded()? toDouble() : value;
+  }
+
+  /**
+   * This method is going be called from intercepted method-call
+   * @param value is the current result value
+   * @return a new result value if needed
+   */
+  public final T asObject(T value) {
+    return isNeeded()? toObject() : value;
+  }
+
 
   @Override
   public String toString() {

@@ -147,7 +147,7 @@ public class AsmExecutableMethodVisitor
                                  final Label end,
                                  final int index) {
     super.visitLocalVariable(name, desc, signature, start, end, index);
-    this.codeStream.LOCAL_VARIABLE(name, desc, signature, remap(start), remap(end), index);
+    this.codeStream.LOCAL_VARIABLE(name, index, desc, signature, remap(start), remap(end));
   }
 
   @Override

@@ -8,6 +8,7 @@ import net.andreho.aop.spi.AspectContext;
 import net.andreho.aop.spi.AspectLocalAttribute;
 import net.andreho.aop.spi.AspectMethodContext;
 import net.andreho.aop.spi.ElementMatcher;
+import net.andreho.aop.spi.impl.Constants;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.cgen.HxCgenUtils;
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
@@ -20,6 +21,7 @@ import net.andreho.haxxor.cgen.instr.misc.LINE_NUMBER;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxMethodBody;
 import net.andreho.haxxor.spec.api.HxParameter;
+import net.andreho.haxxor.spec.api.HxSort;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.ArrayList;
@@ -119,6 +121,8 @@ public abstract class AbstractShadowingAspectAdvice<T>
         .append(delegationStart)
         .asStream();
 
+    final int resultSlot = createSlotForResult(context, original, delegationStart);
+
     if (isStatic) {
       shadowMethod.addModifiers(HxMethod.Modifiers.STATIC);
     } else {
@@ -139,24 +143,26 @@ public abstract class AbstractShadowingAspectAdvice<T>
 
     }
 
+    //DON'T MOVE THIS METHOD CALL ANYWHERE ELSE
     type.addMethod(shadowMethod);
 
     if (isStatic) {
       stream.INVOKESTATIC(shadowMethod);
     } else {
       if (constructor) {
-        stream.ACONST_NULL(); //for the void parameter
+        stream.ACONST_NULL(); //for the last "net.andreho.aop.api.Placeholder" parameter
       }
       stream.INVOKESPECIAL(shadowMethod);
     }
-
 
     final LABEL delegationEnd = new NAMED_LABEL("D_END");
     final LABEL endLabel = new NAMED_LABEL("END");
 
     stream
       .LABEL(delegationEnd)
-      .GENERIC_RETURN(shadowMethod.getReturnType().getSort())
+      .LABEL(new NAMED_LABEL("RETURN"))
+      .GENERIC_LOAD(shadowMethod.getReturnType(), resultSlot)
+      .GENERIC_RETURN(shadowMethod.getReturnType())
       .LABEL(endLabel);
 
     copyLocalVariables(shadowMethod, body, startLabel, endLabel);
@@ -172,6 +178,36 @@ public abstract class AbstractShadowingAspectAdvice<T>
     return shadowMethod;
   }
 
+  private int createSlotForResult(final AspectContext context,
+                                   final HxMethod original,
+                                   final HxInstruction anchor) {
+
+    if(!original.hasReturnType(HxSort.VOID)) {
+      AspectLocalAttribute resultAttribute;
+      final AspectMethodContext methodContext = context.getAspectMethodContext();
+
+      if(!methodContext.hasLocalAttribute(Constants.RESULT_ATTRIBUTES_NAME)) {
+        final int slotOffset = methodContext.getNextSlotIndex();
+        final HxType returnType = original.getReturnType();
+
+        resultAttribute =
+          methodContext.createLocalAttribute(returnType, Constants.RESULT_ATTRIBUTES_NAME, slotOffset);
+        final int variableSize = returnType.getSlotSize();
+
+        HxCgenUtils.shiftAccessToLocalVariable(original.getBody().getFirst(), slotOffset, variableSize);
+      } else {
+        resultAttribute = methodContext.getLocalAttribute(Constants.RESULT_ATTRIBUTES_NAME);
+      }
+
+      anchor.asAnchoredStream()
+            .GENERIC_DEFAULT_VALUE(resultAttribute.getType())
+            .GENERIC_STORE(resultAttribute.getType(), resultAttribute.getIndex());
+
+      return resultAttribute.getIndex();
+    }
+    return -1;
+  }
+
   private void initializeMethodContext(final AspectContext context,
                                        final HxMethod original,
                                        final HxMethod shadowMethod,
@@ -184,8 +220,8 @@ public abstract class AbstractShadowingAspectAdvice<T>
     methodContext.setOriginalMethod(original);
     methodContext.setShadowMethod(shadowMethod);
 
-    methodContext.setStart(startLabel);
-    methodContext.setDelegationStart(delegationStart);
+    methodContext.setBegin(startLabel);
+    methodContext.setDelegationBegin(delegationStart);
     methodContext.setDelegationEnd(delegationEnd);
     methodContext.setEnd(endLabel);
   }
@@ -229,7 +265,7 @@ public abstract class AbstractShadowingAspectAdvice<T>
     for(AspectLocalAttribute localAttribute : methodContext.getLocalAttributes().values()) {
       if(!localAttribute.wasHandled()) {
         if(!body.hasLocalVariable(localAttribute.getName())) {
-          body.addLocalVariable(localAttribute.getLocalVariable());
+          body.addLocalVariable(localAttribute.getHxLocalVariable());
         }
         localAttribute.markAsHandled();
       }
@@ -237,13 +273,13 @@ public abstract class AbstractShadowingAspectAdvice<T>
     return body;
   }
 
-  protected void postProcessResult(final AspectContext context,
+  protected boolean postProcessResult(final AspectContext context,
                                    final HxMethod interceptor,
                                    final HxMethod original,
                                    final HxMethod shadow,
                                    final HxInstruction anchor) {
 
-    getResultHandler().process(this, context, interceptor, shadow, shadow, anchor);
+    return getResultHandler().process(this, context, interceptor, shadow, shadow, anchor);
   }
 
   protected void injectParameters(final AspectContext ctx,

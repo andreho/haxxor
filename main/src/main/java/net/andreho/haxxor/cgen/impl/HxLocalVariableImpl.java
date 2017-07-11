@@ -19,7 +19,7 @@ public class HxLocalVariableImpl
   private String descriptor;
   private String signature;
 
-  private LABEL start;
+  private LABEL begin;
   private LABEL end;
 
   public HxLocalVariableImpl() {
@@ -29,19 +29,19 @@ public class HxLocalVariableImpl
                              final String name,
                              final String descriptor,
                              final String signature,
-                             final LABEL start,
+                             final LABEL begin,
                              final LABEL end) {
     this.index = index;
     this.name = name;
     this.descriptor = descriptor;
     this.signature = signature;
-    this.start = start;
+    this.begin = begin;
     this.end = end;
   }
 
   @Override
   public void visit(final HxCodeStream codeStream) {
-    codeStream.LOCAL_VARIABLE(getName(), getDescriptor(), getSignature(), getStart(), getEnd(), getIndex());
+    codeStream.LOCAL_VARIABLE(getName(), getIndex(), getDescriptor(), getSignature(), getBegin(), getEnd());
   }
 
   @Override
@@ -71,8 +71,8 @@ public class HxLocalVariableImpl
   }
 
   @Override
-  public LABEL getStart() {
-    return this.start;
+  public LABEL getBegin() {
+    return this.begin;
   }
 
   @Override
@@ -100,7 +100,7 @@ public class HxLocalVariableImpl
 
   @Override
   public HxLocalVariable setStart(final LABEL start) {
-    this.start = Objects.requireNonNull(start);
+    this.begin = Objects.requireNonNull(start);
     return this;
   }
 
@@ -125,7 +125,7 @@ public class HxLocalVariableImpl
            ", name='" + name + '\'' +
            ", descriptor='" + descriptor + '\'' +
            ", signature='" + signature + '\'' +
-           ", start=" + start.print() +
+           ", begin=" + begin.print() +
            ", end=" + end.print() +
            ')';
   }

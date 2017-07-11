@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -111,8 +112,8 @@ public class AspectActivator
 
     for(String aspectClassname : aspects) {
       final HxType aspectType = haxxor.resolve(aspectClassname);
-      aspectProfiles.addAll(aspectProfileFactory.create(aspectType));
       aspectTypes.add(aspectType);
+      aspectProfiles.addAll(aspectProfileFactory.create(aspectType));
     }
 
     final Map<String, AspectProfile> aspectProfileMap =
@@ -137,6 +138,7 @@ public class AspectActivator
       }
     }
 
+    aspectDefinitions.sort(Comparator.naturalOrder());
     this.aspectDefinitions = unmodifiableList(aspectDefinitions);
   }
 

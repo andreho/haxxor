@@ -62,10 +62,11 @@ public class AbstractFactoryAwareAspectAdvice<T> extends AbstractShadowingAspect
       }
 
       final int slotIndex = methodContext.getNextSlotIndex();
-      HxCgenUtils.shiftAccessToLocalVariable(methodContext.getStart(), slotIndex, 1);
+      HxCgenUtils.shiftAccessToLocalVariable(methodContext.getBegin(), slotIndex, 1);
       methodContext.createLocalAttribute(aspectType, aspectAttributeName, slotIndex);
       stream.GENERIC_STORE(aspectType, slotIndex);
     }
+
     final AspectLocalAttribute localAttribute = methodContext.getLocalAttribute(aspectAttributeName);
     stream.GENERIC_LOAD(localAttribute.getType(), localAttribute.getIndex());
   }

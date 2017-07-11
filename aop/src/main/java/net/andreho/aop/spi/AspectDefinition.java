@@ -10,20 +10,27 @@ import java.util.Optional;
 /**
  * <br/>Created by a.hofmann on 17.06.2017 at 07:06.
  */
-public interface AspectDefinition {
+public interface AspectDefinition extends Comparable<AspectDefinition> {
 
   /**
-   * @return
+   * @return of this aspect
+   * @see net.andreho.aop.api.Order
+   * @see net.andreho.aop.api.Aspect
+   */
+  int getOrder();
+
+  /**
+   * @return name of this aspect - usually it's a simple classname
    */
   String getName();
 
   /**
-   * @return
+   * @return the name of used selection profile
    */
   String getProfile();
 
   /**
-   * @return
+   * @return the represented aspect type itself
    */
   HxType getType();
 
@@ -40,7 +47,7 @@ public interface AspectDefinition {
   /**
    * @return
    */
-  Collection<AspectAdviceType> getAspectAdviceTypes();
+  Collection<AspectAdviceType> getAdviceTypes();
 
   /**
    * @param originalMethodName
@@ -71,7 +78,7 @@ public interface AspectDefinition {
   /**
    * @return
    */
-  List<AspectAdvice<?>> getAspectAdvices();
+  List<AspectAdvice<?>> getAdvices();
 
   /**
    * @param profileName

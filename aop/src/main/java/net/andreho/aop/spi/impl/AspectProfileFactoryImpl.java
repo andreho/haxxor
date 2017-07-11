@@ -49,7 +49,6 @@ public class AspectProfileFactoryImpl implements AspectProfileFactory {
       return;
     }
 
-    final HxType[] throwableArray = profileAnnotation.getAttribute("throwable", Constants.EMPTY_TYPE_ARRAY);
     final HxAnnotation[] methods = profileAnnotation.getAttribute("methods", Constants.EMPTY_ANNOTATION_ARRAY);
     final HxAnnotation[] fields = profileAnnotation.getAttribute("fields", Constants.EMPTY_ANNOTATION_ARRAY);
     final HxAnnotation[] classes = profileAnnotation.getAttribute("classes", Constants.EMPTY_ANNOTATION_ARRAY);
@@ -57,7 +56,6 @@ public class AspectProfileFactoryImpl implements AspectProfileFactory {
     result.add(
       new AspectProfileImpl(
         profileName,
-        throwableArray,
         elementMatcherFactory.createClassesFilter(classes),
         elementMatcherFactory.createMethodsFilter(methods),
         elementMatcherFactory.createFieldsFilter(fields)

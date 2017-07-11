@@ -1,5 +1,7 @@
 package net.andreho.aop.spi.impl;
 
+import net.andreho.aop.api.Order;
+import net.andreho.aop.api.StandardOrder;
 import net.andreho.aop.api.injectable.Attribute;
 import net.andreho.aop.spi.AspectAdviceType;
 import net.andreho.aop.spi.AspectDefinition;
@@ -23,8 +25,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 
@@ -50,29 +50,31 @@ public class AspectDefinitionFactoryImpl
   public AspectDefinition create(final Haxxor haxxor,
                                  final HxType type,
                                  final Map<String, AspectProfile> aspectProfiles,
-                                 final Collection<AspectAdviceType> aspectAdviceTypes) {
+                                 final Collection<AspectAdviceType> adviceTypes) {
 
     final Optional<HxAnnotation> aspectOptional = type.getAnnotation(ASPECT_ANNOTATION_TYPE);
     if (!aspectOptional.isPresent()) {
       return null;
     }
 
+    final int order = extractAspectOrder(type);
     final HxAnnotation aspectAnnotation = aspectOptional.get();
     final Map<String, List<String>> parameters = extractParameters(aspectAnnotation);
     final AspectFactory aspectFactory = createAspectFactoryIfAvailable(type);
-    final String prefix = "__"; // aspectAnnotation.getAttribute("prefix", "__$");
-    final String suffix = "__"; // aspectAnnotation.getAttribute("suffix", "$__");
+    final String prefix = "__"; // aspectAnnotation.getAttribute("prefix", "__");
+    final String suffix = "__"; // aspectAnnotation.getAttribute("suffix", "__");
     final String profileName = findAspectProfileName(aspectAnnotation);
     final ElementMatcher<HxType> classesMatcher =
       requireNonNull(aspectProfiles.get(profileName), "Profile not found: " + profileName)
       .getClassesMatcher();
 
     return new AspectDefinitionImpl(
+      order,
       type,
       profileName,
       prefix,
       suffix,
-      aspectAdviceTypes,
+      adviceTypes,
       classesMatcher,
       parameters,
       getElementMatcherFactory(),
@@ -102,8 +104,10 @@ public class AspectDefinitionFactoryImpl
     return new AspectFactoryImpl(aspectFactoryMethod, attributeName, isAspectFactoryReusable(aspectFactoryMethod));
   }
 
-  private Map<String, AspectProfile> buildNamedAspectProfileMap(final Collection<AspectProfile> aspectProfiles) {
-    return aspectProfiles.stream().collect(Collectors.toMap(AspectProfile::getName, Function.identity()));
+  protected int extractAspectOrder(HxType aspectType) {
+    return aspectType.getAnnotation(Order.class)
+                     .map(annotation -> annotation.getAttribute("value", StandardOrder.ASPECT))
+                     .orElse(StandardOrder.ASPECT);
   }
 
   protected Map<String, List<String>> extractParameters(HxAnnotation aspectAnnotation) {

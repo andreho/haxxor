@@ -56,12 +56,4 @@ public @interface Profile {
    * @see Field.Set
    */
   Fields[] fields() default {};
-
-  /**
-   * Defines a set of {@link Throwable} classes that should be processed by a referencing {@link Catch} advice
-   *
-   * @return {@link Throwable} types of expected exceptions, that need to be handled by this aspect
-   * @see Catch
-   */
-  Class<? extends Throwable>[] throwable() default {Throwable.class};
 }

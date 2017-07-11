@@ -1082,8 +1082,8 @@ public class AsmCodeStream
   }
 
   @Override
-  public HxCodeStream TRY_CATCH(LABEL startLabel, LABEL endLabel, LABEL handler, String type) {
-    return visitTryCatchBlock(startLabel, endLabel, handler, type);
+  public HxCodeStream TRY_CATCH(LABEL startLabel, LABEL endLabel, LABEL handler, String exceptionTypename) {
+    return visitTryCatchBlock(startLabel, endLabel, handler, exceptionTypename);
   }
 
   @Override
@@ -1092,7 +1092,12 @@ public class AsmCodeStream
   }
 
   @Override
-  public HxCodeStream LOCAL_VARIABLE(String name, String desc, String signature, LABEL start, LABEL end, int index) {
+  public HxCodeStream LOCAL_VARIABLE(String name,
+                                     int index,
+                                     String desc,
+                                     String signature,
+                                     LABEL start,
+                                     LABEL end) {
     return visitLocalVariable(name, desc, signature, start, end, index);
   }
 

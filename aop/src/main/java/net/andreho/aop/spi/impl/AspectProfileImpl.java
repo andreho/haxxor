@@ -6,12 +6,6 @@ import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static java.util.Collections.emptySet;
-import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -21,20 +15,15 @@ public class AspectProfileImpl
   implements AspectProfile {
 
   private final String name;
-  private final Set<String> throwableSet;
   private final ElementMatcher<HxMethod> methodsMatcher;
   private final ElementMatcher<HxField> fieldsMatcher;
   private final ElementMatcher<HxType> classesMatcher;
 
   public AspectProfileImpl(final String name,
-                           final HxType[] throwableArray,
                            final ElementMatcher<HxType> classesMatcher,
                            final ElementMatcher<HxMethod> methodsMatcher,
                            final ElementMatcher<HxField> fieldsMatcher) {
     this.name = requireNonNull(name);
-    this.throwableSet = (throwableArray != null && throwableArray.length > 0)?
-                        unmodifiableSet(Stream.of(throwableArray).map(HxType::getName).collect(Collectors.toSet())) :
-                        emptySet();
 
     this.classesMatcher = requireNonNull(classesMatcher).minimize();
     this.methodsMatcher = requireNonNull(methodsMatcher).minimize();
@@ -44,11 +33,6 @@ public class AspectProfileImpl
   @Override
   public String getName() {
     return name;
-  }
-
-  @Override
-  public Set<String> getThrowableSet() {
-    return throwableSet;
   }
 
   @Override

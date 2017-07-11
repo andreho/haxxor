@@ -21,8 +21,7 @@ public class ThrowExamples {
   }
 
   public static String tryCatchIOException() {
-    String[][][] strings = new String[1][2][3];
-    int[][][] ints = new int[1][2][3];
+    String result = null;
     /*
 {
 mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, "tryCatchIOException", "()Ljava/lang/String;", null, null);
@@ -31,35 +30,51 @@ Label l0 = new Label();
 Label l1 = new Label();
 Label l2 = new Label();
 mv.visitTryCatchBlock(l0, l1, l2, "java/io/IOException");
-mv.visitLabel(l0);
-mv.visitLineNumber(22, l0);
-mv.visitMethodInsn(INVOKESTATIC, "examples/ThrowExamples", "methodThatThrowsIOException", "()Ljava/lang/String;", false);
-mv.visitLabel(l1);
-mv.visitInsn(ARETURN);
-mv.visitLabel(l2);
-mv.visitLineNumber(23, l2);
-mv.visitFrame(Opcodes.F_SAME1, 0, null, 1, new Object[] {"java/io/IOException"});
-mv.visitVarInsn(ASTORE, 0);
 Label l3 = new Label();
 mv.visitLabel(l3);
 mv.visitLineNumber(24, l3);
-mv.visitVarInsn(ALOAD, 0);
-mv.visitMethodInsn(INVOKESTATIC, "examples/ThrowExamples", "methodThatHandlesIOException", "(Ljava/io/IOException;)Ljava/lang/String;", false);
-mv.visitInsn(ARETURN);
+mv.visitInsn(ACONST_NULL);
+mv.visitVarInsn(ASTORE, 0);
+mv.visitLabel(l0);
+mv.visitLineNumber(56, l0);
+mv.visitMethodInsn(INVOKESTATIC, "examples/ThrowExamples", "methodThatThrowsIOException", "()Ljava/lang/String;", false);
+mv.visitVarInsn(ASTORE, 0);
+mv.visitLabel(l1);
+mv.visitLineNumber(59, l1);
 Label l4 = new Label();
+mv.visitJumpInsn(GOTO, l4);
+mv.visitLabel(l2);
+mv.visitLineNumber(57, l2);
+mv.visitFrame(Opcodes.F_FULL, 1, new Object[] {"java/lang/String"}, 1, new Object[] {"java/io/IOException"});
+mv.visitVarInsn(ASTORE, 1);
+Label l5 = new Label();
+mv.visitLabel(l5);
+mv.visitLineNumber(58, l5);
+mv.visitVarInsn(ALOAD, 1);
+mv.visitMethodInsn(INVOKESTATIC, "examples/ThrowExamples", "methodThatHandlesIOException", "(Ljava/io/IOException;)Ljava/lang/String;", false);
+mv.visitVarInsn(ASTORE, 0);
 mv.visitLabel(l4);
-mv.visitLocalVariable("e", "Ljava/io/IOException;", null, l3, l4, 0);
-mv.visitMaxs(1, 1);
+mv.visitLineNumber(60, l4);
+mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+mv.visitVarInsn(ALOAD, 0);
+mv.visitInsn(ARETURN);
+Label l6 = new Label();
+mv.visitLabel(l6);
+mv.visitLocalVariable("e", "Ljava/io/IOException;", null, l5, l4, 1);
+mv.visitLocalVariable("result", "Ljava/lang/String;", null, l0, l6, 0);
+mv.visitMaxs(1, 2);
 mv.visitEnd();
 }
      */
     try {
-      return methodThatThrowsIOException();
+      result = methodThatThrowsIOException();
     } catch (IOException e) {
-      return methodThatHandlesIOException(e);
-    } finally {
-      methodThatHandlesFinally();
+      result = methodThatHandlesIOException(e);
     }
+    return result;
+//    finally {
+//      methodThatHandlesFinally();
+//    }
   }
 
   @Test

@@ -151,6 +151,10 @@ public interface HxExtendedCodeStream
     }
   }
 
+  default HxExtendedCodeStream GENERIC_RETURN(HxType returnType) {
+    return GENERIC_RETURN(returnType.getSort());
+  }
+
   default HxExtendedCodeStream GENERIC_RETURN(HxSort returnValueSort) { {
       switch (returnValueSort) {
         case VOID:
@@ -216,7 +220,7 @@ public interface HxExtendedCodeStream
   default HxExtendedCodeStream GENERIC_LOAD(final HxSort sort, final int slotId) {
     switch (sort) {
       case VOID:
-        throw new IllegalArgumentException("Invalid parameter: " + sort);
+        return this;
 
       case BOOLEAN:
       case BYTE:
@@ -242,7 +246,7 @@ public interface HxExtendedCodeStream
   default HxExtendedCodeStream GENERIC_STORE(final HxSort sort, final int slotId) {
     switch (sort) {
       case VOID:
-        throw new IllegalArgumentException("Invalid variable's type: " + sort);
+        return this;
 
       case BOOLEAN:
       case BYTE:

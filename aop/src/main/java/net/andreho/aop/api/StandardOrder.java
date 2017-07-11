@@ -4,6 +4,7 @@ package net.andreho.aop.api;
  * <br/>Created by a.hofmann on 16.06.2017 at 21:29.
  */
 public interface StandardOrder {
+  int ASPECT = 10_000_000;
 
   int MODIFY_TYPE = 100_000_000;
   int MODIFY_FIELD = 110_000_000;
@@ -16,5 +17,5 @@ public interface StandardOrder {
   int AROUND = 170_000_000;
   int AFTER = 180_000_000;
   int CATCH = 190_000_000;
-  int FINALLY = 250_000_000;
+  int FINALLY = 200_000_000;
 }

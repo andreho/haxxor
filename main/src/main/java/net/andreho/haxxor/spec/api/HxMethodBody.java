@@ -1,5 +1,6 @@
 package net.andreho.haxxor.spec.api;
 
+import net.andreho.haxxor.Utils;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionFactory;
@@ -7,6 +8,7 @@ import net.andreho.haxxor.cgen.HxLocalVariable;
 import net.andreho.haxxor.cgen.HxTryCatch;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -160,6 +162,28 @@ public interface HxMethodBody
    * @return
    */
   HxMethodBody addTryCatch(HxTryCatch tryCatch);
+
+  /**
+   * @param exceptionType
+   * @return
+   */
+  Optional<HxTryCatch> findTryCatch(String exceptionType);
+
+  /**
+   * @param exceptionType
+   * @return
+   */
+  default Optional<HxTryCatch> findTryCatch(HxType exceptionType) {
+    return findTryCatch(exceptionType.getName());
+  }
+
+  /**
+   * @param exceptionType
+   * @return
+   */
+  default Optional<HxTryCatch> findTryCatch(Class<? extends Throwable> exceptionType) {
+    return findTryCatch(Utils.toClassName(exceptionType));
+  }
 
   /**
    * @return factory for instructions

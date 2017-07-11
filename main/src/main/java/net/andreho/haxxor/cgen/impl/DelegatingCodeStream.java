@@ -1391,9 +1391,9 @@ public class DelegatingCodeStream
   public HxCodeStream TRY_CATCH(final LABEL startLabel,
                                 final LABEL endLabel,
                                 final LABEL handler,
-                                final String type) {
+                                final String exceptionTypename) {
     if (codeStream != null) {
-      codeStream.TRY_CATCH(startLabel, endLabel, handler, type);
+      codeStream.TRY_CATCH(startLabel, endLabel, handler, exceptionTypename);
     }
     return this;
   }
@@ -1412,13 +1412,13 @@ public class DelegatingCodeStream
 
   @Override
   public HxCodeStream LOCAL_VARIABLE(final String name,
+                                     final int index,
                                      final String desc,
                                      final String signature,
                                      final LABEL start,
-                                     final LABEL end,
-                                     final int index) {
+                                     final LABEL end) {
     if (codeStream != null) {
-      codeStream.LOCAL_VARIABLE(name, desc, signature, start, end, index);
+      codeStream.LOCAL_VARIABLE(name, index, desc, signature, start, end);
     }
     return this;
   }

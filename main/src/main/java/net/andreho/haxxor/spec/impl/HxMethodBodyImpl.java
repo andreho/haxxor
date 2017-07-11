@@ -22,6 +22,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static net.andreho.haxxor.Utils.isUninitialized;
@@ -71,15 +72,15 @@ public class HxMethodBodyImpl
     final Map<Object, LABEL> mapping = new IdentityHashMap<>(32);
 
     for(HxTryCatch tryCatch : tryCatches) {
-      final LABEL start = remap(mapping, tryCatch.getStart());
+      final LABEL start = remap(mapping, tryCatch.getBegin());
       final LABEL end = remap(mapping, tryCatch.getEnd());
-      final LABEL handler = remap(mapping, tryCatch.getHandler());
+      final LABEL handler = remap(mapping, tryCatch.getCatch());
 
-      otherBody.addTryCatch(new HxTryCatchImpl(start, end, handler, tryCatch.getType()));
+      otherBody.addTryCatch(new HxTryCatchImpl(start, end, handler, tryCatch.getExceptionType()));
     }
 
     for(HxLocalVariable localVariable : localVariables) {
-      final LABEL start = remap(mapping, localVariable.getStart());
+      final LABEL start = remap(mapping, localVariable.getBegin());
       final LABEL end = remap(mapping, localVariable.getEnd());
 
       otherBody.addLocalVariable(
@@ -148,6 +149,16 @@ public class HxMethodBodyImpl
   }
 
   @Override
+  public Optional<HxTryCatch> findTryCatch(final String exceptionType) {
+    for(HxTryCatch tryCatch : getTryCatches()) {
+      if(Objects.equals(exceptionType, tryCatch.getExceptionType())) {
+        return Optional.of(tryCatch);
+      }
+    }
+    return Optional.empty();
+  }
+
+  @Override
   public HxMethod getMethod() {
     return this.owner;
   }
@@ -156,8 +167,6 @@ public class HxMethodBodyImpl
   public HxInstructionFactory getInstructionFactory() {
     return DEFAULT_INSTRUCTION_FACTORY;
   }
-
-
 
   @Override
   public <S extends HxCodeStream<S>> S build(final boolean rebuild) {
@@ -168,8 +177,7 @@ public class HxMethodBodyImpl
   }
 
   @Override
-  public <S extends HxCodeStream<S>> S build(final boolean rebuild,
-                                             final Function<HxMethodBody, S> streamFactory) {
+  public <S extends HxCodeStream<S>> S build(final boolean rebuild, final Function<HxMethodBody, S> streamFactory) {
     if (rebuild) {
       reset();
     }

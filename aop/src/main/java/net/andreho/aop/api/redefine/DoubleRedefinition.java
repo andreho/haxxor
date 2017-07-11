@@ -1,4 +1,4 @@
-package net.andreho.aop.spi.redefine;
+package net.andreho.aop.api.redefine;
 
 /**
  * <br/>Created by a.hofmann on 23.03.2017 at 17:50.

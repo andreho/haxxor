@@ -42,7 +42,7 @@ public class BeforeAspectAdvice
 
     final HxMethod interceptor = getInterceptor();
     final AspectMethodContext methodContext = context.getAspectMethodContext();
-    final HxInstruction anchor = methodContext.getDelegationStart();
+    final HxInstruction anchor = methodContext.getDelegationBegin();
 
     if(needsAspectFactory()) {
       instantiateAspectInstance(context, anchor);

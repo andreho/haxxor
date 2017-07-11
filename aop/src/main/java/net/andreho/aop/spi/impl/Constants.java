@@ -3,8 +3,10 @@ package net.andreho.aop.spi.impl;
 import net.andreho.aop.api.After;
 import net.andreho.aop.api.Aspect;
 import net.andreho.aop.api.Before;
+import net.andreho.aop.api.Catch;
 import net.andreho.aop.api.Modify;
 import net.andreho.aop.api.Order;
+import net.andreho.aop.api.injectable.Caught;
 import net.andreho.aop.api.injectable.Result;
 import net.andreho.aop.api.spec.Disable;
 import net.andreho.haxxor.spec.api.HxAnnotation;
@@ -33,17 +35,21 @@ public interface Constants {
   String ORDER_ANNOTATION_TYPE = Order.class.getName();
   String BEFORE_ANNOTATION_TYPE = Before.class.getName();
   String AFTER_ANNOTATION_TYPE = After.class.getName();
+  String CATCH_ANNOTATION_TYPE = Catch.class.getName();
   String MODIFY_TYPE_ANNOTATION_TYPE = Modify.Type.class.getName();
   String MODIFY_METHOD_ANNOTATION_TYPE = Modify.Method.class.getName();
   String MODIFY_FIELD_ANNOTATION_TYPE = Modify.Field.class.getName();
   String INJECT_RESULT_ANNOTATION_TYPE = Result.class.getName();
+  String CAUGHT_RESULT_ANNOTATION_TYPE = Caught.class.getName();
   String DISABLE_ANNOTATION_TYPE = Disable.class.getName();
 
   String VOID_PARAMETER_NAME =
     "$$_void_";
   String RESULT_ATTRIBUTES_NAME =
     "$$_result_";
-  String DEFAULT_ASPECT_ATTRIBUTE_NAME_PREFIX =
+  String DEFAULT_CAUGHT_EXCEPTION_ATTRIBUTE_NAME_PREFIX =
     "$$_";
+  String DEFAULT_ASPECT_ATTRIBUTE_NAME_PREFIX =
+    "$$_caught_";
   int UNORDERED_ELEMENT_INDEX = 1_000_000;
 }

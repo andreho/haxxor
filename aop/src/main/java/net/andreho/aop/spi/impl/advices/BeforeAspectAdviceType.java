@@ -10,6 +10,7 @@ import net.andreho.aop.spi.impl.Constants;
 import net.andreho.aop.spi.impl.advices.injectors.ArgParameterInjector;
 import net.andreho.aop.spi.impl.advices.injectors.ArgsParameterInjector;
 import net.andreho.aop.spi.impl.advices.injectors.ArityParameterInjector;
+import net.andreho.aop.spi.impl.advices.injectors.AttributeParameterInjector;
 import net.andreho.aop.spi.impl.advices.injectors.DeclaringParameterInjector;
 import net.andreho.aop.spi.impl.advices.injectors.DefaultInjector;
 import net.andreho.aop.spi.impl.advices.injectors.InterceptedParameterInjector;
@@ -18,6 +19,7 @@ import net.andreho.aop.spi.impl.advices.injectors.MarkerParameterInjector;
 import net.andreho.aop.spi.impl.advices.injectors.ThisParameterInjector;
 import net.andreho.aop.spi.impl.advices.results.DefaultPostProcessor;
 import net.andreho.aop.spi.impl.advices.results.LocalAttributePostProcessor;
+import net.andreho.aop.spi.impl.advices.results.RedefinePostProcessor;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
@@ -48,10 +50,12 @@ public class BeforeAspectAdviceType
         DeclaringParameterInjector.INSTANCE,
         ArityParameterInjector.INSTANCE,
         MarkerParameterInjector.INSTANCE,
+        AttributeParameterInjector.INSTANCE,
         LineParameterInjector.INSTANCE,
         DefaultInjector.INSTANCE
       ),
       AspectAdvicePostProcessor.with(
+        RedefinePostProcessor.INSTANCE,
         LocalAttributePostProcessor.INSTANCE,
         DefaultPostProcessor.INSTANCE
       ),

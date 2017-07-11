@@ -884,7 +884,7 @@ public class InstructionCodeStream
   }
 
   @Override
-  public HxExtendedCodeStream TRY_CATCH(final LABEL startLabel, final LABEL endLabel, final LABEL handler, final String type) {
+  public HxExtendedCodeStream TRY_CATCH(final LABEL startLabel, final LABEL endLabel, final LABEL handler, final String exceptionTypename) {
     throw new UnsupportedOperationException("Use "+ExtendedInstructionCodeStream.class.getName());
   }
 
@@ -895,8 +895,12 @@ public class InstructionCodeStream
   }
 
   @Override
-  public HxExtendedCodeStream LOCAL_VARIABLE(final String name, final String desc, final String signature, final LABEL start,
-                                     final LABEL end, final int index) {
+  public HxExtendedCodeStream LOCAL_VARIABLE(final String name,
+                                             final int index,
+                                             final String desc,
+                                             final String signature,
+                                             final LABEL start,
+                                             final LABEL end) {
     throw new UnsupportedOperationException("Use "+ExtendedInstructionCodeStream.class.getName());
   }
 

@@ -5,7 +5,7 @@ import net.andreho.haxxor.cgen.HxTryCatch;
 import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.spec.impl.HxAnnotatedDelegate;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
@@ -13,39 +13,73 @@ import java.util.Objects;
 public class HxTryCatchImpl extends HxAnnotatedDelegate<HxTryCatch>
     implements HxTryCatch {
 
-  private final LABEL start;
-  private final LABEL end;
-  private final LABEL handler;
-  private final String type;
+  private LABEL begin;
+  private LABEL end;
+  private LABEL handler;
+  private String handledException;
 
-  public HxTryCatchImpl(LABEL start,
+  public HxTryCatchImpl() {
+  }
+
+  public HxTryCatchImpl(LABEL begin,
                         LABEL end,
                         LABEL handler,
-                        String type) {
-    this.start = Objects.requireNonNull(start);
-    this.end = Objects.requireNonNull(end);
-    this.handler = Objects.requireNonNull(handler);
-    this.type = type;
+                        String handledException) {
+    this.begin = requireNonNull(begin);
+    this.end = requireNonNull(end);
+    this.handler = requireNonNull(handler);
+    this.handledException = handledException;
   }
 
   @Override
   public void visit(HxCodeStream codeStream) {
-    codeStream.TRY_CATCH(this.start, this.end, this.handler, this.type);
+    codeStream.TRY_CATCH(requireNonNull(this.begin),
+                         requireNonNull(this.end),
+                         requireNonNull(this.handler),
+                         this.handledException);
   }
 
-  public LABEL getStart() {
-    return this.start;
+  @Override
+  public LABEL getBegin() {
+    return this.begin;
   }
 
+  @Override
   public LABEL getEnd() {
     return this.end;
   }
 
-  public LABEL getHandler() {
+  @Override
+  public LABEL getCatch() {
     return this.handler;
   }
 
-  public String getType() {
-    return this.type;
+  @Override
+  public String getExceptionType() {
+    return this.handledException;
+  }
+
+  @Override
+  public HxTryCatch setBegin(final LABEL label) {
+    this.begin = requireNonNull(label);
+    return this;
+  }
+
+  @Override
+  public HxTryCatch setEnd(final LABEL label) {
+    this.end = requireNonNull(label);
+    return this;
+  }
+
+  @Override
+  public HxTryCatch setCatch(final LABEL label) {
+    this.handler = requireNonNull(label);
+    return this;
+  }
+
+  @Override
+  public HxTryCatch setExceptionType(final String exceptionType) {
+    this.handledException = exceptionType;
+    return this;
   }
 }
