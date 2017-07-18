@@ -14,12 +14,27 @@ public class HxArguments {
   private Object[] arguments;
   private int length;
 
+  /**
+   * @return
+   */
+  public static HxArguments createArguments() {
+    return new HxArguments();
+  }
+
+  /**
+   * @param capacity
+   * @return
+   */
+  public static HxArguments createArguments(int capacity) {
+    return new HxArguments(capacity);
+  }
+
   protected HxArguments() {
     this(0);
   }
 
   protected HxArguments(int capacity) {
-    this.arguments = capacity == 0? EMPTY_ARRAY : new Object[capacity];
+    this.arguments = capacity == 0 ? EMPTY_ARRAY : new Object[capacity];
   }
 
   private void ensureCapacity(int capacity) {
@@ -116,20 +131,5 @@ public class HxArguments {
     }
     return builder.append(']')
                   .toString();
-  }
-
-  /**
-   * @return
-   */
-  public static HxArguments create() {
-    return new HxArguments();
-  }
-
-  /**
-   * @param capacity
-   * @return
-   */
-  public static HxArguments create(int capacity) {
-    return new HxArguments(capacity);
   }
 }

@@ -19,7 +19,7 @@ public interface ElementMatcher<T> {
    * @param element
    * @return
    */
-  boolean match(T element);
+  boolean matches(T element);
 
   /**
    * @return

@@ -5,6 +5,7 @@ import net.andreho.haxxor.cgen.HxLocalVariable;
 import net.andreho.haxxor.cgen.HxTryCatch;
 import net.andreho.haxxor.cgen.impl.HxTryCatchImpl;
 import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.spec.api.HxType;
 
 import static java.util.Objects.requireNonNull;
 
@@ -14,27 +15,44 @@ import static java.util.Objects.requireNonNull;
 public class AspectTryCatchImpl implements AspectTryCatch {
   private HxLocalVariable hxLocalVariable;
   private HxTryCatch hxTryCatch;
+  private HxType exceptionType;
   private LABEL handlerEnd;
 
   public AspectTryCatchImpl() {
   }
 
-  public AspectTryCatchImpl(final LABEL begin,
+  public AspectTryCatchImpl(final HxType exceptionType,
+                            final LABEL begin,
                             final LABEL end,
                             final LABEL handlerBegin,
                             final LABEL handlerEnd,
-                            final String exceptionType,
                             final HxLocalVariable exceptionVariable) {
-    this(new HxTryCatchImpl(begin, end, handlerBegin, exceptionType), exceptionVariable, handlerEnd);
-
+    this(
+      exceptionType,
+       new HxTryCatchImpl(begin, end, handlerBegin, exceptionType.toInternalName()),
+       exceptionVariable,
+       handlerEnd
+    );
   }
 
-  public AspectTryCatchImpl(final HxTryCatch hxTryCatch,
+  public AspectTryCatchImpl(final HxType exceptionType,
+                            final HxTryCatch hxTryCatch,
                             final HxLocalVariable localVariable,
                             final LABEL handlerEnd) {
+    this.exceptionType = exceptionType;
     this.hxTryCatch = hxTryCatch;
     this.hxLocalVariable = localVariable;
     this.handlerEnd = handlerEnd;
+  }
+
+  @Override
+  public HxType getExceptionType() {
+    return exceptionType;
+  }
+
+  @Override
+  public void setExceptionType(final HxType exceptionType) {
+    this.exceptionType = exceptionType;
   }
 
   @Override

@@ -4,7 +4,16 @@ package net.andreho.haxxor.cgen;
  * <br/>Created by a.hofmann on 13.06.2017 at 03:45.
  */
 public class HxMethodType {
+
   private final String signature;
+
+  /**
+   * @param signature is the signature of the referenced method/constructor
+   * @return
+   */
+  public static HxMethodType createMethodType(final String signature) {
+    return new HxMethodType(signature);
+  }
 
   public HxMethodType(final String signature) {
     this.signature = signature;
@@ -35,6 +44,6 @@ public class HxMethodType {
 
   @Override
   public String toString() {
-    return "METHOD_TYPE["+signature+"]";
+    return "METHOD_TYPE[" + signature + "]";
   }
 }

@@ -28,7 +28,7 @@ public class ImplementingMatcher
     }
 
     for(HxType itf : interfaces) {
-      if(match(itf)) {
+      if(matches(itf)) {
         return true;
       }
     }
@@ -38,7 +38,7 @@ public class ImplementingMatcher
 
   private boolean hasImplementing(final HxType itf) {
     for(ElementMatcher<HxType> fragment : array) {
-      if(fragment.match(itf)) {
+      if(fragment.matches(itf)) {
         return true;
       }
     }
@@ -46,7 +46,7 @@ public class ImplementingMatcher
   }
 
   @Override
-  public boolean match(final HxType type) {
+  public boolean matches(final HxType type) {
     HxType current = type;
     while (true) {
       if(hasImplementing(current.getInterfaces())) {

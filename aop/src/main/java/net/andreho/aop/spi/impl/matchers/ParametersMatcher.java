@@ -39,7 +39,7 @@ public class ParametersMatcher
   }
 
   @Override
-  public boolean match(final HxMethod element) {
+  public boolean matches(final HxMethod element) {
     if(element.getParametersCount() == 0) {
       return false;
     }
@@ -53,9 +53,9 @@ public class ParametersMatcher
   }
 
   private boolean matchParameter(final HxParameter parameter) {
-    return positioned.match(parameter) &&
-           typed.match(parameter) &&
-           annotated.match(parameter) &&
-           named.match(parameter);
+    return positioned.matches(parameter) &&
+           typed.matches(parameter) &&
+           annotated.matches(parameter) &&
+           named.matches(parameter);
   }
 }

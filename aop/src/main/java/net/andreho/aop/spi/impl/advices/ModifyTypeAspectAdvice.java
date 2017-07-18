@@ -54,7 +54,7 @@ public class ModifyTypeAspectAdvice
   @Override
   public boolean apply(final AspectContext context,
                        final HxType type) {
-    if (!match(type)) {
+    if (!matches(type)) {
       return false;
     }
 

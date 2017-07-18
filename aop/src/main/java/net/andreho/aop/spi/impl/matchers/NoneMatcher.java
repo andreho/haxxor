@@ -7,7 +7,7 @@ public class NoneMatcher<T> extends AbstractMatcher<T> {
   public static final NoneMatcher INSTANCE = new NoneMatcher();
 
   @Override
-  public boolean match(final T element) {
+  public boolean matches(final T element) {
     return false;
   }
 

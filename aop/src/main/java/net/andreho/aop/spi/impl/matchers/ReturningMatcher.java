@@ -21,8 +21,8 @@ public class ReturningMatcher
   }
 
   @Override
-  public boolean match(final HxMethod method) {
-    return delegate.match(method.getReturnType());
+  public boolean matches(final HxMethod method) {
+    return delegate.matches(method.getReturnType());
   }
 
   @Override

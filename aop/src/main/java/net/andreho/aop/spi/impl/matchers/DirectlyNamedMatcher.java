@@ -14,7 +14,7 @@ public class DirectlyNamedMatcher<T extends HxNamed>
     this.name = name == null? "" : name;
   }
   @Override
-  public boolean match(final T named) {
+  public boolean matches(final T named) {
     return isAny() || name.equals(named.getName());
   }
 

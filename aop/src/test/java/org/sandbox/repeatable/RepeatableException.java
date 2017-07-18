@@ -27,6 +27,23 @@ public class RepeatableException extends RuntimeException {
     this.arguments = arguments;
   }
 
+  public Object getTarget() {
+    return target;
+  }
+
+  public Executable getExecutable() {
+    return executable;
+  }
+
+  public Object[] getArguments() {
+    return arguments.clone();
+  }
+
+  @Override
+  public synchronized Throwable fillInStackTrace() {
+    return this;
+  }
+
   public <T> T repeat()
   throws IllegalAccessException, InvocationTargetException, InstantiationException {
     Executable executable = this.executable;

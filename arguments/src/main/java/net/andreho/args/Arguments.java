@@ -1,46 +1,59 @@
-package net.andreho.aop.spi;
+package net.andreho.args;
 
-import java.util.function.Consumer;
+import java.net.URLClassLoader;
+
+import static net.andreho.args.ArgumentsClassFactory.createArgumentsClassFor;
+import static net.andreho.args.DynamicClassPathInstaller.installDynamicClassPathForArguments;
 
 /**
- * <br/>Created by a.hofmann on 15.06.2017 at 01:21.
+ * <br/>Created by a.hofmann on 15.07.2017 at 05:23.
  */
 public interface Arguments extends Iterable<Object> {
-  enum Sort {
-    BOOLEAN,
-    BYTE,
-    SHORT,
-    CHAR,
-    INT,
-    FLOAT,
-    LONG,
-    DOUBLE,
-    OBJECT;
+  /**
+   * @return
+   */
+  static Arguments empty() {
+    return EmptyArguments.INSTANCE;
+  }
 
-    public boolean isPrimitive() {
-      return this != OBJECT;
-    }
+  /**
+   * Installs a dynamic class path for generated arguments classes and
+   * uses system class-loader as installation point.
+   */
+  static void install() {
+    installDynamicClassPathForArguments();
+  }
 
-    public static Sort fromCode(int code) {
-      switch (code) {
-        case 0: return BOOLEAN;
-        case 1: return BYTE;
-        case 2: return SHORT;
-        case 3: return CHAR;
-        case 4: return INT;
-        case 5: return FLOAT;
-        case 6: return LONG;
-        case 7: return DOUBLE;
-          default: return OBJECT;
-      }
-    }
+  /**
+   * Installs a dynamic class path for generated classes and
+   * uses given class-loader as installation point (may vary depending on class-loader hierarchy).
+   * @param classLoader to use
+   */
+  static void install(URLClassLoader classLoader) {
+    installDynamicClassPathForArguments(classLoader);
+  }
+
+  /**
+   * @param signature of the requested class
+   * @return classname of the generated or already existing class
+   */
+  static String generateFor(final Class<?> ... signature) {
+    return createArgumentsClassFor(signature);
+  }
+
+  /**
+   * @param signature of the requested class
+   * @return classname of the generated or already existing class
+   */
+  static String generateFor(final String signature) {
+    return createArgumentsClassFor(signature);
   }
 
   /**
    * @param idx
    * @return
    */
-  Sort getSort(int idx);
+  ArgumentsType getType(int idx);
 
   /**
    *
@@ -177,8 +190,12 @@ public interface Arguments extends Iterable<Object> {
   Arguments setObject(int idx, Object value);
 
   /**
-   *
-   * @return
+   * @return <b>true</b> if {@link #length()} is equal to zero or <b>false</b> if not.
+   */
+  boolean isEmpty();
+
+  /**
+   * @return length of the argument's list
    */
   int length();
 
@@ -190,27 +207,6 @@ public interface Arguments extends Iterable<Object> {
   /**
    * @return
    */
-  <T> void toConsumer(Consumer<T> consumer);
-
-  /**
-   * @return
-   */
   @Override
-  Iterator iterator();
-
-  /**
-   *
-   */
-  interface Iterator
-    extends java.util.Iterator<Object> {
-    Sort sort();
-    boolean nextBoolean();
-    byte nextByte();
-    short nextShort();
-    char nextChar();
-    int nextInt();
-    float nextFloat();
-    long nextLong();
-    double nextDouble();
-  }
+  ArgumentsIterator iterator();
 }

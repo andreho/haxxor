@@ -2,6 +2,7 @@ package examples;
 
 import net.andreho.haxxor.Debugger;
 import org.junit.jupiter.api.Test;
+import org.sandbox.aspects.repeatable.RepeatableAspect;
 
 import java.io.IOException;
 
@@ -80,5 +81,10 @@ mv.visitEnd();
   @Test
   void printByteCode() {
     Debugger.trace(getClass());
+  }
+
+  @Test
+  void printAspect() {
+    Debugger.trace(RepeatableAspect.class);
   }
 }

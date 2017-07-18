@@ -40,6 +40,7 @@ public class AopClassFileTransformer
       }
 
       if (typeName != null && isSupportedPackage(typeName)) {
+        System.out.println("Class-loading: "+className);
         return entry.execute(loader, typeName, classBeingRedefined, protectionDomain, classfileBuffer);
       }
     }
@@ -117,10 +118,11 @@ public class AopClassFileTransformer
   }
 
   private static boolean isSealedPackage(final String className) {
-    return className.startsWith("java/") ||
-           className.startsWith("sun/") ||
-           className.startsWith("javax/") ||
-           className.startsWith("com/sun/") ||
-           className.startsWith("com/intellij/");
+    return false;
+//    className.startsWith("java/") ||
+//           className.startsWith("sun/") ||
+//           className.startsWith("javax/") ||
+//           className.startsWith("com/sun/") ||
+//           className.startsWith("com/intellij/");
   }
 }

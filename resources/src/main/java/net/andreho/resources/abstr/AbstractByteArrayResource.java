@@ -16,6 +16,7 @@ import java.net.URL;
 public abstract class AbstractByteArrayResource
     extends AbstractResource<byte[]> {
 
+  private static final int MAX_CACHEABLE_BYTES = Integer.MAX_VALUE - 16;
   private final Object lock = new Object();
 
   public AbstractByteArrayResource(final URL source,
@@ -39,8 +40,11 @@ public abstract class AbstractByteArrayResource
 
   protected byte[] readContentWithLength()
   throws IOException {
-    final byte[] result;
-    result = new byte[(int) length()];
+    if(length() >= MAX_CACHEABLE_BYTES) {
+      throw new IllegalStateException("Not cacheable resource, because of length constraints: "+length());
+    }
+
+    final byte[] result = new byte[(int) length()];
     try (InputStream inputStream = getInputStream()) {
       int awaited = result.length;
       int count;
@@ -59,7 +63,8 @@ public abstract class AbstractByteArrayResource
     final byte[] result;
     try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
       try (final InputStream inputStream = getInputStream()) {
-        final byte[] buffer = new byte[4096];
+        final byte[] buffer = new byte[2048];
+
         int count;
         while ((count = inputStream.read(buffer)) > -1) {
           outputStream.write(buffer, 0, count);

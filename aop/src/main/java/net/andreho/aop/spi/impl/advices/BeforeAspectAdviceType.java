@@ -48,10 +48,10 @@ public class BeforeAspectAdviceType
         ThisParameterInjector.INSTANCE,
         InterceptedParameterInjector.INSTANCE,
         DeclaringParameterInjector.INSTANCE,
+        LineParameterInjector.INSTANCE,
         ArityParameterInjector.INSTANCE,
         MarkerParameterInjector.INSTANCE,
         AttributeParameterInjector.INSTANCE,
-        LineParameterInjector.INSTANCE,
         DefaultInjector.INSTANCE
       ),
       AspectAdvicePostProcessor.with(

@@ -1,5 +1,7 @@
 package net.andreho.aop.spi;
 
+import net.andreho.haxxor.spec.api.HxMethod;
+
 /**
  * <br/>Created by a.hofmann on 17.06.2017 at 07:06.
  */
@@ -36,7 +38,7 @@ public interface AspectAdvice<T>
   /**
    * @return
    */
-  Object getInterceptor();
+  HxMethod getInterceptor();
 
   /**
    * @return

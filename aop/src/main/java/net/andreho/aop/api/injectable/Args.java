@@ -8,7 +8,9 @@ import java.lang.annotation.Target;
 /**
  * This annotation injects an <b>Object[]</b> array containing all passed parameters into marked parameter
  * of the intercepted method call.<br/>
- * Accessing <code>length</code> of this array is equal to the arity of the intercepted method.
+ * Accessing <code>length</code> of this array is equal to the arity of the intercepted method.<br/>
+ * User may alternatively use: {@code net.andreho.args.Arguments} as parameter's type to minimize the amount of produced garbage.
+ * In order to do so the <code>arguments</code> module must be present on classpath.
  * <br/>Created by a.hofmann on 18.09.2015.<br/>
  */
 @Target(ElementType.PARAMETER)

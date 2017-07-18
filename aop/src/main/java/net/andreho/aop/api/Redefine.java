@@ -1,10 +1,5 @@
 package net.andreho.aop.api;
 
-import net.andreho.aop.api.injectable.Args;
-import net.andreho.aop.api.injectable.Caught;
-import net.andreho.aop.api.injectable.Result;
-
-import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -22,12 +17,4 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD}) //ElementType.FIELD
 public @interface Redefine {
-   /**
-    * @return injectable annotation types that should be redefined
-    * @apiNote supported are:
-    * {@link Caught},
-    * {@link Args},
-    * {@link Result}
-    */
-   Class<? extends Annotation>[] value() default {};
 }

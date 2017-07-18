@@ -14,8 +14,8 @@ public final class NegatedMatcher<T> extends AbstractMatcher<T> {
   }
 
   @Override
-  public boolean match(final T t) {
-    return !matcher.match(t);
+  public boolean matches(final T t) {
+    return !matcher.matches(t);
   }
 
   @Override

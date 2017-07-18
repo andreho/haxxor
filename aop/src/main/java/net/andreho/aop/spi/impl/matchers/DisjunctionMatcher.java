@@ -26,7 +26,7 @@ public class DisjunctionMatcher<T>
   }
 
   @Override
-  public boolean match(final T type) {
+  public boolean matches(final T type) {
     if(isAny()) {
       return true;
     }
@@ -41,7 +41,7 @@ public class DisjunctionMatcher<T>
 
   protected boolean check(final ElementMatcher<T> fragment,
                           final T element) {
-    return fragment.match(element);
+    return fragment.matches(element);
   }
 
   @Override

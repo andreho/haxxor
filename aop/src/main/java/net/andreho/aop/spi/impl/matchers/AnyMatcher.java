@@ -7,7 +7,7 @@ public class AnyMatcher<T> extends AbstractMatcher<T> {
   public static final AnyMatcher INSTANCE = new AnyMatcher();
 
   @Override
-  public boolean match(final T element) {
+  public boolean matches(final T element) {
     return true;
   }
 

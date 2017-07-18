@@ -726,7 +726,7 @@ public class AsmCodeMethodVisitor
   }
 
   private HxArguments toHxArguments(Object[] bsmArgs) {
-    HxArguments arguments = HxArguments.create();
+    HxArguments arguments = HxArguments.createArguments();
     for (int i = 0; i < bsmArgs.length; i++) {
       Object arg = bsmArgs[i];
       if (arg instanceof Type) {

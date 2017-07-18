@@ -21,8 +21,8 @@ public class DeclaredByMatcher<O extends HxOwned<O>>
   }
 
   @Override
-  public boolean match(final O element) {
-    return delegate.match((HxType) element.getDeclaringMember());
+  public boolean matches(final O element) {
+    return delegate.matches((HxType) element.getDeclaringMember());
   }
 
   @Override

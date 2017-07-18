@@ -4,7 +4,7 @@ package net.andreho.func;
  * <br/>Created by a.hofmann on 02.07.2017 at 19:47.
  */
 @FunctionalInterface
-public interface F16<R,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P> extends FX<R>, Bindable<A,F15<R,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P>> {
+public interface F16<R,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P> extends FN<R>, Bindable<A,F15<R,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P>> {
   @Override
   default F15<R,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P> bind(final A target) {
     return (b,c,d,e,f,g,h,i,j,k,l,m,n,o,p) ->

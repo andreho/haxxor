@@ -32,11 +32,11 @@ public class FieldsMatcher
   }
 
   @Override
-  public boolean match(final HxField field) {
-    return modifiers.match(field) &&
-           declaredBy.match(field) &&
-           typed.match(field.getType()) &&
-           named.match(field) &&
-           annotated.match(field);
+  public boolean matches(final HxField field) {
+    return modifiers.matches(field) &&
+           declaredBy.matches(field) &&
+           typed.matches(field.getType()) &&
+           named.matches(field) &&
+           annotated.matches(field);
   }
 }

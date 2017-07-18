@@ -24,6 +24,7 @@ public class AspectMethodContextImpl implements AspectMethodContext {
   private LABEL end;
   private LABEL delegationBegin;
   private LABEL delegationEnd;
+  private LABEL catchInjection;
   private HxMethod originalMethod;
   private HxMethod shadowMethod;
   private int nextSlotIndex;
@@ -58,6 +59,16 @@ public class AspectMethodContextImpl implements AspectMethodContext {
   @Override
   public void setDelegationEnd(final LABEL delegationEnd) {
     this.delegationEnd = requireNonNull(delegationEnd);
+  }
+
+  @Override
+  public LABEL getCatchInjection() {
+    return catchInjection;
+  }
+
+  @Override
+  public void setCatchInjection(final LABEL catchInjection) {
+    this.catchInjection = requireNonNull(catchInjection);
   }
 
   @Override
@@ -189,7 +200,7 @@ public class AspectMethodContextImpl implements AspectMethodContext {
       this.tryCatchBlockMap = tryCatchBlockMap = new LinkedHashMap<>();
     }
 
-    final String handledException = tryCatch.getHxTryCatch().getExceptionType();
+    final String handledException = tryCatch.getExceptionType().getName();
 
     if(null != tryCatchBlockMap.putIfAbsent(handledException, tryCatch)) {
       throw new IllegalStateException("Try-Catch block was already added: "+handledException);

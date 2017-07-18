@@ -30,7 +30,7 @@ public class PositionedMatcher<I extends HxOrdered>
   }
 
   @Override
-  public boolean match(final I ordered) {
+  public boolean matches(final I ordered) {
     if (isAny()) {
       return true;
     }

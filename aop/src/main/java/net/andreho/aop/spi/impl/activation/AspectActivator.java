@@ -171,7 +171,7 @@ public class AspectActivator
 
     boolean modified = false;
     for(AspectDefinition aspectDefinition : getAspectDefinitions()) {
-      if(aspectDefinition.getTypeMatcher().match(hxType)) {
+      if(aspectDefinition.getTypeMatcher().matches(hxType)) {
         if(LOG.isDebugEnabled()) {
           LOG.debug("Type's pre-matching was successful for: {}", hxType.getName());
         }

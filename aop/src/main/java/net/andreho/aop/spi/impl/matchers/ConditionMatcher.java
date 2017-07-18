@@ -34,7 +34,7 @@ public class ConditionMatcher
   }
 
   @Override
-  public boolean match(final HxAnnotation annotation) {
+  public boolean matches(final HxAnnotation annotation) {
     if(values.length == 0 ||
        (!annotation.hasAttribute(name) &&
        !annotation.hasDefaultAttribute(name))) {

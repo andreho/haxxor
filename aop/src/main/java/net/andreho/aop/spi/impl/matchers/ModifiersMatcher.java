@@ -17,7 +17,7 @@ public class ModifiersMatcher<M extends HxMember<M>>
   }
 
   @Override
-  public boolean match(final M hxMember) {
+  public boolean matches(final M hxMember) {
     final int mods = this.mods;
     return isAny(mods) ||
            (hxMember.getModifiers() & mods) == mods;

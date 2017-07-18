@@ -25,11 +25,11 @@ public class ClassWithMatcher
   }
 
   @Override
-  public boolean match(final HxType type) {
-    return modifiers.match(type) &&
-           value.match(type) &&
-           named.match(type) &&
-           annotated.match(type);
+  public boolean matches(final HxType type) {
+    return modifiers.matches(type) &&
+           value.matches(type) &&
+           named.matches(type) &&
+           annotated.matches(type);
   }
 
   @Override

@@ -56,6 +56,7 @@ public class FieldAttributeParameterInjector
     if (fields.isEmpty()) {
       return false;
     }
+
     final HxField field = fields.iterator().next();
 
     if (!field.isAccessibleFrom(original)) {

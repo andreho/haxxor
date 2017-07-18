@@ -90,7 +90,7 @@ public abstract class Redefinition<T> {
    * @param value is the current result value
    * @return a new result value if needed
    */
-  public final short toShort(short value) {
+  public final short asShort(short value) {
     return isNeeded()? toShort() : value;
   }
 
@@ -99,7 +99,7 @@ public abstract class Redefinition<T> {
    * @param value is the current result value
    * @return a new result value if needed
    */
-  public final char toChar(char value) {
+  public final char asChar(char value) {
     return isNeeded()? toChar() : value;
   }
 
@@ -108,7 +108,7 @@ public abstract class Redefinition<T> {
    * @param value is the current result value
    * @return a new result value if needed
    */
-  public final int toInt(int value) {
+  public final int asInt(int value) {
     return isNeeded()? toInt() : value;
   }
 
@@ -117,7 +117,7 @@ public abstract class Redefinition<T> {
    * @param value is the current result value
    * @return a new result value if needed
    */
-  public final float toFloat(float value) {
+  public final float asFloat(float value) {
     return isNeeded()? toFloat() : value;
   }
 
@@ -126,7 +126,7 @@ public abstract class Redefinition<T> {
    * @param value is the current result value
    * @return a new result value if needed
    */
-  public final long toLong(long value) {
+  public final long asLong(long value) {
     return isNeeded()? toLong() : value;
   }
 

@@ -34,7 +34,7 @@ public class SignatureMatcher
   }
 
   @Override
-  public boolean match(final HxMethod element) {
+  public boolean matches(final HxMethod element) {
     if(isAny()) {
       return true;
     }

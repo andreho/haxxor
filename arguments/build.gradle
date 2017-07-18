@@ -1,0 +1,7 @@
+group 'net.andreho'
+version projectVersion
+
+dependencies {
+  compile project(':main')
+  compile project(':dynclpath')
+}

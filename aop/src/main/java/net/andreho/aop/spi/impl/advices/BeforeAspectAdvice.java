@@ -31,7 +31,7 @@ public class BeforeAspectAdvice
   @Override
   public boolean apply(final AspectContext context,
                        final HxMethod original) {
-    if (!match(original) || !original.hasBody()) {
+    if (!matches(original) || !original.hasBody()) {
       return false;
     }
 

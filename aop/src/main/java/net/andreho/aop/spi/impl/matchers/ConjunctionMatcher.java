@@ -21,7 +21,7 @@ public class ConjunctionMatcher<T>
   }
 
   @Override
-  public boolean match(final T type) {
+  public boolean matches(final T type) {
     for (ElementMatcher<T> matcher : array) {
       if (!check(matcher, type)) {
         return false;
@@ -32,7 +32,7 @@ public class ConjunctionMatcher<T>
 
   protected boolean check(final ElementMatcher<T> fragment,
                           final T element) {
-    return fragment.match(element);
+    return fragment.matches(element);
   }
 
   @Override

@@ -118,7 +118,7 @@ public class PrintingCodeStream extends DelegatingCodeStream {
   }
 
   private PrintingCodeStream append(HxArguments arguments) {
-    append("HxArguments.create(")
+    append("HxArguments.createArguments(")
         .append(arguments.length()).append(")");
 
     for (int i = 0, len = arguments.length(); i < len; i++) {

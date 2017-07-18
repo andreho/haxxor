@@ -1,5 +1,6 @@
 package org.sandbox.equals;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
  */
 class TestCase {
   @Test
+  @DisplayName("Creates dynamically equals() and hashCode() methods")
   void checkEquality() {
     final Color RED_A = new Color(255, 0, 0);
     final Color RED_B = new Color(255, 0, 0);

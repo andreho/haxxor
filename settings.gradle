@@ -5,4 +5,7 @@ include 'aop'
 include 'agent'
 include 'resources'
 include 'func'
+include 'arguments'
+include 'magic'
+include 'dynclpath'
 

@@ -20,11 +20,11 @@ public class ExtendingMatcher
   }
 
   @Override
-  public boolean match(final HxType type) {
+  public boolean matches(final HxType type) {
     HxType current = type;
 
     while (true) {
-      if(super.match(current)) {
+      if(super.matches(current)) {
         return true;
       }
       if(!current.hasSuperType()) {

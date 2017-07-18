@@ -10,7 +10,7 @@ public enum MethodsType
   implements ElementMatcher<HxMethod> {
   ANY() {
     @Override
-    public boolean match(final HxMethod element) {
+    public boolean matches(final HxMethod element) {
       return true;
     }
     @Override
@@ -23,7 +23,7 @@ public enum MethodsType
    */
   ALL() {
     @Override
-    public boolean match(final HxMethod element) {
+    public boolean matches(final HxMethod element) {
       return !element.isStaticClassInitializer();
     }
   },
@@ -32,7 +32,7 @@ public enum MethodsType
    */
   METHODS() {
     @Override
-    public boolean match(final HxMethod element) {
+    public boolean matches(final HxMethod element) {
       return !element.isStaticClassInitializer() &&
              !element.isConstructor();
     }
@@ -42,7 +42,7 @@ public enum MethodsType
    */
   CONSTRUCTORS() {
     @Override
-    public boolean match(final HxMethod element) {
+    public boolean matches(final HxMethod element) {
       return element.isConstructor();
     }
   }

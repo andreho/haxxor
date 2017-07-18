@@ -5,4 +5,7 @@ dependencies {
   compile project(':agent')
   compile project(':main')
   compile project(':resources')
+
+  testCompile project(':arguments')
+  testCompile project(':func')
 }

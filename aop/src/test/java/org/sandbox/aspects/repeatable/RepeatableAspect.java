@@ -7,9 +7,12 @@ import net.andreho.aop.api.injectable.Args;
 import net.andreho.aop.api.injectable.Caught;
 import net.andreho.aop.api.injectable.Intercepted;
 import net.andreho.aop.api.injectable.This;
+import net.andreho.aop.api.spec.Annotated;
 import net.andreho.aop.api.spec.ClassWith;
 import net.andreho.aop.api.spec.Classes;
+import net.andreho.aop.api.spec.Methods;
 import net.andreho.aop.api.spec.Named;
+import org.sandbox.repeatable.RepeatableException;
 
 import java.lang.reflect.Executable;
 
@@ -24,6 +27,8 @@ import static org.sandbox.aspects.repeatable.RepeatableAspect.REPEATABLE_ASPECT_
     @ClassWith(
       named = @Named("org.sandbox.repeatable.**")
     )
+  ), methods = @Methods(
+    annotated = @Annotated(Repeatable.class)
   )
 )
 @Aspect(REPEATABLE_ASPECT_PROFILE)
@@ -34,8 +39,8 @@ public class RepeatableAspect {
   public static <T extends Throwable> void catchAnyException(@Caught T error,
                                                              @This Object self,
                                                              @Intercepted Executable exec,
-                                                             @Args Object[] args) throws T {
+                                                             @Args Object[] args) {
     System.out.println("Caught an exception: "+error.getMessage());
-    throw error;
+    throw new RepeatableException(error, self, exec, args);
   }
 }

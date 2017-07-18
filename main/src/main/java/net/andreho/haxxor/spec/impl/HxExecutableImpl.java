@@ -1,7 +1,6 @@
 package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.Haxxor;
-import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxMethodBody;
 import net.andreho.haxxor.spec.api.HxParameter;
@@ -11,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static net.andreho.haxxor.Utils.isUninitialized;
@@ -48,18 +46,6 @@ public abstract class HxExecutableImpl
     } else {
       other.setBody(null);
     }
-  }
-
-  private static LABEL remap(final Map<Object, LABEL> mapping, final LABEL label) {
-    return mapping.computeIfAbsent(label, key -> new LABEL());
-  }
-
-  private static LABEL[] remap(final Map<Object, LABEL> mapping, final LABEL[] labels) {
-    LABEL[] remappedLabels = new LABEL[labels.length];
-    for (int i = 0; i < labels.length; i++) {
-      remappedLabels[i] = remap(mapping, labels[i]);
-    }
-    return remappedLabels;
   }
 
   public abstract HxMethod clone();
@@ -190,7 +176,41 @@ public abstract class HxExecutableImpl
 
   @Override
   public Collection<HxMethod> getOverriddenMembers() {
-    return Collections.emptySet();
+    if(getDeclaringType() == null) {
+      return Collections.emptyList();
+    }
+
+    final String name = getName();
+    final List<HxType> parameterTypes = getParameterTypes();
+    final List<HxMethod> methods = new ArrayList<>();
+
+    HxType current = getDeclaringType().getSuperType().orElse(null);
+
+    while(current != null) {
+      current.findMethod(name, parameterTypes).ifPresent(methods::add);
+      if(!current.hasSuperType()) {
+        break;
+      }
+      current = current.getSuperType().get();
+    }
+
+    current = getDeclaringType();
+
+    while(current != null) {
+      for(HxType itf : current.getInterfaces()) {
+        Optional<HxMethod> method = itf.findMethod(name, parameterTypes);
+        if(method.isPresent()) {
+          methods.add(method.get());
+        }
+      }
+
+      if(!current.hasSuperType()) {
+        break;
+      }
+      current = current.getSuperType().get();
+    }
+
+    return methods;
   }
 
   @Override

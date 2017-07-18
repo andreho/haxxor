@@ -102,8 +102,13 @@ public abstract class AbstractShadowingAspectAdvice<T>
     final HxMethod shadowMethod = original
       .clone(shadowName, 0)
       .setModifiers(HxMethod.Modifiers.PRIVATE, HxMethod.Modifiers.SYNTHETIC) // HxMethod.Modifiers.BRIDGE
+      //For more examples: InvokerBytecodeGenerator.generateCustomizedCodeBytes()
       //IS IT A HACK OR NOT?
+      .addAnnotation(haxxor.createAnnotation("java.lang.invoke.LambdaForm$Compiled", true))
+      .addAnnotation(haxxor.createAnnotation("java.lang.invoke.LambdaForm$Hidden", true))
       .addAnnotation(haxxor.createAnnotation("java.lang.invoke.ForceInline", true));
+
+    shadowMethod.getParameters().forEach(parameter -> parameter.addModifiers(HxParameter.Modifiers.SYNTHETIC));
 
     original.getBody().moveTo(shadowMethod);
 
@@ -156,11 +161,13 @@ public abstract class AbstractShadowingAspectAdvice<T>
     }
 
     final LABEL delegationEnd = new NAMED_LABEL("D_END");
+    final LABEL returnLabel = new NAMED_LABEL("RET");
     final LABEL endLabel = new NAMED_LABEL("END");
 
     stream
       .LABEL(delegationEnd)
-      .LABEL(new NAMED_LABEL("RETURN"))
+      .GOTO(returnLabel)
+      .LABEL(returnLabel)
       .GENERIC_LOAD(shadowMethod.getReturnType(), resultSlot)
       .GENERIC_RETURN(shadowMethod.getReturnType())
       .LABEL(endLabel);
@@ -173,14 +180,15 @@ public abstract class AbstractShadowingAspectAdvice<T>
                             startLabel,
                             delegationStart,
                             delegationEnd,
+                            returnLabel,
                             endLabel);
 
     return shadowMethod;
   }
 
   private int createSlotForResult(final AspectContext context,
-                                   final HxMethod original,
-                                   final HxInstruction anchor) {
+                                  final HxMethod original,
+                                  final HxInstruction anchor) {
 
     if(!original.hasReturnType(HxSort.VOID)) {
       AspectLocalAttribute resultAttribute;
@@ -214,6 +222,7 @@ public abstract class AbstractShadowingAspectAdvice<T>
                                        final LABEL startLabel,
                                        final LABEL delegationStart,
                                        final LABEL delegationEnd,
+                                       final LABEL catchInjection,
                                        final LABEL endLabel) {
     final AspectMethodContext methodContext = context.getAspectMethodContext();
 
@@ -223,6 +232,7 @@ public abstract class AbstractShadowingAspectAdvice<T>
     methodContext.setBegin(startLabel);
     methodContext.setDelegationBegin(delegationStart);
     methodContext.setDelegationEnd(delegationEnd);
+    methodContext.setCatchInjection(catchInjection);
     methodContext.setEnd(endLabel);
   }
 

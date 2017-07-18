@@ -24,14 +24,14 @@ public class CatchAspectAdvice
   extends AbstractFactoryAwareAspectAdvice<HxMethod> {
 
   private static final AtomicLong COUNTER = new AtomicLong();
-  private final String exception;
+  private final HxType exception;
 
   public CatchAspectAdvice(final int index,
                            final String profileName,
                            final AspectAdviceType type,
                            final ElementMatcher<HxMethod> elementMatcher,
                            final HxMethod interceptor,
-                           final String exception) {
+                           final HxType exception) {
     super(index,
           type,
           elementMatcher,
@@ -46,7 +46,7 @@ public class CatchAspectAdvice
   @Override
   public boolean apply(final AspectContext context,
                        final HxMethod original) {
-    if (!match(original) || !original.hasBody()) {
+    if (!matches(original) || !original.hasBody()) {
       return false;
     }
 
@@ -59,7 +59,7 @@ public class CatchAspectAdvice
     final AspectMethodContext methodContext = context.getAspectMethodContext();
 
     AspectTryCatch tryCatch;
-    if (!methodContext.hasTryCatchBlock(exception)) {
+    if (!methodContext.hasTryCatchBlock(exception.getName())) {
       final LABEL tryBegin = methodContext.getDelegationBegin();
       final LABEL tryEnd = methodContext.getDelegationEnd();
       final LABEL catchBegin = new LABEL();
@@ -69,19 +69,18 @@ public class CatchAspectAdvice
         Constants.DEFAULT_CAUGHT_EXCEPTION_ATTRIBUTE_NAME_PREFIX + COUNTER.getAndIncrement();
 
       final int slotOffset = methodContext.getNextSlotIndex();
-      final HxType exceptionType = original.getHaxxor().reference(exception);
 
       AspectLocalAttribute exceptionAttribute =
-        methodContext.createLocalAttribute(exceptionType, exceptionVariableName, slotOffset);
+        methodContext.createLocalAttribute(exception, exceptionVariableName, slotOffset);
       exceptionAttribute
         .getHxLocalVariable()
         .setStart(catchBegin)
         .setEnd(catchEnd);
 
       HxCgenUtils.shiftAccessToLocalVariable(
-        original.getBody().getFirst(), slotOffset, exceptionType.getSlotSize());
+        original.getBody().getFirst(), slotOffset, exception.getSlotSize());
 
-      HxExtendedCodeStream stream = methodContext.getDelegationEnd().asStream();
+      HxExtendedCodeStream stream = methodContext.getCatchInjection().asAnchoredStream();
 
       stream
         .LABEL(catchBegin)
@@ -90,7 +89,7 @@ public class CatchAspectAdvice
 
       tryCatch =
         new AspectTryCatchImpl(
-          tryBegin, tryEnd, catchBegin, catchEnd, exception, exceptionAttribute.getHxLocalVariable()
+          exception, tryBegin, tryEnd, catchBegin, catchEnd, exceptionAttribute.getHxLocalVariable()
         );
 
       methodContext.createTryCatchBlock(tryCatch);
@@ -99,7 +98,7 @@ public class CatchAspectAdvice
         .getBody()
         .addTryCatch(tryCatch.getHxTryCatch());
     } else {
-      tryCatch = methodContext.getTryCatchBlock(exception);
+      tryCatch = methodContext.getTryCatchBlock(exception.getName());
     }
 
     invokeCatchAspect(context, tryCatch, interceptor, original, shadow, tryCatch.getCatchEnd());

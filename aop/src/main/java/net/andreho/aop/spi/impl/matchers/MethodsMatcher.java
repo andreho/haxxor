@@ -45,16 +45,16 @@ public class MethodsMatcher
   }
 
   @Override
-  public boolean match(final HxMethod element) {
+  public boolean matches(final HxMethod element) {
     return
-      type.match(element) &&
-      declaredBy.match(element) &&
-      modifiers.match(element) &&
-      named.match(element) &&
-      returning.match(element) &&
-      annotated.match(element) &&
-      signatures.match(element) &&
-      parameters.match(element) &&
+      type.matches(element) &&
+      declaredBy.matches(element) &&
+      modifiers.matches(element) &&
+      named.matches(element) &&
+      returning.matches(element) &&
+      annotated.matches(element) &&
+      signatures.matches(element) &&
+      parameters.matches(element) &&
       matchThrowing(element);
   }
 
@@ -64,7 +64,7 @@ public class MethodsMatcher
     }
     final List<HxType> exceptionTypes = element.getExceptionTypes();
     for (HxType throwableType : exceptionTypes) {
-      if (throwing.match(throwableType)) {
+      if (throwing.matches(throwableType)) {
         return true;
       }
     }

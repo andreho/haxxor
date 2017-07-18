@@ -1,5 +1,6 @@
 package net.andreho.haxxor.spec.api;
 
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -88,6 +89,39 @@ public interface HxParameter
 
   @Override
   HxParameter setModifiers(int modifiers);
+
+  /**
+   * @param name
+   * @return
+   */
+  default boolean hasName(String name) {
+    return isNamePresent() &&
+           Objects.equals(getName(), name);
+  }
+
+  /**
+   * @param typeName
+   * @return
+   */
+  default boolean hasType(String typeName) {
+    return getType().hasName(typeName);
+  }
+
+  /**
+   * @param type
+   * @return
+   */
+  default boolean hasType(Class<?> type) {
+    return getType().hasName(type.getName());
+  }
+
+  /**
+   * @param type
+   * @return
+   */
+  default boolean hasType(HxType type) {
+    return getType().equals(type);
+  }
 
   /**
    *

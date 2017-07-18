@@ -21,8 +21,8 @@ public class TypedMatcher<T extends HxTyped>
   }
 
   @Override
-  public boolean match(final T typed) {
-    return delegate.match(typed.getType());
+  public boolean matches(final T typed) {
+    return delegate.matches(typed.getType());
   }
 
   @Override

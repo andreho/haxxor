@@ -22,10 +22,10 @@ public class ClassesMatcher
   }
 
   @Override
-  public boolean match(final HxType type) {
-    return value.match(type) &&
-           extending.match(type) &&
-           implementing.match(type);
+  public boolean matches(final HxType type) {
+    return value.matches(type) &&
+           extending.matches(type) &&
+           implementing.matches(type);
   }
 
   @Override

@@ -387,7 +387,39 @@ public interface HxExtendedCodeStream
   }
 
   default HxExtendedCodeStream CONVERT(final HxType fromType, final HxType toType) {
-    return CONVERT(fromType.getSort(), toType.getSort());
+    final HxSort toTypeSort = toType.getSort();
+    switch (fromType.getSort()) {
+      case BOOLEAN:
+        return CONVERT_BOOLEAN(toTypeSort);
+      case BYTE:
+      case CHAR:
+      case SHORT:
+      case INT:
+        return CONVERT_INT(toTypeSort);
+      case FLOAT:
+        return CONVERT_FLOAT(toTypeSort);
+      case LONG:
+        return CONVERT_LONG(toTypeSort);
+      case DOUBLE:
+        return CONVERT_DOUBLE(toTypeSort);
+      case OBJECT:
+        if(toType.isPrimitive()) {
+          return UNBOXING(toType, true);
+        }
+        if(!fromType.equals(toType)) {
+          return CHECKCAST(toType);
+        }
+        return this;
+      case ARRAY:
+        if(toType.isArray() ||
+           toType.hasName("java.lang.Object") ||
+           toType.hasName("java.io.Serializable")) {
+          return this;
+        }
+      default: {
+        throw new IllegalStateException("Not convertible: "+toType);
+      }
+    }
   }
 
   default HxExtendedCodeStream CONVERT(final HxSort fromType, final HxSort toType) {
@@ -622,6 +654,7 @@ public interface HxExtendedCodeStream
     .ANEWARRAY("java/lang/Object");
 
     int slotIndex = firstSlotOffset;
+
     for (int i = 0; i < signature.size(); i++) {
       final HxType type = signature.get(i);
 

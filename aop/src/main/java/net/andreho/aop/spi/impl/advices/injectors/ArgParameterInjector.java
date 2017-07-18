@@ -31,7 +31,18 @@ public final class ArgParameterInjector
                                            final HxInstruction anchor) {
 
     final HxAnnotation argAnnotation = parameter.getAnnotation(ANNOTATION_TYPE).get();
-    final int injectableIndex = argAnnotation.getAttribute("value", -1);
+    int injectableIndex = argAnnotation.getAttribute("value", -1);
+
+    if(injectableIndex == Arg.BY_TYPE) {
+      int autoSelectedArgIndex = -1;
+      for (HxParameter p : original.getParameters()) {
+        if(p.getType().equals(parameter.getType())) {
+          autoSelectedArgIndex = p.getIndex();
+          break;
+        }
+      }
+      injectableIndex = autoSelectedArgIndex;
+    }
 
     if(injectableIndex > -1 && original.hasParameterAt(injectableIndex)) {
       final HxParameter injectableArg = original.getParameterAt(injectableIndex);

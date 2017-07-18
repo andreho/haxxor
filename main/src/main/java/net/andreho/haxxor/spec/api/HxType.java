@@ -19,14 +19,109 @@ import static net.andreho.haxxor.Utils.toClassNames;
  * Created by a.hofmann on 30.05.2015.
  */
 public interface HxType
-    extends HxAnnotated<HxType>,
-            HxMember<HxType>,
-            HxOwned<HxType>,
-            HxGeneric<HxType>,
-            HxGenericElement<HxType>,
-            HxAccessible<HxType>,
-            HxNamed,
-            HxProvider {
+  extends HxAnnotated<HxType>,
+          HxMember<HxType>,
+          HxOwned<HxType>,
+          HxGeneric<HxType>,
+          HxGenericElement<HxType>,
+          HxAccessible<HxType>,
+          HxNamed,
+          HxProvider {
+
+  /**
+   */
+  enum Version {
+    V1_5(Opcodes.V1_5),
+    V1_6(Opcodes.V1_6),
+    V1_7(Opcodes.V1_7),
+    V1_8(Opcodes.V1_8);
+
+    final int code;
+
+    public static Version of(int ver) {
+      switch (ver) {
+        case Opcodes.V1_5:
+          return V1_5;
+        case Opcodes.V1_6:
+          return V1_6;
+        case Opcodes.V1_7:
+          return V1_7;
+        case Opcodes.V1_8:
+          return V1_8;
+      }
+      throw new IllegalArgumentException("Unsupported version: " + ver);
+    }
+
+    Version(int code) {
+      this.code = code;
+    }
+
+    public int getCode() {
+      return code;
+    }
+  }
+
+  /**
+   *
+   */
+  enum Part {
+    DEFAULTS,
+    ANNOTATIONS,
+    INTERFACES,
+    FIELDS,
+    METHODS,
+    INNER_TYPES
+  }
+
+  /**
+   *
+   */
+  enum Modifiers
+    implements HxModifier {
+    // class, field, method
+    PUBLIC(Opcodes.ACC_PUBLIC),
+    // class, field, method
+    PRIVATE(Opcodes.ACC_PRIVATE),
+    // class, field, method
+    PROTECTED(Opcodes.ACC_PROTECTED),
+    // class, field, method
+    STATIC(Opcodes.ACC_STATIC),
+    // class, field, method, parameter
+    FINAL(Opcodes.ACC_FINAL),
+    // class
+    SUPER(Opcodes.ACC_SUPER),
+    // class
+    INTERFACE(Opcodes.ACC_INTERFACE),
+    // class, method
+    ABSTRACT(Opcodes.ACC_ABSTRACT),
+    // class, field, method, parameter
+    SYNTHETIC(Opcodes.ACC_SYNTHETIC),
+    // class
+    ANNOTATION(Opcodes.ACC_ANNOTATION),
+    // class(?) field inner
+    ENUM(Opcodes.ACC_ENUM);
+
+    final int bit;
+
+    /**
+     * Transforms given modifiers to an equal enum-set
+     *
+     * @param modifiers to transform
+     * @return enum-set representation of given type's modifiers
+     */
+    public static Set<Modifiers> toSet(int modifiers) {
+      return HxModifier.toSet(Modifiers.class, modifiers);
+    }
+
+    Modifiers(int bit) {
+      this.bit = bit;
+    }
+
+    @Override
+    public int toBit() {
+      return bit;
+    }
+  }
 
   /**
    * Initializes given type parts
@@ -97,7 +192,7 @@ public interface HxType
    * @return package of this type
    */
   default String getPackageName() {
-    if(isArray() || isPrimitive()) {
+    if (isArray() || isPrimitive()) {
       return null;
     }
     int index = getName().lastIndexOf(HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR);
@@ -110,6 +205,12 @@ public interface HxType
   Optional<HxType> getSuperType();
 
   /**
+   * @param superType
+   * @return
+   */
+  HxType setSuperType(HxType superType);
+
+  /**
    * Shortcut for: <code>this.setSuperType(getHaxxor().reference(superType))</code>
    *
    * @param superType to reference as super type
@@ -117,21 +218,28 @@ public interface HxType
    */
   default HxType setSuperType(String superType) {
     return setSuperType(getHaxxor().reference(superType));
-}
+  }
 
   /**
-   * @param superType
+   * Shortcut for: <code>this.setSuperType(getHaxxor().reference(superClass.getName()))</code>
+   *
+   * @param superClass to reference as super type
    * @return
    */
-  HxType setSuperType(HxType superType);
+  default HxType setSuperType(Class<?> superClass) {
+    if (superClass.isPrimitive() || superClass.isArray() || superClass.isInterface()) {
+      throw new IllegalArgumentException("Class can't be used as superclass: " + superClass);
+    }
+    return setSuperType(getHaxxor().reference(superClass.getName()));
+  }
 
   /**
    * @param superType
    * @return
    */
   default boolean hasSuperType(String superType) {
-    return getSuperType().isPresent()?
-            getSuperType().get().hasName(superType) :
+    return getSuperType().isPresent() ?
+           getSuperType().get().hasName(superType) :
            superType == null;
   }
 
@@ -140,7 +248,20 @@ public interface HxType
    * @return
    */
   default boolean hasSuperType(HxType superType) {
-    return Objects.equals(superType, getSuperType());
+    return Objects.equals(getSuperType(), superType);
+  }
+
+  /**
+   * @param superClass
+   * @return
+   */
+  default boolean hasSuperType(Class<?> superClass) {
+    return
+      !superClass.isPrimitive() &&
+      !superClass.isInterface() &&
+      !superClass.isArray() &&
+      !superClass.isEnum() &&
+      hasSuperType(superClass.getName());
   }
 
   /**
@@ -159,24 +280,24 @@ public interface HxType
    * @param interfaces
    * @return
    */
-  HxType setInterfaces(List<HxType> interfaces);
-
-  /**
-   * @param interfaces
-   * @return
-   */
   default HxType setInterfaces(String... interfaces) {
     return setInterfaces(getHaxxor().referencesAsList(interfaces));
   }
 
   /**
-   * @param interfaceName
+   * @param interfaces
    * @return
    */
-  default boolean hasInterface(String interfaceName) {
+  HxType setInterfaces(List<HxType> interfaces);
+
+  /**
+   * @param interfaceName to look for
+   * @return
+   */
+  default boolean hasInterface(final String interfaceName) {
     Objects.requireNonNull(interfaceName, "Interface name can't be null.");
-    for(HxType itf : getInterfaces()) {
-      if(interfaceName.equals(itf.getName())) {
+    for (HxType itf : getInterfaces()) {
+      if (itf.hasName(interfaceName)) {
         return true;
       }
     }
@@ -184,12 +305,21 @@ public interface HxType
   }
 
   /**
-   * @param hxInterface
+   * @param hxInterface to look for
    * @return
    */
-  default boolean hasInterface(HxType hxInterface) {
+  default boolean hasInterface(final HxType hxInterface) {
     Objects.requireNonNull(hxInterface, "Interface can't be null.");
     return hasInterface(hxInterface.getName());
+  }
+
+  /**
+   * @param itf to look for
+   * @return
+   */
+  default boolean hasInterface(final Class<?> itf) {
+    Objects.requireNonNull(itf, "Interface can't be null.");
+    return itf.isInterface() && hasInterface(itf.getName());
   }
 
   /**
@@ -203,11 +333,10 @@ public interface HxType
   }
 
   /**
-   *
    * @param innerType
    * @return
    */
-  default HxType addInnerType(HxType innerType) {
+  default HxType addInnerType(final HxType innerType) {
     initialize(Part.INNER_TYPES).getInnerTypes().add(innerType);
     return this;
   }
@@ -221,15 +350,15 @@ public interface HxType
    * @param declaredTypes
    * @return
    */
-  default HxType setInnerTypes(HxType ... declaredTypes) {
-    return setInnerTypes(Arrays.asList(declaredTypes));
-  }
+  HxType setInnerTypes(List<HxType> declaredTypes);
 
   /**
    * @param declaredTypes
    * @return
    */
-  HxType setInnerTypes(List<HxType> declaredTypes);
+  default HxType setInnerTypes(HxType... declaredTypes) {
+    return setInnerTypes(Arrays.asList(declaredTypes));
+  }
 
   /**
    * @return
@@ -247,12 +376,12 @@ public interface HxType
    * otherwise zero-based position of the given field in the {@link #getFields()} list
    */
   default int indexOf(HxField field) {
-    if(!equals(field.getDeclaringMember())) {
+    if (!equals(field.getDeclaringMember())) {
       return -1;
     }
     int idx = 0;
-    for(HxField hxField : getFields()) {
-      if(field == hxField || field.equals(hxField)) {
+    for (HxField hxField : getFields()) {
+      if (field == hxField || field.equals(hxField)) {
         return idx;
       }
       idx++;
@@ -266,18 +395,19 @@ public interface HxType
    * otherwise zero-based position of the given method in the {@link #getMethods()} list
    */
   default int indexOf(HxMethod method) {
-    if(!equals(method.getDeclaringMember())) {
+    if (!equals(method.getDeclaringMember())) {
       return -1;
     }
     int idx = 0;
-    for(HxMethod hxMethod : getMethods()) {
-      if(method == hxMethod || method.equals(hxMethod)) {
+    for (HxMethod hxMethod : getMethods()) {
+      if (method == hxMethod || method.equals(hxMethod)) {
         return idx;
       }
       idx++;
     }
     return -1;
   }
+
   /**
    * @return
    */
@@ -341,16 +471,16 @@ public interface HxType
   List<HxMethod> getMethods();
 
   /**
-   * @param name
-   * @return
-   */
-  Collection<HxMethod> getMethods(String name);
-
-  /**
    * @param methods
    * @return
    */
   HxType setMethods(List<HxMethod> methods);
+
+  /**
+   * @param name
+   * @return
+   */
+  Collection<HxMethod> getMethods(String name);
 
   /**
    * @param method
@@ -367,7 +497,7 @@ public interface HxType
   }
 
   /**
-   * @param index where to insert given method
+   * @param index  where to insert given method
    * @param method to add
    * @return
    */
@@ -382,7 +512,7 @@ public interface HxType
   Optional<HxMethod> findMethod(String name);
 
   /**
-   * @param name is name of the wanted method
+   * @param name       is name of the wanted method
    * @param descriptor is signature description of the wanted method
    * @return {@link Optional#empty() empty} or a method with given name and signature
    */
@@ -417,8 +547,8 @@ public interface HxType
    * @return {@link Optional#empty() empty} or a method with given name and signature
    */
   default Optional<HxMethod> findMethod(String returnType,
-                                String name,
-                                String... parameters) {
+                                        String name,
+                                        String... parameters) {
     return findMethod(getHaxxor().reference(returnType),
                       name,
                       getHaxxor().referencesAsArray(parameters));
@@ -431,8 +561,8 @@ public interface HxType
    * @return
    */
   default Optional<HxMethod> findMethod(HxType returnType,
-                                String name,
-                                HxType... parameters) {
+                                        String name,
+                                        HxType... parameters) {
     return findMethod(returnType,
                       name,
                       Arrays.asList(parameters));
@@ -445,8 +575,8 @@ public interface HxType
    * @return
    */
   default Optional<HxMethod> findMethod(HxType returnType,
-                                String name,
-                                List<HxType> parameters) {
+                                        String name,
+                                        List<HxType> parameters) {
     return findMethod(Optional.of(returnType), name, parameters);
   }
 
@@ -466,7 +596,7 @@ public interface HxType
    * @return
    */
   default Optional<HxMethod> findMethod(String name,
-                                List<HxType> parameters) {
+                                        List<HxType> parameters) {
     return findMethod(Optional.empty(), name, parameters);
   }
 
@@ -476,7 +606,7 @@ public interface HxType
    * @return
    */
   default Optional<HxMethod> findMethod(String name,
-                                HxType ... parameters) {
+                                        HxType... parameters) {
     return findMethod(name, Arrays.asList(parameters));
   }
 
@@ -486,7 +616,7 @@ public interface HxType
    * @return
    */
   default Optional<HxMethod> findMethod(String name,
-                                String ... parameters) {
+                                        String... parameters) {
     return findMethod(name, getHaxxor().referencesAsArray(parameters));
   }
 
@@ -498,7 +628,7 @@ public interface HxType
    */
   default Optional<HxMethod> findMethod(Class<?> returnType,
                                         String name,
-                                        Class<?> ... parameters) {
+                                        Class<?>... parameters) {
     return findMethod(getHaxxor().reference(returnType.getName()),
                       name,
                       getHaxxor().referencesAsArray(toClassNames(parameters)));
@@ -510,7 +640,7 @@ public interface HxType
    * @return
    */
   default Optional<HxMethod> findMethod(String name,
-                                        Class<?> ... parameters) {
+                                        Class<?>... parameters) {
     return findMethod(name, getHaxxor().referencesAsArray(toClassNames(parameters)));
   }
 
@@ -549,8 +679,8 @@ public interface HxType
    * @return
    */
   default boolean hasMethod(HxType returnType,
-                    String name,
-                    HxType... parameters) {
+                            String name,
+                            HxType... parameters) {
     return findMethod(returnType, name, parameters).isPresent();
   }
 
@@ -561,8 +691,8 @@ public interface HxType
    * @return
    */
   default boolean hasMethod(HxType returnType,
-                    String name,
-                    List<HxType> parameters) {
+                            String name,
+                            List<HxType> parameters) {
     return findMethod(returnType, name, parameters).isPresent();
   }
 
@@ -639,9 +769,10 @@ public interface HxType
    * @param constructor
    * @return
    */
-  default HxType addConstructorAt(int index, HxMethod constructor) {
-    if(!HxConstants.CONSTRUCTOR_METHOD_NAME.equals(constructor)) {
-      throw new IllegalArgumentException("Not a constructor: "+constructor);
+  default HxType addConstructorAt(int index,
+                                  HxMethod constructor) {
+    if (!HxConstants.CONSTRUCTOR_METHOD_NAME.equals(constructor.getName())) {
+      throw new IllegalArgumentException("Not a constructor: " + constructor);
     }
     return addMethodAt(getMethods().size(), constructor);
   }
@@ -651,8 +782,8 @@ public interface HxType
    * @return
    */
   default HxType removeConstructor(HxMethod constructor) {
-    if(!HxConstants.CONSTRUCTOR_METHOD_NAME.equals(constructor)) {
-      throw new IllegalArgumentException("Not a constructor: "+constructor);
+    if (!HxConstants.CONSTRUCTOR_METHOD_NAME.equals(constructor.getName())) {
+      throw new IllegalArgumentException("Not a constructor: " + constructor);
     }
     return removeMethod(constructor);
   }
@@ -721,7 +852,7 @@ public interface HxType
    * @param parameters
    * @return
    */
-  default boolean hasConstructor(Class<?> ... parameters) {
+  default boolean hasConstructor(Class<?>... parameters) {
     return findConstructor(parameters).isPresent();
   }
 
@@ -848,7 +979,7 @@ public interface HxType
    * @return
    */
   Collection<HxMethod> constructors(Predicate<HxMethod> predicate,
-                                         boolean recursive);
+                                    boolean recursive);
 
   /**
    * @return
@@ -1017,8 +1148,8 @@ public interface HxType
    */
   default boolean isInstantiable() {
     return !isPrimitive() &&
-      !hasModifiers(Modifiers.ABSTRACT) &&
-      !hasModifiers(Modifiers.INTERFACE);
+           !hasModifiers(Modifiers.ABSTRACT) &&
+           !hasModifiers(Modifiers.INTERFACE);
   }
 
   /**
@@ -1040,12 +1171,12 @@ public interface HxType
    * @return internal classname of this type
    */
   default String toInternalName() {
-    if(isPrimitive() || isArray()) {
+    if (isPrimitive() || isArray()) {
       return toDescriptor();
     }
     return getName().replace(
-        HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR,
-        HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR
+      HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR,
+      HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR
     );
   }
 
@@ -1068,9 +1199,9 @@ public interface HxType
       }
       builder.append('L');
       final String name = getName();
-      for(int i = 0, len = name.length(); i<len; i++) {
+      for (int i = 0, len = name.length(); i < len; i++) {
         char c = name.charAt(i);
-        if(c == HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR) {
+        if (c == HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR) {
           c = HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR;
         }
         builder.append(c);
@@ -1093,95 +1224,4 @@ public interface HxType
    * @return the actual state of this type as loadable bytecode
    */
   byte[] toByteCode();
-
-  /**
-   */
-  enum Version {
-    V1_5(Opcodes.V1_5),
-    V1_6(Opcodes.V1_6),
-    V1_7(Opcodes.V1_7),
-    V1_8(Opcodes.V1_8);
-
-    final int code;
-
-    Version(int code) {
-      this.code = code;
-    }
-
-    public static Version of(int ver) {
-      switch (ver) {
-        case Opcodes.V1_5: return V1_5;
-        case Opcodes.V1_6: return V1_6;
-        case Opcodes.V1_7: return V1_7;
-        case Opcodes.V1_8: return V1_8;
-      }
-      throw new IllegalArgumentException("Unsupported version: " + ver);
-    }
-
-    public int getCode() {
-      return code;
-    }
-  }
-
-  /**
-   *
-   */
-  enum Part {
-    DEFAULTS,
-    ANNOTATIONS,
-    INTERFACES,
-    FIELDS,
-    METHODS,
-    INNER_TYPES
-  }
-
-  /**
-   *
-   */
-  enum Modifiers
-      implements HxModifier {
-    // class, field, method
-    PUBLIC(Opcodes.ACC_PUBLIC),
-    // class, field, method
-    PRIVATE(Opcodes.ACC_PRIVATE),
-    // class, field, method
-    PROTECTED(Opcodes.ACC_PROTECTED),
-    // class, field, method
-    STATIC(Opcodes.ACC_STATIC),
-    // class, field, method, parameter
-    FINAL(Opcodes.ACC_FINAL),
-    // class
-    SUPER(Opcodes.ACC_SUPER),
-    // class
-    INTERFACE(Opcodes.ACC_INTERFACE),
-    // class, method
-    ABSTRACT(Opcodes.ACC_ABSTRACT),
-    // class, field, method, parameter
-    SYNTHETIC(Opcodes.ACC_SYNTHETIC),
-    // class
-    ANNOTATION(Opcodes.ACC_ANNOTATION),
-    // class(?) field inner
-    ENUM(Opcodes.ACC_ENUM);
-
-    final int bit;
-
-    Modifiers(int bit) {
-      this.bit = bit;
-    }
-
-    /**
-     * Transforms given modifiers to an equal enum-set
-     *
-     * @param modifiers to transform
-     * @return enum-set representation of given type's modifiers
-     */
-    public static Set<Modifiers> toSet(int modifiers) {
-      return HxModifier.toSet(Modifiers.class, modifiers);
-    }
-
-    @Override
-    public int toBit() {
-      return bit;
-    }
-  }
 }

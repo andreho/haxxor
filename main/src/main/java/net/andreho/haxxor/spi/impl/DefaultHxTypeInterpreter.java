@@ -281,7 +281,7 @@ public class DefaultHxTypeInterpreter
     );
 
     visitParameters(method, mv);
-    if(method.getDeclaringMember().isAnnotation()) {
+    if(method.getDeclaringType().isAnnotation()) {
       visitAnnotationDefault(method, mv);
     }
     visitAnnotations(method, mv::visitAnnotation);
@@ -304,8 +304,9 @@ public class DefaultHxTypeInterpreter
 
   private void visitParameter(final MethodVisitor mv,
                               final HxParameter parameter) {
-    String name = parameter.isNamePresent() ? parameter.getName() : null;
-    mv.visitParameter(name, parameter.getModifiers());
+    if(parameter.isNamePresent()) {
+      mv.visitParameter(parameter.getName(), parameter.getModifiers());
+    }
   }
 
   protected void visitAnnotationDefault(final HxMethod method,
@@ -380,7 +381,6 @@ public class DefaultHxTypeInterpreter
     av.visitEnd();
   }
 
-
   protected void visitParameterAnnotations(final HxParameter parameter,
                                            final int index,
                                            final MethodVisitor mv) {
@@ -397,10 +397,7 @@ public class DefaultHxTypeInterpreter
 
   protected void visitTypeAnnotations(final HxMethod method,
                                       final MethodVisitor mv) {
-
-
     if(!method.isGeneric()) {
-      //TODO: this is still not a filter condition ...
       // because of 'throws' and possible annotations on checked exceptions
     }
 

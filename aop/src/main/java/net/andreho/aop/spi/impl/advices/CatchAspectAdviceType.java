@@ -89,7 +89,7 @@ public class CatchAspectAdviceType
 
       steps.add(
         new CatchAspectAdvice(
-          index, profileName, this, affectedMethodsMatcher, catchAdvice, exceptionType.getName()
+          index, profileName, this, affectedMethodsMatcher, catchAdvice, exceptionType
         )
       );
     }

@@ -8,6 +8,7 @@ import net.andreho.aop.spi.AspectTryCatch;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxParameter;
+import net.andreho.haxxor.spec.api.HxType;
 
 /**
  * <br/>Created by a.hofmann on 21.06.2017 at 00:49.
@@ -29,12 +30,12 @@ public final class CaughtParameterInjector
                                            final HxParameter parameter,
                                            final HxInstruction anchor) {
 
-    final String exception =
+    final HxType exception =
       interceptor.getAnnotation(Catch.class).get()
-                 .getAttribute("exception", String.class);
+                 .getAttribute("exception", HxType.class);
 
     final AspectTryCatch tryCatchBlock =
-      context.getAspectMethodContext().getTryCatchBlock(exception);
+      context.getAspectMethodContext().getTryCatchBlock(exception.getName());
 
     anchor.asAnchoredStream()
           .ALOAD(tryCatchBlock.getHxLocalVariable().getIndex());

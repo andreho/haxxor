@@ -24,7 +24,7 @@ public abstract class AbstractResource<T>
   private final ResourceType resourceType;
 
   protected volatile Object attachment;
-  protected volatile Optional<Resource> next;
+  protected volatile Resource next;
   protected volatile Reference<byte[]> cachedReference;
 
   public AbstractResource(final URL source,
@@ -37,12 +37,13 @@ public abstract class AbstractResource<T>
 
   @Override
   public Optional<Resource> getNext() {
-    return this.next;
+    final Resource next = this.next;
+    return next == null? Optional.empty() : Optional.of(next);
   }
 
   @Override
   public void setNext(final Resource resource) {
-    this.next = Optional.ofNullable(resource);
+    this.next = resource;
   }
 
   @Override
@@ -63,7 +64,8 @@ public abstract class AbstractResource<T>
 
   @Override
   public <V> Optional<V> getAttachment() {
-    return Optional.ofNullable((V) attachment);
+    final Object attachment = this.attachment;
+    return attachment == null? Optional.empty() : Optional.of((V) attachment);
   }
 
   @Override
@@ -118,13 +120,12 @@ public abstract class AbstractResource<T>
 
   @Override
   public Iterator<Resource> iterator() {
-    final Resource resource = this;
     return new Iterator<Resource>() {
-      Optional<Resource> current = Optional.of(resource);
+      private Resource current = AbstractResource.this;
 
       @Override
       public boolean hasNext() {
-        return this.current.isPresent();
+        return this.current != null;
       }
 
       @Override
@@ -132,8 +133,8 @@ public abstract class AbstractResource<T>
         if (!hasNext()) {
           throw new NoSuchElementException();
         }
-        Resource current = this.current.get();
-        this.current = current.getNext();
+        Resource current = this.current;
+        this.current = current.getNext().orElse(null);
         return current;
       }
     };

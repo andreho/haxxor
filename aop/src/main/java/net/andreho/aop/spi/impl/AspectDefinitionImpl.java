@@ -234,7 +234,7 @@ public class AspectDefinitionImpl implements AspectDefinition {
     if(type.isAnnotationPresent(Constants.ASPECT_ANNOTATION_TYPE)) {
       return false;
     }
-    if(!getTypeMatcher().match(type)) {
+    if(!getTypeMatcher().matches(type)) {
       return false;
     }
 

@@ -13,7 +13,7 @@ public class StringMatcher
   }
 
   @Override
-  public boolean match(final String s) {
+  public boolean matches(final String s) {
     return isAny() || value.equals(s);
   }
 

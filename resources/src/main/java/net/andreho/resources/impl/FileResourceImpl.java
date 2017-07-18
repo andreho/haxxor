@@ -42,7 +42,7 @@ public class FileResourceImpl
 
   @Override
   public boolean hasLength() {
-    return false;
+    return true;
   }
 
   @Override

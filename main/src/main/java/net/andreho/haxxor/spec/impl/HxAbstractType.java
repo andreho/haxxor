@@ -218,18 +218,6 @@ public abstract class HxAbstractType
   }
 
   @Override
-  public HxType removeConstructor(final HxMethod constructor) {
-    //NO OP
-    return this;
-  }
-
-  @Override
-  public HxType addConstructorAt(int index, HxMethod constructor) {
-    //NO OP
-    return this;
-  }
-
-  @Override
   public Optional<HxMethod> findConstructorDirectly(final String descriptor) {
     for (HxMethod constructor : getConstructors()) {
       if (constructor.hasDescriptor(descriptor)) {

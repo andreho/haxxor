@@ -45,6 +45,16 @@ public interface AspectMethodContext {
   /**
    * @return
    */
+  LABEL getCatchInjection();
+
+  /**
+   * @param catchInjection
+   */
+  void setCatchInjection(LABEL catchInjection);
+
+  /**
+   * @return
+   */
   LABEL getEnd();
 
   /**
@@ -129,7 +139,7 @@ public interface AspectMethodContext {
   void createTryCatchBlock(AspectTryCatch tryCatch);
 
   /**
-   * @param exceptionType
+   * @param exceptionType is the Java classname of an exception type
    */
   AspectTryCatch getTryCatchBlock(String exceptionType);
 

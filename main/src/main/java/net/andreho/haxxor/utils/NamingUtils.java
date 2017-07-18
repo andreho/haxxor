@@ -185,6 +185,10 @@ public abstract class NamingUtils {
     return index < 0 || index >= length;
   }
 
+  public static String toInternalClassname(Class<?> cls) {
+    return toInternalClassname(cls.getName());
+  }
+
   /**
    * @param classname
    * @return
@@ -195,6 +199,61 @@ public abstract class NamingUtils {
       return classname;
     }
     return classname.replace(JAVA_PACKAGE_SEPARATOR_CHAR, INTERNAL_PACKAGE_SEPARATOR_CHAR);
+  }
+
+  /**
+   * @param returnType
+   * @param signature
+   * @return
+   */
+  public static String toDescriptor(Class<?> returnType, Class<?> ... signature) {
+    final StringBuilder builder = new StringBuilder().append('(');
+    for(Class<?> cls : signature) {
+      toDescriptor(cls, builder);
+    }
+    return toDescriptor(returnType, builder.append(')')).toString();
+  }
+
+  private static StringBuilder toDescriptor(Class<?> cls, StringBuilder builder) {
+    if(cls.isPrimitive()) {
+      if(cls == Integer.TYPE) {
+        return builder.append("I");
+      }
+      if(cls == Double.TYPE) {
+        return builder.append("D");
+      }
+      if(cls == Long.TYPE) {
+        return builder.append("J");
+      }
+      if(cls == Float.TYPE) {
+        return builder.append("F");
+      }
+      if(cls == Boolean.TYPE) {
+        return builder.append("Z");
+      }
+      if(cls == Byte.TYPE) {
+        return builder.append("B");
+      }
+      if(cls == Character.TYPE) {
+        return builder.append("C");
+      }
+      if(cls == Short.TYPE) {
+        return builder.append("S");
+      }
+      return builder.append("V");
+    } else if (cls.isArray()) {
+      return toDescriptor(cls.getComponentType(), builder.append('['));
+    }
+    final String classname = cls.getName();
+    builder.append('L');
+    for (int i = 0, len = classname.length(); i < len; i++) {
+      char c = classname.charAt(i);
+      if(c == '.') {
+        c = '/';
+      }
+      builder.append(c);
+    }
+    return builder.append(';');
   }
 
   /**

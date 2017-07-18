@@ -57,8 +57,8 @@ public abstract class AbstractAspectAdvice<T>
   }
 
   @Override
-  public boolean match(final T element) {
-    return getMatcher().match(element);
+  public boolean matches(final T element) {
+    return getMatcher().matches(element);
   }
 
   @Override

@@ -54,7 +54,7 @@ public class NamedMatcher<T extends HxNamed>
   }
 
   @Override
-  public boolean match(final T named) {
+  public boolean matches(final T named) {
     return pattern.matcher(named.getName()).matches();
   }
 

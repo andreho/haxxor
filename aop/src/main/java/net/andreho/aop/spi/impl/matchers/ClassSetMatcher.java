@@ -33,7 +33,7 @@ public class ClassSetMatcher
   }
 
   @Override
-  public boolean match(final HxType type) {
+  public boolean matches(final HxType type) {
     return classSet.contains(type.getName());
   }
 
