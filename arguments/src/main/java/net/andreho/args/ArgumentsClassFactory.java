@@ -2,7 +2,6 @@ package net.andreho.args;
 
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
-import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
@@ -105,13 +104,36 @@ final class ArgumentsClassFactory {
     final HxType type = haxxor.createType(className);
     type.addModifiers(
       HxType.Modifiers.PUBLIC, HxType.Modifiers.SYNTHETIC, HxType.Modifiers.FINAL
-    )
-        .setSuperType(AbstractArguments256.class);
+    ).setSuperType(AbstractArguments256.class);
 
     addConstructor(haxxor, type, layoutString);
     addFields(haxxor, layout, type);
 
     return type.toByteCode();
+  }
+
+  private static void addConstructor(final Haxxor haxxor,
+                                     final HxType type,
+                                     final String layout) {
+    HxMethod constructor = haxxor.createConstructor(String.class)
+                                 .addModifiers(HxMethod.Modifiers.PUBLIC);
+    HxExtendedCodeStream stream = constructor.getBody().getFirst().asStream();
+
+    stream
+      .LABEL()
+      .THIS()
+      .ALOAD(1)
+      .LDC(layout)
+      .LDC(layout.length())
+      .INVOKESPECIAL(
+        toInternalClassname(AbstractArguments256.class),
+        "<init>",
+        toDescriptor(Void.TYPE, String.class, String.class, Integer.TYPE)
+      )
+      .RETURN()
+      .LABEL();
+
+    type.addConstructor(constructor);
   }
 
   private static void addFields(final Haxxor haxxor,
@@ -129,30 +151,6 @@ final class ArgumentsClassFactory {
 
       type.addField(field);
     }
-  }
-
-  private static void addConstructor(final Haxxor haxxor,
-                                     final HxType type,
-                                     final String layout) {
-    HxMethod constructor = haxxor.createConstructor(String.class)
-                                 .addModifiers(HxMethod.Modifiers.PUBLIC);
-    HxExtendedCodeStream stream = constructor.getBody().getFirst().asStream();
-
-    stream
-      .LABEL(new LABEL())
-      .THIS()
-      .ALOAD(1)
-      .LDC(layout)
-      .LDC(layout.length())
-      .INVOKESPECIAL(
-        toInternalClassname(AbstractArguments256.class),
-        "<init>",
-        toDescriptor(Void.TYPE, String.class, String.class, Integer.TYPE)
-      )
-      .RETURN()
-      .LABEL(new LABEL());
-
-    type.addConstructor(constructor);
   }
 
   private static String lpad(final String value,

@@ -13,7 +13,7 @@ import java.nio.file.Path;
  */
 final class DynamicClassPathInstaller {
 
-  private static final String ID = "net_andreho_args";
+  private static final String ID = "net.andreho.args";
   static final Path INSTALLATION_FOLDER = createTempDirectory();
   static final URL INSTALLATION_URL = toUrl(INSTALLATION_FOLDER);
 
@@ -30,7 +30,9 @@ final class DynamicClassPathInstaller {
     try {
       return Files.createTempDirectory(ID);
     } catch (IOException e) {
-      throw new IllegalStateException("Unable to create temporary directory for: 'net.andreho.args'", e);
+      throw new IllegalStateException(
+        "Unable to create temporary directory for dynamic class-path: 'net.andreho.args'", e
+      );
     }
   }
 

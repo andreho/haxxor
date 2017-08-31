@@ -59,6 +59,7 @@ public class CatchAspectAdvice
     final AspectMethodContext methodContext = context.getAspectMethodContext();
 
     AspectTryCatch tryCatch;
+
     if (!methodContext.hasTryCatchBlock(exception.getName())) {
       final LABEL tryBegin = methodContext.getDelegationBegin();
       final LABEL tryEnd = methodContext.getDelegationEnd();

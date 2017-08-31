@@ -33,10 +33,10 @@ public interface Entry {
   Entry merge(Entry other);
 
   /**
-   * @param inputStream
-   * @param first
-   * @param rest
-   * @return
+   * @param inputStream is the content of the element to add
+   * @param first is either the name or first segment in the path of the element to add
+   * @param rest if present, is the rest path, where last element must be the name of element to add
+   * @return <b>true</b> if successful, <b>false</b> otherwise.
    */
   boolean add(InputStream inputStream,
               String first,
@@ -44,10 +44,10 @@ public interface Entry {
   throws IOException;
 
   /**
-   * @param bytes
-   * @param first
-   * @param rest
-   * @return
+   * @param bytes is the byte content of the element to add
+   * @param first is either the name or first segment in the path of the element to add
+   * @param rest if present, is the rest path, where last element must be the name of element to add
+   * @return <b>true</b> if successful, <b>false</b> otherwise.
    */
   boolean add(byte[] bytes,
               String first,

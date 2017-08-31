@@ -48,6 +48,7 @@ public class TempDirEntry
                      final String... rest)
   throws IOException {
     Path resolved = target.resolve(Paths.get(first, rest));
+
     if(Files.exists(resolved)) {
       return false;
     }

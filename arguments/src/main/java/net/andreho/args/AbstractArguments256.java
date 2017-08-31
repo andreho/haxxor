@@ -10,7 +10,7 @@ public abstract class AbstractArguments256
   implements Arguments {
 
   private static final int TYPE_COUNT = 9;
-  public static final int USED_BITS_MASK = 0xFFFF;
+  public static final int BITS_MASK = 0xFFFF;
   public static final int INDEX_MASK = 0xFF;
   public static final int TYPE_SHIFT = 8;
 
@@ -68,7 +68,7 @@ public abstract class AbstractArguments256
 
   @Override
   protected final int info(int idx) {
-    return USED_BITS_MASK & info[idx];
+    return BITS_MASK & info[idx];
   }
 
   @Override

@@ -48,7 +48,7 @@ public interface Constants {
   String RESULT_ATTRIBUTES_NAME =
     "$$_result_";
   String DEFAULT_CAUGHT_EXCEPTION_ATTRIBUTE_NAME_PREFIX =
-    "$$_";
+    "$$_e_";
   String DEFAULT_ASPECT_ATTRIBUTE_NAME_PREFIX =
     "$$_caught_";
   int UNORDERED_ELEMENT_INDEX = 1_000_000;

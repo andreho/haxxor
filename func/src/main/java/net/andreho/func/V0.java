@@ -6,6 +6,7 @@ package net.andreho.func;
 @FunctionalInterface
 public interface V0
   extends VN, Bindable<Object,V0> {
+
   @Override
   default V0 bind(final Object target) {
     return this;

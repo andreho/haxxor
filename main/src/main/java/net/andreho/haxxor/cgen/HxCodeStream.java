@@ -974,6 +974,10 @@ public interface HxCodeStream<Stream extends HxCodeStream<Stream>> {
 
   //----------------------------------------------------------------------------------------------------------------
 
+  default Stream LABEL() {
+    return LABEL(new LABEL());
+  }
+
   Stream LABEL(LABEL label);
 
   Stream TRY_CATCH(LABEL startLabel, LABEL endLabel, LABEL handler, String exceptionTypename);
