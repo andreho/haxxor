@@ -34,13 +34,13 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 19.06.2017 at 00:35.
  */
-public class CatchAspectAdviceType
+public class FinallyAspectAdviceType
   extends AbstractAspectAdviceType {
   private static final AspectAdvice.Target[] TARGETS = {
     AspectAdvice.Target.METHOD, AspectAdvice.Target.CONSTRUCTOR
   };
 
-  public CatchAspectAdviceType(final int order) {
+  public FinallyAspectAdviceType(final int order) {
     super(
       order,
       AspectAdviceParameterInjector.with(
@@ -72,24 +72,24 @@ public class CatchAspectAdviceType
 
   @Override
   public Collection<AspectAdvice<?>> buildAdvices(final AspectDefinition def, final HxType type) {
-    final Collection<HxMethod> catchAdvices = locateAdvicesWith(type, Constants.CATCH_ANNOTATION_TYPE);
+    final Collection<HxMethod> finallyAdvices = locateAdvicesWith(type, Constants.FINALLY_ANNOTATION_TYPE);
 
-    if (catchAdvices.isEmpty()) {
+    if (finallyAdvices.isEmpty()) {
       return Collections.emptyList();
     }
 
     final List<AspectAdvice<?>> steps = new ArrayList<>();
 
-    for (HxMethod catchAdvice : catchAdvices) {
-      final int index = getIndex(catchAdvice);
-      final HxAnnotation catchAnnotation = catchAdvice.getAnnotation(Constants.CATCH_ANNOTATION_TYPE).get();
-      final String profileName = fetchProfileName(catchAnnotation);
-      final HxType exceptionType = catchAnnotation.getAttribute("exception", (HxType) null);
+    for (HxMethod finallyAdvice : finallyAdvices) {
+      final int index = getIndex(finallyAdvice);
+      final HxAnnotation finallyAnnotation = finallyAdvice.getAnnotation(Constants.FINALLY_ANNOTATION_TYPE).get();
+      final String profileName = fetchProfileName(finallyAnnotation);
+      final HxType exceptionType = null; //finallyAnnotation.getAttribute("exception", (HxType) null);
       final ElementMatcher<HxMethod> affectedMethodsMatcher = obtainMethodsMatcher(def, profileName);
 
       steps.add(
-        new CatchAspectAdvice(
-          index, profileName, this, affectedMethodsMatcher, catchAdvice, exceptionType
+        new FinallyAspectAdvice(
+          index, profileName, this, affectedMethodsMatcher, finallyAdvice
         )
       );
     }

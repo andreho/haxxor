@@ -27,6 +27,7 @@ public @interface Modify {
   @Retention(RetentionPolicy.RUNTIME)
   @Order(StandardOrder.MODIFY_TYPE)
   @interface Type {
+
     /**
      * @return an unique name of a globally available profile
      * @see Profile

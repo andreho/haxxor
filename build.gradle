@@ -41,7 +41,7 @@ allprojects {
     // Workaround for:
     // java.lang.NoSuchMethodError:
     // org.junit.platform.commons.util.ReflectionUtils.getDefaultClassLoader()Ljava/lang/ClassLoader;
-    testCompile("org.junit.platform:junit-platform-launcher:$junitVersion")
+    testCompile("org.junit.platform:junit-platform-launcher:$junitPlatformLauncherVersion")
 
     testCompile "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testCompile "org.junit.jupiter:junit-jupiter-engine:$junitVersion"

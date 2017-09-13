@@ -4,6 +4,7 @@ import net.andreho.aop.api.After;
 import net.andreho.aop.api.Aspect;
 import net.andreho.aop.api.Before;
 import net.andreho.aop.api.Catch;
+import net.andreho.aop.api.Finally;
 import net.andreho.aop.api.Modify;
 import net.andreho.aop.api.Order;
 import net.andreho.aop.api.injectable.Caught;
@@ -36,6 +37,7 @@ public interface Constants {
   String BEFORE_ANNOTATION_TYPE = Before.class.getName();
   String AFTER_ANNOTATION_TYPE = After.class.getName();
   String CATCH_ANNOTATION_TYPE = Catch.class.getName();
+  String FINALLY_ANNOTATION_TYPE = Finally.class.getName();
   String MODIFY_TYPE_ANNOTATION_TYPE = Modify.Type.class.getName();
   String MODIFY_METHOD_ANNOTATION_TYPE = Modify.Method.class.getName();
   String MODIFY_FIELD_ANNOTATION_TYPE = Modify.Field.class.getName();
