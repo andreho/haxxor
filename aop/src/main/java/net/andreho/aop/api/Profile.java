@@ -1,7 +1,6 @@
 package net.andreho.aop.api;
 
 import net.andreho.aop.api.spec.Classes;
-import net.andreho.aop.api.spec.Fields;
 import net.andreho.aop.api.spec.Methods;
 
 import java.lang.annotation.ElementType;
@@ -42,8 +41,8 @@ public @interface Profile {
    * @see After
    * @see Around
    * @see Finally
-   * @see Field.Get
-   * @see Field.Set
+   * @see Access.Get
+   * @see Access.Set
    */
   Methods[] methods() default {};
 
@@ -52,8 +51,8 @@ public @interface Profile {
    *
    * @apiNote elements are bound via an OR (disjunction);
    * empty array means any field will be selected
-   * @see Field.Get
-   * @see Field.Set
+   * @see Access.Get
+   * @see Access.Set
    */
-  Fields[] fields() default {};
+  net.andreho.aop.api.spec.Fields[] fields() default {};
 }

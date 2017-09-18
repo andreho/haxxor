@@ -55,7 +55,7 @@ public abstract class Helpers {
   };
 
   public static String buildKeyFor(HxMethod method) {
-    return method.isConstructor()?
+    return method.isConstructor() ?
            method.toDescriptor() :
            method.toDescriptor(new StringBuilder(method.getName())).toString();
   }
@@ -95,6 +95,18 @@ public abstract class Helpers {
    */
   public static Field getFieldOf(Class<?> cls,
                                  String name) {
+    return CACHED_FIELDS.get(cls).get(name);
+  }
+
+  /**
+   * @param cls
+   * @param name
+   * @param type
+   * @return
+   */
+  public static Field getFieldOf(Class<?> cls,
+                                 String name,
+                                 String type) {
     return CACHED_FIELDS.get(cls).get(name);
   }
 
