@@ -9,8 +9,9 @@ import net.andreho.haxxor.spec.api.HxType;
 public interface HxTypeVerifier {
 
   /**
-   * @param type
-   * @return
+   * @param type to verify
+   * @return a result
+   * @see HxVerificationResult
    */
   HxVerificationResult verify(HxType type);
 }

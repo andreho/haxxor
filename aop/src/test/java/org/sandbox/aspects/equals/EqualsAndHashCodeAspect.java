@@ -43,11 +43,11 @@ public class EqualsAndHashCodeAspect {
 
       final Haxxor haxxor = type.getHaxxor();
       final Collection<HxField> fields =
-        type.fields(field -> field.isAnnotationPresent(EqualityAttribute.class));
+        type.fields(field -> !field.isStatic() &&
+                             field.isAnnotationPresent(EqualityAttribute.class));
 
       createEqualsMethod(type, haxxor, fields);
       createHashCodeMethod(type, haxxor, fields);
-
       return true;
     }
     return false;
@@ -78,7 +78,6 @@ public class EqualsAndHashCodeAspect {
             .INVOKESPECIAL(equalsMethods.iterator().next())
             .IRETURN();
     } else {
-
       LABEL isNotTheSameInstance = new LABEL();
       stream
         .THIS()

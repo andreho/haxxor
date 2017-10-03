@@ -24,7 +24,7 @@ public enum MethodsType
   ALL() {
     @Override
     public boolean matches(final HxMethod element) {
-      return !element.isStaticClassInitializer();
+      return !element.isClassInitializer();
     }
   },
   /**
@@ -33,7 +33,7 @@ public enum MethodsType
   METHODS() {
     @Override
     public boolean matches(final HxMethod element) {
-      return !element.isStaticClassInitializer() &&
+      return !element.isClassInitializer() &&
              !element.isConstructor();
     }
   },

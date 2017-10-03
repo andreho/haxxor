@@ -11,9 +11,11 @@ import java.util.List;
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
 public class PUTFIELD
-    extends AbstractFieldInstruction {
+  extends AbstractFieldInstruction {
 
-  public PUTFIELD(String owner, String name, String desc) {
+  public PUTFIELD(String owner,
+                  String name,
+                  String desc) {
     super(Opcodes.PUTFIELD, owner, name, desc);
   }
 
@@ -25,5 +27,12 @@ public class PUTFIELD
   @Override
   public List<Object> getStackPushList(final HxComputingContext context) {
     return NO_STACK_PUSH;
+  }
+
+  @Override
+  public PUTFIELD clone(final String owner,
+                        final String name,
+                        final String desc) {
+    return new PUTFIELD(owner, name, desc);
   }
 }

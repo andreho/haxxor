@@ -6,11 +6,13 @@ import net.andreho.aop.api.Catch;
 import net.andreho.aop.api.Finally;
 import net.andreho.aop.api.Modify;
 import net.andreho.aop.api.Order;
+import net.andreho.aop.api.mixin.Mixin;
 import net.andreho.aop.spi.impl.advices.AfterAspectAdviceType;
 import net.andreho.aop.spi.impl.advices.BeforeAspectAdviceType;
 import net.andreho.aop.spi.impl.advices.CatchAspectAdviceType;
 import net.andreho.aop.spi.impl.advices.FinallyAspectAdviceType;
-import net.andreho.aop.spi.impl.advices.ModifyTypeAspectAdviceType;
+import net.andreho.aop.spi.impl.mixin.MixinAspectAdviceType;
+import net.andreho.aop.spi.impl.modify.ModifyTypeAspectAdviceType;
 
 import java.lang.annotation.Annotation;
 
@@ -18,6 +20,7 @@ import java.lang.annotation.Annotation;
  * <br/>Created by a.hofmann on 17.06.2017 at 07:33.
  */
 public enum DefaultAspectStepTypes {
+  MIXIN(new MixinAspectAdviceType(fetchOrderFromAnnotation(Mixin.Application.class))),
   MODIFY_TYPE(new ModifyTypeAspectAdviceType(fetchOrderFromAnnotation(Modify.Type.class))),
 //  MODIFY_FIELD,
 //  MODIFY_METHOD,

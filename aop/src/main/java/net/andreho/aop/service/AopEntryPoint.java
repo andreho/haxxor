@@ -113,7 +113,7 @@ public final class AopEntryPoint {
       //DEBUG
 //      Debugger.trace(classfileBuffer, new Textifier(), new PrintWriter(System.out), 0);
       printInfo(className, true, start, used);
-//      Debugger.trace(bytes, new Textifier(), new PrintWriter(System.out), 0);
+//      Debugger.trace(bytes, new ASMifier(), new PrintWriter(System.out), 0);
       return bytes;
     }
     return null;

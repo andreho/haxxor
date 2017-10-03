@@ -390,9 +390,9 @@ public class PrintingCodeStream extends DelegatingCodeStream {
   }
 
   @Override
-  public HxCodeStream TYPE(final String internalType) {
-    super.TYPE(internalType);
-    append(".TYPE(").append("\"").append(internalType).append("\")\n");
+  public HxCodeStream TYPE(final String typeDescriptor) {
+    super.TYPE(typeDescriptor);
+    append(".TYPE(").append("\"").append(typeDescriptor).append("\")\n");
     return this;
   }
 

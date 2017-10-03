@@ -9,6 +9,7 @@ import net.andreho.aop.api.Modify;
 import net.andreho.aop.api.Order;
 import net.andreho.aop.api.injectable.Caught;
 import net.andreho.aop.api.injectable.Result;
+import net.andreho.aop.api.mixin.Mixin;
 import net.andreho.aop.api.spec.Disable;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxEnum;
@@ -38,6 +39,8 @@ public interface Constants {
   String AFTER_ANNOTATION_TYPE = After.class.getName();
   String CATCH_ANNOTATION_TYPE = Catch.class.getName();
   String FINALLY_ANNOTATION_TYPE = Finally.class.getName();
+  String MIXIN_APPLICATION_ANNOTATION = Mixin.Application.class.getName();
+  String MIXIN_APPLICATIONS_ANNOTATION = Mixin.Applications.class.getName();
   String MODIFY_TYPE_ANNOTATION_TYPE = Modify.Type.class.getName();
   String MODIFY_METHOD_ANNOTATION_TYPE = Modify.Method.class.getName();
   String MODIFY_FIELD_ANNOTATION_TYPE = Modify.Field.class.getName();

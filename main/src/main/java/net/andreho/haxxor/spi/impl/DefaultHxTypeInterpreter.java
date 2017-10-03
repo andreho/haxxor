@@ -30,7 +30,6 @@ import java.util.function.BiFunction;
  */
 public class DefaultHxTypeInterpreter
     implements HxTypeInterpreter {
-
   /*
   A visitor to visit a Java class.
   The methods of this class must be called in the following order:
@@ -55,6 +54,7 @@ public class DefaultHxTypeInterpreter
     visitInnerClasses(type, writer);
     visitFields(type, writer);
     HxMethod clinit = visitMethods(type, writer);
+
     if(clinit != null) {
       visitMethod(writer, clinit);
     }
@@ -261,7 +261,7 @@ public class DefaultHxTypeInterpreter
                               final ClassWriter cw) {
     HxMethod clinit = null;
     for (HxMethod method : type.getMethods()) {
-      if("<clinit>".equals(method.getName()) && clinit == null) {
+      if(method.isClassInitializer() && clinit == null) {
         clinit = method;
         continue;
       }

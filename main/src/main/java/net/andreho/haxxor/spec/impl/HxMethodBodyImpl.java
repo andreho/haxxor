@@ -112,7 +112,7 @@ public class HxMethodBodyImpl
 
     otherBody.setMaxLocals(body.getMaxLocals());
     otherBody.setMaxStack(body.getMaxStack());
-    return null;
+    return otherBody;
   }
 
   private static LABEL remap(final Map<Object, LABEL> mapping, final LABEL label) {

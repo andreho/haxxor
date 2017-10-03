@@ -174,8 +174,8 @@ public class InstructionCodeStream
   }
 
   @Override
-  public HxExtendedCodeStream TYPE(final String internalType) {
-    return newCurrent(this.current.append(factory.TYPE(internalType)));
+  public HxExtendedCodeStream TYPE(final String typeDescriptor) {
+    return newCurrent(this.current.append(factory.TYPE(typeDescriptor)));
   }
 
   @Override

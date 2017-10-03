@@ -7,6 +7,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -276,6 +277,30 @@ public interface HxType
    */
   List<HxType> getInterfaces();
 
+  default HxType addInterface(String type) {
+    final HxTypeReference typeReference = getHaxxor().reference(type);
+    return addInterface(typeReference);
+  }
+
+  default HxType addInterface(Class<?> type) {
+    if(!type.isInterface()) {
+      throw new IllegalArgumentException("Not an interface: "+type);
+    }
+    return addInterface(type.getName());
+  }
+
+  default HxType addInterface(HxType type) {
+    if(!type.isInterface()) {
+      throw new IllegalArgumentException("Not an interface: "+type);
+    }
+    final List<HxType> interfaces = initialize(Part.INTERFACES).getInterfaces();
+
+    if(!interfaces.contains(type)) {
+      interfaces.add(type);
+    }
+    return this;
+  }
+
   /**
    * @param interfaces
    * @return
@@ -497,7 +522,7 @@ public interface HxType
   }
 
   /**
-   * @param index  where to insert given method
+   * @param index where to insert given method
    * @param method to add
    * @return
    */
@@ -645,10 +670,25 @@ public interface HxType
   }
 
   /**
+   * @return
+   */
+  default Optional<HxMethod> findClassInitializer() {
+    return findMethodDirectly(HxConstants.CLASS_INITIALIZER_METHOD_NAME, "()V");
+  }
+
+  /**
    * @param method
    * @return
    */
   default boolean hasMethod(Method method) {
+    return findMethod(method).isPresent();
+  }
+
+  /**
+   * @param method
+   * @return
+   */
+  default boolean hasMethod(HxMethod method) {
     return findMethod(method).isPresent();
   }
 
@@ -774,7 +814,7 @@ public interface HxType
     if (!HxConstants.CONSTRUCTOR_METHOD_NAME.equals(constructor.getName())) {
       throw new IllegalArgumentException("Not a constructor: " + constructor);
     }
-    return addMethodAt(getMethods().size(), constructor);
+    return addMethodAt(index, constructor);
   }
 
   /**
@@ -789,10 +829,17 @@ public interface HxType
   }
 
   /**
-   * @param descriptor is signature description of the constructor
+   * @param descriptor is signature description of the constructor to find
    * @return
    */
   Optional<HxMethod> findConstructorDirectly(String descriptor);
+
+  /**
+   * @return
+   */
+  default Optional<HxMethod> findDefaultConstructor() {
+    return findConstructor(Collections.emptyList());
+  }
 
   /**
    * @param constructor
@@ -808,6 +855,13 @@ public interface HxType
    */
   default Optional<HxMethod> findConstructor(HxMethod constructor) {
     return findConstructor(constructor.getParameterTypes());
+  }
+
+  /**
+   * @return a set with constructors that propagate their invocation to a constructor defined by the super type
+   */
+  default Collection<HxMethod> findForwardingConstructors() {
+    return Collections.emptySet();
   }
 
   /**
@@ -883,6 +937,13 @@ public interface HxType
   /**
    * @return
    */
+  default boolean hasDefaultConstructor() {
+    return findDefaultConstructor().isPresent();
+  }
+
+  /**
+   * @return
+   */
   Optional<HxGenericType> getGenericType();
 
   /**
@@ -893,6 +954,20 @@ public interface HxType
    */
   default boolean hasName(String className) {
     return getName().equals(getHaxxor().toNormalizedClassname(className));
+  }
+
+  /**
+   * @param className to check against current classname and all names of parent types
+   * @return <b>true</b> if name of this type is equal to the given one or if anyone of super types has the given name,
+   * <b>false</b> otherwise.
+   */
+  default boolean hasNameViaExtends(String className) {
+    if(!hasName(className)) {
+      final Optional<HxType> superType = getSuperType();
+      return superType.isPresent() &&
+             superType.get().hasNameViaExtends(className);
+    }
+    return true;
   }
 
   /**
@@ -1033,7 +1108,7 @@ public interface HxType
   Optional<HxType> getComponentType();
 
   /**
-   * @return whether this type represents array type or not
+   * @return whether this type represents an array type or not
    */
   default boolean isArray() {
     return getDimension() > 0;
@@ -1161,7 +1236,7 @@ public interface HxType
   }
 
   /**
-   * @param classLoader
+   * @param classLoader where the referenced type prototype must be loaded
    * @return
    */
   Class<?> loadClass(ClassLoader classLoader)

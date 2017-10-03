@@ -75,6 +75,7 @@ public interface HxMethod
     }
   }
 
+  int ALL_PARTS = -1;
   int BODY_PART = 1;
   int ANNOTATIONS_PART = 2;
   int PARAMETERS_ANNOTATIONS_PART = 4;
@@ -84,6 +85,17 @@ public interface HxMethod
    */
   default HxMethod clone() {
     return clone(getName());
+  }
+
+  /**
+   * @param parts to copy
+   * @return
+   * @see #BODY_PART
+   * @see #ANNOTATIONS_PART
+   * @see #PARAMETERS_ANNOTATIONS_PART
+   */
+  default HxMethod clone(int parts) {
+    return clone(getName(), parts);
   }
 
   /**
@@ -199,14 +211,15 @@ public interface HxMethod
    * @return <b>true</b> if this method is a constructor, <b>false</b> otherwise.
    */
   default boolean isConstructor() {
-    return "<init>".equals(getName());
+    return HxConstants.CONSTRUCTOR_METHOD_NAME.equals(getName());
   }
 
   /**
    * @return <b>true</b> if this method is a static class-initializer, <b>false</b> otherwise.
    */
-  default boolean isStaticClassInitializer() {
-    return "<clinit>".equals(getName());
+  default boolean isClassInitializer() {
+    return HxConstants.CLASS_INITIALIZER_METHOD_NAME.equals(getName()) &&
+           hasDescriptor("()V");
   }
 
   /**

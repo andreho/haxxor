@@ -536,6 +536,7 @@ public interface HxInstructionsType {
     private final int pop;
     private final int inverse;
     private volatile Jump inverseJump;
+    private static final Jump[] VALUES = values();
 
     Jump(int opcode,
          final int pop,
@@ -566,7 +567,7 @@ public interface HxInstructionsType {
     public Jump inverse() {
       Jump inverseJump = this.inverseJump;
       if (inverseJump == null) {
-        this.inverseJump = inverseJump = values()[inverse];
+        this.inverseJump = inverseJump = VALUES[inverse];
       }
       return inverseJump;
     }

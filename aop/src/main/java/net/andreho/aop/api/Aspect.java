@@ -48,7 +48,7 @@ public @interface Aspect {
       Marker.class,
       This.class
     }, postProcessingWith = {
-    Attribute.class
+      Attribute.class
   })
   @Retention(RetentionPolicy.RUNTIME)
   @Target({ElementType.METHOD, ElementType.CONSTRUCTOR})

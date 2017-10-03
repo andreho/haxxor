@@ -24,4 +24,9 @@ public class StringLDC
   public List<Object> getStackPushList(final HxComputingContext context) {
     return PUSH_STRING;
   }
+
+  @Override
+  public String toString() {
+    return "LDC (\""+getValue()+"\")";
+  }
 }

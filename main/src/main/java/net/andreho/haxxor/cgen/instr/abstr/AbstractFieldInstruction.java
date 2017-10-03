@@ -51,6 +51,8 @@ public abstract class AbstractFieldInstruction
     return getInstructionType().getPopSize(desc);
   }
 
+  public abstract <INST extends AbstractFieldInstruction> INST clone(String owner, String name, String desc);
+
   @Override
   public String toString() {
     return super.toString() + " " + this.owner + "." + this.name + " " + this.desc;

@@ -86,7 +86,6 @@ public class HxFieldImpl
     return hxType.indexOf(this);
   }
 
-
   @Override
   public String getName() {
     return name;

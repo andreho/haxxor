@@ -11,8 +11,8 @@ import java.util.List;
  */
 public class TypeLDC
     extends LDC<String> {
-  public TypeLDC(final String value) {
-    super(value, ConstantType.STRING);
+  public TypeLDC(final String typeDescriptor) {
+    super(typeDescriptor, ConstantType.TYPE);
   }
 
   @Override
@@ -23,5 +23,10 @@ public class TypeLDC
   @Override
   public List<Object> getStackPushList(final HxComputingContext context) {
     return PUSH_TYPE;
+  }
+
+  @Override
+  public String toString() {
+    return "LDC ("+getValue()+".class)";
   }
 }

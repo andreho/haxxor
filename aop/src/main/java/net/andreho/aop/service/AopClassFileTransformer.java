@@ -40,7 +40,7 @@ public class AopClassFileTransformer
       }
 
       if (typeName != null && isSupportedPackage(typeName)) {
-        System.out.println("Class-loading: "+className);
+        //System.out.println("Class-loading: "+typeName);
         return entry.execute(loader, typeName, classBeingRedefined, protectionDomain, classfileBuffer);
       }
     }

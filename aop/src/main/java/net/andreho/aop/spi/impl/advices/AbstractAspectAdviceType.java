@@ -84,11 +84,15 @@ public abstract class AbstractAspectAdviceType
     return aspectProfile.orElseThrow(IllegalStateException::new).getMethodsMatcher();
   }
 
-  protected String fetchProfileName(final HxAnnotation annotation) {
-    String profileName = annotation.getAttribute("value", "");
+  protected String fetchProfileName(final HxAnnotation annotation, final String attribute) {
+    String profileName = annotation.getAttribute(attribute, "");
     if(profileName == null || profileName.isEmpty()) {
       throw new IllegalStateException("Invalid name of referenced profile: "+profileName);
     }
     return profileName;
+  }
+
+  protected String fetchProfileName(final HxAnnotation annotation) {
+    return fetchProfileName(annotation, "value");
   }
 }

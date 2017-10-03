@@ -16,7 +16,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
 import static net.andreho.haxxor.Utils.concat;
@@ -27,8 +26,6 @@ import static net.andreho.haxxor.Utils.concat;
 public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>>
   extends HxMemberImpl<A>
   implements HxAnnotated<A> {
-
-  private static final Map<String, String> REPEATABLE_CACHE = new ConcurrentHashMap<>();
 
   private static final HxAnnotation[] EMPTY_ANNOTATIONS_ARRAY = new HxAnnotation[0];
   private static final Class<Repeatable> REPEATABLE_ANNOTATION_CLASS = Repeatable.class;
@@ -175,7 +172,7 @@ public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>
   }
 
   @Override
-  public Collection<HxAnnotation> getAnnotationsByType(String type) {
+  public Collection<HxAnnotation> getAnnotationsByType(final String type) {
     HxType repeatableAnnotationType = null;
     HxType repeatableType = null;
 
@@ -200,12 +197,11 @@ public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>
         HxAnnotation[] annotations = optional.get().getAttribute("value");
         return new ArrayList<>(Arrays.asList(annotations));
       }
-    } else {
-      final Optional<HxAnnotation> optional = getAnnotation(type);
+    }
 
-      if (optional.isPresent()) {
-        return new ArrayList<>(Arrays.asList(optional.get()));
-      }
+    final Optional<HxAnnotation> optional = getAnnotation(type);
+    if (optional.isPresent()) {
+      return new ArrayList<>(Arrays.asList(optional.get()));
     }
 
     return Collections.emptySet();

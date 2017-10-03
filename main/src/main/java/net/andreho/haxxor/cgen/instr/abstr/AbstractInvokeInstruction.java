@@ -58,6 +58,8 @@ public abstract class AbstractInvokeInstruction
     return this.isInterface;
   }
 
+  public abstract <INST extends AbstractInvokeInstruction> INST clone(String owner, String name, String desc, boolean isInterface);
+
   @Override
   public String toString() {
     return super.toString() + " (" + this.owner + ", " + this.name + ", " + this.desc + ")";

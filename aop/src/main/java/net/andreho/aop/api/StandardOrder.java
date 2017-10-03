@@ -6,6 +6,7 @@ package net.andreho.aop.api;
 public interface StandardOrder {
   int ASPECT = 10_000_000;
 
+  int MIXIN = 50_000_000;
   int MODIFY_TYPE = 100_000_000;
   int MODIFY_FIELD = 110_000_000;
   int MODIFY_METHOD = 120_000_000;

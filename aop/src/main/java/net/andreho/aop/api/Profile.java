@@ -1,6 +1,7 @@
 package net.andreho.aop.api;
 
 import net.andreho.aop.api.spec.Classes;
+import net.andreho.aop.api.spec.Fields;
 import net.andreho.aop.api.spec.Methods;
 
 import java.lang.annotation.ElementType;
@@ -54,5 +55,5 @@ public @interface Profile {
    * @see Access.Get
    * @see Access.Set
    */
-  net.andreho.aop.api.spec.Fields[] fields() default {};
+  Fields[] fields() default {};
 }

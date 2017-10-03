@@ -66,7 +66,8 @@ public abstract class HxExecutableImpl
 
   @Override
   public boolean hasBody() {
-    return this.body != null && this.body.isAvailable();
+    return this.body != null &&
+           this.body.isAvailable();
   }
 
   @Override
@@ -80,7 +81,7 @@ public abstract class HxExecutableImpl
 
   @Override
   public HxMethod setBody(final HxMethodBody methodBody) {
-    this.body = methodBody;
+    this.body = methodBody.clone(this);
     return this;
   }
 

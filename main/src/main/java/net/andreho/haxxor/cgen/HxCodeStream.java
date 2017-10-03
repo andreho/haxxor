@@ -230,11 +230,11 @@ public interface HxCodeStream<Stream extends HxCodeStream<Stream>> {
    * Pushes a class reference from constant pool on the operand stack.<br/>
    * Code: <code>0x12</code><br/>
    *
-   * @param internalType to push, represents an internal classname (e.g.: <code>java/lang/String</code>)
+   * @param typeDescriptor to push, represents an descriptor form of a classname (e.g.: <code>Ljava/lang/String;</code>)
    * @return this
    * @implNote by specification this command called <b>LDC</b> too.
    */
-  Stream TYPE(String internalType); //18
+  Stream TYPE(String typeDescriptor); //18
 
   /**
    * Pushes an integer value from the slot with given index on the operand stack.<br/>

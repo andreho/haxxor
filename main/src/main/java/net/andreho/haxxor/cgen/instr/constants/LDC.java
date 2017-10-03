@@ -49,8 +49,8 @@ public abstract class LDC<T>
     return new MethodTypeLDC(value);
   }
 
-  public static LDC<String> ofType(String value) {
-    return new TypeLDC(value);
+  public static LDC<String> ofType(String typeDescriptor) {
+    return new TypeLDC(typeDescriptor);
   }
 
   public enum ConstantType {

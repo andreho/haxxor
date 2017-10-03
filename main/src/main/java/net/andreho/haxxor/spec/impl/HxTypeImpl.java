@@ -176,10 +176,18 @@ public class HxTypeImpl
 
   @Override
   public Optional<HxField> findField(String name) {
+//    if(fields.size() <= 10) {
+//      for (HxField field : fields) {
+//        if(Objects.equals(name, field.getName())) {
+//          return Optional.of(field);
+//        }
+//      }
+//    } else {
     HxField hxField = fieldMap.get(name);
     if(hxField != null) {
       return Optional.of(hxField);
     }
+//    }
     return Optional.empty();
   }
 
@@ -251,6 +259,7 @@ public class HxTypeImpl
     }
 
     int index = indexOf(field);
+
     if(index > -1) {
       fields.remove(index);
     } else {
@@ -285,7 +294,7 @@ public class HxTypeImpl
 
   @Override
   public Collection<HxMethod> getMethods(String name) {
-    return methodMap.computeIfAbsent(name, (key) -> new LinkedHashSet<>());
+    return methodMap.computeIfAbsent(name, (key) -> new LinkedHashSet<>(0));
   }
 
   @Override
@@ -458,6 +467,7 @@ public class HxTypeImpl
   public Collection<HxType> interfaces(final Predicate<HxType> predicate, final boolean recursive) {
     final List<HxType> result = new ArrayList<>();
     HxType current = this;
+
     while (current != null) {
       for (HxType itf : current.getInterfaces()) {
         if (predicate.test(itf)) {
@@ -479,6 +489,7 @@ public class HxTypeImpl
   public Collection<HxType> types(final Predicate<HxType> predicate, final boolean recursive) {
     final List<HxType> result = new ArrayList<>();
     HxType current = this;
+
     while (current != null) {
       if (predicate.test(current)) {
         result.add(current);

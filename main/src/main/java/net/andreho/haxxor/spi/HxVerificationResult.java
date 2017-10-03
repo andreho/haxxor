@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
+ * A class to wrap a verification of a class prototype and its bytecode
  * <br/>Created by a.hofmann on 04.06.2017 at 00:46.
  */
 public class HxVerificationResult implements Iterable<HxVerificationResult> {
@@ -17,7 +18,7 @@ public class HxVerificationResult implements Iterable<HxVerificationResult> {
   };
 
   /**
-   * @return
+   * @return singleton OK instance
    */
   public static HxVerificationResult ok() {
     return OK;

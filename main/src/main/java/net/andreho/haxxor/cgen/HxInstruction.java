@@ -135,6 +135,16 @@ public interface HxInstruction
   void setNext(HxInstruction next);
 
   /**
+   * @param replacement
+   * @return
+   */
+  default HxInstruction replaceWith(HxInstruction replacement) {
+    prepend(replacement);
+    remove();
+    return replacement;
+  }
+
+  /**
    * Shortcut for: <code>this.getPrevious().append(inst);</code>
    *
    * @param inst to prepend

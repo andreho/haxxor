@@ -25,7 +25,7 @@ public interface HxMethodBody
   HxMethodBody clone(HxMethod owner);
 
   /**
-   * Moves the content of this method's bode into the given method and resets this method's body to empty state.
+   * Moves the content of this method's body into the given method and resets this method's body to empty state.
    * @param newOwner of the cloned method's body
    * @return current method's body of the given method
    */

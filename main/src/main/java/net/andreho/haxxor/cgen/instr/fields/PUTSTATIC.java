@@ -11,13 +11,13 @@ import java.util.List;
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
 public class PUTSTATIC
-    extends AbstractFieldInstruction {
+  extends AbstractFieldInstruction {
 
-  public PUTSTATIC(String owner, String name, String desc) {
+  public PUTSTATIC(String owner,
+                   String name,
+                   String desc) {
     super(Opcodes.PUTSTATIC, owner, name, desc);
   }
-
-  //----------------------------------------------------------------------------------------------------------------
 
   @Override
   public void visit(HxCodeStream codeStream) {
@@ -27,5 +27,12 @@ public class PUTSTATIC
   @Override
   public List<Object> getStackPushList(final HxComputingContext context) {
     return NO_STACK_PUSH;
+  }
+
+  @Override
+  public PUTSTATIC clone(final String owner,
+                         final String name,
+                         final String desc) {
+    return new PUTSTATIC(owner, name, desc);
   }
 }

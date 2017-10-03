@@ -863,7 +863,8 @@ public class AsmCodeMethodVisitor
       Type type = (Type) cst;
       int sort = type.getSort();
       if (sort == Type.OBJECT || sort == Type.ARRAY) {
-        cs.TYPE(sort == Type.OBJECT ? type.getInternalName() : type.getDescriptor());
+//        cs.TYPE(sort == Type.OBJECT ? type.getInternalName() : type.getDescriptor());
+        cs.TYPE(type.getDescriptor());
       } else if (sort == Type.METHOD) {
         cs.METHOD(new HxMethodType(type.getDescriptor()));
       } else {

@@ -382,8 +382,8 @@ public class AsmCodeStream
   }
 
   @Override
-  public HxCodeStream TYPE(String internalType) {
-    return visitLdcInsn(Type.getType(internalType));
+  public HxCodeStream TYPE(String typeDescriptor) {
+    return visitLdcInsn(Type.getType(typeDescriptor));
   }
 
   @Override

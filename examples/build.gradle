@@ -1,0 +1,45 @@
+group 'net.andreho'
+version '0.0.1'
+
+project.ext {
+  aspectjVersion = "1.8.11"
+}
+
+buildscript {
+  repositories {
+    maven {
+      url "https://maven.eveoh.nl/content/repositories/releases"
+    }
+  }
+  dependencies {
+    classpath "nl.eveoh:gradle-aspectj:2.0"
+  }
+}
+
+apply plugin: 'application'
+apply plugin: 'aspectj'
+
+mainClassName = 'examples.Main'
+
+compileAspect {
+  additionalAjcArgs = ['debug' : '']
+  xlint = 'warning'
+  maxmem = '1024m'
+}
+
+dependencies {
+
+  compile project(':main')
+  // https://mvnrepository.com/artifact/org.javassist/javassist
+  compile group: 'org.javassist', name: 'javassist', version: '3.21.0-GA'
+  // https://mvnrepository.com/artifact/org.apache.bcel/bcel
+  compile group: 'org.apache.bcel', name: 'bcel', version: '6.1'
+  // https://mvnrepository.com/artifact/org.ow2.asm/asm
+  compile group: 'org.ow2.asm', name: 'asm-all', version: '5.2'
+  // https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy
+  compile group: 'net.bytebuddy', name: 'byte-buddy', version: '1.7.5'
+
+  compile "org.aspectj:aspectjrt:${aspectjVersion}"
+  compile "org.aspectj:aspectjweaver:${aspectjVersion}"
+  //aspectpath "org.aspectj:aspectjtools:${aspectjVersion}"
+}

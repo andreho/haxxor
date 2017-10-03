@@ -1,6 +1,10 @@
 package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.cgen.HxInstruction;
+import net.andreho.haxxor.cgen.HxInstructionSort;
+import net.andreho.haxxor.cgen.HxInstructionsType;
+import net.andreho.haxxor.cgen.instr.abstr.AbstractInvokeInstruction;
 import net.andreho.haxxor.spec.api.HxConstants;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxGenericType;
@@ -8,6 +12,7 @@ import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxTypeReference;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -225,6 +230,43 @@ public abstract class HxAbstractType
       }
     }
     return Optional.empty();
+  }
+
+  @Override
+  public Collection<HxMethod> findForwardingConstructors() {
+    if(!isInterface() && !isArray() && !isPrimitive() &&
+       !hasName("java.lang.Object") &&
+       getSuperType().isPresent()) {
+
+      final HxType superType = getSuperType().get();
+      final Collection<HxMethod> constructors = getConstructors();
+      final Collection<HxMethod> forwardingConstructors = new ArrayList<>(2);
+
+      loop:
+      for(HxMethod constructor : constructors) {
+        if(constructor.hasBody()) {
+          for(HxInstruction inst : constructor.getBody()) {
+            if(inst.hasSort(HxInstructionSort.Invocation) && inst instanceof AbstractInvokeInstruction) {
+              final AbstractInvokeInstruction invokeInstruction = (AbstractInvokeInstruction) inst;
+
+              if(invokeInstruction.hasType(HxInstructionsType.Invocation.INVOKESPECIAL) &&
+                 HxConstants.CONSTRUCTOR_METHOD_NAME.equals(invokeInstruction.getName())) {
+
+                if(superType.hasName(invokeInstruction.getOwner())) {
+                  forwardingConstructors.add(constructor);
+                  continue loop;
+                } else if(hasName(invokeInstruction.getOwner())) {
+                  continue loop;
+                }
+              }
+            }
+          }
+        }
+      }
+      return forwardingConstructors;
+    }
+
+    return Collections.emptySet();
   }
 
   @Override
@@ -481,7 +523,6 @@ public abstract class HxAbstractType
     }
     return Class.forName(name, true, classLoader);
   }
-
 
   @Override
   public int hashCode() {
