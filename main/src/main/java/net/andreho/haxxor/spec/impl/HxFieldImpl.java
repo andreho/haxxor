@@ -159,7 +159,8 @@ public class HxFieldImpl
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(getName());
+    return Objects.hashCode(getName()) +
+           Objects.hashCode(getType()) * 31;
   }
 
   @Override

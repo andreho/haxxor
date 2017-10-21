@@ -69,9 +69,14 @@ public class DefaultHxElementFactory
 
   @Override
   public HxMethod createConstructor(final String... parameterTypes) {
+    return createConstructor(haxxor.referencesAsArray(parameterTypes));
+  }
+
+  @Override
+  public HxMethod createConstructor(final HxType... parameterTypes) {
     return new HxMethodImpl(HxConstants.CONSTRUCTOR_METHOD_NAME,
-                            createReference("void"),
-                            haxxor.referencesAsArray(parameterTypes));
+                            getHaxxor().resolve("void"),
+                            parameterTypes);
   }
 
   @Override
@@ -86,7 +91,14 @@ public class DefaultHxElementFactory
   public HxMethod createMethod(final String returnType,
                                final String methodName,
                                final String... parameterTypes) {
-    return new HxMethodImpl(methodName, createReference(returnType), haxxor.referencesAsArray(parameterTypes));
+    return createMethod(createReference(returnType), methodName, haxxor.referencesAsArray(parameterTypes));
+  }
+
+  @Override
+  public HxMethod createMethod(final HxType returnType,
+                               final String methodName,
+                               final HxType... parameterTypes) {
+    return new HxMethodImpl(methodName, returnType, parameterTypes);
   }
 
   @Override

@@ -6,6 +6,7 @@ import net.andreho.aop.spi.AspectLocalAttribute;
 import net.andreho.aop.spi.AspectMethodContext;
 import net.andreho.aop.spi.AspectTryCatch;
 import net.andreho.aop.spi.ElementMatcher;
+import net.andreho.aop.spi.ParameterInjectorSelector;
 import net.andreho.aop.spi.impl.AspectTryCatchImpl;
 import net.andreho.aop.spi.impl.Constants;
 import net.andreho.haxxor.cgen.HxCgenUtils;
@@ -15,6 +16,8 @@ import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -26,19 +29,17 @@ public class CatchAspectAdvice
   private static final AtomicLong COUNTER = new AtomicLong();
   private final HxType exception;
 
-  public CatchAspectAdvice(final int index,
-                           final String profileName,
+  public CatchAspectAdvice(final String profileName,
                            final AspectAdviceType type,
                            final ElementMatcher<HxMethod> elementMatcher,
-                           final HxMethod interceptor,
+                           final List<HxMethod> interceptors,
                            final HxType exception) {
-    super(index,
-          type,
+    super(type,
           elementMatcher,
           profileName,
-          interceptor,
-          type.getParameterInjector(),
-          type.getPostProcessor()
+          interceptors,
+          type.getParameterInjectorSelector(),
+          type.getResultPostProcessor()
     );
     this.exception = exception;
   }
@@ -46,16 +47,25 @@ public class CatchAspectAdvice
   @Override
   public boolean apply(final AspectContext context,
                        final HxMethod original) {
-    if (!matches(original) || !original.hasBody()) {
+    if (!matches(original) || !original.hasBody() || !getInterceptors().isEmpty()) {
       return false;
     }
+
+    final Optional<ParameterInjectorSelector.Result> bestInterceptor =
+      findBestSuitableInterceptor(context, original);
+
+    if(!bestInterceptor.isPresent()) {
+      return false;
+    }
+
+    final ParameterInjectorSelector.Result result = bestInterceptor.get();
 
     System.out.println("@Catch[" + getIndex() + "]: " + original);
 
     final HxMethod shadow = findOrCreateShadowMethod(
       context, original, context.getAspectDefinition().createShadowMethodName(original.getName()));
 
-    final HxMethod interceptor = getInterceptor();
+    final HxMethod interceptor = result.method;
     final AspectMethodContext methodContext = context.getAspectMethodContext();
 
     AspectTryCatch tryCatch;
@@ -102,7 +112,7 @@ public class CatchAspectAdvice
       tryCatch = methodContext.getTryCatchBlock(exception.getName());
     }
 
-    invokeCatchAspect(context, tryCatch, interceptor, original, shadow, tryCatch.getCatchEnd());
+    invokeCatchAspect(context, tryCatch, interceptor, original, shadow, tryCatch.getCatchEnd(), result);
     return true;
   }
 
@@ -111,13 +121,14 @@ public class CatchAspectAdvice
                                  final HxMethod interceptor,
                                  final HxMethod original,
                                  final HxMethod shadow,
-                                 final HxInstruction anchor) {
+                                 final HxInstruction anchor,
+                                 final ParameterInjectorSelector.Result result) {
 
     if (needsAspectFactory()) {
-      instantiateAspectInstance(context, anchor);
+      instantiateAspectInstance(context, original, original, anchor);
     }
 
-    injectParameters(context, interceptor, original, shadow, anchor);
+    injectParameters(context, interceptor, original, shadow, anchor, result);
 
     anchor.asAnchoredStream().INVOKE(interceptor);
 

@@ -35,14 +35,14 @@ class DefaultHxByteCodeLoaderTest
   }
 
   @Override
-  public byte[] load(final String className) {
-    return byteCodeLoader.load(className);
+  public byte[] load(final ClassLoader classLoader, final String className) {
+    return byteCodeLoader.load(classLoader, className);
   }
 
   @Test
   void testLoadByteCode()
   throws IOException {
-    byte[] loaded = load(MinimalBean.class.getName());
+    byte[] loaded = load(this.getClass().getClassLoader(), MinimalBean.class.getName());
     byte[] original = null;
 
     try (InputStream inputStream = haxxor.getClassLoader().getResourceAsStream(

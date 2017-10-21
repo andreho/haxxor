@@ -2,6 +2,9 @@ package org.sandbox.aspects.equals;
 
 import java.util.Objects;
 
+import static java.lang.Double.doubleToLongBits;
+import static java.lang.Float.floatToIntBits;
+
 /**
  * <br/>Created by a.hofmann on 05.07.2017 at 21:00.
  */
@@ -28,7 +31,7 @@ public abstract class EqualsUtils {
   }
 
   public static boolean equal(float a, float b) {
-    return a == b;
+    return floatToIntBits(a) == floatToIntBits(b);
   }
 
   public static boolean equal(long a, long b) {
@@ -36,7 +39,7 @@ public abstract class EqualsUtils {
   }
 
   public static boolean equal(double a, double b) {
-    return a == b;
+    return doubleToLongBits(a) == doubleToLongBits(b);
   }
 
   public static boolean equal(Object a, Object b) {

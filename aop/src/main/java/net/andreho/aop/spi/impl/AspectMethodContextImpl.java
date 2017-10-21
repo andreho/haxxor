@@ -110,7 +110,7 @@ public class AspectMethodContextImpl implements AspectMethodContext {
 
   @Override
   public boolean hasLocalAttribute(final String name) {
-    return getLocalAttribute(name) != null;
+    return getLocalAttributes().get(name) != null;
   }
 
   @Override

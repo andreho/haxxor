@@ -4,6 +4,7 @@ import net.andreho.aop.spi.AspectProfile;
 import net.andreho.aop.spi.ElementMatcher;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
+import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxType;
 
 import static java.util.Objects.requireNonNull;
@@ -15,6 +16,7 @@ public class AspectProfileImpl
   implements AspectProfile {
 
   private final String name;
+  private final ElementMatcher<HxParameter> parametersMatcher;
   private final ElementMatcher<HxMethod> methodsMatcher;
   private final ElementMatcher<HxField> fieldsMatcher;
   private final ElementMatcher<HxType> classesMatcher;
@@ -22,17 +24,24 @@ public class AspectProfileImpl
   public AspectProfileImpl(final String name,
                            final ElementMatcher<HxType> classesMatcher,
                            final ElementMatcher<HxMethod> methodsMatcher,
-                           final ElementMatcher<HxField> fieldsMatcher) {
+                           final ElementMatcher<HxField> fieldsMatcher,
+                           final ElementMatcher<HxParameter> parametersMatcher) {
     this.name = requireNonNull(name);
 
     this.classesMatcher = requireNonNull(classesMatcher).minimize();
     this.methodsMatcher = requireNonNull(methodsMatcher).minimize();
     this.fieldsMatcher = requireNonNull(fieldsMatcher).minimize();
+    this.parametersMatcher = requireNonNull(parametersMatcher).minimize();
   }
 
   @Override
   public String getName() {
     return name;
+  }
+
+  @Override
+  public ElementMatcher<HxParameter> getParametersMatcher() {
+    return parametersMatcher;
   }
 
   @Override

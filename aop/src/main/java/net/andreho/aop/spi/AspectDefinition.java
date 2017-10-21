@@ -37,12 +37,18 @@ public interface AspectDefinition extends Comparable<AspectDefinition> {
   /**
    * @return
    */
-  Map<String, List<String>> getParameters();
+  List<AspectFactory> getAspectFactories();
+
+  /**
+   * @param type
+   * @return
+   */
+  Optional<AspectFactory> findAspectFactoryFor(HxType type);
 
   /**
    * @return
    */
-  Optional<AspectFactory> getAspectFactory();
+  Map<String, List<String>> getParameters();
 
   /**
    * @return

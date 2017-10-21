@@ -2,11 +2,11 @@ package net.andreho.aop.spi.impl.modify;
 
 import net.andreho.aop.api.Modify;
 import net.andreho.aop.spi.AspectAdvice;
-import net.andreho.aop.spi.AspectAdviceParameterInjector;
-import net.andreho.aop.spi.AspectAdvicePostProcessor;
 import net.andreho.aop.spi.AspectDefinition;
 import net.andreho.aop.spi.AspectProfile;
 import net.andreho.aop.spi.ElementMatcher;
+import net.andreho.aop.spi.ParameterInjectorSelector;
+import net.andreho.aop.spi.ResultPostProcessor;
 import net.andreho.aop.spi.impl.advices.AbstractAspectAdviceType;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxMethod;
@@ -32,13 +32,10 @@ public class ModifyTypeAspectAdviceType
   };
 
   public ModifyTypeAspectAdviceType(final int order) {
-    super(
-      order,
-      AspectAdviceParameterInjector.with(
-      ),
-      AspectAdvicePostProcessor.with(
-      ),
-      TARGETS
+    super(order,
+          ParameterInjectorSelector.create(),
+          ResultPostProcessor.list(),
+          TARGETS
     );
   }
 

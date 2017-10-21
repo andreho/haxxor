@@ -5,6 +5,7 @@ import net.andreho.asm.org.objectweb.asm.ClassWriter;
 import net.andreho.asm.org.objectweb.asm.FieldVisitor;
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.asm.org.objectweb.asm.Type;
+import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxLocalVariable;
@@ -20,29 +21,38 @@ import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxMethodBody;
 import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxType;
-import net.andreho.haxxor.spi.HxTypeInterpreter;
+import net.andreho.haxxor.spi.HxTypeSerializer;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.BiFunction;
 
 /**
  * <br/>Created by a.hofmann on 13.06.2017 at 20:42.
  */
-public class DefaultHxTypeInterpreter
-    implements HxTypeInterpreter {
+public class DefaultHxTypeSerializer
+  implements HxTypeSerializer {
+
+  private final Haxxor haxxor;
+  public DefaultHxTypeSerializer(final Haxxor haxxor) {
+    this.haxxor = Objects.requireNonNull(haxxor);
+  }
+
   /*
-  A visitor to visit a Java class.
-  The methods of this class must be called in the following order:
-    visit
-    [ visitSource ]
-    [ visitOuterClass ]
-    ( visitAnnotation | visitTypeAnnotation | visitAttribute )*
-    ( visitInnerClass | visitField | visitMethod )*
-    visitEnd.
-  */
+    A visitor to visit a Java class.
+    The methods of this class must be called in the following order:
+      visit
+      [ visitSource ]
+      [ visitOuterClass ]
+      ( visitAnnotation | visitTypeAnnotation | visitAttribute )*
+      ( visitInnerClass | visitField | visitMethod )*
+      visitEnd.
+    */
   @Override
-  public byte[] interpret(final HxType type,
+  public byte[] serialize(final HxType type,
                           final boolean computeFrames) {
+    haxxor.getTypeVerifier().verify(type);
+
     final ClassWriter writer = new ClassWriter(computeFrames ? ClassWriter.COMPUTE_FRAMES : 0);
 
     visitClassHeader(type, writer);
@@ -211,7 +221,11 @@ public class DefaultHxTypeInterpreter
 
   protected void visitFields(final HxType type,
                              final ClassWriter cw) {
+    final Haxxor haxxor = this.haxxor;
+
     for (HxField field : type.getFields()) {
+      haxxor.getFieldVerifier().verify(field);
+
       //( visitAnnotation | visitTypeAnnotation | visitAttribute )* visitEnd.
       final FieldVisitor fv = cw.visitField(
           field.getModifiers(),
@@ -272,6 +286,8 @@ public class DefaultHxTypeInterpreter
 
   protected MethodVisitor visitMethod(final ClassWriter cw,
                                       final HxMethod method) {
+    haxxor.getMethodVerifier().verify(method);
+
     final MethodVisitor mv = cw.visitMethod(
         method.getModifiers(),
         method.getName(),

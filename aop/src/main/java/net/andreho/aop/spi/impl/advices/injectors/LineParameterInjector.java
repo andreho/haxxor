@@ -4,7 +4,7 @@ import net.andreho.aop.api.injectable.Line;
 import net.andreho.aop.spi.AspectAdvice;
 import net.andreho.aop.spi.AspectContext;
 import net.andreho.haxxor.cgen.HxInstruction;
-import net.andreho.haxxor.cgen.HxInstructionsType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.misc.LINE_NUMBER;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxParameter;
@@ -35,7 +35,7 @@ public final class LineParameterInjector
 
     if (parameter.isAnnotationPresent(LINE_ANNOTATION_TYPE_NAME)) {
       Optional<HxInstruction> lineNumber = anchor.findFirst(
-        ins -> ins.hasType(HxInstructionsType.Special.LINE_NUMBER));
+        ins -> ins.hasType(HxInstructionTypes.Special.LINE_NUMBER));
 
       if (lineNumber.isPresent()) {
         LINE_NUMBER ln = (LINE_NUMBER) lineNumber.get();

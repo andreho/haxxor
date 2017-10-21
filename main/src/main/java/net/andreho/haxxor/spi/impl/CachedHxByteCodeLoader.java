@@ -20,7 +20,7 @@ public class CachedHxByteCodeLoader
   public static final String MAX_CACHE_SIZE_PARAMETER =
       "hx.bytecode.loader.max_cache_size";
   public static final int MAXIMAL_CACHE_SIZE =
-      Math.max(100, Integer.parseInt(System.getProperty(MAX_CACHE_SIZE_PARAMETER, "1000")));
+      Math.max(1, Integer.parseInt(System.getProperty(MAX_CACHE_SIZE_PARAMETER, "1000")));
 
   private static final Map<String, Reference<byte[]>> GLOBAL_CACHE =
       new LinkedHashMap<String, Reference<byte[]>>() {
@@ -45,20 +45,37 @@ public class CachedHxByteCodeLoader
 
   @Override
   @SuppressWarnings("Duplicates")
-  public byte[] load(final String className) {
+  public byte[] load(final ClassLoader classLoader, final String className) {
     byte[] bytes = getCached(className);
     if (bytes == null) {
-      bytes = loadContent(className);
+      bytes = loadContent(classLoader, className);
     }
     return bytes;
+  }
+
+  private byte[] loadContent(final ClassLoader classLoader, final String className) {
+    byte[] content;
+    final Lock lock = this.lock.writeLock();
+    lock.lock();
+    try {
+      content = getCached(className);
+
+      if (content == null) {
+        content = super.load(classLoader, className);
+        cache.put(className, new SoftReference<>(content));
+      }
+    } finally {
+      lock.unlock();
+    }
+    return content;
   }
 
   private byte[] getCached(final String className) {
     final Lock lock = this.lock.readLock();
     lock.lock();
     try {
-      final Reference<byte[]> reference = this.cache.get(className);
       byte[] bytes;
+      final Reference<byte[]> reference = this.cache.get(className);
       if (reference != null && (bytes = reference.get()) != null) {
         return bytes;
       }
@@ -66,21 +83,5 @@ public class CachedHxByteCodeLoader
       lock.unlock();
     }
     return null;
-  }
-
-  private byte[] loadContent(final String className) {
-    byte[] content;
-    final Lock lock = this.lock.writeLock();
-    lock.lock();
-    try {
-      content = getCached(className);
-      if (content == null) {
-        content = super.load(className);
-        cache.put(className, new SoftReference<>(content));
-      }
-    } finally {
-      lock.unlock();
-    }
-    return content;
   }
 }

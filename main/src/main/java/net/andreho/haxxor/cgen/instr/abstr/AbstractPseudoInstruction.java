@@ -23,7 +23,7 @@ public abstract class AbstractPseudoInstruction
   }
 
   @Override
-  public List<Object> getStackPushList(final HxComputingContext context) {
+  public List<Object> compute(final HxComputingContext context) {
     return AbstractInstruction.NO_STACK_PUSH;
   }
 

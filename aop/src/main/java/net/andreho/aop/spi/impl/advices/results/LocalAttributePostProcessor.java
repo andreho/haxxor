@@ -2,9 +2,9 @@ package net.andreho.aop.spi.impl.advices.results;
 
 import net.andreho.aop.api.injectable.Attribute;
 import net.andreho.aop.spi.AspectAdvice;
-import net.andreho.aop.spi.AspectAdvicePostProcessor;
 import net.andreho.aop.spi.AspectContext;
 import net.andreho.aop.spi.AspectMethodContext;
+import net.andreho.aop.spi.ResultPostProcessor;
 import net.andreho.haxxor.cgen.HxCgenUtils;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.spec.api.HxAnnotation;
@@ -17,17 +17,17 @@ import java.util.Optional;
  * <br/>Created by a.hofmann on 21.06.2017 at 01:42.
  */
 public class LocalAttributePostProcessor
-  implements AspectAdvicePostProcessor {
+  implements ResultPostProcessor {
   private static final String ATTRIBUTE_ANNOTATION_TYPE_NAME = Attribute.class.getName();
   public static final LocalAttributePostProcessor INSTANCE = new LocalAttributePostProcessor();
 
   @Override
-  public boolean process(final AspectAdvice<?> aspectAdvice,
-                         final AspectContext context,
-                         final HxMethod interceptor,
-                         final HxMethod original,
-                         final HxMethod shadow,
-                         final HxInstruction anchor) {
+  public boolean handle(final AspectAdvice<?> aspectAdvice,
+                        final AspectContext context,
+                        final HxMethod interceptor,
+                        final HxMethod original,
+                        final HxMethod shadow,
+                        final HxInstruction anchor) {
     final Optional<HxAnnotation> optional = interceptor.getAnnotation(ATTRIBUTE_ANNOTATION_TYPE_NAME);
     if(!optional.isPresent()) {
       return false;

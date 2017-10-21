@@ -6,8 +6,9 @@ package net.andreho.haxxor.spi;
 public interface HxByteCodeLoader {
 
   /**
-   * @param className of a class being loaded
-   * @return content of the requested class as a bytearray
+   * @param classLoader of a class being attempted for loading
+   * @param className of a class being attempted for loading
+   * @return content of the requested class as a byte-array
    */
-  byte[] load(String className);
+  byte[] load(final ClassLoader classLoader, final String className);
 }

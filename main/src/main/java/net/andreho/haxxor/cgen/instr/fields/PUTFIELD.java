@@ -25,7 +25,7 @@ public class PUTFIELD
   }
 
   @Override
-  public List<Object> getStackPushList(final HxComputingContext context) {
+  public List<Object> compute(final HxComputingContext context) {
     return NO_STACK_PUSH;
   }
 

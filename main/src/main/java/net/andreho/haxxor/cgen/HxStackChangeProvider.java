@@ -20,5 +20,5 @@ public interface HxStackChangeProvider {
    * @param context
    * @return
    */
-  List<Object> getStackPushList(HxComputingContext context);
+  List<Object> compute(HxComputingContext context);
 }

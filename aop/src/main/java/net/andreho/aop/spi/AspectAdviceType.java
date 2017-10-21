@@ -25,12 +25,12 @@ public interface AspectAdviceType
   /**
    * @return
    */
-  AspectAdviceParameterInjector getParameterInjector();
+  ParameterInjectorSelector getParameterInjectorSelector();
 
   /**
    * @return
    */
-  AspectAdvicePostProcessor getPostProcessor();
+  ResultPostProcessor getResultPostProcessor();
 
   /**
    * @param activatorAnnotation

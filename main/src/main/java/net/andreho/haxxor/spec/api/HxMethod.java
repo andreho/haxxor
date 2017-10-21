@@ -5,6 +5,7 @@ import net.andreho.haxxor.misc.MappedList;
 import net.andreho.haxxor.spec.impl.HxParameterImpl;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * Created by a.hofmann on 31.05.2015.
@@ -26,6 +28,11 @@ public interface HxMethod
           HxNamed,
           HxProvider,
           Cloneable {
+
+  int ALLOWED_MODIFIERS =
+    Opcodes.ACC_PUBLIC | Opcodes.ACC_PRIVATE | Opcodes.ACC_PROTECTED | Opcodes.ACC_STATIC | Opcodes.ACC_FINAL |
+    Opcodes.ACC_SYNCHRONIZED | Opcodes.ACC_BRIDGE | Opcodes.ACC_VARARGS | Opcodes.ACC_NATIVE | Opcodes.ACC_ABSTRACT |
+    Opcodes.ACC_STRICT | Opcodes.ACC_SYNTHETIC;
 
   enum Modifiers
     implements HxModifier {
@@ -55,15 +62,6 @@ public interface HxMethod
 
     final int bit;
 
-    Modifiers(int bit) {
-      this.bit = bit;
-    }
-
-    @Override
-    public int toBit() {
-      return bit;
-    }
-
     /**
      * Transforms given modifiers to an equal enum-set
      *
@@ -73,12 +71,19 @@ public interface HxMethod
     public static Set<Modifiers> toSet(int modifiers) {
       return HxModifier.toSet(Modifiers.class, modifiers);
     }
-  }
 
-  int ALL_PARTS = -1;
-  int BODY_PART = 1;
-  int ANNOTATIONS_PART = 2;
-  int PARAMETERS_ANNOTATIONS_PART = 4;
+    /**
+     * @param bit of represented modifier
+     */
+    Modifiers(int bit) {
+      this.bit = bit;
+    }
+
+    @Override
+    public int toBit() {
+      return bit;
+    }
+  }
 
   /**
    * @return
@@ -90,9 +95,10 @@ public interface HxMethod
   /**
    * @param parts to copy
    * @return
-   * @see #BODY_PART
-   * @see #ANNOTATIONS_PART
-   * @see #PARAMETERS_ANNOTATIONS_PART
+   * @see CloneableParts#ALL_PARTS
+   * @see CloneableParts#BODY_PART
+   * @see CloneableParts#ANNOTATIONS_PART
+   * @see CloneableParts#PARAMETERS_ANNOTATIONS_PART
    */
   default HxMethod clone(int parts) {
     return clone(getName(), parts);
@@ -105,14 +111,16 @@ public interface HxMethod
   HxMethod clone(String name);
 
   /**
-   * @param name of the cloned method
-   * @param parts as a bitset for pars to clone; <code>-1</code> for all method's parts
+   * @param name  of the cloned method
+   * @param parts as a bitset for pars to clone; <code>{@link CloneableParts#ALL_PARTS}</code> for all method's parts
    * @return a cloned version of this method with given name
-   * @see #BODY_PART
-   * @see #ANNOTATIONS_PART
-   * @see #PARAMETERS_ANNOTATIONS_PART
+   * @see CloneableParts#ALL_PARTS
+   * @see CloneableParts#BODY_PART
+   * @see CloneableParts#ANNOTATIONS_PART
+   * @see CloneableParts#PARAMETERS_ANNOTATIONS_PART
    */
-  HxMethod clone(String name, int parts);
+  HxMethod clone(String name,
+                 int parts);
 
   /**
    * @return name of this method
@@ -128,8 +136,15 @@ public interface HxMethod
   }
 
   /**
-   * @param returnClassname
-   * @return
+   * @return <b>true</b> if this method return any value and in other words this means a not <code>void</code> method
+   */
+  default boolean hasReturnType() {
+    return !hasReturnType(HxSort.VOID);
+  }
+
+  /**
+   * @param returnClassname to match against
+   * @return <b>true</b> if this method returns the given type
    */
   default boolean hasReturnType(String returnClassname) {
     if (getReturnType() == null) {
@@ -139,24 +154,24 @@ public interface HxMethod
   }
 
   /**
-   * @param returnType
-   * @return
+   * @param returnType to match against
+   * @return <b>true</b> if this method returns the given type
    */
   default boolean hasReturnType(HxType returnType) {
     return hasReturnType(Objects.requireNonNull(returnType).getName());
   }
 
   /**
-   * @param cls
-   * @return
+   * @param cls to match against
+   * @return <b>true</b> if this method returns the given type
    */
   default boolean hasReturnType(Class<?> cls) {
     return getReturnType().hasName(cls.getName());
   }
 
   /**
-   * @param sort
-   * @return
+   * @param sort to match against
+   * @return <b>true</b> if this method returns the given type sort
    */
   default boolean hasReturnType(HxSort sort) {
     return getReturnType().getSort() == sort;
@@ -168,8 +183,8 @@ public interface HxMethod
   HxType getReturnType();
 
   /**
-   * @param returnType
-   * @return
+   * @param returnType of this method
+   * @return this
    * @implSpec return value can't be null
    */
   default HxMethod setReturnType(String returnType) {
@@ -177,8 +192,8 @@ public interface HxMethod
   }
 
   /**
-   * @param returnType
-   * @return
+   * @param returnType of this method
+   * @return this
    * @implSpec return value can't be null
    */
   HxMethod setReturnType(HxType returnType);
@@ -202,6 +217,7 @@ public interface HxMethod
 
   /**
    * Allows to replace or set methods's body to given one
+   *
    * @param methodBody to used
    * @return
    */
@@ -218,12 +234,13 @@ public interface HxMethod
    * @return <b>true</b> if this method is a static class-initializer, <b>false</b> otherwise.
    */
   default boolean isClassInitializer() {
-    return HxConstants.CLASS_INITIALIZER_METHOD_NAME.equals(getName()) &&
+    return isStatic() &&
+           HxConstants.CLASS_INITIALIZER_METHOD_NAME.equals(getName()) &&
            hasDescriptor("()V");
   }
 
   /**
-   * @param index
+   * @param index of parameter to check
    * @return
    */
   default boolean hasParameterAt(int index) {
@@ -231,21 +248,23 @@ public interface HxMethod
   }
 
   /**
-   * @param count
-   * @return
+   * @param count of parameters
+   * @return <b>true</b> this method has given parameters' count, <b>false</b> otherwise
    */
   default boolean hasParametersCount(int count) {
-    return hasParametersCount(count, count);
+    return getParametersCount() == count;
   }
 
   /**
-   * @param min
-   * @param max
-   * @return
+   * @param min count of parameters
+   * @param max count of parameters (incl.)
+   * @return <b>true</b> if count of parameters of this method lies in the given range, <b>false</b> otherwise
    */
-  default boolean hasParametersCount(int min,
-                                     int max) {
-    return min <= getParametersCount() && getParametersCount() <= max;
+  default boolean hasParametersCountInRange(int min,
+                                            int max) {
+    return min <= max &&
+           min <= getParametersCount() &&
+           getParametersCount() <= max;
   }
 
   /**
@@ -284,9 +303,43 @@ public interface HxMethod
   }
 
   /**
+   * @param types of new parameters of this method
+   * @return this
+   */
+  default HxMethod setParameterTypes(HxType... types) {
+    return setParameterTypes(Arrays.asList(types));
+  }
+
+  /**
+   * @param types of new parameters of this method
+   * @return this
+   */
+  default HxMethod setParameterTypes(List<HxType> types) {
+    final List<HxParameter> parameters = new ArrayList<>(types.size());
+    for (HxType type : types) {
+      parameters.add(new HxParameterImpl(type));
+    }
+    return setParameters(parameters);
+  }
+
+  /**
    * @return the list with all parameters
    */
   List<HxParameter> getParameters();
+
+  /**
+   * @param parameters
+   * @return this
+   */
+  default HxMethod setParameters(HxParameter... parameters) {
+    return setParameters(Arrays.asList(parameters));
+  }
+
+  /**
+   * @param parameters
+   * @return this
+   */
+  HxMethod setParameters(List<HxParameter> parameters);
 
   /**
    * @param parameter
@@ -301,7 +354,7 @@ public interface HxMethod
    * @return
    */
   HxMethod addParameterAt(int index,
-                   HxParameter parameter);
+                          HxParameter parameter);
 
   /**
    * @param index of wanted formal parameter
@@ -322,11 +375,11 @@ public interface HxMethod
    * @return
    */
   default int getParametersSlotAt(int index) {
-    if(index < 0 || index >= getParametersCount()) {
-      throw new IndexOutOfBoundsException("Invalid index: "+index+", method's arity is: "+getParametersCount());
+    if (index < 0 || index >= getParametersCount()) {
+      throw new IndexOutOfBoundsException("Invalid index: " + index + ", method's arity is: " + getParametersCount());
     }
-    int slot = isStatic()? 0 : 1;
-    for(int i = 0; i <= index; i++) {
+    int slot = isStatic() ? 0 : 1;
+    for (int i = 0; i <= index; i++) {
       slot += getParameterAt(i).getType().getSlotSize();
     }
     return slot;
@@ -339,40 +392,6 @@ public interface HxMethod
   default HxMethod addParameterType(HxType type) {
     Objects.requireNonNull(type, "Parameter's type can't be null.");
     return addParameter(new HxParameterImpl(type));
-  }
-
-  /**
-   * @param parameters
-   * @return this
-   */
-  default HxMethod setParameters(HxParameter... parameters) {
-    return setParameters(Arrays.asList(parameters));
-  }
-
-  /**
-   * @param parameters
-   * @return this
-   */
-  HxMethod setParameters(List<HxParameter> parameters);
-
-  /**
-   * @param types
-   * @return this
-   */
-  default HxMethod setParameterTypes(HxType... types) {
-    return setParameterTypes(Arrays.asList(types));
-  }
-
-  /**
-   * @param types
-   * @return this
-   */
-  default HxMethod setParameterTypes(List<HxType> types) {
-    final List<HxParameter> parameters = new ArrayList<>(types.size());
-    for (HxType type : types) {
-      parameters.add(new HxParameterImpl(type));
-    }
-    return setParameters(parameters);
   }
 
   /**
@@ -446,8 +465,22 @@ public interface HxMethod
   /**
    * @return
    */
+  default HxMethod makeSynthetic() {
+    return addModifier(Modifiers.SYNTHETIC);
+  }
+
+  /**
+   * @return
+   */
   default boolean isPublic() {
     return hasModifiers(HxMethod.Modifiers.PUBLIC);
+  }
+
+  /**
+   * @return
+   */
+  default HxMethod makePublic() {
+    return makeInternal().addModifier(Modifiers.PUBLIC);
   }
 
   /**
@@ -460,6 +493,13 @@ public interface HxMethod
   /**
    * @return
    */
+  default HxMethod makePrivate() {
+    return makeInternal().addModifier(Modifiers.PRIVATE);
+  }
+
+  /**
+   * @return
+   */
   default boolean isProtected() {
     return hasModifiers(HxMethod.Modifiers.PROTECTED);
   }
@@ -467,8 +507,109 @@ public interface HxMethod
   /**
    * @return
    */
+  default HxMethod makeProtected() {
+    return makeInternal().addModifier(Modifiers.PROTECTED);
+  }
+
+  /**
+   * @return
+   */
   default boolean isInternal() {
     return !isPublic() && !isProtected() && !isPrivate();
+  }
+
+  /**
+   * @return
+   */
+  default HxMethod makeInternal() {
+    return setModifiers((~(Opcodes.ACC_PUBLIC | Opcodes.ACC_PROTECTED | Opcodes.ACC_PRIVATE)) & getModifiers());
+  }
+
+  /**
+   * @return
+   */
+  default boolean isStatic() {
+    return hasModifiers(Modifiers.STATIC);
+  }
+
+  /**
+   * @return
+   */
+  default HxMethod makeStatic() {
+    return setModifiers((~(Opcodes.ACC_ABSTRACT | Opcodes.ACC_FINAL)) & getModifiers())
+      .addModifier(Modifiers.STATIC);
+  }
+
+  /**
+   * @return
+   */
+  default boolean isAbstract() {
+    return hasModifiers(Modifiers.ABSTRACT);
+  }
+
+  /**
+   * @return
+   */
+  default HxMethod makeAbstract() {
+    return setModifiers((~(Opcodes.ACC_STATIC | Opcodes.ACC_FINAL)) & getModifiers())
+      .addModifier(Modifiers.ABSTRACT);
+  }
+
+  /**
+   * @return
+   */
+  default boolean isSynchronized() {
+    return hasModifiers(Modifiers.SYNCHRONIZED);
+  }
+
+  /**
+   * @return
+   */
+  default HxMethod makeSynchronized() {
+    return addModifier(Modifiers.SYNCHRONIZED);
+  }
+
+  /**
+   * @return
+   */
+  default boolean isBrindge() {
+    return hasModifiers(Modifiers.BRIDGE);
+  }
+
+  /**
+   * @return
+   */
+  default HxMethod makeBridge() {
+    return addModifier(Modifiers.BRIDGE);
+  }
+
+  /**
+   * @return
+   */
+  default boolean isNative() {
+    return hasModifiers(Modifiers.NATIVE);
+  }
+
+  /**
+   * @return
+   */
+  default HxMethod makeNative() {
+    return addModifier(Modifiers.NATIVE);
+  }
+
+  /**
+   * @return
+   */
+  default boolean isFinal() {
+    return hasModifiers(Modifiers.FINAL);
+  }
+
+  /**
+   * @return
+   */
+  default HxMethod makeFinal() {
+    return setModifiers((~(Opcodes.ACC_STATIC | Opcodes.ACC_ABSTRACT)) & getModifiers())
+      .addModifier(Modifiers.FINAL);
   }
 
   /**
@@ -509,24 +650,24 @@ public interface HxMethod
   }
 
   /**
-   * @param descriptor
-   * @return
+   * @param descriptor to match
+   * @return <b>true</b> if this method has given descriptor, <b>false</b> otherwise
    */
   boolean hasDescriptor(String descriptor);
 
   /**
-   * @return default value of this annotation attribute
+   * @return default value of this annotation's attribute
    */
   Object getDefaultValue();
 
   /**
-   * @param value is a new default value for this annotation attribute
+   * @param value is a new default value for this annotation's attribute
    * @return this
    */
   HxMethod setDefaultValue(Object value);
 
   /**
-   * @return <b>true</b> if this method was declared by an annotation, represents an annotation's attribute and has a
+   * @return <b>true</b> if this method was declared by an annotation and represents an annotation's attribute and has a
    * default value, <b>false</b> otherwise.
    */
   default boolean hasDefaultValue() {
@@ -548,65 +689,25 @@ public interface HxMethod
     if (type == null || !type.isAnnotation()) {
       return false;
     }
+
     return
       isPublic() &&
       isAbstract() &&
       getParametersCount() == 0 &&
-      !hasReturnType("void") &&
+      hasReturnType() &&
       !"hashCode".equals(getName()) &&
       !"toString".equals(getName()) &&
       !"annotationType".equals(getName());
   }
 
   /**
-   * @return
-   */
-  default boolean isStatic() {
-    return hasModifiers(Modifiers.STATIC);
-  }
-
-  /**
-   * @return
-   */
-  default boolean isAbstract() {
-    return hasModifiers(Modifiers.ABSTRACT);
-  }
-
-  /**
-   * @return
-   */
-  default boolean isSynchronized() {
-    return hasModifiers(Modifiers.SYNCHRONIZED);
-  }
-
-  /**
-   * @return
-   */
-  default boolean isBrindge() {
-    return hasModifiers(Modifiers.BRIDGE);
-  }
-
-  /**
-   * @return
-   */
-  default boolean isNative() {
-    return hasModifiers(Modifiers.NATIVE);
-  }
-
-  /**
-   * @return
-   */
-  default boolean isFinal() {
-    return hasModifiers(Modifiers.FINAL);
-  }
-
-  /**
-   * @param index
+   * @param index     of a parameter
    * @param classname
    * @return
    */
-  default boolean hasParameterWithTypeAt(int index, String classname) {
-    return hasParametersCount(index + 1, Integer.MAX_VALUE) &&
+  default boolean hasParameterWithTypeAt(int index,
+                                         String classname) {
+    return hasParametersCountInRange(index + 1, Integer.MAX_VALUE) &&
            getParameterTypeAt(index).hasName(classname);
   }
 
@@ -615,7 +716,8 @@ public interface HxMethod
    * @param type
    * @return
    */
-  default boolean hasParameterWithTypeAt(int index, HxType type) {
+  default boolean hasParameterWithTypeAt(int index,
+                                         HxType type) {
     return hasParameterWithTypeAt(index, type.getName());
   }
 
@@ -624,7 +726,8 @@ public interface HxMethod
    * @param cls
    * @return
    */
-  default boolean hasParameterWithTypeAt(int index, Class<?> cls) {
+  default boolean hasParameterWithTypeAt(int index,
+                                         Class<?> cls) {
     return hasParameterWithTypeAt(index, cls.getName());
   }
 
@@ -633,8 +736,8 @@ public interface HxMethod
    * @return
    */
   default boolean hasParameterWithAnnotation(String annotationType) {
-    for(HxParameter parameter : getParameters()) {
-      if(parameter.isAnnotationPresent(annotationType)) {
+    for (HxParameter parameter : getParameters()) {
+      if (parameter.isAnnotationPresent(annotationType)) {
         return true;
       }
     }
@@ -655,5 +758,76 @@ public interface HxMethod
    */
   default boolean hasParameterWithAnnotation(Class<?> annotationType) {
     return hasParameterWithAnnotation(annotationType.getName());
+  }
+
+  /**
+   * @param annotationType to search for
+   * @return a list with all defined parameters that have given annotation
+   */
+  default List<HxParameter> findParametersWithAnnotation(String annotationType) {
+    final List<HxParameter> result = new ArrayList<>();
+    for (HxParameter parameter : getParameters()) {
+      if (parameter.isAnnotationPresent(annotationType)) {
+        result.add(parameter);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * @param annotationType
+   * @return
+   */
+  default List<HxParameter> findParametersWithAnnotation(HxType annotationType) {
+    return findParametersWithAnnotation(annotationType.getName());
+  }
+
+  /**
+   * @param annotationType
+   * @return
+   */
+  default List<HxParameter> findParametersWithAnnotation(Class<? extends Annotation> annotationType) {
+    return findParametersWithAnnotation(annotationType.getName());
+  }
+
+  /**
+   * @param condition to test on each parameter
+   * @return <b>true</b> if there is at least one parameter satisfying the given condition, <b>false</b> otherwise
+   */
+  default boolean hasParameterWith(Predicate<HxParameter> condition) {
+    for (HxParameter parameter : getParameters()) {
+      if (condition.test(parameter)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * @param condition to test on each parameter
+   * @return a list with parameters that satisfies given condition
+   */
+  default List<HxParameter> findParametersWith(Predicate<HxParameter> condition) {
+    final List<HxParameter> result = new ArrayList<>();
+    for (HxParameter parameter : getParameters()) {
+      if (condition.test(parameter)) {
+        result.add(parameter);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * This class defines a set of constants for {@link #clone(int)} method
+   */
+  abstract class CloneableParts {
+
+    public static final int ALL_PARTS = -1;
+    public static final int BODY_PART = 1;
+    public static final int ANNOTATIONS_PART = 2;
+    public static final int PARAMETERS_ANNOTATIONS_PART = 4;
+
+    private CloneableParts() {
+    }
   }
 }

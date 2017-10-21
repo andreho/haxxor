@@ -29,6 +29,11 @@ public interface HxType
           HxNamed,
           HxProvider {
 
+  int ALLOWED_MODIFIERS =
+    Opcodes.ACC_PUBLIC | Opcodes.ACC_PRIVATE | Opcodes.ACC_PROTECTED | Opcodes.ACC_STATIC | Opcodes.ACC_FINAL |
+    Opcodes.ACC_SUPER | Opcodes.ACC_INTERFACE | Opcodes.ACC_ABSTRACT | Opcodes.ACC_ANNOTATION |
+    Opcodes.ACC_ENUM | Opcodes.ACC_SYNTHETIC;
+
   /**
    */
   enum Version {
@@ -125,7 +130,7 @@ public interface HxType
   }
 
   /**
-   * Initializes given type parts
+   * Initializes given parts of this type
    *
    * @param parts to initialize
    * @return this
@@ -167,10 +172,10 @@ public interface HxType
   }
 
   /**
-   * @return the standard Java classname, like:
+   * @return the standard binary Java classname of this type like: <br/>
    * <code>int</code>,
    * <code>byte[]</code>,
-   * <code>java.lang.String</code>,
+   * <code>java.lang.Object</code>,
    * <code>java.lang.String[][]</code> or
    * <code>java.util.Map$Entry</code> etc.)
    */
@@ -183,7 +188,7 @@ public interface HxType
   String getSimpleName();
 
   /**
-   * @return
+   * @return sort of this type
    */
   default HxSort getSort() {
     return HxSort.fromName(getName());
@@ -206,16 +211,10 @@ public interface HxType
   Optional<HxType> getSuperType();
 
   /**
-   * @param superType
-   * @return
-   */
-  HxType setSuperType(HxType superType);
-
-  /**
    * Shortcut for: <code>this.setSuperType(getHaxxor().reference(superType))</code>
    *
    * @param superType to reference as super type
-   * @return
+   * @return this
    */
   default HxType setSuperType(String superType) {
     return setSuperType(getHaxxor().reference(superType));
@@ -225,7 +224,7 @@ public interface HxType
    * Shortcut for: <code>this.setSuperType(getHaxxor().reference(superClass.getName()))</code>
    *
    * @param superClass to reference as super type
-   * @return
+   * @return this
    */
   default HxType setSuperType(Class<?> superClass) {
     if (superClass.isPrimitive() || superClass.isArray() || superClass.isInterface()) {
@@ -235,8 +234,14 @@ public interface HxType
   }
 
   /**
+   * @param superType of this type
+   * @return this
+   */
+  HxType setSuperType(HxType superType);
+
+  /**
    * @param superType
-   * @return
+   * @return <b>true</b> if this type has the given supertype
    */
   default boolean hasSuperType(String superType) {
     return getSuperType().isPresent() ?
@@ -246,7 +251,7 @@ public interface HxType
 
   /**
    * @param superType
-   * @return
+   * @return <b>true</b> if this type has the given supertype
    */
   default boolean hasSuperType(HxType superType) {
     return Objects.equals(getSuperType(), superType);
@@ -254,7 +259,7 @@ public interface HxType
 
   /**
    * @param superClass
-   * @return
+   * @return <b>true</b> if this type has the given supertype
    */
   default boolean hasSuperType(Class<?> superClass) {
     return
@@ -266,7 +271,7 @@ public interface HxType
   }
 
   /**
-   * @return <b>true</b> if this type has a reference to a super type, <b>false</b> otherwise.
+   * @return <b>true</b> if this type has a reference to a supertype, <b>false</b> otherwise.
    */
   default boolean hasSuperType() {
     return getSuperType().isPresent();
@@ -277,47 +282,46 @@ public interface HxType
    */
   List<HxType> getInterfaces();
 
-  default HxType addInterface(String type) {
-    final HxTypeReference typeReference = getHaxxor().reference(type);
-    return addInterface(typeReference);
-  }
-
-  default HxType addInterface(Class<?> type) {
-    if(!type.isInterface()) {
-      throw new IllegalArgumentException("Not an interface: "+type);
-    }
-    return addInterface(type.getName());
-  }
-
-  default HxType addInterface(HxType type) {
-    if(!type.isInterface()) {
-      throw new IllegalArgumentException("Not an interface: "+type);
-    }
-    final List<HxType> interfaces = initialize(Part.INTERFACES).getInterfaces();
-
-    if(!interfaces.contains(type)) {
-      interfaces.add(type);
-    }
-    return this;
-  }
-
   /**
-   * @param interfaces
-   * @return
+   * @param interfaces of this type
+   * @return this
    */
   default HxType setInterfaces(String... interfaces) {
     return setInterfaces(getHaxxor().referencesAsList(interfaces));
   }
 
   /**
-   * @param interfaces
-   * @return
+   * @param interfaces of this type
+   * @return this
    */
   HxType setInterfaces(List<HxType> interfaces);
 
+  default HxType addInterface(String type) {
+    final HxTypeReference typeReference = getHaxxor().reference(type);
+    return addInterface(typeReference);
+  }
+
+  default HxType addInterface(Class<?> type) {
+    if (!type.isInterface()) {
+      throw new IllegalArgumentException("Not an interface: " + type);
+    }
+    return addInterface(type.getName());
+  }
+
+  default HxType addInterface(HxType type) {
+    if (!type.isInterface()) {
+      throw new IllegalArgumentException("Not an interface: " + type);
+    }
+    final List<HxType> interfaces = initialize(Part.INTERFACES).getInterfaces();
+    if (!interfaces.contains(type)) {
+      interfaces.add(type);
+    }
+    return this;
+  }
+
   /**
    * @param interfaceName to look for
-   * @return
+   * @return <b>true</b> if this type <code>implements</code> the given one interface
    */
   default boolean hasInterface(final String interfaceName) {
     Objects.requireNonNull(interfaceName, "Interface name can't be null.");
@@ -331,7 +335,7 @@ public interface HxType
 
   /**
    * @param hxInterface to look for
-   * @return
+   * @return <b>true</b> if this type <code>implements</code> the given one interface
    */
   default boolean hasInterface(final HxType hxInterface) {
     Objects.requireNonNull(hxInterface, "Interface can't be null.");
@@ -340,7 +344,7 @@ public interface HxType
 
   /**
    * @param itf to look for
-   * @return
+   * @return <b>true</b> if this type <code>implements</code> the given one interface
    */
   default boolean hasInterface(final Class<?> itf) {
     Objects.requireNonNull(itf, "Interface can't be null.");
@@ -358,8 +362,8 @@ public interface HxType
   }
 
   /**
-   * @param innerType
-   * @return
+   * @param innerType of this type
+   * @return this
    */
   default HxType addInnerType(final HxType innerType) {
     initialize(Part.INNER_TYPES).getInnerTypes().add(innerType);
@@ -367,31 +371,35 @@ public interface HxType
   }
 
   /**
-   * @return
+   * @return a list with all registered inner types of this type
    */
   List<HxType> getInnerTypes();
 
   /**
-   * @param declaredTypes
-   * @return
+   * @param declaredTypes a list with all declared inner types
+   * @return this
    */
   HxType setInnerTypes(List<HxType> declaredTypes);
 
   /**
-   * @param declaredTypes
-   * @return
+   * @param declaredTypes a list with all declared inner types
+   * @return this
    */
   default HxType setInnerTypes(HxType... declaredTypes) {
     return setInnerTypes(Arrays.asList(declaredTypes));
   }
 
   /**
-   * @return
+   * If this type is an inner class then this method return a type reference to the enclosing type
+   *
+   * @return the enclosing type of this type if present
    */
   Optional<HxType> getEnclosingType();
 
   /**
-   * @return
+   * If this type is an inner local class then this method return a type reference to the enclosing method/constructor
+   *
+   * @return the enclosing method of this type if present
    */
   Optional<HxMethod> getEnclosingMethod();
 
@@ -467,18 +475,27 @@ public interface HxType
                     HxField field);
 
   /**
-   * @param field
+   * @param field to remove
    * @return this
+   * @throws IllegalArgumentException if given field doesn't belong to this type
    */
   HxType removeField(HxField field);
 
   /**
-   * Gets a field with given name
+   * Gets the first available field with given name
    *
    * @param name of a field to search
    * @return {@link Optional#empty() empty} or a field with given name
    */
   Optional<HxField> findField(String name);
+
+  /**
+   * @param name       of the searched field
+   * @param descriptor form of the searched field's type
+   * @return {@link Optional#empty() empty} or a field with given name and descriptor
+   */
+  Optional<HxField> findFieldDirectly(String name,
+                                      String descriptor);
 
   /**
    * Checks whether there is a field with given name or not
@@ -522,7 +539,7 @@ public interface HxType
   }
 
   /**
-   * @param index where to insert given method
+   * @param index  where to insert given method
    * @param method to add
    * @return
    */
@@ -538,7 +555,7 @@ public interface HxType
 
   /**
    * @param name       is name of the wanted method
-   * @param descriptor is signature description of the wanted method
+   * @param descriptor is signature descriptor of the desired method
    * @return {@link Optional#empty() empty} or a method with given name and signature
    */
   Optional<HxMethod> findMethodDirectly(String name,
@@ -549,10 +566,7 @@ public interface HxType
    * @return
    */
   default Optional<HxMethod> findMethod(Method method) {
-    HxTypeReference returnTypeReference = getHaxxor().reference(method.getReturnType().getName());
-    return findMethod(returnTypeReference,
-                      method.getName(),
-                      getHaxxor().referencesAsArray(toClassNames(getHaxxor(), method.getParameterTypes())));
+    return findMethod(method.getReturnType(), method.getName(), method.getParameterTypes());
   }
 
   /**
@@ -842,6 +856,20 @@ public interface HxType
   }
 
   /**
+   * @return
+   */
+  default Optional<HxMethod> findOrCreateDefaultConstructor() {
+    return findDefaultConstructor();
+  }
+
+  /**
+   * @return
+   */
+  default Optional<HxMethod> findOrCreateClassInitializer() {
+    return findClassInitializer();
+  }
+
+  /**
    * @param constructor
    * @return
    */
@@ -962,7 +990,7 @@ public interface HxType
    * <b>false</b> otherwise.
    */
   default boolean hasNameViaExtends(String className) {
-    if(!hasName(className)) {
+    if (!hasName(className)) {
       final Optional<HxType> superType = getSuperType();
       return superType.isPresent() &&
              superType.get().hasNameViaExtends(className);
@@ -983,9 +1011,53 @@ public interface HxType
   /**
    * @param otherType
    * @return
+   */
+  default boolean isAssignableFrom(String otherType) {
+    return isAssignableFrom(getHaxxor().reference(otherType));
+  }
+
+  /**
+   * @param otherType
+   * @return
+   */
+  default boolean isAssignableFrom(Class<?> otherType) {
+    return isAssignableFrom(getHaxxor().reference(otherType.getName()));
+  }
+
+  /**
+   * @param otherType
+   * @return
    * @see Class#isAssignableFrom(Class)
    */
   boolean isAssignableFrom(HxType otherType);
+
+  /**
+   * This method calculates a number of hops from this type to other subtype or interface-type
+   *
+   * @param otherType as destination
+   * @return <b>-1</b> if there isn't any way to reach given type, otherwise a calculated distance
+   * @implNote by default this method uses array-cost equal to 3, extends-cost equal to 15 and interface-cost equal
+   * to 600
+   */
+  default int distanceTo(HxType otherType) {
+    return distanceTo(otherType, 3, 15, 600);
+  }
+
+  /**
+   * This method calculates a number of hops from this type to other super- or interface-type
+   *
+   * @param otherType     as destination
+   * @param arrayCost     for arrays destinations
+   * @param extendsCost   for super-type visiting
+   * @param interfaceCost for interface-type visiting
+   * @return <b>-1</b> if there isn't any way to reach given type, otherwise a calculated distance
+   */
+  default int distanceTo(HxType otherType,
+                         int arrayCost,
+                         int extendsCost,
+                         int interfaceCost) {
+    return hasName(otherType.getName()) ? 0 : -1;
+  }
 
   /**
    * @return
@@ -1141,11 +1213,20 @@ public interface HxType
     return hasModifiers(Modifiers.FINAL);
   }
 
+  default HxType makeFinal() {
+    return removeModifiers(Modifiers.ABSTRACT, Modifiers.INTERFACE, Modifiers.ANNOTATION)
+      .addModifiers(Modifiers.FINAL, Modifiers.SUPER);
+  }
+
   /**
    * @return <b>true</b> if this is a public type, <b>false</b> otherwise.
    */
   default boolean isPublic() {
     return hasModifiers(Modifiers.PUBLIC);
+  }
+
+  default HxType makePublic() {
+    return makeInternal().addModifier(Modifiers.PUBLIC);
   }
 
   /**
@@ -1169,11 +1250,19 @@ public interface HxType
     return !isPublic() && !isProtected() && !isPrivate();
   }
 
+  default HxType makeInternal() {
+    return removeModifiers(Modifiers.PUBLIC, Modifiers.PROTECTED, Modifiers.PRIVATE);
+  }
+
   /**
    * @return <b>true</b> if this is an abstract type, <b>false</b> otherwise.
    */
   default boolean isAbstract() {
     return hasModifiers(Modifiers.ABSTRACT);
+  }
+
+  default HxType makeAbstract() {
+    return removeModifier(Modifiers.FINAL).addModifier(Modifiers.ABSTRACT);
   }
 
   /**
@@ -1183,6 +1272,12 @@ public interface HxType
     return hasModifiers(Modifiers.INTERFACE);
   }
 
+  default HxType makeInterface() {
+    return makeAbstract() //removes final and sets abstract flag
+      .removeModifiers(Modifiers.SUPER, Modifiers.ENUM)
+      .addModifier(Modifiers.INTERFACE);
+  }
+
   /**
    * @return <b>true</b> if this is an enum type, <b>false</b> otherwise.
    */
@@ -1190,11 +1285,20 @@ public interface HxType
     return hasModifiers(Modifiers.ENUM);
   }
 
+  default HxType makeEnum() {
+    return makeFinal().addModifier(Modifiers.ENUM);
+  }
+
   /**
    * @return <b>true</b> if this is an annotation type, <b>false</b> otherwise.
    */
   default boolean isAnnotation() {
     return hasModifiers(Modifiers.ANNOTATION);
+  }
+
+  default HxType makeAnnotation() {
+    return makeInterface()
+      .addModifier(Modifiers.ANNOTATION);
   }
 
   /**
@@ -1256,6 +1360,14 @@ public interface HxType
   }
 
   /**
+   * @param descriptor
+   * @return <b>true</b> if this type has the given descriptor
+   */
+  default boolean hasDescriptor(String descriptor) {
+    return descriptor.equals(toDescriptor());
+  }
+
+  /**
    * @return parameter descriptor of this type
    */
   default String toDescriptor() {
@@ -1299,4 +1411,22 @@ public interface HxType
    * @return the actual state of this type as loadable bytecode
    */
   byte[] toByteCode();
+
+  /**
+   * @param stubClass to wire in
+   * @return a list with all added elements that belong to the given stub class
+   * @see net.andreho.haxxor.spec.api.stub.Stub
+   */
+  default List<HxMember<?>> addTemplate(Class<?> stubClass) {
+    return addTemplate(getHaxxor().resolve(stubClass));
+  }
+
+  /**
+   * @param stubType to wire in
+   * @return a list with all added elements that belong to the given stub class
+   * @see net.andreho.haxxor.spec.api.stub.Stub
+   */
+  default List<HxMember<?>> addTemplate(HxType stubType) {
+    return Collections.emptyList();
+  }
 }

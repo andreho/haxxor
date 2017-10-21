@@ -116,7 +116,7 @@ final class ArgumentsClassFactory {
                                      final HxType type,
                                      final String layout) {
     HxMethod constructor = haxxor.createConstructor(String.class)
-                                 .addModifiers(HxMethod.Modifiers.PUBLIC);
+                                 .addModifier(HxMethod.Modifiers.PUBLIC);
     HxExtendedCodeStream stream = constructor.getBody().getFirst().asStream();
 
     stream

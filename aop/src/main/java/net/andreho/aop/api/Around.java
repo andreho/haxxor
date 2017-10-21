@@ -32,6 +32,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Order(StandardOrder.AROUND)
+@Deprecated /* NOT SUPPORTED AT THE MOMENT */
 public @interface Around {
   /**
    * @return an unique name of a globally available profile

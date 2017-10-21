@@ -7,14 +7,45 @@ import java.util.Set;
  * Created by a.hofmann on 31.05.2015.
  */
 public interface HxParameter
-    extends HxAnnotated<HxParameter>,
-            HxMember<HxParameter>,
-            HxOwned<HxParameter>,
-            HxNamed,
-            HxTyped,
-            HxOrdered,
-            HxProvider,
-            Cloneable {
+  extends HxAnnotated<HxParameter>,
+          HxMember<HxParameter>,
+          HxOwned<HxParameter>,
+          HxNamed,
+          HxTyped,
+          HxOrdered,
+          HxProvider,
+          Cloneable {
+
+  /**
+   *
+   */
+  enum Modifiers
+    implements HxModifier {
+    FINAL(0x0010),
+    SYNTHETIC(0x1000),
+    MANDATED(0x8000);
+
+    final int bit;
+
+    /**
+     * Transforms given modifiers to an equal enum-set
+     *
+     * @param modifiers to transform
+     * @return enum-set representation of given parameter's modifiers
+     */
+    public static Set<Modifiers> toSet(int modifiers) {
+      return HxModifier.toSet(Modifiers.class, modifiers);
+    }
+
+    Modifiers(int bit) {
+      this.bit = bit;
+    }
+
+    @Override
+    public int toBit() {
+      return bit;
+    }
+  }
 
   /**
    * @return a new copy of this parameter
@@ -28,11 +59,12 @@ public interface HxParameter
   HxParameter clone(String name);
 
   /**
-   * @param name of the cloned parameter
+   * @param name            of the cloned parameter
    * @param withAnnotations whether to copy annotations or not
    * @return a new copy of this parameter
    */
-  HxParameter clone(String name, boolean withAnnotations);
+  HxParameter clone(String name,
+                    boolean withAnnotations);
 
   /**
    * @return zero-based index of this parameter in the parameter list of the owning method/constructor
@@ -112,7 +144,7 @@ public interface HxParameter
    * @return
    */
   default boolean hasType(Class<?> type) {
-    return getType().hasName(type.getName());
+    return hasName(type.getName());
   }
 
   /**
@@ -121,36 +153,5 @@ public interface HxParameter
    */
   default boolean hasType(HxType type) {
     return getType().equals(type);
-  }
-
-  /**
-   *
-   */
-  enum Modifiers
-      implements HxModifier {
-    FINAL(0x0010),
-    SYNTHETIC(0x1000),
-    MANDATED(0x8000);
-
-    final int bit;
-
-    Modifiers(int bit) {
-      this.bit = bit;
-    }
-
-    /**
-     * Transforms given modifiers to an equal enum-set
-     *
-     * @param modifiers to transform
-     * @return enum-set representation of given parameter's modifiers
-     */
-    public static Set<Modifiers> toSet(int modifiers) {
-      return HxModifier.toSet(Modifiers.class, modifiers);
-    }
-
-    @Override
-    public int toBit() {
-      return bit;
-    }
   }
 }

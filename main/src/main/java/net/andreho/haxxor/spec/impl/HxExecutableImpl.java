@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static net.andreho.haxxor.Utils.isUninitialized;
@@ -110,14 +111,6 @@ public abstract class HxExecutableImpl
     return parameters;
   }
 
-  private List<HxType> initializeExceptions() {
-    List<HxType> exceptions = this.exceptions;
-    if (isUninitialized(exceptions)) {
-      this.exceptions = exceptions = new ArrayList<>();
-    }
-    return exceptions;
-  }
-
   @Override
   public List<HxParameter> getParameters() {
     return this.parameters;
@@ -210,7 +203,6 @@ public abstract class HxExecutableImpl
       }
       current = current.getSuperType().get();
     }
-
     return methods;
   }
 
@@ -234,7 +226,11 @@ public abstract class HxExecutableImpl
 
   @Override
   public int hashCode() {
-    return getParameters().hashCode();
+    int hash = 0;
+    for(HxParameter parameter : getParameters()) {
+      hash = Integer.rotateLeft(hash, 1) + Objects.hashCode(parameter.getType());
+    }
+    return hash;
   }
 
   @Override

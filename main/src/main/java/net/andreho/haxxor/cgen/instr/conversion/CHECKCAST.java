@@ -25,7 +25,7 @@ public class CHECKCAST
   }
 
   @Override
-  public List<Object> getStackPushList(final HxComputingContext context) {
+  public List<Object> compute(final HxComputingContext context) {
     return context.getStackPush()
                   .prepare()
                   .push(getOperand())

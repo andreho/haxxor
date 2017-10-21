@@ -5,13 +5,22 @@ import net.andreho.haxxor.spec.api.HxTypeReference;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
 import net.andreho.haxxor.spi.HxClassnameNormalizer;
 import net.andreho.haxxor.spi.HxElementFactory;
+import net.andreho.haxxor.spi.HxFieldInitializer;
+import net.andreho.haxxor.spi.HxFieldVerifier;
+import net.andreho.haxxor.spi.HxMethodInitializer;
+import net.andreho.haxxor.spi.HxMethodVerifier;
+import net.andreho.haxxor.spi.HxStubInterpreter;
+import net.andreho.haxxor.spi.HxTypeDeserializer;
 import net.andreho.haxxor.spi.HxTypeInitializer;
-import net.andreho.haxxor.spi.HxTypeInterpreter;
+import net.andreho.haxxor.spi.HxTypeSerializer;
+import net.andreho.haxxor.spi.HxTypeVerifier;
+import net.andreho.haxxor.spi.HxVerificationResult;
 import net.andreho.haxxor.spi.impl.CachedHxByteCodeLoader;
 import net.andreho.haxxor.spi.impl.DefaultHxClassnameNormalizer;
 import net.andreho.haxxor.spi.impl.DefaultHxElementFactory;
+import net.andreho.haxxor.spi.impl.DefaultHxTypeDeserializer;
 import net.andreho.haxxor.spi.impl.DefaultHxTypeInitializer;
-import net.andreho.haxxor.spi.impl.DefaultHxTypeInterpreter;
+import net.andreho.haxxor.spi.impl.DefaultHxTypeSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,8 +30,29 @@ import java.util.Objects;
  * <br/>Created by a.hofmann on 19.03.2016.<br/>
  */
 public class HaxxorBuilder {
+
   private final boolean concurrent;
   private final ClassLoader classLoader;
+
+  /**
+   * Creates new instance of builder with given classloader
+   *
+   * @param classLoader to use
+   * @return new builder instance
+   */
+  public static HaxxorBuilder with(ClassLoader classLoader) {
+    return new HaxxorBuilder(classLoader, false);
+  }
+
+  /**
+   * Creates new instance of builder with given classloader
+   *
+   * @param classLoader to use
+   * @return new builder instance
+   */
+  public static HaxxorBuilder withConcurrent(ClassLoader classLoader) {
+    return new HaxxorBuilder(classLoader, true);
+  }
 
   public HaxxorBuilder() {
     this(HaxxorBuilder.class.getClassLoader(), false);
@@ -43,24 +73,6 @@ public class HaxxorBuilder {
   }
 
   /**
-   * Creates new instance of builder with given classloader
-   * @param classLoader to use
-   * @return new builder instance
-   */
-  public static HaxxorBuilder with(ClassLoader classLoader) {
-    return new HaxxorBuilder(classLoader, false);
-  }
-
-  /**
-   * Creates new instance of builder with given classloader
-   * @param classLoader to use
-   * @return new builder instance
-   */
-  public static HaxxorBuilder withConcurrent(ClassLoader classLoader) {
-    return new HaxxorBuilder(classLoader, true);
-  }
-
-  /**
    * @return
    */
   public boolean isConcurrent() {
@@ -78,6 +90,8 @@ public class HaxxorBuilder {
   /**
    * Creates a new type-initializer instance that must be involved into creation of new types via
    * {@link HxElementFactory#createType(String)}
+   *
+   * @param haxxor instance that requires this component
    * @return new type-initializer instance associated with given haxxor instance
    */
   public HxTypeInitializer createTypeInitializer(Haxxor haxxor) {
@@ -85,9 +99,33 @@ public class HaxxorBuilder {
   }
 
   /**
+   * Creates a new field-initializer instance that must be involved into creation of new field via
+   * {@link HxElementFactory#createField(HxType, String)}
+   *
+   * @param haxxor instance that requires this component
+   * @return new field-initializer instance associated with given haxxor instance
+   */
+  public HxFieldInitializer createFieldInitializer(final Haxxor haxxor) {
+    return (hxField) -> {
+    };
+  }
+
+  /**
+   * Creates a new method-initializer instance that must be involved into creation of new field via
+   * {@link HxElementFactory#createMethod(HxType, String, HxType...)}
+   *
+   * @param haxxor instance that requires this component
+   * @return new method-initializer instance associated with given haxxor instance
+   */
+  public HxMethodInitializer createMethodInitializer(final Haxxor haxxor) {
+    return (hxMethod) -> {
+    };
+  }
+
+  /**
    * Creates element factory instance that must be used with given haxxor instance
    *
-   * @param haxxor instance that receives created element factory
+   * @param haxxor is the requesting instance that receives created element factory
    * @return new element factory associated with given haxxor instance
    */
   public HxElementFactory createElementFactory(Haxxor haxxor) {
@@ -95,11 +133,19 @@ public class HaxxorBuilder {
   }
 
   /**
-   * @param haxxor instance
-   * @return new type interpreter instance
+   * @param haxxor is the requesting instance
+   * @return new type deserializer instance
    */
-  public HxTypeInterpreter createTypeInterpreter(Haxxor haxxor) {
-    return new DefaultHxTypeInterpreter();
+  public HxTypeDeserializer createTypeDeserializer(final Haxxor haxxor) {
+    return new DefaultHxTypeDeserializer(haxxor);
+  }
+
+  /**
+   * @param haxxor is the requesting instance
+   * @return new type serializer instance
+   */
+  public HxTypeSerializer createTypeSerializer(Haxxor haxxor) {
+    return new DefaultHxTypeSerializer(haxxor);
   }
 
   /**
@@ -140,5 +186,44 @@ public class HaxxorBuilder {
    */
   public HxClassnameNormalizer createClassNameNormalizer(Haxxor haxxor) {
     return new DefaultHxClassnameNormalizer();
+  }
+
+  /**
+   * Creates a new type verifier for any type that is going to be serialized
+   *
+   * @param haxxor is the requesting instance
+   * @return
+   */
+  public HxTypeVerifier createTypeVerifier(final Haxxor haxxor) {
+    return type -> HxVerificationResult.ok();
+  }
+
+  /**
+   * Creates a new type verifier for any field that is going to be serialized
+   * @param haxxor is the requesting instance
+   * @return
+   */
+  public HxFieldVerifier createFieldVerifier(final Haxxor haxxor) {
+    return hxField -> HxVerificationResult.ok();
+  }
+
+  /**
+   * Creates a new type verifier for any method/constructor that is going to be serialized
+   * @param haxxor is the requesting instance
+   * @return
+   */
+  public HxMethodVerifier createMethodVerifier(final Haxxor haxxor) {
+    return hxMethod -> HxVerificationResult.ok();
+  }
+
+  /**
+   * Creates a new stub-interpreter
+   * @param haxxor is the requesting instance
+   * @return a
+   */
+  public HxStubInterpreter createStubInterpreter(final Haxxor haxxor) {
+    return (target, stub) -> {
+      throw new UnsupportedOperationException("Not implemented");
+    };
   }
 }

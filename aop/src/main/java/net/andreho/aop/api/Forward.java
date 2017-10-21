@@ -32,6 +32,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Order(StandardOrder.FORWARDING)
+@Deprecated /* NOT SUPPORTED AT THE MOMENT */
 public @interface Forward {
 
   /**

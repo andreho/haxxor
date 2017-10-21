@@ -2,6 +2,8 @@ package net.andreho.aop.spi;
 
 import net.andreho.haxxor.spec.api.HxMethod;
 
+import java.util.List;
+
 /**
  * <br/>Created by a.hofmann on 17.06.2017 at 07:06.
  */
@@ -12,7 +14,8 @@ public interface AspectAdvice<T>
     TYPE,
     FIELD,
     METHOD,
-    CONSTRUCTOR
+    CONSTRUCTOR,
+    PARAMETER
   }
 
   /**
@@ -38,12 +41,16 @@ public interface AspectAdvice<T>
   /**
    * @return
    */
-  HxMethod getInterceptor();
+  List<HxMethod> getInterceptors();
 
   /**
    * @return
    */
-  boolean needsAspectFactory();
+  default boolean needsAspectFactory() {
+    return getInterceptors()
+      .stream()
+      .anyMatch(m -> !m.isStatic());
+  }
 
   /**
    * @return

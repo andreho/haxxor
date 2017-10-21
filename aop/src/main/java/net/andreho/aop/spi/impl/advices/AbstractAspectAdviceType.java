@@ -1,23 +1,32 @@
 package net.andreho.aop.spi.impl.advices;
 
 import net.andreho.aop.spi.AspectAdvice;
-import net.andreho.aop.spi.AspectAdviceParameterInjector;
-import net.andreho.aop.spi.AspectAdvicePostProcessor;
 import net.andreho.aop.spi.AspectAdviceType;
 import net.andreho.aop.spi.AspectDefinition;
 import net.andreho.aop.spi.AspectProfile;
 import net.andreho.aop.spi.ElementMatcher;
+import net.andreho.aop.spi.ParameterInjectorSelector;
+import net.andreho.aop.spi.ResultPostProcessor;
 import net.andreho.aop.spi.impl.Constants;
 import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxAnnotation;
+import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxOrdered;
+import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxType;
 
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * <br/>Created by a.hofmann on 19.06.2017 at 00:35.
@@ -34,16 +43,16 @@ public abstract class AbstractAspectAdviceType
 
   private final int order;
   private final EnumSet<AspectAdvice.Target> targets;
-  private final AspectAdviceParameterInjector parameterInjector;
-  private final AspectAdvicePostProcessor resultHandler;
+  private final ParameterInjectorSelector parameterInjectorSelector;
+  private final ResultPostProcessor resultPostProcessor;
 
   public AbstractAspectAdviceType(final int order,
-                                  final AspectAdviceParameterInjector parameterInjector,
-                                  final AspectAdvicePostProcessor resultHandler,
-                                  final AspectAdvice.Target ... targets) {
+                                  final ParameterInjectorSelector parameterInjectorSelector,
+                                  final ResultPostProcessor resultPostProcessor,
+                                  final AspectAdvice.Target... targets) {
     this.order = order;
-    this.parameterInjector = parameterInjector;
-    this.resultHandler = resultHandler;
+    this.parameterInjectorSelector = requireNonNull(parameterInjectorSelector);
+    this.resultPostProcessor = requireNonNull(resultPostProcessor);
     this.targets = EnumSet.copyOf(Arrays.asList(targets));
   }
 
@@ -53,18 +62,23 @@ public abstract class AbstractAspectAdviceType
   }
 
   @Override
-  public AspectAdviceParameterInjector getParameterInjector() {
-    return parameterInjector;
+  public ParameterInjectorSelector getParameterInjectorSelector() {
+    return parameterInjectorSelector;
   }
 
   @Override
-  public AspectAdvicePostProcessor getPostProcessor() {
-    return resultHandler;
+  public ResultPostProcessor getResultPostProcessor() {
+    return resultPostProcessor;
   }
 
   @Override
   public boolean hasTarget(final AspectAdvice.Target target) {
     return targets.contains(target);
+  }
+
+  @Override
+  public boolean isActivatedThrough(final Class<? extends Annotation> activatorAnnotation) {
+    return false;
   }
 
   @Override
@@ -82,6 +96,32 @@ public abstract class AbstractAspectAdviceType
                                                           final String profileName) {
     final Optional<AspectProfile> aspectProfile = def.getAspectProfile(profileName);
     return aspectProfile.orElseThrow(IllegalStateException::new).getMethodsMatcher();
+  }
+
+  protected ElementMatcher<HxParameter> obtainParametersMatcher(final AspectDefinition def,
+                                                             final String profileName) {
+    final Optional<AspectProfile> aspectProfile = def.getAspectProfile(profileName);
+    return aspectProfile.orElseThrow(IllegalStateException::new).getParametersMatcher();
+  }
+
+  protected ElementMatcher<HxField> obtainFieldsMatcher(final AspectDefinition def,
+                                                        final String profileName) {
+    final Optional<AspectProfile> aspectProfile = def.getAspectProfile(profileName);
+    return aspectProfile.orElseThrow(IllegalStateException::new).getFieldsMatcher();
+  }
+
+  protected Map<String, List<HxMethod>> collectAdvicesByProfileWithType(final String adviceAnnotation, final Collection<HxMethod> afterAdvices) {
+    final Map<String, List<HxMethod>> mappedWithProfiles = new LinkedHashMap<>();
+
+    for (HxMethod afterAdvice : afterAdvices) {
+      final HxAnnotation afterAnnotation = afterAdvice.getAnnotation(adviceAnnotation).get();
+      final String profile = fetchProfileName(afterAnnotation);
+      final List<HxMethod> advicesByProfile = mappedWithProfiles.computeIfAbsent(profile,
+                                                                                 (key) -> new ArrayList<>());
+
+      advicesByProfile.add(afterAdvice);
+    }
+    return mappedWithProfiles;
   }
 
   protected String fetchProfileName(final HxAnnotation annotation, final String attribute) {

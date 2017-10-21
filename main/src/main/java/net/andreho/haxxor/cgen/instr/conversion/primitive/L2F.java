@@ -23,7 +23,7 @@ public class L2F
   }
 
   @Override
-  public List<Object> getStackPushList(final HxComputingContext context) {
+  public List<Object> compute(final HxComputingContext context) {
     return PUSH_FLOAT;
   }
 }

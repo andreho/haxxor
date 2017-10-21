@@ -9,6 +9,7 @@ import net.andreho.aop.spi.impl.matchers.ClassWithMatcher;
 import net.andreho.aop.spi.impl.matchers.ClassesMatcher;
 import net.andreho.aop.spi.impl.matchers.ConditionMatcher;
 import net.andreho.aop.spi.impl.matchers.DirectlyNamedMatcher;
+import net.andreho.aop.spi.impl.matchers.MethodParametersMatcher;
 import net.andreho.aop.spi.impl.matchers.MethodsMatcher;
 import net.andreho.aop.spi.impl.matchers.ModifiersMatcher;
 import net.andreho.aop.spi.impl.matchers.NamedMatcher;
@@ -24,6 +25,7 @@ import net.andreho.haxxor.spec.api.HxMember;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxNamed;
 import net.andreho.haxxor.spec.api.HxOrdered;
+import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxTyped;
 
@@ -271,7 +273,7 @@ public class ElementMatcherFactoryImpl
     final ElementMatcher<HxAnnotated> annotatedMatcher = createAnnotatedMatcher(annotated);
     final ElementMatcher<HxType> throwingMatcher = createClassesFilter(throwing);
     final ElementMatcher<HxMethod> signaturesMatcher = createSignatureMatcher(signatures);
-    final ElementMatcher<HxMethod> parametersMatcher = createParameterMatcher(parameters);
+    final ElementMatcher<HxMethod> parametersMatcher = createMethodParametersMatcher(parameters);
 
     return new MethodsMatcher(
       getMethodType(type),
@@ -341,15 +343,33 @@ public class ElementMatcherFactoryImpl
     return ElementMatcher.any();
   }
 
-  private ElementMatcher<HxMethod> createParameterMatcher(final HxAnnotation[] parametersAnnotations) {
-    final List<ElementMatcher<HxMethod>> parameters = new ArrayList<>();
-    for (HxAnnotation signature : parametersAnnotations) {
-      parameters.add(createParameterMatcher(signature));
-    }
-    return ElementMatcher.or(parameters);
+  private ElementMatcher<HxMethod> createMethodParametersMatcher(final HxAnnotation[] parametersAnnotations) {
+    return new MethodParametersMatcher(createParametersFilter(parametersAnnotations));
   }
 
-  private ElementMatcher<HxMethod> createParameterMatcher(final HxAnnotation parameterAnnotation) {
+  @Override
+  public ElementMatcher<HxField> createFieldsFilter(final HxAnnotation[] fieldsAnnotations) {
+    if(fieldsAnnotations.length > 0) {
+      throw new UnsupportedOperationException();
+    }
+    return ElementMatcher.any();
+  }
+
+  @Override
+  public ElementMatcher<HxParameter> createParametersFilter(final HxAnnotation[] parameters) {
+    if(parameters == null || parameters.length == 0) {
+      return ElementMatcher.any();
+    }
+
+    final List<ElementMatcher<HxParameter>> parametersMatchers = new ArrayList<>();
+    for (HxAnnotation parameterAnnotation : parameters) {
+      parametersMatchers.add(createParameterFilter(parameterAnnotation));
+    }
+
+    return ElementMatcher.or(parametersMatchers);
+  }
+
+  private ElementMatcher<HxParameter> createParameterFilter(final HxAnnotation parameterAnnotation) {
     if(parameterAnnotation == null) {
       return ElementMatcher.any();
     }
@@ -371,10 +391,5 @@ public class ElementMatcherFactoryImpl
       annotatedMatcher,
       namedMatcher
     ).negateIf(negate);
-  }
-
-  @Override
-  public ElementMatcher<HxField> createFieldsFilter(final HxAnnotation[] fieldsAnnotations) {
-    return ElementMatcher.any();
   }
 }

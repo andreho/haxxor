@@ -81,6 +81,13 @@ public interface HxElementFactory extends HxProvider {
    * @param parameterTypes of new constructor
    * @return a new unbound constructor instance
    */
+  HxMethod createConstructor(final HxType... parameterTypes);
+
+  /**
+   * Creates a new unbound constructor with given parameters
+   * @param parameterTypes of new constructor
+   * @return a new unbound constructor instance
+   */
   default HxMethod createConstructor(final Class<?>... parameterTypes) {
     return createConstructor(toClassNames(parameterTypes));
   }
@@ -103,6 +110,17 @@ public interface HxElementFactory extends HxProvider {
   HxMethod createMethod(final String returnType,
                         final String methodName,
                         final String... parameterTypes);
+
+  /**
+   * Creates a new unbound method with given name, return-type and parameters
+   * @param returnType of new method
+   * @param methodName of new method
+   * @param parameterTypes of new method
+   * @return a new unbound method instance
+   */
+  HxMethod createMethod(final HxType returnType,
+                        final String methodName,
+                        final HxType... parameterTypes);
 
   /**
    * Creates a new unbound method with given name, return-type and parameters

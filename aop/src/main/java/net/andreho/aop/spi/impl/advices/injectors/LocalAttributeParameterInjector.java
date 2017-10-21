@@ -31,6 +31,7 @@ public class LocalAttributeParameterInjector
                                               final HxMethod shadow,
                                               final HxParameter parameter,
                                               final HxInstruction anchor) {
+    
     final HxAnnotation attributeAnnotation = parameter.getAnnotation(ATTRIBUTE_ANNOTATION_TYPE_NAME).get();
     final String attributeName = attributeAnnotation.getAttribute("value", "");
     final AspectMethodContext methodContext = context.getAspectMethodContext();

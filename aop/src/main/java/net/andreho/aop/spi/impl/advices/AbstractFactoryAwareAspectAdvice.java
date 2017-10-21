@@ -1,46 +1,77 @@
 package net.andreho.aop.spi.impl.advices;
 
-import net.andreho.aop.spi.AspectAdviceParameterInjector;
-import net.andreho.aop.spi.AspectAdvicePostProcessor;
 import net.andreho.aop.spi.AspectAdviceType;
 import net.andreho.aop.spi.AspectContext;
 import net.andreho.aop.spi.AspectFactory;
 import net.andreho.aop.spi.AspectLocalAttribute;
 import net.andreho.aop.spi.AspectMethodContext;
 import net.andreho.aop.spi.ElementMatcher;
+import net.andreho.aop.spi.ParameterInjectorSelector;
+import net.andreho.aop.spi.ResultPostProcessor;
+import net.andreho.aop.spi.impl.Constants;
 import net.andreho.haxxor.cgen.HxCgenUtils;
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
 import net.andreho.haxxor.cgen.HxInstruction;
+import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxMethod;
+import net.andreho.haxxor.spec.api.HxOrdered;
 import net.andreho.haxxor.spec.api.HxType;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * <br/>Created by a.hofmann on 04.07.2017 at 15:22.
  */
-public class AbstractFactoryAwareAspectAdvice<T> extends AbstractShadowingAspectAdvice<T> {
+public class AbstractFactoryAwareAspectAdvice<T>
+  extends AbstractShadowingAspectAdvice<T> {
 
-  public AbstractFactoryAwareAspectAdvice(final int index,
-                                             final AspectAdviceType type,
-                                             final ElementMatcher<T> elementMatcher,
-                                             final String profileName,
-                                             final HxMethod interceptor,
-                                             final AspectAdviceParameterInjector parameterInjector,
-                                             final AspectAdvicePostProcessor resultHandler) {
-    super(index, type, elementMatcher, profileName, interceptor, parameterInjector, resultHandler);
+  protected static <E extends HxAnnotated<E> & HxOrdered>
+  Integer getIndex(final E element) {
+    return element.getAnnotation(Constants.ORDER_ANNOTATION_TYPE)
+                  .map(a -> a.getAttribute("value", Integer.MAX_VALUE))
+                  .orElse(Constants.UNORDERED_ELEMENT_INDEX + element.getIndex());
   }
 
-  protected void instantiateAspectInstance(final AspectContext context,
-                                           final HxInstruction anchor) {
+  public AbstractFactoryAwareAspectAdvice(final AspectAdviceType type,
+                                          final ElementMatcher<T> elementMatcher,
+                                          final String profileName,
+                                          final List<HxMethod> interceptors,
+                                          final ParameterInjectorSelector parameterInjectorSelector,
+                                          final ResultPostProcessor resultHandler) {
+    super(type, elementMatcher, profileName, interceptors, parameterInjectorSelector, resultHandler);
+  }
+
+  protected Optional<ParameterInjectorSelector.Result> findBestSuitableInterceptor(final AspectContext context,
+                                                                                   final HxMethod original) {
+    final ParameterInjectorSelector parameterInjectorSelector = getParameterInjectorSelector();
+    return parameterInjectorSelector.selectBestSuitableInjectors(context, original, getInterceptors());
+  }
+
+  protected boolean instantiateAspectInstance(final AspectContext context,
+                                              final HxMethod original,
+                                              final HxMethod interceptor,
+                                              final HxInstruction anchor) {
 
     final AspectMethodContext methodContext = context.getAspectMethodContext();
-    final AspectFactory aspectFactory = context.getAspectDefinition().getAspectFactory().get();
+    final AspectFactory aspectFactory = context
+      .getAspectDefinition()
+      .findAspectFactoryFor(interceptor.getDeclaringType())
+      .get();
+
     final HxMethod aspectFactoryMethod = aspectFactory.getMethod();
     final HxExtendedCodeStream stream = anchor.asAnchoredStream();
     final String aspectAttributeName = aspectFactory.getAspectAttributeName();
+    final Optional<ParameterInjectorSelector.Result> injectors =
+      getParameterInjectorSelector().selectSuitableInjectors(context, original, aspectFactoryMethod);
 
-    if(!methodContext.hasLocalAttribute(aspectAttributeName)) {
+    if (!injectors.isPresent()) {
+      return false;
+    }
+
+    if (!methodContext.hasLocalAttribute(aspectAttributeName)) {
       HxType aspectType;
-      if(aspectFactoryMethod.isConstructor()) {
+      if (aspectFactoryMethod.isConstructor()) {
         aspectType = aspectFactoryMethod.getDeclaringMember();
         stream
           .NEW(aspectType)
@@ -53,12 +84,13 @@ public class AbstractFactoryAwareAspectAdvice<T> extends AbstractShadowingAspect
                        aspectFactoryMethod,
                        methodContext.getOriginalMethod(),
                        methodContext.getShadowMethod(),
-                       anchor);
+                       anchor,
+                       injectors.get());
 
       stream.INVOKE(aspectFactoryMethod);
 
-      if(!aspectFactory.isReusable()) {
-        return;
+      if (!aspectFactory.isReusable()) {
+        return true;
       }
 
       final int slotIndex = methodContext.getNextSlotIndex();
@@ -69,5 +101,6 @@ public class AbstractFactoryAwareAspectAdvice<T> extends AbstractShadowingAspect
 
     final AspectLocalAttribute localAttribute = methodContext.getLocalAttribute(aspectAttributeName);
     stream.GENERIC_LOAD(localAttribute.getType(), localAttribute.getIndex());
+    return true;
   }
 }

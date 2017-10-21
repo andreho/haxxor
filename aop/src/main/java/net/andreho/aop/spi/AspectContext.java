@@ -2,6 +2,7 @@ package net.andreho.aop.spi;
 
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
+import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxType;
 
 /**
@@ -9,9 +10,22 @@ import net.andreho.haxxor.spec.api.HxType;
  */
 public interface AspectContext {
   /**
+   * @param aspectAdvice
+   */
+  void enterAspect(AspectAdvice<?> aspectAdvice);
+  /**
+   * @param aspectAdvice
+   */
+  default void leaveAspect(AspectAdvice<?> aspectAdvice) {}
+
+  /**
    * @param type
    */
   void enterType(HxType type);
+  /**
+   * @param type
+   */
+  default void leaveType(HxType type) {}
 
   /**
    * @param field
@@ -19,14 +33,44 @@ public interface AspectContext {
   void enterField(HxField field);
 
   /**
+   * @param field
+   */
+  default void leaveField(HxField field) {}
+
+  /**
    * @param method
    */
   void enterMethod(HxMethod method);
 
   /**
+   * @param method
+   */
+  default void leaveMethod(HxMethod method) {}
+
+  /**
    * @param constructor
    */
   void enterConstructor(HxMethod constructor);
+
+  /**
+   * @param constructor
+   */
+  default void leaveConstructor(HxMethod constructor) {}
+
+  /**
+   * @param parameter
+   */
+  void enterParameter(HxParameter parameter);
+
+  /**
+   * @param parameter
+   */
+  default void leaveParameter(HxParameter parameter) {}
+
+  /**
+   * @return
+   */
+  AspectAdvice<?> getAspectAdvice();
 
   /**
    * @return
@@ -37,4 +81,5 @@ public interface AspectContext {
    * @return
    */
   AspectMethodContext getAspectMethodContext();
+
 }

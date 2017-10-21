@@ -23,7 +23,7 @@ public class ALOAD
   }
 
   @Override
-  public List<Object> getStackPushList(final HxComputingContext context) {
+  public List<Object> compute(final HxComputingContext context) {
     Object type = context.getLocals()
                          .get(getLocalIndex());
     if (type instanceof Integer) {

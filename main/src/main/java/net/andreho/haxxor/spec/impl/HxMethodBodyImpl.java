@@ -4,7 +4,7 @@ import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionFactory;
 import net.andreho.haxxor.cgen.HxInstructionSort;
-import net.andreho.haxxor.cgen.HxInstructionsType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.HxLinkedMethodBody;
 import net.andreho.haxxor.cgen.HxLocalVariable;
 import net.andreho.haxxor.cgen.HxTryCatch;
@@ -102,7 +102,7 @@ public class HxMethodBodyImpl
       } else if(instruction.hasSort(HxInstructionSort.Switches)) {
         AbstractSwitchJumpInstruction aSwitch = (AbstractSwitchJumpInstruction) instruction;
         instruction = aSwitch.clone(remap(mapping, aSwitch.getDefaultLabel()), remap(mapping, aSwitch.getLabels()));
-      } else if(instruction.hasType(HxInstructionsType.Special.LABEL)) {
+      } else if(instruction.hasType(HxInstructionTypes.Special.LABEL)) {
         stream.LABEL(remap(mapping, (LABEL) instruction));
         continue;
       }

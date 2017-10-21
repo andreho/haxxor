@@ -1,13 +1,15 @@
 package net.andreho.haxxor.cgen;
 
+import net.andreho.haxxor.Utils;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * <br/>Created by a.hofmann on 13.06.2017 at 04:58.
  */
-public class HxArguments {
+public class HxArguments implements Iterable<Object> {
 
   private static final Object[] EMPTY_ARRAY = new Object[0];
 
@@ -131,5 +133,10 @@ public class HxArguments {
     }
     return builder.append(']')
                   .toString();
+  }
+
+  @Override
+  public Iterator<Object> iterator() {
+    return Utils.iterator(this.arguments, 0, this.length);
   }
 }

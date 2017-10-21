@@ -11,7 +11,6 @@ import java.util.Collection;
  */
 @FunctionalInterface
 public interface AspectAdviceParameterInjector {
-
   /**
    * Tries to answer a question about whether this injector
    * can be applied and inject valid value into the given parameter or not
@@ -31,11 +30,12 @@ public interface AspectAdviceParameterInjector {
 
     return true;
   }
+
   /**
    * Allocates value for the parameter under the given index
    * @param aspectAdvice is the currently processed step
    * @param context to use
-   * @param interceptor to invoke
+   * @param interceptor to invoke and whose parameters to populate
    * @param original that should be modified
    * @param shadow that should be executed
    * @param parameter that must be populated with a suitable value

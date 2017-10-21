@@ -4,7 +4,7 @@ import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.HxFrames;
 import net.andreho.haxxor.cgen.HxInstructionType;
-import net.andreho.haxxor.cgen.HxInstructionsType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInstruction;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public class FRAME
 
   @Override
   public HxInstructionType getInstructionType() {
-    return HxInstructionsType.Special.FRAME;
+    return HxInstructionTypes.Special.FRAME;
   }
 
   public HxFrames getType() {
@@ -61,7 +61,7 @@ public class FRAME
   }
 
   @Override
-  public List<Object> getStackPushList(final HxComputingContext context) {
+  public List<Object> compute(final HxComputingContext context) {
     return NO_STACK_PUSH;
   }
 

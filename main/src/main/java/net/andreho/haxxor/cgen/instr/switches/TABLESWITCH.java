@@ -30,7 +30,7 @@ public class TABLESWITCH
   }
 
   @Override
-  public List<Object> getStackPushList(final HxComputingContext context) {
+  public List<Object> compute(final HxComputingContext context) {
     for (LABEL label : getLabels()) {
       label.addReference(this);
     }

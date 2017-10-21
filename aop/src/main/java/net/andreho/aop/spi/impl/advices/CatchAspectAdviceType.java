@@ -2,22 +2,11 @@ package net.andreho.aop.spi.impl.advices;
 
 import net.andreho.aop.api.After;
 import net.andreho.aop.spi.AspectAdvice;
-import net.andreho.aop.spi.AspectAdviceParameterInjector;
-import net.andreho.aop.spi.AspectAdvicePostProcessor;
 import net.andreho.aop.spi.AspectDefinition;
 import net.andreho.aop.spi.ElementMatcher;
+import net.andreho.aop.spi.ParameterInjectorSelector;
+import net.andreho.aop.spi.ResultPostProcessor;
 import net.andreho.aop.spi.impl.Constants;
-import net.andreho.aop.spi.impl.advices.injectors.ArgParameterInjector;
-import net.andreho.aop.spi.impl.advices.injectors.ArgsParameterInjector;
-import net.andreho.aop.spi.impl.advices.injectors.ArityParameterInjector;
-import net.andreho.aop.spi.impl.advices.injectors.AttributeParameterInjector;
-import net.andreho.aop.spi.impl.advices.injectors.CaughtParameterInjector;
-import net.andreho.aop.spi.impl.advices.injectors.DeclaringParameterInjector;
-import net.andreho.aop.spi.impl.advices.injectors.DefaultInjector;
-import net.andreho.aop.spi.impl.advices.injectors.InterceptedParameterInjector;
-import net.andreho.aop.spi.impl.advices.injectors.LineParameterInjector;
-import net.andreho.aop.spi.impl.advices.injectors.MarkerParameterInjector;
-import net.andreho.aop.spi.impl.advices.injectors.ThisParameterInjector;
 import net.andreho.aop.spi.impl.advices.results.DefaultPostProcessor;
 import net.andreho.aop.spi.impl.advices.results.LocalAttributePostProcessor;
 import net.andreho.aop.spi.impl.advices.results.RedefinePostProcessor;
@@ -43,7 +32,18 @@ public class CatchAspectAdviceType
   public CatchAspectAdviceType(final int order) {
     super(
       order,
-      AspectAdviceParameterInjector.with(
+      ParameterInjectorSelector.create(),
+      ResultPostProcessor.list(
+        RedefinePostProcessor.INSTANCE,
+        LocalAttributePostProcessor.INSTANCE,
+        DefaultPostProcessor.INSTANCE
+      ),
+      TARGETS
+    );
+  }
+
+  /*
+AspectAdviceParameterInjector.with(
         ArgParameterInjector.INSTANCE,
         ArgsParameterInjector.INSTANCE,
         ThisParameterInjector.INSTANCE,
@@ -55,15 +55,8 @@ public class CatchAspectAdviceType
         AttributeParameterInjector.INSTANCE,
         CaughtParameterInjector.INSTANCE,
         DefaultInjector.INSTANCE
-      ),
-      AspectAdvicePostProcessor.with(
-        RedefinePostProcessor.INSTANCE,
-        LocalAttributePostProcessor.INSTANCE,
-        DefaultPostProcessor.INSTANCE
-      ),
-      TARGETS
-    );
-  }
+      )
+   */
 
   @Override
   public boolean isActivatedThrough(final Class<? extends Annotation> activatorAnnotation) {
@@ -87,11 +80,11 @@ public class CatchAspectAdviceType
       final HxType exceptionType = catchAnnotation.getAttribute("exception", (HxType) null);
       final ElementMatcher<HxMethod> affectedMethodsMatcher = obtainMethodsMatcher(def, profileName);
 
-      steps.add(
-        new CatchAspectAdvice(
-          index, profileName, this, affectedMethodsMatcher, catchAdvice, exceptionType
-        )
-      );
+//      steps.add(
+//        new CatchAspectAdvice(
+//          index, profileName, this, affectedMethodsMatcher, catchAdvice, exceptionType
+//        )
+//      );
     }
     return steps;
   }

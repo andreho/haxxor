@@ -4,8 +4,12 @@ import net.andreho.aop.spi.AspectAdviceType;
 import net.andreho.aop.spi.AspectContext;
 import net.andreho.aop.spi.AspectMethodContext;
 import net.andreho.aop.spi.ElementMatcher;
+import net.andreho.aop.spi.ParameterInjectorSelector;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.spec.api.HxMethod;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * <br/>Created by a.hofmann on 19.06.2017 at 00:34.
@@ -13,42 +17,44 @@ import net.andreho.haxxor.spec.api.HxMethod;
 public class AfterAspectAdvice
   extends AbstractFactoryAwareAspectAdvice<HxMethod> {
 
-  public AfterAspectAdvice(final int index,
-                           final String profileName,
+  public AfterAspectAdvice(final String profileName,
                            final AspectAdviceType type,
                            final ElementMatcher<HxMethod> elementMatcher,
-                           final HxMethod interceptor) {
-    super(index,
-          type,
+                           final List<HxMethod> interceptors) {
+    super(type,
           elementMatcher,
           profileName,
-          interceptor,
-          type.getParameterInjector(),
-          type.getPostProcessor()
+          interceptors,
+          type.getParameterInjectorSelector(),
+          type.getResultPostProcessor()
     );
   }
 
   @Override
   public boolean apply(final AspectContext context,
                        final HxMethod original) {
-    if (!matches(original) || !original.hasBody()) {
+
+    if (!matches(original) || !original.hasBody() || getInterceptors().isEmpty()) {
       return false;
     }
 
-    System.out.println("@After[" + getIndex() + "]: " + original);
+    final Optional<ParameterInjectorSelector.Result> bestInterceptor =
+      findBestSuitableInterceptor(context, original);
 
+    if(!bestInterceptor.isPresent()) {
+      return false;
+    }
+
+    final ParameterInjectorSelector.Result result = bestInterceptor.get();
+
+    System.out.println("@After[" + getIndex() + "]: " + original);
     final HxMethod shadow = findOrCreateShadowMethod(
       context, original, context.getAspectDefinition().createShadowMethodName(original.getName()));
 
-    final HxMethod interceptor = getInterceptor();
+    final HxMethod interceptor = result.method;
     final AspectMethodContext methodContext = context.getAspectMethodContext();
 
-//    methodContext.getDelegationEnd().forPrevious(
-//      ins -> ins.hasSort(HxInstructionSort.Exit) && ins.hasNot(HxInstructionsType.Exit.ATHROW),
-//      ins -> handleReturnOpcode(context, interceptor, original, shadow, ins)
-//    );
-
-    handleReturnOpcode(context, interceptor, original, shadow, methodContext.getDelegationEnd());
+    handleReturnOpcode(context, interceptor, original, shadow, methodContext.getDelegationEnd(), result);
 
     return true;
   }
@@ -57,13 +63,14 @@ public class AfterAspectAdvice
                                   final HxMethod interceptor,
                                   final HxMethod original,
                                   final HxMethod shadow,
-                                  final HxInstruction anchor) {
+                                  final HxInstruction anchor,
+                                  final ParameterInjectorSelector.Result result) {
 
-    if(needsAspectFactory()) {
-      instantiateAspectInstance(context, anchor);
+    if (!interceptor.isStatic()) {
+      instantiateAspectInstance(context, original, original, anchor);
     }
 
-    injectParameters(context, interceptor, original, shadow, anchor);
+    injectParameters(context, interceptor, original, shadow, anchor, result);
 
     anchor.asAnchoredStream().INVOKE(interceptor);
 

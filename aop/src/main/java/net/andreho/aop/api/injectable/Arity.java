@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation injects the arity (length of parameter list) of currently intercepted method
- * into an <b>int</b> parameter.
+ * into an <b>int</b> parameter, that was marked with this annotation.
  * <br/>Created by a.hofmann on 18.09.2015.<br/>
  */
 @Target(ElementType.PARAMETER)

@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 14.06.2017 at 02:32.
  */
-class DefaultHxTypeInterpreterTest {
+class DefaultHxTypeSerializerTest {
   static List<Class<?>> testClasses() {
     return Arrays.asList(
         MinimalBean.class,

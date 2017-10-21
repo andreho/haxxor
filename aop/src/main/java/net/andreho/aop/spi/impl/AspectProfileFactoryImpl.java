@@ -49,16 +49,18 @@ public class AspectProfileFactoryImpl implements AspectProfileFactory {
       return;
     }
 
-    final HxAnnotation[] methods = profileAnnotation.getAttribute("methods", Constants.EMPTY_ANNOTATION_ARRAY);
-    final HxAnnotation[] fields = profileAnnotation.getAttribute("fields", Constants.EMPTY_ANNOTATION_ARRAY);
     final HxAnnotation[] classes = profileAnnotation.getAttribute("classes", Constants.EMPTY_ANNOTATION_ARRAY);
+    final HxAnnotation[] fields = profileAnnotation.getAttribute("fields", Constants.EMPTY_ANNOTATION_ARRAY);
+    final HxAnnotation[] methods = profileAnnotation.getAttribute("methods", Constants.EMPTY_ANNOTATION_ARRAY);
+    final HxAnnotation[] parameters = profileAnnotation.getAttribute("parameters", Constants.EMPTY_ANNOTATION_ARRAY);
 
     result.add(
       new AspectProfileImpl(
         profileName,
         elementMatcherFactory.createClassesFilter(classes),
         elementMatcherFactory.createMethodsFilter(methods),
-        elementMatcherFactory.createFieldsFilter(fields)
+        elementMatcherFactory.createFieldsFilter(fields),
+        elementMatcherFactory.createParametersFilter(parameters)
       )
     );
   }

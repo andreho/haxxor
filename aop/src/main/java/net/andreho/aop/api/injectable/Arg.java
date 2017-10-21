@@ -20,9 +20,15 @@ public @interface Arg {
    * @return the parameter's index to inject
    */
   int value() default BY_TYPE;
+//
+//  /**
+//   * @return <b>true</b> if injection of the marked parameter must be fully completed in order
+//   * to execute following interceptor, <b>false</b> to use a suitable default value and call the interceptor anyway
+//   */
+//  boolean required() default false;
 
   /**
-   *
+   * Constant to select arguments by their type
    */
   int BY_TYPE = Integer.MIN_VALUE;
 }

@@ -99,7 +99,7 @@ public final class AopEntryPoint {
     long used = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
     final Haxxor haxxor = new Haxxor(HaxxorBuilder.with(loader));
-    final HxType hxType = haxxor.resolve(className, 0, classfileBuffer);
+    final HxType hxType = haxxor.resolve(className, classfileBuffer, 0);
 
     //NEVER PROCESS ASPECTS SELF
     if(hxType.isAnnotationPresent(Constants.ASPECT_ANNOTATION_TYPE)) {

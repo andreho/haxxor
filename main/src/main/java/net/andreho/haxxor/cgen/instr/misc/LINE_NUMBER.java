@@ -3,7 +3,7 @@ package net.andreho.haxxor.cgen.instr.misc;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.HxInstructionType;
-import net.andreho.haxxor.cgen.HxInstructionsType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInstruction;
 
@@ -34,7 +34,7 @@ public class LINE_NUMBER
 
   @Override
   public HxInstructionType getInstructionType() {
-    return HxInstructionsType.Special.LINE_NUMBER;
+    return HxInstructionTypes.Special.LINE_NUMBER;
   }
 
   @Override
@@ -43,7 +43,7 @@ public class LINE_NUMBER
   }
 
   @Override
-  public List<Object> getStackPushList(final HxComputingContext context) {
+  public List<Object> compute(final HxComputingContext context) {
     return NO_STACK_PUSH;
   }
 

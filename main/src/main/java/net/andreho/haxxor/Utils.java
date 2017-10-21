@@ -18,8 +18,7 @@ import java.util.Objects;
  * <br/>Created by a.hofmann on 30.05.2017 at 14:35.
  */
 public abstract class Utils {
-
-  private static final int DEFAULT_READ_BUFFER_LENGTH = 1028;
+  private static final int DEFAULT_READ_BUFFER_LENGTH = 2048;
 
   private Utils() {
   }
@@ -121,7 +120,7 @@ public abstract class Utils {
    *
    * @param inputStream to read
    * @return content of given stream as byte-array
-   * @implNote <b>ATTENTION:</b> input still must be closed by method's caller
+   * @implNote <b>ATTENTION:</b> input-stream must be closed by method's caller
    */
   public static byte[] toByteArray(InputStream inputStream)
   throws IOException {
@@ -234,10 +233,10 @@ public abstract class Utils {
   /**
    * Creates an iterator for given array (<u>remove()</u> isn't supported)
    *
+   * @param <T>
    * @param array  to iterate with
    * @param offset defines start index for iteration
    * @param length defines end index for iteration (exclusive)
-   * @param <T>
    * @return an iterator that visits elements of given array using given offset and length
    */
   public static final <T> Iterator<T> iterator(final T[] array,

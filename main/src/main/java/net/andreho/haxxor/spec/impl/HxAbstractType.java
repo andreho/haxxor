@@ -1,9 +1,10 @@
 package net.andreho.haxxor.spec.impl;
 
 import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.cgen.HxExtendedCodeStream;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionSort;
-import net.andreho.haxxor.cgen.HxInstructionsType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInvokeInstruction;
 import net.andreho.haxxor.spec.api.HxConstants;
 import net.andreho.haxxor.spec.api.HxField;
@@ -25,13 +26,70 @@ import java.util.function.Predicate;
  * <br/>Created by andreho on 3/26/16 at 7:21 PM.<br/>
  */
 public abstract class HxAbstractType
-    extends HxAnnotatedImpl<HxType>
-    implements HxType {
+  extends HxAnnotatedImpl<HxType>
+  implements HxType {
 
   private final Haxxor haxxor;
   private final String name;
 
-  public HxAbstractType(Haxxor haxxor, String name) {
+  private static int estimateDistance(final HxType lhs,
+                                      final HxType rhs,
+                                      int distance,
+                                      final int arrayCost,
+                                      final int extendsCost,
+                                      final int interfaceCost) {
+    if (lhs == null || rhs == null) {
+      return -1;
+    } else if (lhs.equals(rhs)) {
+      return distance;
+    } else if (lhs.isPrimitive()) {
+      return -1;
+    } else if (lhs.isArray()) {
+      if (lhs.getDimension() != rhs.getDimension()) {
+        return -1;
+      }
+
+      return estimateDistance(
+        lhs.getComponentType().get(),
+        rhs.getComponentType().get(),
+        distance + arrayCost,
+        arrayCost,
+        extendsCost,
+        interfaceCost
+      );
+    }
+
+    if (rhs.isInterface()) {
+      for (HxType itf : lhs.getInterfaces()) {
+        int dist = estimateDistance(
+          itf,
+          rhs,
+          distance += interfaceCost,
+          arrayCost,
+          extendsCost,
+          interfaceCost
+        );
+
+        if (dist > -1) {
+          return dist;
+        }
+      }
+    }
+    if (lhs.hasSuperType()) {
+      return estimateDistance(
+        lhs.getSuperType().get(),
+        rhs,
+        distance + extendsCost,
+        arrayCost,
+        extendsCost,
+        interfaceCost
+      );
+    }
+    return -1;
+  }
+
+  public HxAbstractType(Haxxor haxxor,
+                        String name) {
     this.haxxor = Objects.requireNonNull(haxxor, "Associated haxxor instance can't be null.");
     this.name = Objects.requireNonNull(name, "Given internal classname can't be null.");
 
@@ -75,7 +133,7 @@ public abstract class HxAbstractType
   @Override
   public HxType setSuperType(String superType) {
     if (superType == null) {
-      if("java.lang.Object".equals(getName())) {
+      if ("java.lang.Object".equals(getName())) {
         setSuperType((HxType) null);
         return this;
       }
@@ -134,7 +192,12 @@ public abstract class HxAbstractType
 
   @Override
   public Optional<HxField> findField(String name) {
-    //NO OP
+    return Optional.empty();
+  }
+
+  @Override
+  public Optional<HxField> findFieldDirectly(final String name,
+                                             final String descriptor) {
     return Optional.empty();
   }
 
@@ -185,7 +248,8 @@ public abstract class HxAbstractType
   }
 
   @Override
-  public Optional<HxMethod> findMethodDirectly(String name, String descriptor) {
+  public Optional<HxMethod> findMethodDirectly(String name,
+                                               String descriptor) {
     for (HxMethod method : getMethods(name)) {
       if (method.hasDescriptor(descriptor)) {
         return Optional.of(method);
@@ -234,28 +298,28 @@ public abstract class HxAbstractType
 
   @Override
   public Collection<HxMethod> findForwardingConstructors() {
-    if(!isInterface() && !isArray() && !isPrimitive() &&
-       !hasName("java.lang.Object") &&
-       getSuperType().isPresent()) {
+    if (!isInterface() && !isArray() && !isPrimitive() &&
+        !hasName("java.lang.Object") &&
+        getSuperType().isPresent()) {
 
       final HxType superType = getSuperType().get();
       final Collection<HxMethod> constructors = getConstructors();
       final Collection<HxMethod> forwardingConstructors = new ArrayList<>(2);
 
       loop:
-      for(HxMethod constructor : constructors) {
-        if(constructor.hasBody()) {
-          for(HxInstruction inst : constructor.getBody()) {
-            if(inst.hasSort(HxInstructionSort.Invocation) && inst instanceof AbstractInvokeInstruction) {
+      for (HxMethod constructor : constructors) {
+        if (constructor.hasBody()) {
+          for (HxInstruction inst : constructor.getBody()) {
+            if (inst.hasSort(HxInstructionSort.Invocation) && inst instanceof AbstractInvokeInstruction) {
               final AbstractInvokeInstruction invokeInstruction = (AbstractInvokeInstruction) inst;
 
-              if(invokeInstruction.hasType(HxInstructionsType.Invocation.INVOKESPECIAL) &&
-                 HxConstants.CONSTRUCTOR_METHOD_NAME.equals(invokeInstruction.getName())) {
+              if (invokeInstruction.hasType(HxInstructionTypes.Invocation.INVOKESPECIAL) &&
+                  HxConstants.CONSTRUCTOR_METHOD_NAME.equals(invokeInstruction.getName())) {
 
-                if(superType.hasName(invokeInstruction.getOwner())) {
+                if (superType.hasName(invokeInstruction.getOwner())) {
                   forwardingConstructors.add(constructor);
                   continue loop;
-                } else if(hasName(invokeInstruction.getOwner())) {
+                } else if (hasName(invokeInstruction.getOwner())) {
                   continue loop;
                 }
               }
@@ -267,6 +331,45 @@ public abstract class HxAbstractType
     }
 
     return Collections.emptySet();
+  }
+
+  @Override
+  public Optional<HxMethod> findOrCreateDefaultConstructor() {
+    Optional<HxMethod> defaultConstructorOptional = findDefaultConstructor();
+    if (defaultConstructorOptional.isPresent()) {
+      return defaultConstructorOptional;
+    }
+
+    Optional<HxMethod> defaultSuperConstructor = getSuperType().get().findDefaultConstructor();
+    if (!defaultSuperConstructor.isPresent() || !defaultSuperConstructor.get().isAccessibleFrom(this)) {
+      return Optional.empty();
+    }
+
+    HxMethod defaultConstructor = getHaxxor().createConstructor(new String[0]);
+    HxExtendedCodeStream stream = defaultConstructor.getBody().getFirst().asStream();
+    stream
+      .THIS() //Uninitialized
+      .INVOKESPECIAL(defaultSuperConstructor.get())
+      .RETURN();
+
+    return Optional.of(defaultConstructor);
+  }
+
+  @Override
+  public Optional<HxMethod> findOrCreateClassInitializer() {
+    Optional<HxMethod> classInitializerOptional = findClassInitializer();
+    if (classInitializerOptional.isPresent()) {
+      return classInitializerOptional;
+    }
+
+    HxMethod classInitializer = getHaxxor()
+      .createMethod("void", HxConstants.CLASS_INITIALIZER_METHOD_NAME)
+      .setModifiers(HxMethod.Modifiers.STATIC);
+
+    HxExtendedCodeStream stream = classInitializer.getBody().getFirst().asStream();
+    stream.RETURN();
+
+    return Optional.of(classInitializer);
   }
 
   @Override
@@ -306,7 +409,7 @@ public abstract class HxAbstractType
 
   @Override
   public boolean isAssignableFrom(final HxType otherType) {
-    if(otherType == null) {
+    if (otherType == null) {
       return false;
     } else if (equals(otherType)) {
       return true;
@@ -323,15 +426,15 @@ public abstract class HxAbstractType
 
     HxType current = otherType; //current is not NULL at this moment
 
-    if(isInterface()) {
+    if (isInterface()) {
       do {
         //search only for interfaces of current type (independent whether interface or not)
-        for(HxType itf : current.getInterfaces()) {
-          if(isAssignableFrom(itf)) {
+        for (HxType itf : current.getInterfaces()) {
+          if (isAssignableFrom(itf)) {
             return true;
           }
         }
-        if(!current.hasSuperType()) {
+        if (!current.hasSuperType()) {
           break;
         }
         current = current.getSuperType().get();
@@ -341,7 +444,7 @@ public abstract class HxAbstractType
         if (equals(current)) {
           return true;
         }
-        if(!current.hasSuperType()) {
+        if (!current.hasSuperType()) {
           break;
         }
         current = current.getSuperType().get();
@@ -351,27 +454,40 @@ public abstract class HxAbstractType
   }
 
   @Override
-  public Collection<HxField> fields(Predicate<HxField> predicate, boolean recursive) {
+  public int distanceTo(final HxType otherType,
+                        final int arrayCost,
+                        final int extendsCost,
+                        final int interfaceCost) {
+    return estimateDistance(otherType, this, 0, arrayCost, extendsCost, interfaceCost);
+  }
+
+  @Override
+  public Collection<HxField> fields(Predicate<HxField> predicate,
+                                    boolean recursive) {
     return Collections.emptySet();
   }
 
   @Override
-  public Collection<HxMethod> methods(Predicate<HxMethod> predicate, boolean recursive) {
+  public Collection<HxMethod> methods(Predicate<HxMethod> predicate,
+                                      boolean recursive) {
     return Collections.emptySet();
   }
 
   @Override
-  public Collection<HxMethod> constructors(Predicate<HxMethod> predicate, boolean recursive) {
+  public Collection<HxMethod> constructors(Predicate<HxMethod> predicate,
+                                           boolean recursive) {
     return Collections.emptySet();
   }
 
   @Override
-  public Collection<HxType> types(Predicate<HxType> predicate, boolean recursive) {
+  public Collection<HxType> types(Predicate<HxType> predicate,
+                                  boolean recursive) {
     return Collections.emptySet();
   }
 
   @Override
-  public Collection<HxType> interfaces(Predicate<HxType> predicate, boolean recursive) {
+  public Collection<HxType> interfaces(Predicate<HxType> predicate,
+                                       boolean recursive) {
     return Collections.emptySet();
   }
 
@@ -385,7 +501,7 @@ public abstract class HxAbstractType
     if (getEnclosingMethod().isPresent()) {
       return Optional.of(getEnclosingMethod().get().getDeclaringMember());
     }
-    if(getDeclaringMember() != null) {
+    if (getDeclaringMember() != null) {
       return Optional.of((HxType) getDeclaringMember());
     }
     return Optional.empty();
@@ -403,7 +519,7 @@ public abstract class HxAbstractType
     /* HxLinkedCode was copied from original java.lang.Class */
     final String name = getName();
     int dollarIndex = name.lastIndexOf('$');
-    if(dollarIndex < 0) {
+    if (dollarIndex < 0) {
       return null;
     }
     return name.substring(dollarIndex);
@@ -421,7 +537,7 @@ public abstract class HxAbstractType
       // top level class
       simpleName = getName();
       int dotIndex = simpleName.lastIndexOf(".");
-      return dotIndex < 0?
+      return dotIndex < 0 ?
              simpleName :
              simpleName.substring(dotIndex + 1); // strip the package name
     }
@@ -466,7 +582,7 @@ public abstract class HxAbstractType
            name.charAt(pos - 2) == '[' &&
            name.charAt(pos - 1) == ']') {
       dim++;
-      pos-=2;
+      pos -= 2;
     }
     return dim;
   }
@@ -487,7 +603,7 @@ public abstract class HxAbstractType
    * class.  Returns {@code false} otherwise.
    */
   protected boolean isLocalOrAnonymousClass() {
-    if(!hasModifiers(Modifiers.STATIC)) {
+    if (!hasModifiers(Modifiers.STATIC)) {
       return getDeclaringMember() instanceof HxMethod;
     }
     return false;
@@ -501,7 +617,7 @@ public abstract class HxAbstractType
 
   @Override
   public HxTypeReference toReference() {
-    if(isReference()) {
+    if (isReference()) {
       return (HxTypeReference) this;
     }
     return getHaxxor().createReference(this);
@@ -516,12 +632,17 @@ public abstract class HxAbstractType
   public Class<?> loadClass(final ClassLoader classLoader)
   throws ClassNotFoundException {
     String name = getName();
-    if(isArray()) {
+    if (isArray()) {
       name = toDescriptor()
-          .replace(HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR,
-                   HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR);
+        .replace(HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR,
+                 HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR);
     }
     return Class.forName(name, true, classLoader);
+  }
+
+  @Override
+  public boolean hasDescriptor(final String descriptor) {
+    return HxMethodImpl.checkDescriptorsParameters(this, descriptor) > -1;
   }
 
   @Override

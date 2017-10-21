@@ -31,7 +31,7 @@ public interface HxTypeInitializer {
   }
 
   /**
-   * Initializes, prepares or adapts intern layout of the given type
+   * Initializes, prepares or adapts intern properties of the given type
    * @param type to modify according to user's needs
    */
   void initialize(HxType type);

@@ -1,14 +1,10 @@
 package net.andreho.aop.api;
 
-import net.andreho.aop.api.injectable.Arg;
-import net.andreho.aop.api.injectable.Args;
 import net.andreho.aop.api.injectable.Arity;
 import net.andreho.aop.api.injectable.Attribute;
-import net.andreho.aop.api.injectable.Current;
 import net.andreho.aop.api.injectable.Declaring;
 import net.andreho.aop.api.injectable.Intercepted;
 import net.andreho.aop.api.injectable.Line;
-import net.andreho.aop.api.injectable.Marker;
 import net.andreho.aop.api.injectable.This;
 import net.andreho.aop.api.spec.Parameter;
 import net.andreho.aop.api.spec.Supports;
@@ -37,15 +33,10 @@ public @interface Aspect {
    */
   @Supports(
     injectionOf = {
-      Arg.class,
-      Args.class,
+      Line.class,
       Arity.class,
-      Attribute.class,
-      Current.class,
       Declaring.class,
       Intercepted.class,
-      Line.class,
-      Marker.class,
       This.class
     }, postProcessingWith = {
       Attribute.class

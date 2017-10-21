@@ -2,26 +2,15 @@ package net.andreho.aop.spi.impl.advices;
 
 import net.andreho.aop.api.After;
 import net.andreho.aop.spi.AspectAdvice;
-import net.andreho.aop.spi.AspectAdviceParameterInjector;
-import net.andreho.aop.spi.AspectAdvicePostProcessor;
 import net.andreho.aop.spi.AspectDefinition;
 import net.andreho.aop.spi.ElementMatcher;
+import net.andreho.aop.spi.ParameterInjectorSelector;
+import net.andreho.aop.spi.ResultPostProcessor;
 import net.andreho.aop.spi.impl.Constants;
-import net.andreho.aop.spi.impl.advices.injectors.ArgParameterInjector;
-import net.andreho.aop.spi.impl.advices.injectors.ArgsParameterInjector;
-import net.andreho.aop.spi.impl.advices.injectors.ArityParameterInjector;
-import net.andreho.aop.spi.impl.advices.injectors.AttributeParameterInjector;
-import net.andreho.aop.spi.impl.advices.injectors.DeclaringParameterInjector;
-import net.andreho.aop.spi.impl.advices.injectors.DefaultInjector;
-import net.andreho.aop.spi.impl.advices.injectors.InterceptedParameterInjector;
-import net.andreho.aop.spi.impl.advices.injectors.LineParameterInjector;
-import net.andreho.aop.spi.impl.advices.injectors.MarkerParameterInjector;
-import net.andreho.aop.spi.impl.advices.injectors.ResultParameterInjector;
-import net.andreho.aop.spi.impl.advices.injectors.ThisParameterInjector;
+import net.andreho.aop.spi.impl.advices.injector.ArgParameterInjector;
 import net.andreho.aop.spi.impl.advices.results.DefaultPostProcessor;
 import net.andreho.aop.spi.impl.advices.results.LocalAttributePostProcessor;
 import net.andreho.aop.spi.impl.advices.results.RedefinePostProcessor;
-import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 
@@ -30,12 +19,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <br/>Created by a.hofmann on 19.06.2017 at 00:35.
  */
 public class AfterAspectAdviceType
   extends AbstractAspectAdviceType {
+
   private static final AspectAdvice.Target[] TARGETS = {
     AspectAdvice.Target.METHOD, AspectAdvice.Target.CONSTRUCTOR
   };
@@ -43,6 +34,18 @@ public class AfterAspectAdviceType
   public AfterAspectAdviceType(final int order) {
     super(
       order,
+      ParameterInjectorSelector.create(
+        ArgParameterInjector.INSTANCE
+      ),
+      ResultPostProcessor.list(
+        RedefinePostProcessor.INSTANCE,
+        LocalAttributePostProcessor.INSTANCE,
+        DefaultPostProcessor.INSTANCE
+      ),
+      TARGETS
+    );
+  }
+  /*
       AspectAdviceParameterInjector.with(
         ArgParameterInjector.INSTANCE,
         ArgsParameterInjector.INSTANCE,
@@ -55,15 +58,8 @@ public class AfterAspectAdviceType
         AttributeParameterInjector.INSTANCE,
         ResultParameterInjector.INSTANCE,
         DefaultInjector.INSTANCE
-      ),
-      AspectAdvicePostProcessor.with(
-        RedefinePostProcessor.INSTANCE,
-        LocalAttributePostProcessor.INSTANCE,
-        DefaultPostProcessor.INSTANCE
-      ),
-      TARGETS
-    );
-  }
+      )
+   */
 
   @Override
   public boolean isActivatedThrough(final Class<? extends Annotation> activatorAnnotation) {
@@ -71,7 +67,8 @@ public class AfterAspectAdviceType
   }
 
   @Override
-  public Collection<AspectAdvice<?>> buildAdvices(final AspectDefinition def, final HxType type) {
+  public Collection<AspectAdvice<?>> buildAdvices(final AspectDefinition def,
+                                                  final HxType type) {
     final Collection<HxMethod> afterAdvices = locateAdvicesWith(type, Constants.AFTER_ANNOTATION_TYPE);
 
     if (afterAdvices.isEmpty()) {
@@ -79,15 +76,19 @@ public class AfterAspectAdviceType
     }
 
     final List<AspectAdvice<?>> steps = new ArrayList<>();
+    final Map<String, List<HxMethod>> mappedWithProfiles =
+      collectAdvicesByProfileWithType(Constants.AFTER_ANNOTATION_TYPE, afterAdvices);
 
-    for (HxMethod afterAdvice : afterAdvices) {
-      final int index = getIndex(afterAdvice);
-      final HxAnnotation afterAnnotation = afterAdvice.getAnnotation(Constants.AFTER_ANNOTATION_TYPE).get();
-      final String profileName = fetchProfileName(afterAnnotation);
-      final ElementMatcher<HxMethod> affectedMethodsMatcher = obtainMethodsMatcher(def, profileName);
+    for (final Map.Entry<String, List<HxMethod>> entry : mappedWithProfiles.entrySet()) {
+      final String profile = entry.getKey();
+      final List<HxMethod> aspects = entry.getValue();
 
-      steps.add(new AfterAspectAdvice(index, profileName, this, affectedMethodsMatcher, afterAdvice));
+      final ElementMatcher<HxMethod> affectedMethodsMatcher = obtainMethodsMatcher(def, profile);
+      steps.add(new AfterAspectAdvice(profile, this, affectedMethodsMatcher, aspects));
     }
+
     return steps;
   }
+
+
 }

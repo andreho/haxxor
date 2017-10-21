@@ -103,7 +103,7 @@ public interface HxExtendedCodeStream
   }
 
   default HxExtendedCodeStream TYPE(HxType type) {
-    return TYPE(type.toInternalName());
+    return TYPE(type.toDescriptor());
   }
 
   /**
@@ -388,6 +388,10 @@ public interface HxExtendedCodeStream
 
   default HxExtendedCodeStream CONVERT(final HxType fromType, final HxType toType) {
     final HxSort toTypeSort = toType.getSort();
+    if(fromType.equals(toType)) {
+      return this;
+    }
+
     switch (fromType.getSort()) {
       case BOOLEAN:
         return CONVERT_BOOLEAN(toTypeSort);
@@ -411,15 +415,15 @@ public interface HxExtendedCodeStream
         }
         return this;
       case ARRAY:
-        if(toType.isArray() ||
-           toType.hasName("java.lang.Object") ||
+        if(toType.hasName("java.lang.Object") ||
            toType.hasName("java.io.Serializable")) {
           return this;
+        } else if(toType.isArray() &&
+                  fromType.getDimension() == toType.getDimension()) {
+          return CHECKCAST(toType);
         }
-      default: {
-        throw new IllegalStateException("Not convertible: "+toType);
-      }
     }
+    throw new IllegalStateException("Not convertible: "+toType);
   }
 
   default HxExtendedCodeStream CONVERT(final HxSort fromType, final HxSort toType) {
@@ -442,14 +446,12 @@ public interface HxExtendedCodeStream
           return UNBOXING(toType, true);
         }
         return this;
-      case ARRAY:
-        if(toType.isArray() || toType.isObject()) {
-          return this;
-        }
-      default: {
-        throw new IllegalStateException("Not convertible: "+toType);
-      }
+//      case ARRAY:
+//        if(toType.isArray() || toType.isObject()) {
+//          return this;
+//        }
     }
+    throw new IllegalStateException("Not convertible: "+toType);
   }
 
   /**

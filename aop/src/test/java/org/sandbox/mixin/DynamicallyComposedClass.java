@@ -3,7 +3,7 @@ package org.sandbox.mixin;
 /**
  * <br/>Created by a.hofmann on 30.09.2017 at 03:57.
  */
-public class DynamicallyComposedClass {
+public class DynamicallyComposedClass { //implements Named, Identifiable
 //  private static final AtomicLong COUNTER = new AtomicLong(0);
 //
 //  private String name;

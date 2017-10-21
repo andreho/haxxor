@@ -15,16 +15,13 @@ import static java.util.Objects.requireNonNull;
 public abstract class AbstractAspectAdvice<T>
   implements AspectAdvice<T>, ElementMatcher<T> {
 
-  private final int index;
   private final AspectAdviceType type;
   private final ElementMatcher<T> elementMatcher;
   private final String profileName;
 
-  public AbstractAspectAdvice(final int index,
-                              final AspectAdviceType type,
+  public AbstractAspectAdvice(final AspectAdviceType type,
                               final ElementMatcher<T> elementMatcher,
                               final String profileName) {
-    this.index = index;
     this.type = requireNonNull(type);
     this.profileName = requireNonNull(profileName);
     this.elementMatcher = requireNonNull(elementMatcher);
@@ -32,17 +29,12 @@ public abstract class AbstractAspectAdvice<T>
 
   @Override
   public int getIndex() {
-    return index;
+    return 0;
   }
 
   @Override
   public boolean hasTarget(final Target target) {
     return getType().hasTarget(target);
-  }
-
-  @Override
-  public boolean needsAspectFactory() {
-    return false;
   }
 
   @Override
@@ -81,11 +73,13 @@ public abstract class AbstractAspectAdvice<T>
     }
 
     final AspectAdvice<?> that = (AspectAdvice<?>) o;
-    return Objects.equals(type, that.getType());
+    return Objects.equals(type, that.getType()) &&
+           Objects.equals(profileName, that.getProfileName());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(type);
+    return Objects.hashCode(type) * 31 +
+           Objects.hashCode(profileName);
   }
 }

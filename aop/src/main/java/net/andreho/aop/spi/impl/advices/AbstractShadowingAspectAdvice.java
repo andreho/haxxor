@@ -1,19 +1,20 @@
 package net.andreho.aop.spi.impl.advices;
 
 import net.andreho.aop.api.Placeholder;
-import net.andreho.aop.spi.AspectAdviceParameterInjector;
-import net.andreho.aop.spi.AspectAdvicePostProcessor;
 import net.andreho.aop.spi.AspectAdviceType;
 import net.andreho.aop.spi.AspectContext;
 import net.andreho.aop.spi.AspectLocalAttribute;
 import net.andreho.aop.spi.AspectMethodContext;
 import net.andreho.aop.spi.ElementMatcher;
+import net.andreho.aop.spi.ParameterInjector;
+import net.andreho.aop.spi.ParameterInjectorSelector;
+import net.andreho.aop.spi.ResultPostProcessor;
 import net.andreho.aop.spi.impl.Constants;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.cgen.HxCgenUtils;
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
 import net.andreho.haxxor.cgen.HxInstruction;
-import net.andreho.haxxor.cgen.HxInstructionsType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.HxLocalVariable;
 import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.cgen.instr.NAMED_LABEL;
@@ -37,42 +38,35 @@ public abstract class AbstractShadowingAspectAdvice<T>
   extends AbstractAspectAdvice<T> {
 
   protected static final String PLACEHOLDER_CLASSNAME = Placeholder.class.getName();
-  private final HxMethod interceptor;
-  private final AspectAdviceParameterInjector parameterInjector;
-  private final AspectAdvicePostProcessor resultHandler;
+  private final List<HxMethod> interceptors;
+  private final ResultPostProcessor resultHandler;
+  private final ParameterInjectorSelector parameterInjectorSelector;
 
-  public AbstractShadowingAspectAdvice(final int index,
-                                       final AspectAdviceType type,
+  public AbstractShadowingAspectAdvice(final AspectAdviceType type,
                                        final ElementMatcher<T> elementMatcher,
                                        final String profileName,
-                                       final HxMethod interceptor,
-                                       final AspectAdviceParameterInjector parameterInjector,
-                                       final AspectAdvicePostProcessor resultHandler) {
-    super(index,
-          type,
+                                       final List<HxMethod> interceptors,
+                                       final ParameterInjectorSelector parameterInjectorSelector,
+                                       final ResultPostProcessor resultHandler) {
+    super(type,
           elementMatcher,
           profileName);
 
-    this.interceptor = requireNonNull(interceptor);
-    this.parameterInjector = requireNonNull(parameterInjector);
+    this.interceptors = requireNonNull(interceptors);
+    this.parameterInjectorSelector = requireNonNull(parameterInjectorSelector);
     this.resultHandler = requireNonNull(resultHandler);
   }
 
   @Override
-  public boolean needsAspectFactory() {
-    return !getInterceptor().isStatic();
+  public List<HxMethod> getInterceptors() {
+    return interceptors;
   }
 
-  @Override
-  public HxMethod getInterceptor() {
-    return interceptor;
+  public ParameterInjectorSelector getParameterInjectorSelector() {
+    return parameterInjectorSelector;
   }
 
-  public AspectAdviceParameterInjector getParameterInjector() {
-    return parameterInjector;
-  }
-
-  public AspectAdvicePostProcessor getResultHandler() {
+  public ResultPostProcessor getResultHandler() {
     return resultHandler;
   }
 
@@ -108,8 +102,7 @@ public abstract class AbstractShadowingAspectAdvice<T>
       .addAnnotation(haxxor.createAnnotation("java.lang.invoke.LambdaForm$Hidden", true))
       .addAnnotation(haxxor.createAnnotation("java.lang.invoke.ForceInline", true));
 
-    shadowMethod.getParameters().forEach(parameter -> parameter.addModifiers(HxParameter.Modifiers.SYNTHETIC));
-
+    shadowMethod.getParameters().forEach(parameter -> parameter.addModifier(HxParameter.Modifiers.SYNTHETIC));
     original.getBody().moveTo(shadowMethod);
 
     final boolean isStatic = original.isStatic();
@@ -118,6 +111,9 @@ public abstract class AbstractShadowingAspectAdvice<T>
 
     final LABEL startLabel = new NAMED_LABEL("START");
     final LABEL delegationStart = new NAMED_LABEL("D_START");
+    final LABEL delegationEnd = new NAMED_LABEL("D_END");
+    final LABEL returnLabel = new NAMED_LABEL("RET");
+    final LABEL endLabel = new NAMED_LABEL("END");
 
     first.append(startLabel);
 
@@ -129,12 +125,14 @@ public abstract class AbstractShadowingAspectAdvice<T>
     final int resultSlot = createSlotForResult(context, original, delegationStart);
 
     if (isStatic) {
-      shadowMethod.addModifiers(HxMethod.Modifiers.STATIC);
+      shadowMethod.addModifier(HxMethod.Modifiers.STATIC);
+      stream
+        .GENERIC_LOAD(shadowMethod.getParameterTypes(), 0);
     } else {
-      stream.THIS();
+      stream
+        .THIS()
+        .GENERIC_LOAD(shadowMethod.getParameterTypes(), 1);
     }
-
-    stream.GENERIC_LOAD(shadowMethod.getParameterTypes(), isStatic ? 0 : 1);
 
     if (constructor) {
       HxCgenUtils.shiftAccessToLocalVariable(
@@ -145,7 +143,6 @@ public abstract class AbstractShadowingAspectAdvice<T>
       shadowMethod.addParameter(
         haxxor.createParameter(haxxor.reference(PLACEHOLDER_CLASSNAME))
               .setModifiers(HxParameter.Modifiers.SYNTHETIC));
-
     }
 
     //DON'T MOVE THIS METHOD CALL ANYWHERE ELSE
@@ -160,11 +157,8 @@ public abstract class AbstractShadowingAspectAdvice<T>
       stream.INVOKESPECIAL(shadowMethod);
     }
 
-    final LABEL delegationEnd = new NAMED_LABEL("D_END");
-    final LABEL returnLabel = new NAMED_LABEL("RET");
-    final LABEL endLabel = new NAMED_LABEL("END");
-
     stream
+      .GENERIC_STORE(shadowMethod.getReturnType(), resultSlot)
       .LABEL(delegationEnd)
       .GOTO(returnLabel)
       .LABEL(returnLabel)
@@ -190,11 +184,11 @@ public abstract class AbstractShadowingAspectAdvice<T>
                                   final HxMethod original,
                                   final HxInstruction anchor) {
 
-    if(!original.hasReturnType(HxSort.VOID)) {
+    if (!original.hasReturnType(HxSort.VOID)) {
       AspectLocalAttribute resultAttribute;
       final AspectMethodContext methodContext = context.getAspectMethodContext();
 
-      if(!methodContext.hasLocalAttribute(Constants.RESULT_ATTRIBUTES_NAME)) {
+      if (!methodContext.hasLocalAttribute(Constants.RESULT_ATTRIBUTES_NAME)) {
         final int slotOffset = methodContext.getNextSlotIndex();
         final HxType returnType = original.getReturnType();
 
@@ -259,7 +253,7 @@ public abstract class AbstractShadowingAspectAdvice<T>
                                                     final LABEL newBeginLabel) {
     Optional<HxInstruction> inst =
       targetMethod.getBody().getFirst().findFirst(
-        ins -> ins.hasType(HxInstructionsType.Special.LINE_NUMBER)
+        ins -> ins.hasType(HxInstructionTypes.Special.LINE_NUMBER)
       );
 
     if (inst.isPresent()) {
@@ -272,9 +266,9 @@ public abstract class AbstractShadowingAspectAdvice<T>
   protected HxMethodBody addNewLocalAttributes(final HxMethod original,
                                                final AspectMethodContext methodContext) {
     final HxMethodBody body = original.getBody();
-    for(AspectLocalAttribute localAttribute : methodContext.getLocalAttributes().values()) {
-      if(!localAttribute.wasHandled()) {
-        if(!body.hasLocalVariable(localAttribute.getName())) {
+    for (AspectLocalAttribute localAttribute : methodContext.getLocalAttributes().values()) {
+      if (!localAttribute.wasHandled()) {
+        if (!body.hasLocalVariable(localAttribute.getName())) {
           body.addLocalVariable(localAttribute.getHxLocalVariable());
         }
         localAttribute.markAsHandled();
@@ -284,35 +278,27 @@ public abstract class AbstractShadowingAspectAdvice<T>
   }
 
   protected boolean postProcessResult(final AspectContext context,
-                                   final HxMethod interceptor,
-                                   final HxMethod original,
-                                   final HxMethod shadow,
-                                   final HxInstruction anchor) {
+                                      final HxMethod interceptor,
+                                      final HxMethod original,
+                                      final HxMethod shadow,
+                                      final HxInstruction anchor) {
 
-    return getResultHandler().process(this, context, interceptor, shadow, shadow, anchor);
+    return getResultHandler().handle(this, context, interceptor, shadow, shadow, anchor);
   }
 
   protected void injectParameters(final AspectContext ctx,
                                   final HxMethod interceptor,
                                   final HxMethod original,
                                   final HxMethod shadow,
-                                  final HxInstruction anchor) {
+                                  final HxInstruction anchor,
+                                  final ParameterInjectorSelector.Result suitableInjectors) {
+    final List<ParameterInjector> injectors = suitableInjectors.injectors;
 
-    final AspectAdviceParameterInjector parameterInjector = getParameterInjector();
+    for (int i = 0; i < interceptor.getParameters().size(); i++) {
+      final HxParameter parameter = interceptor.getParameters().get(i);
+      final ParameterInjector injector = injectors.get(i);
 
-    for (HxParameter parameter : interceptor.getParameters()) {
-      if (!parameterInjector.injectParameter(
-        this,
-        ctx,
-        interceptor,
-        original,
-        shadow,
-        parameter,
-        anchor)) {
-
-        throw new IllegalStateException(
-          "Unable to inject parameter of " + interceptor + " at position: " + parameter.getIndex());
-      }
+      injector.inject(this, ctx, original, shadow, interceptor, parameter, anchor);
     }
   }
 
@@ -327,12 +313,12 @@ public abstract class AbstractShadowingAspectAdvice<T>
     }
 
     final AbstractShadowingAspectAdvice<?> that = (AbstractShadowingAspectAdvice<?>) o;
-    return interceptor.equals(that.interceptor);
+    return interceptors.equals(that.interceptors);
   }
 
   @Override
   public int hashCode() {
     return super.hashCode() * 31 +
-           interceptor.hashCode();
+           interceptors.hashCode();
   }
 }

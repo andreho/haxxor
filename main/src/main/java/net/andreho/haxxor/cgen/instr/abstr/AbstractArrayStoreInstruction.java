@@ -24,7 +24,7 @@ public abstract class AbstractArrayStoreInstruction
   }
 
   @Override
-  public List<Object> getStackPushList(HxComputingContext context) {
+  public List<Object> compute(HxComputingContext context) {
     int depth = getInstructionType().getPopSize();
 
     Object arrayType = context.getStack()

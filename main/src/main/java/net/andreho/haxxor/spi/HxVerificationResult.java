@@ -10,10 +10,10 @@ import java.util.Optional;
  * <br/>Created by a.hofmann on 04.06.2017 at 00:46.
  */
 public class HxVerificationResult implements Iterable<HxVerificationResult> {
-  private static final HxVerificationResult OK = new HxVerificationResult(false, "Passed", null) {
+  private static final HxVerificationResult OK = new HxVerificationResult(null, null, "Passed") {
     @Override
     public HxVerificationResult setNext(final HxVerificationResult next) {
-      throw new UnsupportedOperationException();
+      throw new UnsupportedOperationException("Only failed verification results may be chained together.");
     }
   };
 
@@ -25,40 +25,50 @@ public class HxVerificationResult implements Iterable<HxVerificationResult> {
   }
 
   /**
-   * @param message
+   * @param verificator
    * @param target
+   * @param message
    * @return
    */
-  public static HxVerificationResult failed(String message, Object target) {
-    return new HxVerificationResult(true, message, target);
+  public static HxVerificationResult failed(HxVerificator<?> verificator,
+                                            Object target,
+                                            String message) {
+    return new HxVerificationResult(verificator, target, message);
   }
 
-  private final boolean failed;
+  private final HxVerificator<?> verificator;
   private final String message;
-  private final Optional<Object> target;
+  private final Object target;
   protected HxVerificationResult next;
 
-  protected HxVerificationResult(final boolean failed,
-                                 final String message,
-                                 final Object target) {
-    this(failed, message, target, null);
+  protected HxVerificationResult(final HxVerificator<?> verificator,
+                                 final Object target,
+                                 final String message) {
+    this(verificator, target, message, null);
   }
 
-  protected HxVerificationResult(final boolean failed,
-                                 final String message,
+  protected HxVerificationResult(final HxVerificator<?> verificator,
                                  final Object target,
+                                 final String message,
                                  final HxVerificationResult next) {
-    this.failed = failed;
     this.message = Objects.requireNonNull(message, "Verification's message can't be null.");
-    this.target = Optional.ofNullable(target);
+    this.verificator = verificator;
+    this.target = target;
     this.next = next;
   }
 
   /**
    * @return
    */
-  public boolean hasFailed() {
-    return failed;
+  public boolean isFailed() {
+    return this != ok();
+  }
+
+  /**
+   * @return associated verificator instance; may be null
+   */
+  public HxVerificator<?> getVerificator() {
+    return verificator;
   }
 
   /**
@@ -72,7 +82,7 @@ public class HxVerificationResult implements Iterable<HxVerificationResult> {
    * @return
    */
   public Optional<Object> getTarget() {
-    return target;
+    return Optional.of(target);
   }
 
   /**
@@ -83,7 +93,8 @@ public class HxVerificationResult implements Iterable<HxVerificationResult> {
   }
 
   /**
-   * @return
+   * @param next encountered problem
+   * @return the given instance
    */
   public HxVerificationResult setNext(final HxVerificationResult next) {
     this.next = next;

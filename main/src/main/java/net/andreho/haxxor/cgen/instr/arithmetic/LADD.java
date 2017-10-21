@@ -23,7 +23,7 @@ public class LADD
   }
 
   @Override
-  public List<Object> getStackPushList(HxComputingContext context) {
+  public List<Object> compute(HxComputingContext context) {
     return PUSH_LONG;
   }
 }

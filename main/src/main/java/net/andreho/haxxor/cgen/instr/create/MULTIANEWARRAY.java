@@ -27,7 +27,7 @@ public class MULTIANEWARRAY
   }
 
   @Override
-  public List<Object> getStackPushList(final HxComputingContext context) {
+  public List<Object> compute(final HxComputingContext context) {
     return context.getStackPush()
                   .prepare()
                   .push(multiply(getOperand(), this.dimension))

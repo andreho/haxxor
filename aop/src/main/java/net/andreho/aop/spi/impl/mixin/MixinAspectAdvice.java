@@ -9,7 +9,7 @@ import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionSort;
-import net.andreho.haxxor.cgen.HxInstructionsType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractFieldInstruction;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInvokeInstruction;
 import net.andreho.haxxor.cgen.instr.constants.LDC;
@@ -20,7 +20,9 @@ import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -47,17 +49,17 @@ public class MixinAspectAdvice
                            final AspectAdviceType type,
                            final ElementMatcher<HxType> elementMatcher,
                            final HxType[] mixinTypes) {
-    super(index, type, elementMatcher, profileName);
+    super(type, elementMatcher, profileName); //index,
     this.mixinTypes = mixinTypes;
-  }
-
-  @Override
-  public HxMethod getInterceptor() {
-    return null;
   }
 
   public HxType[] getMixinTypes() {
     return mixinTypes.clone();
+  }
+
+  @Override
+  public List<HxMethod> getInterceptors() {
+    return Collections.emptyList();
   }
 
   @Override
@@ -111,7 +113,7 @@ public class MixinAspectAdvice
 
     if (mixinClinitOptional.isPresent()) {
       final HxMethod mixinClinit = mixinClinitOptional.get();
-      final HxMethod clonedMixinClinit = mixinClinit.clone(HxMethod.ALL_PARTS);
+      final HxMethod clonedMixinClinit = mixinClinit.clone(HxMethod.CloneableParts.ALL_PARTS);
 
       adaptMethodBodyForCurrentType(type, mixin, clonedMixinClinit);
       adaptLocalVariables(type, mixin, clonedMixinClinit);
@@ -128,7 +130,7 @@ public class MixinAspectAdvice
       }
 
       Optional<HxInstruction> returnInstructionOptional =
-        clinit.getBody().getLast().findFirstWithType(HxInstructionsType.Exit.RETURN);
+        clinit.getBody().getLast().findFirstWithType(HxInstructionTypes.Exit.RETURN);
 
       if (returnInstructionOptional.isPresent()) {
         final HxInstruction instruction = returnInstructionOptional.get();
@@ -171,7 +173,7 @@ public class MixinAspectAdvice
 
       }
     }
-    //throw new UnsupportedOperationException("TODO: implement it");
+    throw new UnsupportedOperationException("TODO: implement it");
   }
 
   private void mergeMixinConstructors(final HxMethod typeConstructor, final HxMethod mixinConstructor) {
@@ -190,7 +192,7 @@ public class MixinAspectAdvice
 
   private Optional<HxInstruction> findSuperConstructorCall(final HxMethod constructor) {
     return constructor.getBody().getFirst().findFirst(instr -> {
-      if (instr.hasType(HxInstructionsType.Invocation.INVOKESPECIAL)) {
+      if (instr.hasType(HxInstructionTypes.Invocation.INVOKESPECIAL)) {
         AbstractInvokeInstruction invokeInstruction = (AbstractInvokeInstruction) instr;
         if ("<init>".equals(invokeInstruction.getName()) &&
             constructor.getDeclaringType().hasSuperType(invokeInstruction.getOwner())) {
@@ -263,12 +265,12 @@ public class MixinAspectAdvice
                                    fieldInstruction.getName(),
                                    fieldInstruction.getDescriptor()));
         }
-      } else if (inst.hasType(HxInstructionsType.Constants.LDC)) {
+      } else if (inst.hasType(HxInstructionTypes.Constants.LDC)) {
         LDC<?> ldc = (LDC<?>) inst;
         if (ldc.getType() == LDC.ConstantType.TYPE && mixin.hasName(ldc.getValue().toString())) {
           ldc.replaceWith(LDC.ofType(type.toDescriptor()));
         }
-      } else if (inst.hasType(HxInstructionsType.Special.LINE_NUMBER)) {
+      } else if (inst.hasType(HxInstructionTypes.Special.LINE_NUMBER)) {
         inst.remove();
       }
     });

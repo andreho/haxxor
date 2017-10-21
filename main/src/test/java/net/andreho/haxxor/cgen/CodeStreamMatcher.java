@@ -66,10 +66,10 @@ public class CodeStreamMatcher extends MethodVisitor {
   private void checkOpcode(final int opcode,
                            final HxInstruction hxInstruction) {
     assertEquals(opcode, hxInstruction.getOpcode(),
-                 "Current instruction has an unexpected opcode: " + hxInstruction + "#" + hxInstruction.getOpcode() + "; " + HxInstructionsType
+                 "Current instruction has an unexpected opcode: " + hxInstruction + "#" + hxInstruction.getOpcode() + "; " + HxInstructionTypes
 
                    .fromOpcode(opcode));
-    assertEquals(HxInstructionsType.fromOpcode(opcode), hxInstruction.getInstructionType());
+    assertEquals(HxInstructionTypes.fromOpcode(opcode), hxInstruction.getInstructionType());
     assertTrue(hxInstruction.hasOpcode(opcode));
   }
 

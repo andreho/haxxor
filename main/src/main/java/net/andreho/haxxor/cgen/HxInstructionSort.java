@@ -8,7 +8,7 @@ public enum HxInstructionSort {
   Allocation,
   Arithmetic,
   Array,
-  Binary,
+  BitWise,
   Comparison,
   Conversion,
   Constants,

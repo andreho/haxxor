@@ -5,7 +5,7 @@ import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionType;
-import net.andreho.haxxor.cgen.HxInstructionsType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInstruction;
 
 import java.util.ArrayList;
@@ -47,11 +47,11 @@ public class LABEL
 
   @Override
   public HxInstructionType getInstructionType() {
-    return HxInstructionsType.Special.LABEL;
+    return HxInstructionTypes.Special.LABEL;
   }
 
   @Override
-  public List<Object> getStackPushList(final HxComputingContext context) {
+  public List<Object> compute(final HxComputingContext context) {
     context.getVisitedLabels()
            .putIfAbsent(this, getPrevious());
     return NO_STACK_PUSH;

@@ -16,7 +16,7 @@ public class SpecificMixin
   @Mixin.Ignore
   public static final String PARAMETER_ID = "id";
 
-  private static final AtomicLong COUNTER = new AtomicLong(0);
+  private static final AtomicLong COUNTER; // = new AtomicLong(0);
 
   private String name;
   private final long id;
@@ -59,5 +59,10 @@ public class SpecificMixin
   @Override
   public String toString() {
     return SpecificMixin.class.getSimpleName() + "{id="+id+", name='" + name + "\'}";
+  }
+
+  static {
+    System.out.println("");
+    COUNTER = new AtomicLong(0);
   }
 }

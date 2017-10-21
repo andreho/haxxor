@@ -38,6 +38,13 @@ public interface HxInstruction
   }
 
   /**
+   * @return <b>true</b> if there isn't any further instructions in forward iteration's direction, <b>false</b> otherwise.
+   */
+  default boolean isEnd() {
+    return false;
+  }
+
+  /**
    * @return <b>true</b> if this instruction doesn't exist and serves for internal use-cases, <b>false</b> otherwise.
    * @see END
    * @see BEGIN
@@ -47,13 +54,6 @@ public interface HxInstruction
    */
   default boolean isPseudoInstruction() {
     return getOpcode() < 0;
-  }
-
-  /**
-   * @return <b>true</b> if there isn't any further instructions in forward iteration's direction, <b>false</b> otherwise.
-   */
-  default boolean isEnd() {
-    return false;
   }
 
   /**
@@ -73,7 +73,7 @@ public interface HxInstruction
    * @return
    */
   default HxInstructionType getInstructionType() {
-    return HxInstructionsType.fromOpcode(getOpcode());
+    return HxInstructionTypes.fromOpcode(getOpcode());
   }
 
   /**

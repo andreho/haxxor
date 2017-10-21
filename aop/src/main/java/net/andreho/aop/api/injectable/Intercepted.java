@@ -9,6 +9,7 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 
 /**
  * This annotation injects either {@link Method method} reference of currently intercepted method's invocation
@@ -24,6 +25,7 @@ import java.lang.reflect.Method;
  * @see Constructor
  * @see Executable
  * @see Member
+ * @see Parameter
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)

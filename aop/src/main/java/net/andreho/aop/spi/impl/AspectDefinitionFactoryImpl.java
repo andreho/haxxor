@@ -60,7 +60,7 @@ public class AspectDefinitionFactoryImpl
     final int order = extractAspectOrder(type);
     final HxAnnotation aspectAnnotation = aspectOptional.get();
     final Map<String, List<String>> parameters = extractParameters(aspectAnnotation);
-    final AspectFactory aspectFactory = createAspectFactoryIfAvailable(type);
+    final List<AspectFactory> aspectFactories = createAspectFactoriesIfAvailable(type);
     final String prefix = "__"; // aspectAnnotation.getAttribute("prefix", "__");
     final String suffix = "__"; // aspectAnnotation.getAttribute("suffix", "__");
     final String profileName = findAspectProfileName(aspectAnnotation);
@@ -79,29 +79,40 @@ public class AspectDefinitionFactoryImpl
       parameters,
       getElementMatcherFactory(),
       aspectProfiles,
-      aspectFactory
+      aspectFactories
     );
   }
 
-  private AspectFactory createAspectFactoryIfAvailable(final HxType type) {
-    final HxMethod aspectFactoryMethod = findAspectFactory(type);
+  private List<AspectFactory> createAspectFactoriesIfAvailable(final HxType type) {
+    System.err.println("TODO: List<AspectFactory> createAspectFactoriesIfAvailable(final HxType type)");
 
-    if(aspectFactoryMethod == null) {
-      return null;
+    final List<HxMethod> aspectFactoryMethods = findAspectFactories(type);
+
+    if(aspectFactoryMethods == null || aspectFactoryMethods.isEmpty()) {
+      return Collections.emptyList();
     }
 
-    String attributeName =
-      aspectFactoryMethod.getAnnotation(Attribute.class)
-                         .map(annotation -> annotation.getAttribute("value", ""))
-                         .orElse("");
+    final List<AspectFactory> aspectFactories = new ArrayList<>(aspectFactoryMethods.size());
 
-    if(attributeName.isEmpty()) {
-      attributeName = Constants.DEFAULT_ASPECT_ATTRIBUTE_NAME_PREFIX +
-                      (aspectFactoryMethod.isConstructor()? aspectFactoryMethod.getDeclaringType() : aspectFactoryMethod.getReturnType())
-      .getSimpleName();
+    for(HxMethod aspectFactoryMethod : aspectFactoryMethods) {
+      String attributeName =
+        aspectFactoryMethod.getAnnotation(Attribute.class)
+                           .map(annotation -> annotation.getAttribute("value", ""))
+                           .orElse("");
+      if(attributeName.isEmpty()) {
+        attributeName = Constants.DEFAULT_ASPECT_ATTRIBUTE_NAME_PREFIX +
+                        (aspectFactoryMethod.isConstructor()?
+                          aspectFactoryMethod.getDeclaringType() :
+                         aspectFactoryMethod.getReturnType())
+        .getSimpleName();
+      }
+
+      aspectFactories.add(
+        new AspectFactoryImpl(aspectFactoryMethod, attributeName, isAspectFactoryReusable(aspectFactoryMethod))
+      );
     }
 
-    return new AspectFactoryImpl(aspectFactoryMethod, attributeName, isAspectFactoryReusable(aspectFactoryMethod));
+    return aspectFactories;
   }
 
   protected int extractAspectOrder(HxType aspectType) {
@@ -127,50 +138,25 @@ public class AspectDefinitionFactoryImpl
     return aspectAnnotation.getAttribute("value", "");
   }
 
-  protected HxMethod findAspectFactory(final HxType aspectType) {
+  protected List<HxMethod> findAspectFactories(final HxType aspectType) {
     final Collection<HxMethod> constructorFactories =
       aspectType.constructors(
-        (c) -> c.isAnnotationPresent(ASPECT_FACTORY_ANNOTATION_TYPE));
+        (c) -> c.isPublic() &&
+               c.isAnnotationPresent(ASPECT_FACTORY_ANNOTATION_TYPE));
+
     final Collection<HxMethod> methodFactories =
       aspectType.methods(
-        (m) -> m.isAnnotationPresent(ASPECT_FACTORY_ANNOTATION_TYPE));
+        (m) ->
+          m.isPublic() &&
+          m.isStatic() &&
+          !m.getReturnType().isPrimitive() &&
+          !m.getReturnType().isArray() &&
+          m.isAnnotationPresent(ASPECT_FACTORY_ANNOTATION_TYPE));
 
-    if (!constructorFactories.isEmpty()) {
-      if (constructorFactories.size() != 1) {
-        throw new IllegalStateException("There are more than one aspect-factory in: " + aspectType);
-      }
-      if (!methodFactories.isEmpty()) {
-        throw new IllegalStateException("Multiple definitions of one aspect-factory are not allowed: " + aspectType);
-      }
-      final HxMethod constructor = constructorFactories.iterator().next();
-      final HxType declaringType = constructor.getDeclaringType();
-
-      if (!constructor.isPublic()) {
-        throw new IllegalStateException("Defined constructor-factory isn't public: " + constructor);
-      }
-      if(!declaringType.isInstantiable() ||
-         declaringType.isArray()) {
-        throw new IllegalStateException(
-          "Given constructor can't be used as an aspect-factory because the declaring type isn't instantiable: " +
-          constructor);
-      }
-      return constructor;
-    }
-
-    if (!methodFactories.isEmpty()) {
-      if (methodFactories.size() != 1) {
-        throw new IllegalStateException("There are more than one aspect-factory in: " + aspectType);
-      }
-      final HxMethod method = methodFactories.iterator().next();
-      if (!method.isPublic() || !method.isStatic()) {
-        throw new IllegalStateException("Defined method-factory isn't public or static: " + method);
-      }
-      if(method.getReturnType().isVoid() || method.getReturnType().isArray()) {
-        throw new IllegalStateException("Defined method-factory must return a valid aspect-instance: " + method);
-      }
-      return method;
-    }
-    return null;
+    final ArrayList<HxMethod> factories = new ArrayList<>(constructorFactories.size() + methodFactories.size());
+    factories.addAll(constructorFactories);
+    factories.addAll(methodFactories);
+    return factories;
   }
 
   protected boolean isAspectFactoryReusable(HxMethod aspectFactory) {

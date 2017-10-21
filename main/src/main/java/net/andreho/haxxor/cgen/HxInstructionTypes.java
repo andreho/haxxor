@@ -9,9 +9,9 @@ import static net.andreho.haxxor.cgen.HxCodeGenerationUtils.getTypeSize;
 /**
  * <br/>Created by a.hofmann on 19.03.2016.<br/>
  */
-public interface HxInstructionsType {
+public interface HxInstructionTypes {
 
-  enum Access
+  enum Fields
     implements HxInstructionType {
     GETSTATIC(Opcodes.GETSTATIC),
     PUTSTATIC(Opcodes.PUTSTATIC),
@@ -21,7 +21,7 @@ public interface HxInstructionsType {
     private final int opcode;
     private final boolean isStatic;
 
-    Access(int opcode) {
+    Fields(int opcode) {
       this.opcode = opcode;
       this.isStatic = this.opcode == Opcodes.PUTSTATIC || this.opcode == Opcodes.GETSTATIC;
     }
@@ -239,7 +239,7 @@ public interface HxInstructionsType {
     }
   }
 
-  enum Binary
+  enum BitWise
     implements HxInstructionType {
     ISHL(Opcodes.ISHL, 1 + 1, 1),
     LSHL(Opcodes.LSHL, 2 + 1, 2),
@@ -258,9 +258,9 @@ public interface HxInstructionsType {
     private final int push;
     private final int pop;
 
-    Binary(int opcode,
-           int pop,
-           int push) {
+    BitWise(int opcode,
+            int pop,
+            int push) {
       this.opcode = opcode;
       this.push = push;
       this.pop = pop;
@@ -283,7 +283,7 @@ public interface HxInstructionsType {
 
     @Override
     public HxInstructionSort getSort() {
-      return HxInstructionSort.Binary;
+      return HxInstructionSort.BitWise;
     }
 
     public boolean is32Bit() {
@@ -333,6 +333,14 @@ public interface HxInstructionsType {
     @Override
     public int getPushSize() {
       return push;
+    }
+
+    public boolean is32Bit() {
+      return 'F' == name().charAt(0);
+    }
+
+    public boolean is64Bit() {
+      return !is32Bit();
     }
   }
 
@@ -844,6 +852,7 @@ public interface HxInstructionsType {
   enum Special
     implements HxInstructionType {
     NOT_INSTRUCTION,
+    COMPOSITE,
     LABEL,
     FRAME,
     LINE_NUMBER;
@@ -1034,29 +1043,29 @@ public interface HxInstructionsType {
       case Opcodes.DNEG:
         return Arithmetic.DNEG;
       case Opcodes.ISHL:
-        return Binary.ISHL;
+        return BitWise.ISHL;
       case Opcodes.LSHL:
-        return Binary.LSHL;
+        return BitWise.LSHL;
       case Opcodes.ISHR:
-        return Binary.ISHR;
+        return BitWise.ISHR;
       case Opcodes.LSHR:
-        return Binary.LSHR;
+        return BitWise.LSHR;
       case Opcodes.IUSHR:
-        return Binary.IUSHR;
+        return BitWise.IUSHR;
       case Opcodes.LUSHR:
-        return Binary.LUSHR;
+        return BitWise.LUSHR;
       case Opcodes.IAND:
-        return Binary.IAND;
+        return BitWise.IAND;
       case Opcodes.LAND:
-        return Binary.LAND;
+        return BitWise.LAND;
       case Opcodes.IOR:
-        return Binary.IOR;
+        return BitWise.IOR;
       case Opcodes.LOR:
-        return Binary.LOR;
+        return BitWise.LOR;
       case Opcodes.IXOR:
-        return Binary.IXOR;
+        return BitWise.IXOR;
       case Opcodes.LXOR:
-        return Binary.LXOR;
+        return BitWise.LXOR;
       case Opcodes.IINC:
         return Store.IINC;
       case Opcodes.I2L:
@@ -1150,13 +1159,13 @@ public interface HxInstructionsType {
       case Opcodes.RETURN:
         return Exit.RETURN;
       case Opcodes.GETSTATIC:
-        return Access.GETSTATIC;
+        return Fields.GETSTATIC;
       case Opcodes.PUTSTATIC:
-        return Access.PUTSTATIC;
+        return Fields.PUTSTATIC;
       case Opcodes.GETFIELD:
-        return Access.GETFIELD;
+        return Fields.GETFIELD;
       case Opcodes.PUTFIELD:
-        return Access.PUTFIELD;
+        return Fields.PUTFIELD;
       case Opcodes.INVOKEVIRTUAL:
         return Invocation.INVOKEVIRTUAL;
       case Opcodes.INVOKESPECIAL:

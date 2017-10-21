@@ -116,8 +116,7 @@ public class AspectActivator
       aspectProfiles.addAll(aspectProfileFactory.create(aspectType));
     }
 
-    final Map<String, AspectProfile> aspectProfileMap =
-      unmodifiableMap(
+    final Map<String, AspectProfile> aspectProfileMap = unmodifiableMap(
         aspectProfiles.stream().collect(Collectors.toMap(AspectProfile::getName, Function.identity()))
       );
     final List<AspectDefinition> aspectDefinitions = new ArrayList<>(aspects.size());

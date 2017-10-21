@@ -2,6 +2,7 @@ package net.andreho.aop.spi;
 
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
+import net.andreho.haxxor.spec.api.HxParameter;
 import net.andreho.haxxor.spec.api.HxType;
 
 /**
@@ -14,6 +15,12 @@ public interface AspectProfile {
    * @return
    */
   String getName();
+
+  /**
+   *
+   * @return
+   */
+  ElementMatcher<HxParameter> getParametersMatcher();
 
   /**
    *

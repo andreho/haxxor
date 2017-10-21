@@ -21,7 +21,7 @@ public class DoubleLDC
   }
 
   @Override
-  public List<Object> getStackPushList(final HxComputingContext context) {
+  public List<Object> compute(final HxComputingContext context) {
     return PUSH_DOUBLE;
   }
 }

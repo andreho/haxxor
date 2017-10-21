@@ -9,6 +9,8 @@ import net.andreho.haxxor.spec.api.HxType;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 import static net.andreho.aop.spi.Helpers.buildKeyFor;
@@ -42,14 +44,14 @@ public class ModifyTypeAspectAdvice
                                 final AspectAdviceType type,
                                 final ElementMatcher<HxType> elementMatcher,
                                 final HxMethod interceptor) {
-    super(index, type, elementMatcher, profileName);
+    super(type, elementMatcher, profileName); //index,
     this.interceptor = requireNonNull(interceptor);
     this.method = findMethod(loadClass(getClass().getClassLoader(), interceptor.getDeclaringType()), interceptor);
   }
 
   @Override
-  public HxMethod getInterceptor() {
-    return interceptor;
+  public List<HxMethod> getInterceptors() {
+    return Collections.emptyList();
   }
 
   @Override

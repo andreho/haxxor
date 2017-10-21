@@ -23,7 +23,7 @@ public class ASTORE
   }
 
   @Override
-  public List<Object> getStackPushList(final HxComputingContext context) {
+  public List<Object> compute(final HxComputingContext context) {
     Object operand = context.getStack().pop();
 
     if (operand instanceof Integer) {

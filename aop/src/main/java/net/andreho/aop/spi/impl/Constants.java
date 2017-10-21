@@ -1,6 +1,7 @@
 package net.andreho.aop.spi.impl;
 
 import net.andreho.aop.api.After;
+import net.andreho.aop.api.ArgPassing;
 import net.andreho.aop.api.Aspect;
 import net.andreho.aop.api.Before;
 import net.andreho.aop.api.Catch;
@@ -34,6 +35,7 @@ public interface Constants {
   String ASPECT_ANNOTATION_TYPE = Aspect.class.getName();
   String ASPECT_FACTORY_ANNOTATION_TYPE = Aspect.Factory.class.getName();
 
+  String ARG_PASSING_ANNOTATION_TYPE = ArgPassing.class.getName();
   String ORDER_ANNOTATION_TYPE = Order.class.getName();
   String BEFORE_ANNOTATION_TYPE = Before.class.getName();
   String AFTER_ANNOTATION_TYPE = After.class.getName();
@@ -47,6 +49,9 @@ public interface Constants {
   String INJECT_RESULT_ANNOTATION_TYPE = Result.class.getName();
   String CAUGHT_RESULT_ANNOTATION_TYPE = Caught.class.getName();
   String DISABLE_ANNOTATION_TYPE = Disable.class.getName();
+
+  String INTERCEPTED_FIELD_NAME_PREFIX = "$$__";
+  String INTERCEPTED_FIELD_NAME_SUFFIX = "__$$";
 
   String VOID_PARAMETER_NAME =
     "$$_void_";

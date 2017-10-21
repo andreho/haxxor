@@ -3,8 +3,8 @@ package net.andreho.aop.spi.impl.advices.results;
 import net.andreho.aop.api.Redefine;
 import net.andreho.aop.api.redefine.Redefinition;
 import net.andreho.aop.spi.AspectAdvice;
-import net.andreho.aop.spi.AspectAdvicePostProcessor;
 import net.andreho.aop.spi.AspectContext;
+import net.andreho.aop.spi.ResultPostProcessor;
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.spec.api.HxMethod;
@@ -17,18 +17,18 @@ import static net.andreho.haxxor.utils.NamingUtils.toInternalClassname;
  * <br/>Created by a.hofmann on 21.06.2017 at 01:45.
  */
 public class RedefinePostProcessor
-  implements AspectAdvicePostProcessor {
+  implements ResultPostProcessor {
 
   private static final String REDEFINITION_CLASS_NAME = toInternalClassname(Redefinition.class.getName());
   public static final RedefinePostProcessor INSTANCE = new RedefinePostProcessor();
 
   @Override
-  public boolean process(final AspectAdvice<?> aspectAdvice,
-                         final AspectContext context,
-                         final HxMethod interceptor,
-                         final HxMethod original,
-                         final HxMethod shadow,
-                         final HxInstruction anchor) {
+  public boolean handle(final AspectAdvice<?> aspectAdvice,
+                        final AspectContext context,
+                        final HxMethod interceptor,
+                        final HxMethod original,
+                        final HxMethod shadow,
+                        final HxInstruction anchor) {
 
     if(interceptor.isAnnotationPresent(Redefine.class)) {
 

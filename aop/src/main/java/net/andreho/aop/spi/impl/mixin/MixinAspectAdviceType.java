@@ -3,11 +3,11 @@ package net.andreho.aop.spi.impl.mixin;
 import net.andreho.aop.api.StandardOrder;
 import net.andreho.aop.api.mixin.Mixin;
 import net.andreho.aop.spi.AspectAdvice;
-import net.andreho.aop.spi.AspectAdviceParameterInjector;
-import net.andreho.aop.spi.AspectAdvicePostProcessor;
 import net.andreho.aop.spi.AspectDefinition;
 import net.andreho.aop.spi.AspectProfile;
 import net.andreho.aop.spi.ElementMatcher;
+import net.andreho.aop.spi.ParameterInjectorSelector;
+import net.andreho.aop.spi.ResultPostProcessor;
 import net.andreho.aop.spi.impl.advices.AbstractAspectAdviceType;
 import net.andreho.haxxor.spec.api.HxAnnotation;
 import net.andreho.haxxor.spec.api.HxType;
@@ -34,10 +34,8 @@ public class MixinAspectAdviceType
   public MixinAspectAdviceType(final int order) {
     super(
       order,
-      AspectAdviceParameterInjector.with(
-      ),
-      AspectAdvicePostProcessor.with(
-      ),
+      ParameterInjectorSelector.create(),
+      ResultPostProcessor.list(),
       TARGETS
     );
   }

@@ -3,6 +3,7 @@ package net.andreho.aop.api;
 import net.andreho.aop.api.spec.Classes;
 import net.andreho.aop.api.spec.Fields;
 import net.andreho.aop.api.spec.Methods;
+import net.andreho.aop.api.spec.Parameters;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
@@ -56,4 +57,13 @@ public @interface Profile {
    * @see Access.Set
    */
   Fields[] fields() default {};
+
+  /**
+   * Defines a set with parameters that should be processed
+   * @return an array of parameters' selectors
+   * @apiNote elements are bound via an OR (disjunction);
+   * empty array means any parameter will be selected
+   * @see ArgPassing
+   */
+  Parameters[] parameters() default {};
 }

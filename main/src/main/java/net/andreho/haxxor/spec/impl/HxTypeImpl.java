@@ -5,6 +5,8 @@ import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxSourceInfo;
 import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.spi.HxVerificationException;
+import net.andreho.haxxor.spi.HxVerificationResult;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -104,8 +106,7 @@ public class HxTypeImpl
 
   @Override
   public Optional<HxSourceInfo> getSourceInfo() {
-    HxSourceInfo sourceInfo = this.sourceInfo;
-    return sourceInfo == null? Optional.empty() : Optional.of(sourceInfo);
+    return Optional.ofNullable(sourceInfo);
   }
 
   @Override
@@ -176,18 +177,20 @@ public class HxTypeImpl
 
   @Override
   public Optional<HxField> findField(String name) {
-//    if(fields.size() <= 10) {
-//      for (HxField field : fields) {
-//        if(Objects.equals(name, field.getName())) {
-//          return Optional.of(field);
-//        }
-//      }
-//    } else {
-    HxField hxField = fieldMap.get(name);
-    if(hxField != null) {
-      return Optional.of(hxField);
+    return Optional.ofNullable(fieldMap.get(name));
+  }
+
+  @Override
+  public Optional<HxField> findFieldDirectly(final String name,
+                                             final String descriptor) {
+
+    for(HxField field : fields) {
+      if(field.hasName(name) &&
+         field.hasDescriptor(descriptor)) {
+        return Optional.of(field);
+      }
     }
-//    }
+
     return Optional.empty();
   }
 
@@ -209,7 +212,7 @@ public class HxTypeImpl
         hasField(field.getName()) ||
         fieldMap.put(field.getName(), field) != null) {
 
-      throw new IllegalArgumentException("Given field was already associated with this type: " + field);
+      throw new IllegalArgumentException("Given field exists already: " + field);
     }
 
     fields.add(index, field);
@@ -507,6 +510,11 @@ public class HxTypeImpl
 
   @Override
   public byte[] toByteCode() {
-    return getHaxxor().getTypeInterpreter().interpret(this);
+    final Haxxor haxxor = getHaxxor();
+    final HxVerificationResult result = haxxor.getTypeVerifier().verify(this);
+    if(result.isFailed()) {
+      throw new HxVerificationException(result);
+    }
+    return haxxor.getTypeSerializer().serialize(this);
   }
 }

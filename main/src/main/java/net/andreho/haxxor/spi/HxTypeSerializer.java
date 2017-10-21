@@ -6,18 +6,19 @@ import net.andreho.haxxor.spec.api.HxType;
  * <br/>Created by a.hofmann on 13.06.2017 at 20:41.
  */
 @FunctionalInterface
-public interface HxTypeInterpreter {
+public interface HxTypeSerializer {
   /**
    * @param type
    * @return
    */
-  default byte[] interpret(HxType type) {
-    return interpret(type, true);
+  default byte[] serialize(HxType type) {
+    return serialize(type, true);
   }
 
   /**
    * @param type
+   * @param computeFrames
    * @return
    */
-  byte[] interpret(HxType type, boolean computeFrames);
+  byte[] serialize(HxType type, boolean computeFrames);
 }

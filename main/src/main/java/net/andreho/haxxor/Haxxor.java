@@ -1,6 +1,5 @@
 package net.andreho.haxxor;
 
-import net.andreho.asm.org.objectweb.asm.ClassReader;
 import net.andreho.asm.org.objectweb.asm.ClassWriter;
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.haxxor.spec.api.HxAnnotation;
@@ -12,12 +11,18 @@ import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spec.api.HxTypeReference;
 import net.andreho.haxxor.spec.impl.HxArrayTypeImpl;
 import net.andreho.haxxor.spec.impl.HxPrimitiveTypeImpl;
-import net.andreho.haxxor.spec.visitors.HxTypeVisitor;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
 import net.andreho.haxxor.spi.HxClassnameNormalizer;
 import net.andreho.haxxor.spi.HxElementFactory;
+import net.andreho.haxxor.spi.HxFieldInitializer;
+import net.andreho.haxxor.spi.HxFieldVerifier;
+import net.andreho.haxxor.spi.HxMethodInitializer;
+import net.andreho.haxxor.spi.HxMethodVerifier;
+import net.andreho.haxxor.spi.HxStubInterpreter;
+import net.andreho.haxxor.spi.HxTypeDeserializer;
 import net.andreho.haxxor.spi.HxTypeInitializer;
-import net.andreho.haxxor.spi.HxTypeInterpreter;
+import net.andreho.haxxor.spi.HxTypeSerializer;
+import net.andreho.haxxor.spi.HxTypeVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,9 +54,16 @@ public class Haxxor
   private final Map<String, HxTypeReference> referenceCache;
   private final WeakReference<ClassLoader> classLoaderWeakReference;
   private final HxClassnameNormalizer classNameNormalizer;
-  private final HxTypeInterpreter typeInterpreter;
+  private final HxTypeDeserializer typeDeserializer;
+  private final HxTypeSerializer typeSerializer;
+  private final HxFieldInitializer fieldInitializer;
+  private final HxMethodInitializer methodInitializer;
   private final HxElementFactory elementFactory;
+  private final HxTypeVerifier typeVerifier;
+  private final HxFieldVerifier fieldVerifier;
+  private final HxMethodVerifier methodVerifier;
   private final HxTypeInitializer typeInitializer;
+  private final HxStubInterpreter stubInterpreter;
   private final boolean concurrent;
 
   /**
@@ -127,6 +139,7 @@ public class Haxxor
 
   public Haxxor(int flags,
                 HaxxorBuilder builder) {
+    super();
 
     this.flags = flags;
     this.classLoaderWeakReference = new WeakReference<>(builder.provideClassLoader(this));
@@ -135,15 +148,23 @@ public class Haxxor
     this.resolvedCache = builder.createResolvedCache(this);
     this.referenceCache = builder.createReferenceCache(this);
     this.typeInitializer = builder.createTypeInitializer(this);
+    this.fieldInitializer = builder.createFieldInitializer(this);
+    this.methodInitializer = builder.createMethodInitializer(this);
     this.elementFactory = builder.createElementFactory(this);
-    this.typeInterpreter = builder.createTypeInterpreter(this);
+    this.typeDeserializer = builder.createTypeDeserializer(this);
+    this.typeSerializer = builder.createTypeSerializer(this);
+    this.typeVerifier = builder.createTypeVerifier(this);
+    this.fieldVerifier = builder.createFieldVerifier(this);
+    this.methodVerifier = builder.createMethodVerifier(this);
     this.classNameNormalizer = builder.createClassNameNormalizer(this);
+    this.stubInterpreter = builder.createStubInterpreter(this);
     this.readWriteLock = new ReentrantReadWriteLock();
     this.concurrent = builder.isConcurrent();
-    initialize();
+
+    postInitialization();
   }
 
-  protected void initialize() {
+  protected void postInitialization() {
     String name = "void";
     HxPrimitiveTypeImpl type =
         new HxPrimitiveTypeImpl(this, toNormalizedClassname(name));
@@ -188,23 +209,19 @@ public class Haxxor
   /**
    * @return
    */
-  protected HxTypeVisitor createTypeVisitor() {
-    return new HxTypeVisitor(this);
+  protected HxType readClass(final String classname,
+                             final byte[] byteCode,
+                             final int flags) {
+    return getTypeDeserializer().deserialize(classname, byteCode, flags);
   }
 
-  /**
-   * @return
-   */
-  protected HxType readClass(final byte[] byteCode,
-                             final int opts) {
-    final HxTypeVisitor visitor = createTypeVisitor();
-    final ClassReader classReader = new ClassReader(byteCode);
-    classReader.accept(visitor, opts);
-    return visitor.getType();
+  protected boolean isArray(final String classname) {
+    return classname.endsWith(HxConstants.ARRAY_DIMENSION);
   }
 
-  protected boolean isArray(final String typeName) {
-    return typeName.endsWith(HxConstants.ARRAY_DIMENSION);
+  @Override
+  public Haxxor getHaxxor() {
+    return this;
   }
 
   /**
@@ -222,17 +239,45 @@ public class Haxxor
   }
 
   /**
-   * @return the associated java element factory
+   * @return the associated element factory
    */
   public HxElementFactory getElementFactory() {
     return elementFactory;
   }
 
   /**
-   * @return the associated type-interpreter
+   * @return the associated type-verifier
    */
-  public HxTypeInterpreter getTypeInterpreter() {
-    return typeInterpreter;
+  public HxTypeVerifier getTypeVerifier() {
+    return typeVerifier;
+  }
+
+  /**
+   * @return the associated field-verifier
+   */
+  public HxFieldVerifier getFieldVerifier() {
+    return fieldVerifier;
+  }
+
+  /**
+   * @return the associated method-verifier
+   */
+  public HxMethodVerifier getMethodVerifier() {
+    return methodVerifier;
+  }
+
+  /**
+   * @return the associated type-deserializer
+   */
+  public HxTypeDeserializer getTypeDeserializer() {
+    return typeDeserializer;
+  }
+
+  /**
+   * @return the associated type-serializer
+   */
+  public HxTypeSerializer getTypeSerializer() {
+    return typeSerializer;
   }
 
   /**
@@ -242,19 +287,25 @@ public class Haxxor
     return typeInitializer;
   }
 
-  @Override
-  public Haxxor getHaxxor() {
-    return this;
+  /**
+   * @return the associated field-initializer
+   */
+  public HxFieldInitializer getFieldInitializer() {
+    return fieldInitializer;
   }
 
   /**
-   * Checks whether this haxxor instance and its type collection
-   * are still available to the associated class-loader.
-   *
-   * @return
+   * @return the associated method-initializer
    */
-  public boolean isActive() {
-    return getClassLoader() != null;
+  public HxMethodInitializer getMethodInitializer() {
+    return methodInitializer;
+  }
+
+  /**
+   * @return the associated stub-interpreter
+   */
+  public HxStubInterpreter getStubInterpreter() {
+    return stubInterpreter;
   }
 
   /**
@@ -272,6 +323,43 @@ public class Haxxor
   }
 
   /**
+   * @param type to initialize and to prepare for further usage
+   * @return the given type
+   */
+  public HxType initialize(final HxType type) {
+    getTypeInitializer().initialize(type);
+    return type;
+  }
+
+  /**
+   * @param field to initialize and to prepare for further usage
+   * @return the given field
+   */
+  public HxField initialize(final HxField field) {
+    getFieldInitializer().initialize(field);
+    return field;
+  }
+
+  /**
+   * @param method to initialize and to prepare for further usage
+   * @return the given method
+   */
+  public HxMethod initialize(final HxMethod method) {
+    getMethodInitializer().initialize(method);
+    return method;
+  }
+
+  /**
+   * Checks whether this haxxor instance and its type collection
+   * are still available to the associated class-loader.
+   *
+   * @return
+   */
+  public boolean isActive() {
+    return getClassLoader() != null;
+  }
+
+  /**
    * @return class loader associated with this haxxor instance
    */
   public ClassLoader getClassLoader() {
@@ -281,76 +369,84 @@ public class Haxxor
   /**
    * Checks whether the given type name was already referenced or not
    *
-   * @param typeName to look for
+   * @param classname to look for
    * @return <b>true</b> if there is a reference with given typename in this instance, <b>false</b> otherwise
    */
-  public boolean hasReference(String typeName) {
-    typeName = toNormalizedClassname(typeName);
-    return this.referenceCache.containsKey(typeName);
+  public boolean hasReference(String classname) {
+    classname = toNormalizedClassname(classname);
+    return this.referenceCache.containsKey(classname);
   }
 
   /**
    * Checks whether the given type name was already resolved or not
    *
-   * @param typeName to look for
+   * @param classname to look for
    * @return <b>true</b> if there is a resolved type with given typename in this instance, <b>false</b> otherwise
    */
-  public boolean hasType(String typeName) {
-    typeName = toNormalizedClassname(typeName);
-    return this.resolvedCache.containsKey(typeName);
+  public boolean hasType(String classname) {
+    classname = toNormalizedClassname(classname);
+    return this.resolvedCache.containsKey(classname);
   }
 
   /**
    * Tries to reference wanted type by its internal-name without to resolve it
    *
-   * @param typeName is the internal classname of the referenced type
-   * @return a new or already existing type reference
+   * @param classname is the classname of the referenced type
+   * @return a new or already cached type reference
    */
-  public HxTypeReference reference(String typeName) {
+  public HxTypeReference reference(String classname) {
     checkClassLoaderAvailability();
-    typeName = toNormalizedClassname(typeName);
-    HxTypeReference reference = fetchReferenceCache(typeName);
+    classname = toNormalizedClassname(classname);
+    HxTypeReference reference = fetchReferenceCache(classname);
 
     if (reference == null) {
       if (LOG.isDebugEnabled()) {
-        LOG.debug("New reference: {}", typeName);
+        LOG.debug("New reference: {}", classname);
       }
-      return storeSynchronizedReference(typeName, createReference(typeName));
+      return storeSynchronizedReference(classname, createReference(classname));
     }
 
     return reference;
   }
 
   /**
+   * @param aClass as prototype for a reference
+   * @return a new or cached reference to the given class
+   */
+  public HxTypeReference reference(Class<?> aClass) {
+    return reference(aClass.getName());
+  }
+
+  /**
    * Creates a collection with references to given type-names
    *
-   * @param typeNames to reference
+   * @param classnames to reference
    * @return a collection with possibly not-resolved references
    */
-  public List<HxType> referencesAsList(String... typeNames) {
-    if (typeNames.length == 0) {
+  public List<HxType> referencesAsList(String... classnames) {
+    if (classnames.length == 0) {
       return Collections.emptyList();
     }
 
-    List<HxType> output = new ArrayList<>(typeNames.length);
-    for (String typeName : typeNames) {
+    List<HxType> output = new ArrayList<>(classnames.length);
+    for (String typeName : classnames) {
       output.add(reference(typeName));
     }
     return output;
   }
 
   /**
-   * @param typeNames
+   * @param classnames
    * @return
    */
-  public HxType[] referencesAsArray(String... typeNames) {
-    if (typeNames.length == 0) {
+  public HxType[] referencesAsArray(String... classnames) {
+    if (classnames.length == 0) {
       return Constants.EMPTY_HX_TYPE_ARRAY;
     }
-    HxType[] output = new HxType[typeNames.length];
+    HxType[] output = new HxType[classnames.length];
 
-    for (int i = 0; i < typeNames.length; i++) {
-      String typeName = typeNames[i];
+    for (int i = 0; i < classnames.length; i++) {
+      String typeName = classnames[i];
       output[i] = reference(typeName);
     }
 
@@ -358,148 +454,161 @@ public class Haxxor
   }
 
   /**
-   * Resolves corresponding type by its name to a {@link HxType haxxor type}
+   * Resolves corresponding type by the given name to a {@link HxType haxxor type}
    *
-   * @param typeName to resolve
-   * @return a real resolved instance of {@link HxType}
+   * @param classname of class to resolve
+   * @return a resolved instance of {@link HxType}
    */
-  public HxType resolve(String typeName) {
-    return resolve(typeName, this.flags);
+  public HxType resolve(String classname) {
+    return resolve(classname, this.flags);
   }
 
   /**
    * Resolves corresponding type by its name to a {@link HxType haxxor type}
    *
-   * @param typeName to resolve
-   * @param options  describes how to resolve wanted type
-   * @return a real resolved instance of {@link HxType}
-   * @implNote resolution means that the corresponding <code>*.class</code> file is loaded, parsed according to given
-   * options and represented as a {@link HxType}
+   * @param aClass with a valid name
+   * @return a resolved instance of {@link HxType}
    */
-  public HxType resolve(String typeName,
-                        int options) {
+  public HxType resolve(Class<?> aClass) {
+    return resolve(aClass.getName());
+  }
+
+  /**
+   * Resolves corresponding type by its name to a {@link HxType haxxor type}
+   *
+   * @param classname of class to resolve
+   * @param flags describes how to resolve desired type
+   * @return a resolved instance of {@link HxType}
+   * @implNote resolution means that the corresponding <code>*.class</code> file is loaded, parsed according to given
+   * flags and represented as a {@link HxType}
+   * @see Flags
+   */
+  public HxType resolve(String classname,
+                        int flags) {
     checkClassLoaderAvailability();
-    typeName = toNormalizedClassname(typeName);
-    HxType type = fetchResolvedCache(typeName);
+    classname = toNormalizedClassname(classname);
+    HxType type = fetchResolvedCache(classname);
 
     if (type != null) {
       return type;
     }
 
-    if (isArray(typeName)) {
-      return register(typeName, new HxArrayTypeImpl(this, typeName));
+    if (isArray(classname)) {
+      return register(classname, new HxArrayTypeImpl(this, classname));
     }
     return resolveInternally(
-            typeName,
-            options,
-            getByteCodeLoader().load(typeName)
+      classname,
+      getByteCodeLoader().load(getClassLoader(), classname), flags
     );
   }
 
   /**
-   * @param typeName
-   * @param options
-   * @param byteCode
-   * @return
+   * @param classname of class to resolve
+   * @param byteCode that describes the class itself
+   * @param flags describes how to resolve the desired type
+   * @return a resolved instance of {@link HxType}
+   * @implNote resolution means that the corresponding <code>*.class</code> file is loaded, parsed according to given
+   * flags and represented as a {@link HxType}
+   * @see Flags
    */
-  public HxType resolve(String typeName,
-                        int options,
-                        byte[] byteCode) {
+  public HxType resolve(String classname,
+                        final byte[] byteCode,
+                        final int flags) {
     checkClassLoaderAvailability();
-    typeName = toNormalizedClassname(typeName);
-    HxType type = fetchResolvedCache(typeName);
+    classname = toNormalizedClassname(classname);
+    HxType type = fetchResolvedCache(classname);
 
     if (type != null) {
       return type;
     }
 
-    return readClass(byteCode, options);
+    return resolveInternally(classname, byteCode, flags);
   }
 
-  protected HxType fetchResolvedCache(final String typeName) {
+  protected HxType fetchResolvedCache(final String classname) {
     if(!concurrent) {
-      return readResolvedCache(typeName);
+      return readResolvedCache(classname);
     }
 
-    return readResolvedCacheGuarded(typeName);
+    return readResolvedCacheGuarded(classname);
   }
 
-  private HxType readResolvedCacheGuarded(final String typeName) {
+  private HxType readResolvedCacheGuarded(final String classname) {
     final Lock lock = readWriteLock.readLock();
     lock.lock();
     try {
-      return readResolvedCache(typeName);
+      return readResolvedCache(classname);
     } finally {
       lock.unlock();
     }
   }
 
-  private HxType readResolvedCache(final String typeName) {
-    return this.resolvedCache.get(typeName);
+  private HxType readResolvedCache(final String classname) {
+    return this.resolvedCache.get(classname);
   }
 
-  protected HxTypeReference fetchReferenceCache(final String typeName) {
+  protected HxTypeReference fetchReferenceCache(final String classname) {
     if(!concurrent) {
-      return readReferenceCache(typeName);
+      return readReferenceCache(classname);
     }
 
-    return readReferenceCacheGuarded(typeName);
+    return readReferenceCacheGuarded(classname);
   }
 
-  private HxTypeReference readReferenceCacheGuarded(final String typeName) {
+  private HxTypeReference readReferenceCacheGuarded(final String classname) {
     final Lock lock = readWriteLock.readLock();
     lock.lock();
     try {
-      return readReferenceCache(typeName);
+      return readReferenceCache(classname);
     } finally {
       lock.unlock();
     }
   }
 
-  private HxTypeReference readReferenceCache(final String typeName) {
-    return this.referenceCache.get(typeName);
+  private HxTypeReference readReferenceCache(final String classname) {
+    return this.referenceCache.get(classname);
   }
 
-  private HxType resolveInternally(String typeName,
-                                   int options,
-                                   byte[] byteCode) {
-    HxType type = readClass(byteCode, options);
+  private HxType resolveInternally(String classname,
+                                   final byte[] byteCode,
+                                   final int flags) {
+    HxType type = readClass(classname, byteCode, flags);
     if (LOG.isDebugEnabled()) {
-      LOG.debug("New type: {}", typeName);
+      LOG.debug("Resolving: {}", classname);
     }
-    return register(typeName, type);
+    return register(classname, type);
   }
 
   /**
    * Registers the given type/reference with the provided typename
    *
-   * @param typeName to use as key
+   * @param classname to use as key
    * @param type     to register
    * @return the actually registered type
    */
-  public HxType register(final String typeName,
+  public HxType register(final String classname,
                          final HxType type) {
     if (type.isReference()) {
-      return storeSynchronizedReference(typeName, type.toReference());
+      return storeSynchronizedReference(classname, type.toReference());
     }
-    return storeSynchronizedResolved(typeName, type);
+    return storeSynchronizedResolved(classname, type);
   }
 
-  protected HxTypeReference storeSynchronizedReference(final String typeName,
+  protected HxTypeReference storeSynchronizedReference(final String classname,
                                                        final HxTypeReference reference) {
     if(!concurrent) {
-      return writeToReferenceCache(typeName, reference);
+      return writeToReferenceCache(classname, reference);
     }
 
-    return writeToReferenceCacheGuarded(typeName, reference);
+    return writeToReferenceCacheGuarded(classname, reference);
   }
 
-  private HxTypeReference writeToReferenceCacheGuarded(final String typeName,
+  private HxTypeReference writeToReferenceCacheGuarded(final String classname,
                                                        final HxTypeReference reference) {
     final Lock lock = readWriteLock.writeLock();
     lock.lock();
     try {
-      return writeToReferenceCache(typeName, reference);
+      return writeToReferenceCache(classname, reference);
     } finally {
       lock.unlock();
     }
@@ -509,34 +618,34 @@ public class Haxxor
     return current == null? notNull : current;
   }
 
-  private HxTypeReference writeToReferenceCache(final String typeName,
+  private HxTypeReference writeToReferenceCache(final String classname,
                                                 final HxTypeReference reference) {
-    return notNull(this.referenceCache.putIfAbsent(typeName, reference), reference);
+    return notNull(this.referenceCache.putIfAbsent(classname, reference), reference);
   }
 
-  protected HxType storeSynchronizedResolved(final String typeName,
+  protected HxType storeSynchronizedResolved(final String classname,
                                              final HxType resolved) {
     if(!concurrent) {
-      return writeToResolvedCache(typeName, resolved);
+      return writeToResolvedCache(classname, resolved);
     }
 
-    return writeToResolvedCacheGuarded(typeName, resolved);
+    return writeToResolvedCacheGuarded(classname, resolved);
   }
 
-  private HxType writeToResolvedCacheGuarded(final String typeName,
+  private HxType writeToResolvedCacheGuarded(final String classname,
                                              final HxType resolved) {
     final Lock lock = readWriteLock.writeLock();
     lock.lock();
     try {
-      return writeToResolvedCache(typeName, resolved);
+      return writeToResolvedCache(classname, resolved);
     } finally {
       lock.unlock();
     }
   }
 
-  private HxType writeToResolvedCache(final String typeName,
+  private HxType writeToResolvedCache(final String classname,
                                       final HxType resolved) {
-    return notNull(this.resolvedCache.putIfAbsent(typeName, resolved), resolved);
+    return notNull(this.resolvedCache.putIfAbsent(classname, resolved), resolved);
   }
 
   private void checkClassLoaderAvailability() {
@@ -546,15 +655,13 @@ public class Haxxor
   }
 
   @Override
-  public String toNormalizedClassname(final String typeName) {
-    return classNameNormalizer.toNormalizedClassname(typeName);
+  public String toNormalizedClassname(final String classname) {
+    return classNameNormalizer.toNormalizedClassname(classname);
   }
 
   @Override
   public HxType createType(final String className) {
-    HxType type = elementFactory.createType(toNormalizedClassname(className));
-    getTypeInitializer().initialize(type);
-    return type;
+    return elementFactory.createType(toNormalizedClassname(className));
   }
 
   @Override
@@ -579,6 +686,11 @@ public class Haxxor
   }
 
   @Override
+  public HxMethod createConstructor(final HxType... parameterTypes) {
+    return elementFactory.createConstructor(parameterTypes);
+  }
+
+  @Override
   public HxMethod createConstructorReference(final String declaringType,
                                                   final String... parameterTypes) {
     return elementFactory.createConstructorReference(toNormalizedClassname(declaringType),
@@ -595,6 +707,13 @@ public class Haxxor
   }
 
   @Override
+  public HxMethod createMethod(final HxType returnType,
+                               final String methodName,
+                               final HxType... parameterTypes) {
+    return elementFactory.createMethod(returnType, methodName, parameterTypes);
+  }
+
+  @Override
   public HxMethod createMethodReference(final String declaringType,
                                         final String returnType,
                                         final String methodName,
@@ -606,14 +725,14 @@ public class Haxxor
   }
 
   @Override
-  public HxParameter createParameter(final String className) {
-    return elementFactory.createParameter(toNormalizedClassname(className));
+  public HxParameter createParameter(final String classname) {
+    return elementFactory.createParameter(toNormalizedClassname(classname));
   }
 
   @Override
-  public HxAnnotation createAnnotation(final String className,
+  public HxAnnotation createAnnotation(final String classname,
                                        final boolean visible) {
-    return elementFactory.createAnnotation(toNormalizedClassname(className), visible);
+    return elementFactory.createAnnotation(toNormalizedClassname(classname), visible);
   }
 
   @Override

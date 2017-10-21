@@ -913,6 +913,47 @@ class HxTypeTest {
   }
 
   @Test
+  void distanceTo() {
+    HxType _int = haxxor.reference(int.class);
+    HxType _double = haxxor.reference(double.class);
+    HxType objectArray = haxxor.reference(Object[].class);
+    HxType stringArray = haxxor.reference(String[].class);
+
+    HxType number = haxxor.reference(Number.class);
+    HxType integer = haxxor.reference(Integer.class);
+    HxType serializable = haxxor.reference(Serializable.class);
+    HxType stringbuilder = haxxor.reference(StringBuilder.class);
+    HxType appendable = haxxor.reference(Appendable.class);
+
+    assertEquals(0, _int.distanceTo(_int));
+    assertEquals(0, _double.distanceTo(_double));
+    assertEquals(0, integer.distanceTo(integer));
+    assertEquals(0, serializable.distanceTo(serializable));
+    assertEquals(0, objectArray.distanceTo(objectArray));
+
+    assertEquals(-1, _int.distanceTo(_double));
+    assertEquals(-1, _double.distanceTo(_int));
+
+    assertEquals(-1, stringArray.distanceTo(objectArray));
+    assertEquals(11, objectArray.distanceTo(stringArray));
+
+    assertEquals(-1, integer.distanceTo(number));
+    assertEquals(10, number.distanceTo(integer));
+
+    assertEquals(-1, number.distanceTo(serializable));
+    assertEquals(100, serializable.distanceTo(number));
+
+    assertEquals(-1, integer.distanceTo(serializable));
+    assertEquals(210, serializable.distanceTo(integer));
+
+    assertEquals(-1, stringbuilder.distanceTo(serializable));
+    assertEquals(100, serializable.distanceTo(stringbuilder));
+
+    assertEquals(-1, stringbuilder.distanceTo(appendable));
+    assertEquals(310, appendable.distanceTo(stringbuilder));
+  }
+
+  @Test
   void isArray() {
   }
 

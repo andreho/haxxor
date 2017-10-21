@@ -599,25 +599,6 @@ public interface HxInstructionFactoryGlobal {
     return FactoryHolder.instance.INVOKEVIRTUAL(type, name, methodDesc);
   }
 
-//  static HxInstruction INVOKEVIRTUAL(HxMethod method) {
-//    return FactoryHolder.instance.INVOKEVIRTUAL(method);
-//  }
-//  static HxInstruction INVOKESPECIAL(HxMethod method) {
-//    return FactoryHolder.instance.INVOKESPECIAL(method);
-//  }
-//  static HxInstruction INVOKESPECIAL(HxConstructor constructor) {
-//    return FactoryHolder.instance.INVOKESPECIAL(constructor);
-//  }
-//  static HxInstruction INVOKESTATIC(HxMethod method) {
-//    return FactoryHolder.instance.INVOKESTATIC(method);
-//  }
-//  static HxInstruction INVOKEINTERFACE(HxMethod method) {
-//    return FactoryHolder.instance.INVOKEINTERFACE(method);
-//  }
-//  static HxInstruction NEW(HxType type) {
-//    return FactoryHolder.instance.NEW(type);
-//  }
-
   static HxInstruction INVOKESPECIAL(String type,
                                      String name,
                                      String methodDesc) {
