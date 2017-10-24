@@ -1,8 +1,9 @@
-package net.andreho.haxxor.cgen.instr.binary;
+package net.andreho.haxxor.cgen.instr.bitwise;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractZeroOperandInstruction;
 
 import java.util.List;
@@ -10,20 +11,25 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class LUSHR
+public class ISHL
     extends AbstractZeroOperandInstruction {
 
-  public LUSHR() {
-    super(Opcodes.LUSHR);
+  public ISHL() {
+    super();
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.BitWise.ISHL;
   }
 
   @Override
   public void visit(HxCodeStream codeStream) {
-    codeStream.LUSHR();
+    codeStream.ISHL();
   }
 
   @Override
   public List<Object> compute(final HxComputingContext context) {
-    return PUSH_LONG;
+    return PUSH_INT;
   }
 }

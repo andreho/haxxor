@@ -6,8 +6,8 @@ package net.andreho.haxxor.cgen.instr.abstr;
 public abstract class AbstractLocalAccessInstruction
     extends AbstractSingleOperandInstruction {
 
-  public AbstractLocalAccessInstruction(int opcode, int operand) {
-    super(opcode, operand);
+  public AbstractLocalAccessInstruction(int operand) {
+    super(operand);
   }
 
   protected int getLocalIndex() {

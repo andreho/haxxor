@@ -1,9 +1,10 @@
 package net.andreho.haxxor.cgen.instr.switches;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
-import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractSwitchJumpInstruction;
 
 import java.util.Arrays;
@@ -19,9 +20,14 @@ public class TABLESWITCH
   protected final int max;
 
   public TABLESWITCH(int min, int max, LABEL defaultLabel, LABEL... labels) {
-    super(Opcodes.TABLESWITCH, defaultLabel, labels);
+    super(defaultLabel, labels);
     this.min = min;
     this.max = max;
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Switches.TABLESWITCH;
   }
 
   @Override

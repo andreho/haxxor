@@ -12,7 +12,7 @@ import net.andreho.aop.spi.impl.Constants;
 import net.andreho.haxxor.cgen.HxCgenUtils;
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
 import net.andreho.haxxor.cgen.HxInstruction;
-import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 

@@ -1,9 +1,10 @@
 package net.andreho.haxxor.cgen.instr.invokes;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxArguments;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.HxMethodHandle;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInstruction;
 
@@ -21,12 +22,17 @@ public class INVOKEDYNAMIC
   private final HxArguments bootstrapMethodArguments;
 
   public INVOKEDYNAMIC(String name, String desc, HxMethodHandle bsm, HxArguments bsmArgs) {
-    super(Opcodes.INVOKEDYNAMIC);
+    super();
     Utils.checkMethodName(getOpcode(), name);
     this.name = name;
     this.desc = desc;
     this.bootstrapMethod = bsm;
     this.bootstrapMethodArguments = bsmArgs;
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Invocation.INVOKEDYNAMIC;
   }
 
   @Override

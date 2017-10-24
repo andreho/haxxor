@@ -8,8 +8,8 @@ public abstract class AbstractStringOperandInstruction
 
   protected final String operand;
 
-  public AbstractStringOperandInstruction(int opcode, String operand) {
-    super(opcode);
+  public AbstractStringOperandInstruction(String operand) {
+    super();
     this.operand = operand;
   }
 

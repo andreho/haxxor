@@ -1,8 +1,9 @@
 package net.andreho.haxxor.cgen.instr.arithmetic;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractZeroOperandInstruction;
 
 import java.util.List;
@@ -14,7 +15,12 @@ public class LREM
     extends AbstractZeroOperandInstruction {
 
   public LREM() {
-    super(Opcodes.LREM);
+    super();
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Arithmetic.LREM;
   }
 
   @Override

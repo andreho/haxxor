@@ -1,9 +1,10 @@
-package net.andreho.haxxor.cgen.instr.jumps;
+package net.andreho.haxxor.cgen.instr.subroutine;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
-import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractSimpleJumpInstruction;
 
 import java.util.List;
@@ -15,7 +16,12 @@ public class JSR
   extends AbstractSimpleJumpInstruction {
 
   public JSR(LABEL label) {
-    super(Opcodes.JSR, label);
+    super(label);
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.SubRoutine.JSR;
   }
 
   @Override

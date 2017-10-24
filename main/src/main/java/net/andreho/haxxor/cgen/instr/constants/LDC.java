@@ -1,6 +1,7 @@
 package net.andreho.haxxor.cgen.instr.constants;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.HxMethodHandle;
 import net.andreho.haxxor.cgen.HxMethodType;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInstruction;
@@ -68,9 +69,14 @@ public abstract class LDC<T>
   private final T value;
 
   protected LDC(T value, ConstantType type) {
-    super(Opcodes.LDC);
+    super();
     this.value = Objects.requireNonNull(value);
     this.type = Objects.requireNonNull(type);
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Constants.LDC;
   }
 
   public ConstantType getType() {

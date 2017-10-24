@@ -10,7 +10,7 @@ import net.andreho.aop.api.spec.Modifier;
 import net.andreho.aop.api.spec.Modifiers;
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
-import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.spec.api.HxField;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;

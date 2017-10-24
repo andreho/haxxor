@@ -1,7 +1,8 @@
 package net.andreho.haxxor.cgen.instr.invokes;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInvokeInstruction;
 
 /**
@@ -13,8 +14,13 @@ public class INVOKESPECIAL
   public INVOKESPECIAL(String owner,
                        String name,
                        String desc) {
-    super(Opcodes.INVOKESPECIAL, owner, name, desc);
+    super(owner, name, desc);
     Utils.checkMethodName(getOpcode(), name);
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Invocation.INVOKESPECIAL;
   }
 
   @Override

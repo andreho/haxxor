@@ -1,8 +1,9 @@
 package net.andreho.haxxor.cgen.instr.sync;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractZeroOperandInstruction;
 
 import java.util.List;
@@ -14,7 +15,12 @@ public class MONITOREXIT
     extends AbstractZeroOperandInstruction {
 
   public MONITOREXIT() {
-    super(Opcodes.MONITOREXIT);
+    super();
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Synchronization.MONITOREXIT;
   }
 
   @Override

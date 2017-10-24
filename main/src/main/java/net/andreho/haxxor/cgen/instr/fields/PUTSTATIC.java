@@ -1,8 +1,9 @@
 package net.andreho.haxxor.cgen.instr.fields;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractFieldInstruction;
 
 import java.util.List;
@@ -16,7 +17,12 @@ public class PUTSTATIC
   public PUTSTATIC(String owner,
                    String name,
                    String desc) {
-    super(Opcodes.PUTSTATIC, owner, name, desc);
+    super(owner, name, desc);
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Fields.PUTSTATIC;
   }
 
   @Override

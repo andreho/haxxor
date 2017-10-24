@@ -1,8 +1,9 @@
 package net.andreho.haxxor.cgen.instr.conversion.primitive;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractZeroOperandInstruction;
 
 import java.util.List;
@@ -14,7 +15,12 @@ public class D2L
     extends AbstractZeroOperandInstruction {
 
   public D2L() {
-    super(Opcodes.D2L);
+    super();
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Conversion.D2L;
   }
 
   @Override

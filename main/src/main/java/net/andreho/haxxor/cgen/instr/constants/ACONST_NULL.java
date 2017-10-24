@@ -1,8 +1,9 @@
 package net.andreho.haxxor.cgen.instr.constants;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractZeroOperandInstruction;
 
 import java.util.List;
@@ -14,7 +15,12 @@ public class ACONST_NULL
     extends AbstractZeroOperandInstruction {
 
   public ACONST_NULL() {
-    super(Opcodes.ACONST_NULL);
+    super();
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Constants.ACONST_NULL;
   }
 
   @Override

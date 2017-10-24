@@ -14,11 +14,10 @@ public abstract class AbstractFieldInstruction
   protected final String name;
   protected final String desc;
 
-  public AbstractFieldInstruction(int opcode,
-                                  String owner,
+  public AbstractFieldInstruction(String owner,
                                   String name,
                                   String desc) {
-    super(opcode);
+    super();
     this.owner = owner;
     this.name = name;
     this.desc = desc;

@@ -8,8 +8,8 @@ public abstract class AbstractSingleOperandInstruction
 
   protected int operand;
 
-  public AbstractSingleOperandInstruction(int opcode, int operand) {
-    super(opcode);
+  public AbstractSingleOperandInstruction(int operand) {
+    super();
     this.operand = operand;
   }
 

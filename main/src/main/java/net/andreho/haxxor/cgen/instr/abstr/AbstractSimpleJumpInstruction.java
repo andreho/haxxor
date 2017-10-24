@@ -1,6 +1,6 @@
 package net.andreho.haxxor.cgen.instr.abstr;
 
-import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
@@ -8,8 +8,8 @@ import net.andreho.haxxor.cgen.instr.LABEL;
 public abstract class AbstractSimpleJumpInstruction
     extends AbstractJumpInstruction {
 
-  public AbstractSimpleJumpInstruction(int opcode, LABEL label) {
-    super(opcode, label);
+  public AbstractSimpleJumpInstruction(LABEL label) {
+    super(label);
   }
 
   @Override

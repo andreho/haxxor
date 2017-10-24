@@ -2,7 +2,7 @@ package net.andreho.haxxor.cgen.impl;
 
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
 import net.andreho.haxxor.cgen.HxInstructionFactory;
-import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.spec.api.HxMethodBody;
 
 /**

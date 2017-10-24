@@ -1,8 +1,9 @@
 package net.andreho.haxxor.cgen.instr.stack;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractZeroOperandInstruction;
 
 import java.util.List;
@@ -15,7 +16,12 @@ public class DUP2
     extends AbstractZeroOperandInstruction {
 
   public DUP2() {
-    super(Opcodes.DUP2);
+    super();
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Stack.DUP2;
   }
 
   @Override

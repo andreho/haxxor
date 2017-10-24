@@ -1,7 +1,8 @@
 package net.andreho.haxxor.cgen.instr.array.load;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractArrayLoadInstruction;
 
 /**
@@ -11,7 +12,12 @@ public class FALOAD
     extends AbstractArrayLoadInstruction {
 
   public FALOAD() {
-    super(Opcodes.FALOAD);
+    super();
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Array.FALOAD;
   }
 
   @Override

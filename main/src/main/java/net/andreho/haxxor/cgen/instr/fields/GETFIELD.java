@@ -1,7 +1,8 @@
 package net.andreho.haxxor.cgen.instr.fields;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractFieldInstruction;
 
 /**
@@ -13,7 +14,12 @@ public class GETFIELD
   public GETFIELD(String owner,
                   String name,
                   String desc) {
-    super(Opcodes.GETFIELD, owner, name, desc);
+    super(owner, name, desc);
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Fields.GETFIELD;
   }
 
   @Override

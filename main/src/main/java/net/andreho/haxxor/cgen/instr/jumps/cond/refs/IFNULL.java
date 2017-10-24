@@ -1,8 +1,9 @@
 package net.andreho.haxxor.cgen.instr.jumps.cond.refs;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
-import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractSimpleJumpInstruction;
 
 /**
@@ -12,7 +13,12 @@ public class IFNULL
   extends AbstractSimpleJumpInstruction {
 
   public IFNULL(LABEL label) {
-    super(Opcodes.IFNULL, label);
+    super(label);
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Jump.IFNULL;
   }
 
   @Override

@@ -1,8 +1,9 @@
 package net.andreho.haxxor.cgen.instr.stack;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractZeroOperandInstruction;
 
 import java.util.List;
@@ -15,7 +16,12 @@ public class POP2
     extends AbstractZeroOperandInstruction {
 
   public POP2() {
-    super(Opcodes.POP2);
+    super();
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Stack.POP2;
   }
 
   @Override

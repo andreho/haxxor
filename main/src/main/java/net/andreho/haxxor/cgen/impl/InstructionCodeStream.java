@@ -9,7 +9,7 @@ import net.andreho.haxxor.cgen.HxInstructionFactory;
 import net.andreho.haxxor.cgen.HxInstructionFactoryGlobal;
 import net.andreho.haxxor.cgen.HxMethodHandle;
 import net.andreho.haxxor.cgen.HxMethodType;
-import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Objects;

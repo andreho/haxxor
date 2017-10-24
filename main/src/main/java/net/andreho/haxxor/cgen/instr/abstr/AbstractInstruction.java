@@ -40,17 +40,15 @@ public abstract class AbstractInstruction extends HxAnnotatedDelegate<HxInstruct
   protected static final List<Object> PUSH_DOUBLE = Collections.unmodifiableList(
       Arrays.asList(Opcodes.DOUBLE, Opcodes.TOP));
 
-  protected final int opcode;
   protected HxInstruction next;
   protected HxInstruction previous;
 
-  public AbstractInstruction(int opcode) {
-    this.opcode = opcode;
+  public AbstractInstruction() {
   }
 
   @Override
   public int getOpcode() {
-    return opcode;
+    return getInstructionType().getOpcode();
   }
 
   @Override

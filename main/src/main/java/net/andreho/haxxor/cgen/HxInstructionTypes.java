@@ -699,11 +699,41 @@ public interface HxInstructionTypes {
     }
   }
 
-  enum Misc
+  enum SubRoutine
     implements HxInstructionType {
-    NOP(Opcodes.NOP),
     JSR(Opcodes.JSR),
     RET(Opcodes.RET);
+
+    private final int opcode;
+
+    SubRoutine(int opcode) {
+      this.opcode = opcode;
+    }
+
+    @Override
+    public int getOpcode() {
+      return this.opcode;
+    }
+
+    @Override
+    public int getPopSize() {
+      return 0;
+    }
+
+    @Override
+    public int getPushSize() {
+      return this == JSR ? 1 : 0;
+    }
+
+    @Override
+    public HxInstructionSort getSort() {
+      return HxInstructionSort.SubRoutine;
+    }
+  }
+
+  enum Misc
+    implements HxInstructionType {
+    NOP(Opcodes.NOP);
 
     private final int opcode;
 
@@ -723,7 +753,7 @@ public interface HxInstructionTypes {
 
     @Override
     public int getPushSize() {
-      return this == JSR ? 1 : 0;
+      return 0;
     }
 
     @Override
@@ -1139,9 +1169,9 @@ public interface HxInstructionTypes {
       case Opcodes.GOTO:
         return Jump.GOTO;
       case Opcodes.JSR:
-        return Misc.JSR;
+        return SubRoutine.JSR;
       case Opcodes.RET:
-        return Misc.RET;
+        return SubRoutine.RET;
       case Opcodes.TABLESWITCH:
         return Switches.TABLESWITCH;
       case Opcodes.LOOKUPSWITCH:

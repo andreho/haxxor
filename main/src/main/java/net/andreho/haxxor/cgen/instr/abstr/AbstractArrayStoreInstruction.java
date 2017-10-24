@@ -10,8 +10,8 @@ import java.util.List;
 public abstract class AbstractArrayStoreInstruction
     extends AbstractZeroOperandInstruction {
 
-  public AbstractArrayStoreInstruction(int opcode) {
-    super(opcode);
+  public AbstractArrayStoreInstruction() {
+    super();
   }
 
   protected void checkArrayType(Object arrayType,

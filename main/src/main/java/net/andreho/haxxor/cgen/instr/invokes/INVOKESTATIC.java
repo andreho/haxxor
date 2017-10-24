@@ -1,7 +1,8 @@
 package net.andreho.haxxor.cgen.instr.invokes;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInvokeInstruction;
 
 /**
@@ -14,8 +15,13 @@ public class INVOKESTATIC
                       String name,
                       String desc,
                       boolean isInterface) {
-    super(Opcodes.INVOKESTATIC, owner, name, desc, isInterface);
+    super(owner, name, desc, isInterface);
     Utils.checkMethodName(getOpcode(), name);
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Invocation.INVOKESTATIC;
   }
 
   @Override

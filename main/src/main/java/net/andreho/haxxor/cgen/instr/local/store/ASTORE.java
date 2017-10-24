@@ -1,8 +1,9 @@
 package net.andreho.haxxor.cgen.instr.local.store;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractLocalAccessInstruction;
 
 import java.util.List;
@@ -14,7 +15,12 @@ public class ASTORE
     extends AbstractLocalAccessInstruction {
 
   public ASTORE(int var) {
-    super(Opcodes.ASTORE, var);
+    super(var);
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Store.ASTORE;
   }
 
   @Override

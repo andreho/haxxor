@@ -12,7 +12,7 @@ import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxFrames;
 import net.andreho.haxxor.cgen.HxMethodHandle;
 import net.andreho.haxxor.cgen.HxMethodType;
-import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 

@@ -18,6 +18,7 @@ public enum HxInstructionSort {
   Load,
   Store,
   Stack,
+  SubRoutine,
   Misc,
   Synchronization,
   Exit,

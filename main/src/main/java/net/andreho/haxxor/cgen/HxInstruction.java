@@ -3,7 +3,7 @@ package net.andreho.haxxor.cgen;
 import net.andreho.haxxor.cgen.impl.InstructionCodeStream;
 import net.andreho.haxxor.cgen.instr.BEGIN;
 import net.andreho.haxxor.cgen.instr.END;
-import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.cgen.instr.misc.FRAME;
 import net.andreho.haxxor.cgen.instr.misc.LINE_NUMBER;
 import net.andreho.haxxor.spec.api.HxAnnotated;
@@ -21,7 +21,7 @@ import java.util.function.Predicate;
  */
 public interface HxInstruction
     extends HxVisitable,
-            HxStackChangeProvider,
+   HxComputable,
             HxAnnotated<HxInstruction>,
             Iterable<HxInstruction> {
 

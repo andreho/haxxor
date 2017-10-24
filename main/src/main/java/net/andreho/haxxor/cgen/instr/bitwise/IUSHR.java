@@ -1,8 +1,9 @@
-package net.andreho.haxxor.cgen.instr.binary;
+package net.andreho.haxxor.cgen.instr.bitwise;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractZeroOperandInstruction;
 
 import java.util.List;
@@ -10,16 +11,21 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
-public class IAND
+public class IUSHR
     extends AbstractZeroOperandInstruction {
 
-  public IAND() {
-    super(Opcodes.IAND);
+  public IUSHR() {
+    super();
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.BitWise.IUSHR;
   }
 
   @Override
   public void visit(HxCodeStream codeStream) {
-    codeStream.IAND();
+    codeStream.IUSHR();
   }
 
   @Override

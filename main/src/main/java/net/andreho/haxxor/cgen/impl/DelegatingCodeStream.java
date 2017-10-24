@@ -6,7 +6,7 @@ import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxFrames;
 import net.andreho.haxxor.cgen.HxMethodHandle;
 import net.andreho.haxxor.cgen.HxMethodType;
-import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 
 /**
  * <br/>Created by a.hofmann on 05.06.2017 at 07:05.

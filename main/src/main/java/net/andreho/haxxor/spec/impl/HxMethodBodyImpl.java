@@ -11,7 +11,7 @@ import net.andreho.haxxor.cgen.HxTryCatch;
 import net.andreho.haxxor.cgen.impl.ExtendedInstructionCodeStream;
 import net.andreho.haxxor.cgen.impl.HxLocalVariableImpl;
 import net.andreho.haxxor.cgen.impl.HxTryCatchImpl;
-import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractSimpleJumpInstruction;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractSwitchJumpInstruction;
 import net.andreho.haxxor.spec.api.HxMethod;

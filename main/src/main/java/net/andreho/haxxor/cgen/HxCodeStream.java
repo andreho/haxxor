@@ -1,7 +1,7 @@
 package net.andreho.haxxor.cgen;
 
 
-import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 
 /**
  * <br/>Created by a.hofmann on 16.06.2015.<br/>

@@ -1,7 +1,7 @@
 package net.andreho.haxxor.cgen.instr.abstr;
 
 import net.andreho.haxxor.cgen.HxComputingContext;
-import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 
 import java.util.List;
 
@@ -13,8 +13,8 @@ public abstract class AbstractJumpInstruction
 
   protected final LABEL label;
 
-  public AbstractJumpInstruction(int opcode, LABEL label) {
-    super(opcode);
+  public AbstractJumpInstruction(LABEL label) {
+    super();
     this.label = label;
   }
 

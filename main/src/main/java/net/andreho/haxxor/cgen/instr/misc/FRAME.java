@@ -22,7 +22,7 @@ public class FRAME
   private final Object[] stack;
 
   public FRAME(final HxFrames type, final int nLocal, final Object[] local, final int nStack, final Object[] stack) {
-    super(-1);
+    super();
     this.type = type;
     this.nLocal = nLocal;
     this.local = local;

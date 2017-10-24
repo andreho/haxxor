@@ -14,7 +14,7 @@ public class END
     extends AbstractInstruction {
 
   public END() {
-    super(-1);
+    super();
   }
 
   @Override

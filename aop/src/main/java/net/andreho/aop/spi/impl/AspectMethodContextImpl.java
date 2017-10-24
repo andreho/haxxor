@@ -4,7 +4,7 @@ import net.andreho.aop.spi.AspectLocalAttribute;
 import net.andreho.aop.spi.AspectMethodContext;
 import net.andreho.aop.spi.AspectTryCatch;
 import net.andreho.haxxor.cgen.HxLocalVariable;
-import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxType;
 

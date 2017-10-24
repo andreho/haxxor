@@ -14,7 +14,7 @@ public class BEGIN
     extends AbstractInstruction {
 
   public BEGIN() {
-    super(-1);
+    super();
   }
 
   @Override

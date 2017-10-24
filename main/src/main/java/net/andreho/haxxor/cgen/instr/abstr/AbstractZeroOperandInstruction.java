@@ -6,7 +6,7 @@ package net.andreho.haxxor.cgen.instr.abstr;
 public abstract class AbstractZeroOperandInstruction
     extends AbstractInstruction {
 
-  public AbstractZeroOperandInstruction(int opcode) {
-    super(opcode);
+  public AbstractZeroOperandInstruction() {
+    super();
   }
 }

@@ -1,8 +1,9 @@
 package net.andreho.haxxor.cgen.instr.local.load;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractLocalAccessInstruction;
 
 import java.util.List;
@@ -14,7 +15,12 @@ public class ALOAD
     extends AbstractLocalAccessInstruction {
 
   public ALOAD(int var) {
-    super(Opcodes.ALOAD, var);
+    super(var);
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Load.ALOAD;
   }
 
   @Override

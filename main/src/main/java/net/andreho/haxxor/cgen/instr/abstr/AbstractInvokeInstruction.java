@@ -15,12 +15,12 @@ public abstract class AbstractInvokeInstruction
   protected final String desc;
   protected final boolean isInterface;
 
-  public AbstractInvokeInstruction(int opcode, String owner, String name, String desc) {
-    this(opcode, owner, name, desc, false);
+  public AbstractInvokeInstruction(String owner, String name, String desc) {
+    this(owner, name, desc, false);
   }
 
-  public AbstractInvokeInstruction(int opcode, String owner, String name, String desc, boolean isInterface) {
-    super(opcode);
+  public AbstractInvokeInstruction(String owner, String name, String desc, boolean isInterface) {
+    super();
     this.owner = owner;
     this.name = name;
     this.desc = desc;

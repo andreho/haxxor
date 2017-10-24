@@ -1,8 +1,9 @@
 package net.andreho.haxxor.cgen.instr.jumps.cond.zero;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
-import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractSimpleJumpInstruction;
 
 /**
@@ -13,7 +14,12 @@ public class IFLT
   extends AbstractSimpleJumpInstruction {
 
   public IFLT(LABEL label) {
-    super(Opcodes.IFLT, label);
+    super(label);
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Jump.IFLT;
   }
 
   @Override

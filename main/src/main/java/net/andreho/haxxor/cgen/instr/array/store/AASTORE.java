@@ -1,7 +1,8 @@
 package net.andreho.haxxor.cgen.instr.array.store;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractArrayStoreInstruction;
 
 /**
@@ -11,7 +12,12 @@ public class AASTORE
     extends AbstractArrayStoreInstruction {
 
   public AASTORE() {
-    super(Opcodes.AASTORE);
+    super();
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Array.AASTORE;
   }
 
   @Override

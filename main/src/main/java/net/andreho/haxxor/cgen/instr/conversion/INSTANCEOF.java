@@ -1,8 +1,9 @@
 package net.andreho.haxxor.cgen.instr.conversion;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractStringOperandInstruction;
 
 import java.util.List;
@@ -14,7 +15,12 @@ public class INSTANCEOF
     extends AbstractStringOperandInstruction {
 
   public INSTANCEOF(String operand) {
-    super(Opcodes.INSTANCEOF, operand);
+    super(operand);
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Conversion.INSTANCEOF;
   }
 
   @Override

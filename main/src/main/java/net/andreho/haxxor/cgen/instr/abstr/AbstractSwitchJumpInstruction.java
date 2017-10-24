@@ -1,6 +1,6 @@
 package net.andreho.haxxor.cgen.instr.abstr;
 
-import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
@@ -10,10 +10,9 @@ public abstract class AbstractSwitchJumpInstruction
 
   protected final LABEL[] labels;
 
-  public AbstractSwitchJumpInstruction(final int opcode,
-                                       final LABEL defaultLabel,
+  public AbstractSwitchJumpInstruction(final LABEL defaultLabel,
                                        final LABEL[] labels) {
-    super(opcode, defaultLabel);
+    super(defaultLabel);
     this.labels = labels;
   }
 

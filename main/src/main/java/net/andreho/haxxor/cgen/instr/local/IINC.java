@@ -1,8 +1,9 @@
 package net.andreho.haxxor.cgen.instr.local;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractLocalAccessInstruction;
 
 import java.util.List;
@@ -15,9 +16,13 @@ public class IINC
   protected int increment;
 
   public IINC(int variable, int increment) {
-    //variable: may be used with WIDE instruction
-    super(Opcodes.IINC, variable);
+    super(variable);
     this.increment = increment; //may be used with WIDE instruction
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Store.IINC;
   }
 
   public int getIncrement() {

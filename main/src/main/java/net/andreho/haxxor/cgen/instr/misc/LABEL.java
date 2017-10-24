@@ -1,4 +1,4 @@
-package net.andreho.haxxor.cgen.instr;
+package net.andreho.haxxor.cgen.instr.misc;
 
 import net.andreho.asm.org.objectweb.asm.Label;
 import net.andreho.haxxor.cgen.HxCodeStream;
@@ -34,7 +34,7 @@ public class LABEL
   }
 
   public LABEL(Label asmLabel, boolean link) {
-    super(-1);
+    super();
     this.asmLabel = asmLabel;
     if(link) {
       this.asmLabel.info = this;

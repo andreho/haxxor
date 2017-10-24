@@ -1,8 +1,9 @@
 package net.andreho.haxxor.cgen.instr.constants;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractSingleOperandInstruction;
 
 import java.util.List;
@@ -18,7 +19,12 @@ public class SIPUSH
   }
 
   public SIPUSH(short value) {
-    super(Opcodes.SIPUSH, value);
+    super(value);
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Constants.SIPUSH;
   }
 
   @Override

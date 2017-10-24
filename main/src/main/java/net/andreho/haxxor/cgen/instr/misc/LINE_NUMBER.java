@@ -4,7 +4,6 @@ import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.LABEL;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInstruction;
 
 import java.util.List;
@@ -19,7 +18,7 @@ public class LINE_NUMBER
   private final LABEL start;
 
   public LINE_NUMBER(int line, LABEL start) {
-    super(-1);
+    super();
     this.line = line;
     this.start = start;
   }

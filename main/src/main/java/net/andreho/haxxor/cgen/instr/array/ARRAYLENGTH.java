@@ -1,8 +1,9 @@
 package net.andreho.haxxor.cgen.instr.array;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractZeroOperandInstruction;
 
 import java.util.List;
@@ -14,7 +15,12 @@ public class ARRAYLENGTH
     extends AbstractZeroOperandInstruction {
 
   public ARRAYLENGTH() {
-    super(Opcodes.ARRAYLENGTH);
+    super();
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Array.ARRAYLENGTH;
   }
 
   @Override
@@ -24,8 +30,8 @@ public class ARRAYLENGTH
 
   @Override
   public List<Object> compute(HxComputingContext context) {
-    Object arrayType = context.getStack()
-                              .peek();
+    Object arrayType = context.getStack().peek();
+
     if (arrayType.getClass() != String.class ||
         arrayType.toString()
                  .charAt(0) != '[') {

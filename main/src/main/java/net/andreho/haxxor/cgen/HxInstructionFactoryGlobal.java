@@ -1,6 +1,6 @@
 package net.andreho.haxxor.cgen;
 
-import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Objects;

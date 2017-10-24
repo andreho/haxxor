@@ -1,4 +1,4 @@
-package net.andreho.haxxor.cgen.instr;
+package net.andreho.haxxor.cgen.instr.misc;
 
 import net.andreho.asm.org.objectweb.asm.Label;
 

@@ -1,8 +1,9 @@
-package net.andreho.haxxor.cgen.instr.create;
+package net.andreho.haxxor.cgen.instr.alloc;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractStringOperandInstruction;
 
 import java.util.List;
@@ -17,8 +18,13 @@ public class MULTIANEWARRAY
 
   public MULTIANEWARRAY(String className,
                         int dims) {
-    super(Opcodes.MULTIANEWARRAY, className);
+    super(className);
     this.dimension = dims;
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Allocation.MULTIANEWARRAY;
   }
 
   @Override

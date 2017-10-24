@@ -1,9 +1,10 @@
 package net.andreho.haxxor.cgen.instr.switches;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
-import net.andreho.haxxor.cgen.instr.LABEL;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractSwitchJumpInstruction;
 
 import java.util.Arrays;
@@ -18,15 +19,19 @@ public class LOOKUPSWITCH
   private final int[] keys;
 
   public LOOKUPSWITCH(LABEL defaultLabel, int[] keys, LABEL[] labels) {
-    super(Opcodes.LOOKUPSWITCH, defaultLabel, labels);
+    super(defaultLabel, labels);
     this.keys = keys;
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Switches.LOOKUPSWITCH;
   }
 
   @Override
   public void visit(HxCodeStream codeStream) {
     codeStream.LOOKUPSWITCH(this.label, this.keys, this.labels);
   }
-
 
   @Override
   public List<Object> compute(final HxComputingContext context) {

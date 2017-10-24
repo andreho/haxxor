@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * -ea -javaagent:C:/Workspace/java/haxxor/agent/build/libs/agent-1.0.0.jar
+ * -ea -javaagent:C:/Workspace/idea/java/haxxor/agent/build/libs/agent-1.0.0.jar
  * <br/>Created by a.hofmann on 04.07.2017 at 22:39.
  */
 @DisplayName("Control access to specifically annotated elements of a class")

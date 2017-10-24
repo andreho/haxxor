@@ -1,8 +1,9 @@
 package net.andreho.haxxor.cgen.instr.cflow.exits;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInstruction;
 
 import java.util.List;
@@ -14,7 +15,12 @@ public class ARETURN
     extends AbstractInstruction {
 
   public ARETURN() {
-    super(Opcodes.ARETURN);
+    super();
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Exit.ARETURN;
   }
 
   @Override
