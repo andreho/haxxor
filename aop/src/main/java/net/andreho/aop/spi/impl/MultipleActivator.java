@@ -2,7 +2,7 @@ package net.andreho.aop.spi.impl;
 
 import net.andreho.aop.spi.Activator;
 import net.andreho.aop.spi.AspectAdviceType;
-import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.api.HxType;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;

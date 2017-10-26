@@ -1,6 +1,6 @@
 package net.andreho.aop.spi.impl.matchers;
 
-import net.andreho.haxxor.spec.api.HxNamed;
+import net.andreho.haxxor.api.HxNamed;
 
 import java.util.regex.Pattern;
 

@@ -1,7 +1,7 @@
 package net.andreho.haxxor.spi.impl;
 
+import net.andreho.haxxor.api.HxMethodBody;
 import net.andreho.haxxor.cgen.HxInstruction;
-import net.andreho.haxxor.spec.api.HxMethodBody;
 import net.andreho.haxxor.spi.HxFrameCalculator;
 
 /**

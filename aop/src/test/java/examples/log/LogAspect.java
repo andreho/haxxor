@@ -10,15 +10,15 @@ import net.andreho.aop.api.spec.Classes;
 import net.andreho.aop.api.spec.Modifier;
 import net.andreho.aop.api.spec.Modifiers;
 import net.andreho.asm.org.objectweb.asm.Type;
-import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.Hx;
+import net.andreho.haxxor.api.HxAnnotation;
+import net.andreho.haxxor.api.HxField;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxMethodBody;
+import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionFactory;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.api.HxField;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxMethodBody;
-import net.andreho.haxxor.spec.api.HxType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +58,7 @@ public class LogAspect {
       return false;
     }
 
-    final Haxxor haxxor = hxType.getHaxxor();
+    final Hx haxxor = hxType.getHaxxor();
     final HxField field = haxxor.createField(Logger.class, logFieldName)
                                 .setModifiers(HxField.Modifiers.PUBLIC, HxField.Modifiers.STATIC, HxType.Modifiers.FINAL);
 

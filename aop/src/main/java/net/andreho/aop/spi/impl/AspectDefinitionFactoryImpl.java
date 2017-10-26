@@ -10,10 +10,10 @@ import net.andreho.aop.spi.AspectFactory;
 import net.andreho.aop.spi.AspectProfile;
 import net.andreho.aop.spi.ElementMatcher;
 import net.andreho.aop.spi.ElementMatcherFactory;
-import net.andreho.haxxor.Haxxor;
-import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.Hx;
+import net.andreho.haxxor.api.HxAnnotation;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +47,7 @@ public class AspectDefinitionFactoryImpl
   }
 
   @Override
-  public AspectDefinition create(final Haxxor haxxor,
+  public AspectDefinition create(final Hx haxxor,
                                  final HxType type,
                                  final Map<String, AspectProfile> aspectProfiles,
                                  final Collection<AspectAdviceType> adviceTypes) {

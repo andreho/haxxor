@@ -1,9 +1,9 @@
 package net.andreho.haxxor.cgen.impl;
 
+import net.andreho.haxxor.api.impl.HxAnnotatedDelegate;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxLocalVariable;
 import net.andreho.haxxor.cgen.instr.misc.LABEL;
-import net.andreho.haxxor.spec.impl.HxAnnotatedDelegate;
 
 import java.util.Objects;
 

@@ -1,10 +1,10 @@
 package net.andreho.haxxor.cgen.instr.abstr;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
+import net.andreho.haxxor.api.impl.HxAnnotatedDelegate;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionSort;
 import net.andreho.haxxor.cgen.HxInstructionType;
-import net.andreho.haxxor.spec.impl.HxAnnotatedDelegate;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -278,7 +278,7 @@ public abstract class AbstractInstruction extends HxAnnotatedDelegate<HxInstruct
 //        case 'V':
 //          context.getStack().push(NO_STACK_PUSH); break;
 //        default: {
-//          context.getStack().push(Utils.transformDesc(desc.substring(off + 1)));
+//          context.getStack().push(CommonUtils.transformDesc(desc.substring(off + 1)));
 //        }
 //      }
 //    }

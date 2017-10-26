@@ -5,7 +5,12 @@ import net.andreho.aop.spi.AspectAdviceType;
 import net.andreho.aop.spi.AspectContext;
 import net.andreho.aop.spi.ElementMatcher;
 import net.andreho.aop.spi.impl.advices.AbstractAspectAdvice;
-import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.Hx;
+import net.andreho.haxxor.api.HxAnnotation;
+import net.andreho.haxxor.api.HxField;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxParameter;
+import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionSort;
@@ -13,11 +18,6 @@ import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractFieldInstruction;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInvokeInstruction;
 import net.andreho.haxxor.cgen.instr.constants.LDC;
-import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.api.HxField;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxParameter;
-import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -108,7 +108,7 @@ public class MixinAspectAdvice
   private void mergeClassInitializers(final HxType type,
                                       final HxType mixin) {
 
-    final Haxxor haxxor = type.getHaxxor();
+    final Hx haxxor = type.getHaxxor();
     final Optional<HxMethod> mixinClinitOptional = mixin.findClassInitializer();
 
     if (mixinClinitOptional.isPresent()) {

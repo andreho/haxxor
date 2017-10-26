@@ -28,14 +28,6 @@ public class FALOAD
   }
 
   @Override
-  protected void checkArrayType(final Object arrayType) {
-    super.checkArrayType(arrayType);
-    if (!"[F".equals(arrayType)) {
-      throw new IllegalArgumentException("Expected an array of current type: float[]");
-    }
-  }
-
-  @Override
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }

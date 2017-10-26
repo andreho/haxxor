@@ -1,7 +1,7 @@
 package net.andreho.aop.spi.impl;
 
 import net.andreho.aop.spi.AspectFactory;
-import net.andreho.haxxor.spec.api.HxMethod;
+import net.andreho.haxxor.api.HxMethod;
 
 import static java.util.Objects.requireNonNull;
 

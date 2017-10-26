@@ -1,8 +1,8 @@
 package net.andreho.aop.spi;
 
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxParameter;
 import net.andreho.haxxor.cgen.HxInstruction;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxParameter;
 
 /**
  * <br/>Created by a.hofmann on 05.10.2017 at 13:14.

@@ -1,7 +1,7 @@
 package net.andreho.haxxor;
 
-import net.andreho.haxxor.spec.api.HxType;
-import net.andreho.haxxor.spec.api.HxTypeReference;
+import net.andreho.haxxor.api.HxType;
+import net.andreho.haxxor.api.HxTypeReference;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
 import net.andreho.haxxor.spi.HxClassnameNormalizer;
 import net.andreho.haxxor.spi.HxElementFactory;
@@ -31,51 +31,67 @@ import java.util.Objects;
  */
 public class HaxxorBuilder {
 
-  private final boolean concurrent;
-  private final ClassLoader classLoader;
+  private int flags;
+  private boolean concurrent;
+  private ClassLoader classLoader;
 
   /**
-   * Creates new instance of builder with given classloader
-   *
-   * @param classLoader to use
-   * @return new builder instance
+   * @return
    */
-  public static HaxxorBuilder with(ClassLoader classLoader) {
-    return new HaxxorBuilder(classLoader, false);
+  static HaxxorBuilder newBuilder() {
+    return new HaxxorBuilder();
   }
 
-  /**
-   * Creates new instance of builder with given classloader
-   *
-   * @param classLoader to use
-   * @return new builder instance
-   */
-  public static HaxxorBuilder withConcurrent(ClassLoader classLoader) {
-    return new HaxxorBuilder(classLoader, true);
-  }
-
-  public HaxxorBuilder() {
+  protected HaxxorBuilder() {
     this(HaxxorBuilder.class.getClassLoader(), false);
   }
 
-  public HaxxorBuilder(final ClassLoader classLoader) {
+  protected HaxxorBuilder(final ClassLoader classLoader) {
     this(classLoader, false);
   }
 
-  public HaxxorBuilder(final boolean concurrent) {
-    this(HaxxorBuilder.class.getClassLoader(), concurrent);
-  }
-
-  public HaxxorBuilder(final ClassLoader classLoader,
-                       final boolean concurrent) {
+  protected HaxxorBuilder(final ClassLoader classLoader,
+                          final boolean concurrent) {
     this.classLoader = Objects.requireNonNull(classLoader);
     this.concurrent = concurrent;
   }
 
   /**
+   * Informs builder to create a haxxor instance with given class-loader
+   *
+   * @param classLoader to use
+   * @return this
+   */
+  public HaxxorBuilder withClassLoader(ClassLoader classLoader) {
+    this.classLoader = Objects.requireNonNull(classLoader);
+    return this;
+  }
+
+  /**
+   * Informs builder to create a haxxor instance with given flags
+   *
+   * @param flags to use
+   * @return this
+   */
+  public HaxxorBuilder withFlags(int flags) {
+    this.flags = flags;
+    return this;
+  }
+
+  /**
+   * Informs builder to create a concurrent haxxor instance
+   *
+   * @return this
+   */
+  public HaxxorBuilder withConcurrency() {
+    this.concurrent = true;
+    return this;
+  }
+
+  /**
    * @return
    */
-  public boolean isConcurrent() {
+  boolean isConcurrent() {
     return concurrent;
   }
 
@@ -83,7 +99,7 @@ public class HaxxorBuilder {
    * @param haxxor instance that will use provided classloader
    * @return the classloader to use for byte-code loading
    */
-  public ClassLoader provideClassLoader(Haxxor haxxor) {
+  public ClassLoader provideClassLoader(final Hx haxxor) {
     return classLoader;
   }
 
@@ -94,7 +110,7 @@ public class HaxxorBuilder {
    * @param haxxor instance that requires this component
    * @return new type-initializer instance associated with given haxxor instance
    */
-  public HxTypeInitializer createTypeInitializer(Haxxor haxxor) {
+  public HxTypeInitializer createTypeInitializer(final Hx haxxor) {
     return new DefaultHxTypeInitializer();
   }
 
@@ -105,7 +121,7 @@ public class HaxxorBuilder {
    * @param haxxor instance that requires this component
    * @return new field-initializer instance associated with given haxxor instance
    */
-  public HxFieldInitializer createFieldInitializer(final Haxxor haxxor) {
+  public HxFieldInitializer createFieldInitializer(final Hx haxxor) {
     return (hxField) -> {
     };
   }
@@ -117,7 +133,7 @@ public class HaxxorBuilder {
    * @param haxxor instance that requires this component
    * @return new method-initializer instance associated with given haxxor instance
    */
-  public HxMethodInitializer createMethodInitializer(final Haxxor haxxor) {
+  public HxMethodInitializer createMethodInitializer(final Hx haxxor) {
     return (hxMethod) -> {
     };
   }
@@ -128,7 +144,7 @@ public class HaxxorBuilder {
    * @param haxxor is the requesting instance that receives created element factory
    * @return new element factory associated with given haxxor instance
    */
-  public HxElementFactory createElementFactory(Haxxor haxxor) {
+  public HxElementFactory createElementFactory(final Hx haxxor) {
     return new DefaultHxElementFactory(haxxor);
   }
 
@@ -136,7 +152,7 @@ public class HaxxorBuilder {
    * @param haxxor is the requesting instance
    * @return new type deserializer instance
    */
-  public HxTypeDeserializer createTypeDeserializer(final Haxxor haxxor) {
+  public HxTypeDeserializer createTypeDeserializer(final Hx haxxor) {
     return new DefaultHxTypeDeserializer(haxxor);
   }
 
@@ -144,7 +160,7 @@ public class HaxxorBuilder {
    * @param haxxor is the requesting instance
    * @return new type serializer instance
    */
-  public HxTypeSerializer createTypeSerializer(Haxxor haxxor) {
+  public HxTypeSerializer createTypeSerializer(final Hx haxxor) {
     return new DefaultHxTypeSerializer(haxxor);
   }
 
@@ -154,7 +170,7 @@ public class HaxxorBuilder {
    * @param haxxor instance that receives created content loader
    * @return new byte-code loader associated with given haxxor instance
    */
-  public HxByteCodeLoader createByteCodeLoader(Haxxor haxxor) {
+  public HxByteCodeLoader createByteCodeLoader(final Hx haxxor) {
     return new CachedHxByteCodeLoader(haxxor);
   }
 
@@ -164,7 +180,7 @@ public class HaxxorBuilder {
    * @param haxxor is the requesting instance
    * @return
    */
-  public Map<String, HxTypeReference> createReferenceCache(Haxxor haxxor) {
+  public Map<String, HxTypeReference> createReferenceCache(final Hx haxxor) {
     return new HashMap<>();
   }
 
@@ -174,7 +190,7 @@ public class HaxxorBuilder {
    * @param haxxor is the requesting instance
    * @return
    */
-  public Map<String, HxType> createResolvedCache(Haxxor haxxor) {
+  public Map<String, HxType> createResolvedCache(final Hx haxxor) {
     return new HashMap<>();
   }
 
@@ -184,7 +200,7 @@ public class HaxxorBuilder {
    * @param haxxor is the requesting instance
    * @return
    */
-  public HxClassnameNormalizer createClassNameNormalizer(Haxxor haxxor) {
+  public HxClassnameNormalizer createClassNameNormalizer(final Hx haxxor) {
     return new DefaultHxClassnameNormalizer();
   }
 
@@ -194,36 +210,46 @@ public class HaxxorBuilder {
    * @param haxxor is the requesting instance
    * @return
    */
-  public HxTypeVerifier createTypeVerifier(final Haxxor haxxor) {
+  public HxTypeVerifier createTypeVerifier(final Hx haxxor) {
     return type -> HxVerificationResult.ok();
   }
 
   /**
    * Creates a new type verifier for any field that is going to be serialized
+   *
    * @param haxxor is the requesting instance
    * @return
    */
-  public HxFieldVerifier createFieldVerifier(final Haxxor haxxor) {
+  public HxFieldVerifier createFieldVerifier(final Hx haxxor) {
     return hxField -> HxVerificationResult.ok();
   }
 
   /**
    * Creates a new type verifier for any method/constructor that is going to be serialized
+   *
    * @param haxxor is the requesting instance
    * @return
    */
-  public HxMethodVerifier createMethodVerifier(final Haxxor haxxor) {
+  public HxMethodVerifier createMethodVerifier(final Hx haxxor) {
     return hxMethod -> HxVerificationResult.ok();
   }
 
   /**
    * Creates a new stub-interpreter
+   *
    * @param haxxor is the requesting instance
    * @return a
    */
-  public HxStubInterpreter createStubInterpreter(final Haxxor haxxor) {
+  public HxStubInterpreter createStubInterpreter(final Hx haxxor) {
     return (target, stub) -> {
       throw new UnsupportedOperationException("Not implemented");
     };
+  }
+
+  /**
+   * @return
+   */
+  public Hx build() {
+    return new Haxxor(this.flags, this);
   }
 }

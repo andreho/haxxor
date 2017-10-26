@@ -1,10 +1,10 @@
 package net.andreho.haxxor.spi.impl;
 
 import net.andreho.asm.org.objectweb.asm.ClassReader;
-import net.andreho.haxxor.Haxxor;
-import net.andreho.haxxor.spec.api.HxType;
-import net.andreho.haxxor.spec.visitors.HxTypeVisitor;
+import net.andreho.haxxor.Hx;
+import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.spi.HxTypeDeserializer;
+import net.andreho.haxxor.spi.impl.visitors.HxTypeVisitor;
 
 import java.util.Objects;
 
@@ -12,9 +12,9 @@ import java.util.Objects;
  * <br/>Created by a.hofmann on 13.10.2017 at 16:43.
  */
 public class DefaultHxTypeDeserializer implements HxTypeDeserializer {
-  private final Haxxor haxxor;
+  private final Hx haxxor;
 
-  public DefaultHxTypeDeserializer(final Haxxor haxxor) {
+  public DefaultHxTypeDeserializer(final Hx haxxor) {
     this.haxxor = Objects.requireNonNull(haxxor);
   }
 

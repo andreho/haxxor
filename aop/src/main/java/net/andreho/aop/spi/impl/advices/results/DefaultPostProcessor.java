@@ -3,8 +3,8 @@ package net.andreho.aop.spi.impl.advices.results;
 import net.andreho.aop.spi.AspectAdvice;
 import net.andreho.aop.spi.AspectContext;
 import net.andreho.aop.spi.ResultPostProcessor;
+import net.andreho.haxxor.api.HxMethod;
 import net.andreho.haxxor.cgen.HxInstruction;
-import net.andreho.haxxor.spec.api.HxMethod;
 
 /**
  * <br/>Created by a.hofmann on 21.06.2017 at 01:45.

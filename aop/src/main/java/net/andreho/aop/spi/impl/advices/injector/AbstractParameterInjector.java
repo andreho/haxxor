@@ -1,8 +1,8 @@
 package net.andreho.aop.spi.impl.advices.injector;
 
 import net.andreho.aop.spi.ParameterInjector;
-import net.andreho.haxxor.spec.api.HxSort;
-import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.api.HxSort;
+import net.andreho.haxxor.api.HxType;
 
 /**
  * <br/>Created by a.hofmann on 05.10.2017 at 13:29.

@@ -3,9 +3,9 @@ package net.andreho.aop.spi.impl.advices.injectors;
 import net.andreho.aop.api.injectable.Args;
 import net.andreho.aop.spi.AspectAdvice;
 import net.andreho.aop.spi.AspectContext;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxParameter;
 import net.andreho.haxxor.cgen.HxInstruction;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxParameter;
 
 /**
  * <br/>Created by a.hofmann on 21.06.2017 at 00:49.

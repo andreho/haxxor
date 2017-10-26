@@ -1,7 +1,7 @@
 package net.andreho.haxxor.spi;
 
-import net.andreho.haxxor.spec.api.HxMember;
-import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.api.HxMember;
+import net.andreho.haxxor.api.HxType;
 
 import java.util.List;
 

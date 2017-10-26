@@ -9,13 +9,13 @@ import net.andreho.aop.spi.ElementMatcher;
 import net.andreho.aop.spi.ParameterInjectorSelector;
 import net.andreho.aop.spi.ResultPostProcessor;
 import net.andreho.aop.spi.impl.Constants;
+import net.andreho.haxxor.api.HxAnnotated;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxOrdered;
+import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.cgen.HxCgenUtils;
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
 import net.andreho.haxxor.cgen.HxInstruction;
-import net.andreho.haxxor.spec.api.HxAnnotated;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxOrdered;
-import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.List;
 import java.util.Optional;

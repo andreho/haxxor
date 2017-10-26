@@ -1,7 +1,7 @@
 package net.andreho.aop.spi.impl.matchers;
 
 import net.andreho.aop.spi.ElementMatcher;
-import net.andreho.haxxor.spec.api.HxAnnotation;
+import net.andreho.haxxor.api.HxAnnotation;
 
 import java.util.Collection;
 

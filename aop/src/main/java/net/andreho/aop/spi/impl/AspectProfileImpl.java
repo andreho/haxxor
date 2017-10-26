@@ -2,10 +2,10 @@ package net.andreho.aop.spi.impl;
 
 import net.andreho.aop.spi.AspectProfile;
 import net.andreho.aop.spi.ElementMatcher;
-import net.andreho.haxxor.spec.api.HxField;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxParameter;
-import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.api.HxField;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxParameter;
+import net.andreho.haxxor.api.HxType;
 
 import static java.util.Objects.requireNonNull;
 

@@ -1,7 +1,7 @@
 package net.andreho.aop.spi;
 
-import net.andreho.haxxor.Haxxor;
-import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.Hx;
+import net.andreho.haxxor.api.HxType;
 
 import java.util.Collection;
 import java.util.Map;
@@ -18,7 +18,7 @@ public interface AspectDefinitionFactory {
    * @param aspectAdviceTypes
    * @return
    */
-  AspectDefinition create(Haxxor haxxor,
+  AspectDefinition create(Hx haxxor,
                           HxType type,
                           Map<String, AspectProfile> aspectProfiles,
                           Collection<AspectAdviceType> aspectAdviceTypes

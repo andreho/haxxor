@@ -2,6 +2,7 @@ package net.andreho.haxxor.spi.impl;
 
 import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.HaxxorBuilder;
+import net.andreho.haxxor.Hx;
 import net.andreho.haxxor.model.MinimalBean;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import static net.andreho.haxxor.Utils.toByteArray;
+import static net.andreho.haxxor.utils.CommonUtils.toByteArray;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -28,7 +29,7 @@ class DefaultHxByteCodeLoaderTest
   void setup() {
     this.haxxor = new Haxxor(0, new HaxxorBuilder() {
       @Override
-      public HxByteCodeLoader createByteCodeLoader(final Haxxor haxxor) {
+      public HxByteCodeLoader createByteCodeLoader(final Hx haxxor) {
         return byteCodeLoader = new DefaultHxByteCodeLoader(haxxor);
       }
     });

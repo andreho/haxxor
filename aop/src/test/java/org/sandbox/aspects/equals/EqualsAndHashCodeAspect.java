@@ -8,12 +8,12 @@ import net.andreho.aop.api.spec.ClassWith;
 import net.andreho.aop.api.spec.Classes;
 import net.andreho.aop.api.spec.Modifier;
 import net.andreho.aop.api.spec.Modifiers;
-import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.Hx;
+import net.andreho.haxxor.api.HxField;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
 import net.andreho.haxxor.cgen.instr.misc.LABEL;
-import net.andreho.haxxor.spec.api.HxField;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Collection;
 
@@ -41,7 +41,7 @@ public class EqualsAndHashCodeAspect {
     if(!type.hasMethod("hashCode") &&
        !type.hasMethod("equals", Object.class)) {
 
-      final Haxxor haxxor = type.getHaxxor();
+      final Hx haxxor = type.getHaxxor();
       final Collection<HxField> fields =
         type.fields(field -> !field.isStatic() &&
                              field.isAnnotationPresent(EqualityAttribute.class));
@@ -54,7 +54,7 @@ public class EqualsAndHashCodeAspect {
   }
 
   private static void createEqualsMethod(final HxType type,
-                                           final Haxxor haxxor,
+                                           final Hx haxxor,
                                            final Collection<HxField> fields) {
     final HxMethod equals =
       haxxor.createMethod(Boolean.TYPE, "equals", Object.class);
@@ -146,7 +146,7 @@ public class EqualsAndHashCodeAspect {
   }
 
   private static void createHashCodeMethod(final HxType type,
-                                           final Haxxor haxxor,
+                                           final Hx haxxor,
                                            final Collection<HxField> fields) {
     final HxMethod hashCode =
       haxxor.createMethod(int.class, "hashCode");

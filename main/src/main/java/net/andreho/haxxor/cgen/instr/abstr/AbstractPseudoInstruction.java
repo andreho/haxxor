@@ -1,13 +1,13 @@
 package net.andreho.haxxor.cgen.instr.abstr;
 
+import net.andreho.haxxor.api.HxAnnotated;
+import net.andreho.haxxor.api.HxAnnotation;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputationContext;
+import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstruction;
-import net.andreho.haxxor.spec.api.HxAnnotated;
-import net.andreho.haxxor.spec.api.HxAnnotation;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
@@ -23,8 +23,8 @@ public abstract class AbstractPseudoInstruction
   }
 
   @Override
-  public List<Object> compute(final HxComputationContext context) {
-    return AbstractInstruction.NO_STACK_PUSH;
+  public void compute(final HxComputationContext context,
+                      final HxFrame frame) {
   }
 
   @Override

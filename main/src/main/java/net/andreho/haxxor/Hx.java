@@ -1,31 +1,29 @@
 package net.andreho.haxxor;
 
-import net.andreho.haxxor.spec.api.HxField;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxType;
-import net.andreho.haxxor.spec.api.HxTypeReference;
+import net.andreho.haxxor.api.HxType;
+import net.andreho.haxxor.api.HxTypeReference;
+import net.andreho.haxxor.spi.HxClassLoaderHolder;
 import net.andreho.haxxor.spi.HxClassnameNormalizer;
 import net.andreho.haxxor.spi.HxElementFactory;
-import net.andreho.haxxor.spi.HxVerificationResult;
+import net.andreho.haxxor.spi.HxInitializationAware;
+import net.andreho.haxxor.spi.HxTypeSerializer;
+import net.andreho.haxxor.spi.HxVerificationAware;
 
 import java.util.List;
 
 /**
  * <br/>Created by a.hofmann on 07.06.2017 at 22:31.
  */
-public interface Hx extends HxClassnameNormalizer, HxElementFactory {
+public interface Hx extends HxClassnameNormalizer,
+                            HxElementFactory,
+                            HxClassLoaderHolder,
+                            HxInitializationAware,
+                            HxTypeSerializer,
+                            HxVerificationAware {
 
-  HxType initialize(HxType type);
-
-  HxField initialize(HxField field);
-
-  HxMethod initialize(HxMethod method);
-
-  HxVerificationResult verify(HxType type);
-
-  HxVerificationResult verify(HxField field);
-
-  HxVerificationResult verify(HxMethod method);
+  static HaxxorBuilder builder() {
+    return HaxxorBuilder.newBuilder();
+  }
 
   boolean hasReference(String classname);
 

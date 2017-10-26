@@ -28,14 +28,6 @@ public class SALOAD
   }
 
   @Override
-  protected void checkArrayType(final Object arrayType) {
-    super.checkArrayType(arrayType);
-    if (!"[S".equals(arrayType)) {
-      throw new IllegalArgumentException("Expected an array of current type: short[]");
-    }
-  }
-
-  @Override
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }

@@ -1,11 +1,11 @@
 package net.andreho.haxxor;
 
+import net.andreho.haxxor.api.HxField;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxType;
+import net.andreho.haxxor.api.HxTypeReference;
 import net.andreho.haxxor.model.MinimalBean;
 import net.andreho.haxxor.model.ValueBean;
-import net.andreho.haxxor.spec.api.HxField;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxType;
-import net.andreho.haxxor.spec.api.HxTypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

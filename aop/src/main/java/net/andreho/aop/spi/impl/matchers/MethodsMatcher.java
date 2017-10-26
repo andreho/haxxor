@@ -1,10 +1,10 @@
 package net.andreho.aop.spi.impl.matchers;
 
 import net.andreho.aop.spi.ElementMatcher;
-import net.andreho.haxxor.spec.api.HxAnnotated;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxNamed;
-import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.api.HxAnnotated;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxNamed;
+import net.andreho.haxxor.api.HxType;
 
 import java.util.List;
 

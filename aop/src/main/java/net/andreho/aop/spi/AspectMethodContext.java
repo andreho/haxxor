@@ -1,9 +1,9 @@
 package net.andreho.aop.spi;
 
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.cgen.HxLocalVariable;
 import net.andreho.haxxor.cgen.instr.misc.LABEL;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Map;
 

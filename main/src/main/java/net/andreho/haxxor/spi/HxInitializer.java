@@ -1,6 +1,6 @@
 package net.andreho.haxxor.spi;
 
-import net.andreho.haxxor.spec.api.HxMember;
+import net.andreho.haxxor.api.HxMember;
 
 /**
  * <br/>Created by a.hofmann on 24.10.2017 at 16:31.

@@ -5,9 +5,8 @@ import net.andreho.aop.spi.AspectPackageFilter;
 import net.andreho.aop.spi.impl.AspectClassVisitor;
 import net.andreho.aop.spi.impl.Constants;
 import net.andreho.asm.org.objectweb.asm.ClassReader;
-import net.andreho.haxxor.Haxxor;
-import net.andreho.haxxor.HaxxorBuilder;
-import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.Hx;
+import net.andreho.haxxor.api.HxType;
 import net.andreho.resources.Resource;
 import net.andreho.resources.ResourceResolver;
 import net.andreho.resources.ResourceScanner;
@@ -98,7 +97,7 @@ public final class AopEntryPoint {
     long start = System.currentTimeMillis();
     long used = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
 
-    final Haxxor haxxor = new Haxxor(HaxxorBuilder.with(loader));
+    final Hx haxxor = Hx.builder().withClassLoader(loader).build();
     final HxType hxType = haxxor.resolve(className, classfileBuffer, 0);
 
     //NEVER PROCESS ASPECTS SELF

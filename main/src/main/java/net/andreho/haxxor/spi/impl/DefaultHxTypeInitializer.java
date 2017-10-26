@@ -1,6 +1,6 @@
 package net.andreho.haxxor.spi.impl;
 
-import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.spi.HxTypeInitializer;
 
 /**

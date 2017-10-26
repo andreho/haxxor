@@ -1,7 +1,7 @@
 package net.andreho.haxxor.cgen;
 
-import net.andreho.haxxor.Utils;
-import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.api.HxType;
+import net.andreho.haxxor.utils.CommonUtils;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -137,6 +137,6 @@ public class HxArguments implements Iterable<Object> {
 
   @Override
   public Iterator<Object> iterator() {
-    return Utils.iterator(this.arguments, 0, this.length);
+    return CommonUtils.iterator(this.arguments, 0, this.length);
   }
 }

@@ -118,12 +118,24 @@ public class HxVerificationResult implements Iterable<HxVerificationResult> {
    * @return the given next verification result
    */
   public HxVerificationResult append(final HxVerificationResult next) {
+    if(next.isPassed()) {
+      return this;
+    }
+
     HxVerificationResult current = this;
     while(current.hasNext()) {
       current = current.getNext();
     }
     current.setNext(next);
     return next;
+  }
+
+  /**
+   */
+  public void throwExceptionIfFailed() {
+    if(isFailed()) {
+      throw new HxVerificationException(this);
+    }
   }
 
   @Override

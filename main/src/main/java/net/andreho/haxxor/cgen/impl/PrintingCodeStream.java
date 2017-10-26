@@ -1,5 +1,6 @@
 package net.andreho.haxxor.cgen.impl;
 
+import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.cgen.HxArguments;
 import net.andreho.haxxor.cgen.HxArrayType;
 import net.andreho.haxxor.cgen.HxCodeStream;
@@ -8,7 +9,6 @@ import net.andreho.haxxor.cgen.HxHandleTag;
 import net.andreho.haxxor.cgen.HxMethodHandle;
 import net.andreho.haxxor.cgen.HxMethodType;
 import net.andreho.haxxor.cgen.instr.misc.LABEL;
-import net.andreho.haxxor.spec.api.HxType;
 
 import java.io.IOException;
 import java.util.IdentityHashMap;

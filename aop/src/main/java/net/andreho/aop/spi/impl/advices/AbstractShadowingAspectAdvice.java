@@ -10,20 +10,20 @@ import net.andreho.aop.spi.ParameterInjector;
 import net.andreho.aop.spi.ParameterInjectorSelector;
 import net.andreho.aop.spi.ResultPostProcessor;
 import net.andreho.aop.spi.impl.Constants;
-import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.Hx;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxMethodBody;
+import net.andreho.haxxor.api.HxParameter;
+import net.andreho.haxxor.api.HxSort;
+import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.cgen.HxCgenUtils;
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.HxLocalVariable;
 import net.andreho.haxxor.cgen.instr.misc.LABEL;
-import net.andreho.haxxor.cgen.instr.misc.NAMED_LABEL;
 import net.andreho.haxxor.cgen.instr.misc.LINE_NUMBER;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxMethodBody;
-import net.andreho.haxxor.spec.api.HxParameter;
-import net.andreho.haxxor.spec.api.HxSort;
-import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.cgen.instr.misc.NAMED_LABEL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +74,7 @@ public abstract class AbstractShadowingAspectAdvice<T>
                                               HxMethod original,
                                               String shadowName) {
 
-    final Haxxor haxxor = original.getHaxxor();
+    final Hx haxxor = original.getHaxxor();
     final HxType type = original.getDeclaringMember();
     final boolean constructor = original.isConstructor();
     List<HxType> parameterTypes = original.getParameterTypes();

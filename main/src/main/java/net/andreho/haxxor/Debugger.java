@@ -6,6 +6,7 @@ import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.asm.org.objectweb.asm.util.ASMifier;
 import net.andreho.asm.org.objectweb.asm.util.Printer;
 import net.andreho.asm.org.objectweb.asm.util.TraceClassVisitor;
+import net.andreho.haxxor.utils.CommonUtils;
 
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -170,7 +171,7 @@ public class Debugger {
         throw new NullPointerException("Unable to reference: " + className);
       }
 
-      trace(Utils.toByteArray(stream), printer, printWriter, flags);
+      trace(CommonUtils.toByteArray(stream), printer, printWriter, flags);
     } catch (Exception e) {
       throw new IllegalStateException("Unable to process stream or given class: " + className);
     }

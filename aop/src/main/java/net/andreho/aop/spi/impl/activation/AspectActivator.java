@@ -13,7 +13,7 @@ import net.andreho.aop.spi.impl.AspectDefinitionFactoryImpl;
 import net.andreho.aop.spi.impl.AspectProfileFactoryImpl;
 import net.andreho.aop.spi.impl.ElementMatcherFactoryImpl;
 import net.andreho.haxxor.Haxxor;
-import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.api.HxType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

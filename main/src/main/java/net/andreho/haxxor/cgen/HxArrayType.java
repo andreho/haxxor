@@ -1,7 +1,7 @@
 package net.andreho.haxxor.cgen;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.spec.api.HxSort;
+import net.andreho.haxxor.api.HxSort;
 
 /**
  * <br/>Created by a.hofmann on 05.06.2017 at 07:47.

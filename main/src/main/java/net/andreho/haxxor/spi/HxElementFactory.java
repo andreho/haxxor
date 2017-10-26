@@ -1,16 +1,15 @@
 package net.andreho.haxxor.spi;
 
-import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.api.HxField;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxParameter;
-import net.andreho.haxxor.spec.api.HxProvider;
-import net.andreho.haxxor.spec.api.HxType;
-import net.andreho.haxxor.spec.api.HxTypeReference;
+import net.andreho.haxxor.api.HxAnnotation;
+import net.andreho.haxxor.api.HxField;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxParameter;
+import net.andreho.haxxor.api.HxProvider;
+import net.andreho.haxxor.api.HxType;
+import net.andreho.haxxor.api.HxTypeReference;
 
 import java.lang.annotation.Annotation;
 
-import static net.andreho.haxxor.Utils.toClassNames;
 
 /**
  * <br/>Created by a.hofmann on 08.04.2017 at 08:50.
@@ -89,7 +88,7 @@ public interface HxElementFactory extends HxProvider {
    * @return a new unbound constructor instance
    */
   default HxMethod createConstructor(final Class<?>... parameterTypes) {
-    return createConstructor(toClassNames(parameterTypes));
+    return createConstructor(getHaxxor().toNormalizedClassnames(parameterTypes));
   }
 
   /**
@@ -134,7 +133,7 @@ public interface HxElementFactory extends HxProvider {
                         final Class<?>... parameterTypes) {
     return createMethod(returnType.getName(),
                         methodName,
-                        toClassNames(parameterTypes));
+                        getHaxxor().toNormalizedClassnames(parameterTypes));
   }
 
   /**
@@ -153,7 +152,7 @@ public interface HxElementFactory extends HxProvider {
       declaringType.getName(),
       returnType.getName(),
       methodName,
-      toClassNames(parameterTypes)
+      getHaxxor().toNormalizedClassnames(parameterTypes)
     );
   }
 

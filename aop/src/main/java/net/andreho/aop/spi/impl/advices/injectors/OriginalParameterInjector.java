@@ -3,13 +3,13 @@ package net.andreho.aop.spi.impl.advices.injectors;
 import net.andreho.aop.api.injectable.Original;
 import net.andreho.aop.spi.AspectAdvice;
 import net.andreho.aop.spi.AspectContext;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxParameter;
+import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
 import net.andreho.haxxor.cgen.HxHandleTag;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxMethodHandle;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxParameter;
-import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.concurrent.Callable;
 

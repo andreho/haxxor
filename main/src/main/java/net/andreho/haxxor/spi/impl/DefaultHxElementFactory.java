@@ -1,21 +1,21 @@
 package net.andreho.haxxor.spi.impl;
 
-import net.andreho.haxxor.Haxxor;
-import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.api.HxConstants;
-import net.andreho.haxxor.spec.api.HxField;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxParameter;
-import net.andreho.haxxor.spec.api.HxType;
-import net.andreho.haxxor.spec.api.HxTypeReference;
-import net.andreho.haxxor.spec.impl.HxAnnotationImpl;
-import net.andreho.haxxor.spec.impl.HxArrayTypeImpl;
-import net.andreho.haxxor.spec.impl.HxFieldImpl;
-import net.andreho.haxxor.spec.impl.HxMethodImpl;
-import net.andreho.haxxor.spec.impl.HxMethodReferenceImpl;
-import net.andreho.haxxor.spec.impl.HxParameterImpl;
-import net.andreho.haxxor.spec.impl.HxTypeImpl;
-import net.andreho.haxxor.spec.impl.HxTypeReferenceImpl;
+import net.andreho.haxxor.Hx;
+import net.andreho.haxxor.api.HxAnnotation;
+import net.andreho.haxxor.api.HxConstants;
+import net.andreho.haxxor.api.HxField;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxParameter;
+import net.andreho.haxxor.api.HxType;
+import net.andreho.haxxor.api.HxTypeReference;
+import net.andreho.haxxor.api.impl.HxAnnotationImpl;
+import net.andreho.haxxor.api.impl.HxArrayTypeImpl;
+import net.andreho.haxxor.api.impl.HxFieldImpl;
+import net.andreho.haxxor.api.impl.HxMethodImpl;
+import net.andreho.haxxor.api.impl.HxMethodReferenceImpl;
+import net.andreho.haxxor.api.impl.HxParameterImpl;
+import net.andreho.haxxor.api.impl.HxTypeImpl;
+import net.andreho.haxxor.api.impl.HxTypeReferenceImpl;
 import net.andreho.haxxor.spi.HxElementFactory;
 
 import java.util.Objects;
@@ -26,14 +26,14 @@ import java.util.Objects;
 public class DefaultHxElementFactory
     implements HxElementFactory {
 
-  private final Haxxor haxxor;
+  private final Hx haxxor;
 
-  public DefaultHxElementFactory(final Haxxor haxxor) {
+  public DefaultHxElementFactory(final Hx haxxor) {
     this.haxxor = Objects.requireNonNull(haxxor, "Haxxor instance can't be null.");
   }
 
   @Override
-  public Haxxor getHaxxor() {
+  public Hx getHaxxor() {
     return haxxor;
   }
 

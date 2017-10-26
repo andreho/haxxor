@@ -4,10 +4,10 @@ import net.andreho.aop.spi.AspectAdvice;
 import net.andreho.aop.spi.AspectContext;
 import net.andreho.aop.spi.AspectDefinition;
 import net.andreho.aop.spi.AspectMethodContext;
-import net.andreho.haxxor.spec.api.HxField;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxParameter;
-import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.api.HxField;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxParameter;
+import net.andreho.haxxor.api.HxType;
 
 /**
  * <br/>Created by a.hofmann on 19.06.2017 at 07:15.

@@ -2,15 +2,15 @@ package net.andreho.haxxor;
 
 import net.andreho.asm.org.objectweb.asm.ClassWriter;
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
-import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.api.HxConstants;
-import net.andreho.haxxor.spec.api.HxField;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxParameter;
-import net.andreho.haxxor.spec.api.HxType;
-import net.andreho.haxxor.spec.api.HxTypeReference;
-import net.andreho.haxxor.spec.impl.HxArrayTypeImpl;
-import net.andreho.haxxor.spec.impl.HxPrimitiveTypeImpl;
+import net.andreho.haxxor.api.HxAnnotation;
+import net.andreho.haxxor.api.HxConstants;
+import net.andreho.haxxor.api.HxField;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxParameter;
+import net.andreho.haxxor.api.HxType;
+import net.andreho.haxxor.api.HxTypeReference;
+import net.andreho.haxxor.api.impl.HxArrayTypeImpl;
+import net.andreho.haxxor.api.impl.HxPrimitiveTypeImpl;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
 import net.andreho.haxxor.spi.HxClassnameNormalizer;
 import net.andreho.haxxor.spi.HxElementFactory;
@@ -23,6 +23,7 @@ import net.andreho.haxxor.spi.HxTypeDeserializer;
 import net.andreho.haxxor.spi.HxTypeInitializer;
 import net.andreho.haxxor.spi.HxTypeSerializer;
 import net.andreho.haxxor.spi.HxTypeVerifier;
+import net.andreho.haxxor.spi.HxVerificationException;
 import net.andreho.haxxor.spi.HxVerificationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +115,7 @@ public class Haxxor
     this(0, new HaxxorBuilder(Haxxor.class.getClassLoader()));
   }
 
-  public Haxxor(HaxxorBuilder builder) {
+  public Haxxor(final HaxxorBuilder builder) {
     this(0, builder);
   }
 
@@ -122,7 +123,7 @@ public class Haxxor
    * @param flags
    * @see Haxxor.Flags
    */
-  public Haxxor(int flags) {
+  public Haxxor(final int flags) {
     this(flags, new HaxxorBuilder(Haxxor.class.getClassLoader()));
   }
 
@@ -131,13 +132,13 @@ public class Haxxor
    * @param classLoader
    * @see Haxxor.Flags
    */
-  public Haxxor(int flags,
-                ClassLoader classLoader) {
+  public Haxxor(final int flags,
+                final ClassLoader classLoader) {
     this(flags, new HaxxorBuilder(classLoader));
   }
 
-  public Haxxor(int flags,
-                HaxxorBuilder builder) {
+  public Haxxor(final int flags,
+                final HaxxorBuilder builder) {
     super();
 
     this.flags = flags;
@@ -391,6 +392,7 @@ public class Haxxor
   /**
    * @return class loader associated with this haxxor instance
    */
+  @Override
   public ClassLoader getClassLoader() {
     return this.classLoaderWeakReference.get();
   }
@@ -773,6 +775,47 @@ public class Haxxor
   public HxAnnotation createAnnotation(final String classname,
                                        final boolean visible) {
     return elementFactory.createAnnotation(toNormalizedClassname(classname), visible);
+  }
+
+  @Override
+  public byte[] serialize(final HxType type,
+                          final boolean computeFrames) {
+    doFullVerification(type);
+
+    return getTypeSerializer().serialize(type, computeFrames);
+  }
+
+  protected void doFullVerification(final HxType type) {
+    HxVerificationResult result = verify(type);
+    HxVerificationResult current = result;
+
+    for(HxField field : type.getFields()) {
+      HxVerificationResult subResult = verify(field);
+
+      if(subResult.isFailed()) {
+        if(result.isFailed()) {
+          current = current.append(subResult);
+        } else {
+          result = current = subResult;
+        }
+      }
+    }
+
+    for(HxMethod method : type.getMethods()) {
+      HxVerificationResult subResult = verify(method);
+
+      if(subResult.isFailed()) {
+        if(result.isFailed()) {
+          current = current.append(subResult);
+        } else {
+          result = current = subResult;
+        }
+      }
+    }
+
+    if(result.isFailed()) {
+      throw new HxVerificationException(result);
+    }
   }
 
   @Override

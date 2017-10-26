@@ -1,7 +1,7 @@
 package net.andreho.haxxor.cgen;
 
+import net.andreho.haxxor.api.HxMethod;
 import net.andreho.haxxor.cgen.instr.misc.LABEL;
-import net.andreho.haxxor.spec.api.HxMethod;
 
 /**
  * <br/>Created by a.hofmann on 12.03.2016.<br/>

@@ -5,22 +5,22 @@ import net.andreho.asm.org.objectweb.asm.ClassWriter;
 import net.andreho.asm.org.objectweb.asm.FieldVisitor;
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.asm.org.objectweb.asm.Type;
-import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.Hx;
+import net.andreho.haxxor.api.HxAnnotated;
+import net.andreho.haxxor.api.HxAnnotation;
+import net.andreho.haxxor.api.HxAnnotationAttribute;
+import net.andreho.haxxor.api.HxConstants;
+import net.andreho.haxxor.api.HxEnum;
+import net.andreho.haxxor.api.HxField;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxMethodBody;
+import net.andreho.haxxor.api.HxParameter;
+import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxLocalVariable;
 import net.andreho.haxxor.cgen.HxTryCatch;
 import net.andreho.haxxor.cgen.impl.AsmCodeStream;
-import net.andreho.haxxor.spec.api.HxAnnotated;
-import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.api.HxAnnotationAttribute;
-import net.andreho.haxxor.spec.api.HxConstants;
-import net.andreho.haxxor.spec.api.HxEnum;
-import net.andreho.haxxor.spec.api.HxField;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxMethodBody;
-import net.andreho.haxxor.spec.api.HxParameter;
-import net.andreho.haxxor.spec.api.HxType;
 import net.andreho.haxxor.spi.HxTypeSerializer;
 
 import java.util.Collection;
@@ -33,9 +33,9 @@ import java.util.function.BiFunction;
 public class DefaultHxTypeSerializer
   implements HxTypeSerializer {
 
-  protected final Haxxor haxxor;
+  protected final Hx haxxor;
 
-  public DefaultHxTypeSerializer(final Haxxor haxxor) {
+  public DefaultHxTypeSerializer(final Hx haxxor) {
     this.haxxor = Objects.requireNonNull(haxxor);
   }
 
@@ -52,8 +52,6 @@ public class DefaultHxTypeSerializer
   @Override
   public byte[] serialize(final HxType type,
                           final boolean computeFrames) {
-    haxxor.getTypeVerifier().verify(type);
-
     final ClassWriter writer = createClassWriter(type, computeFrames);
 
     visitClassHeader(type, writer);
@@ -227,10 +225,7 @@ public class DefaultHxTypeSerializer
 
   protected void visitFields(final HxType type,
                              final ClassWriter cw) {
-    final Haxxor haxxor = this.haxxor;
-
     for (HxField field : type.getFields()) {
-      haxxor.getFieldVerifier().verify(field);
 
       //( visitAnnotation | visitTypeAnnotation | visitAttribute )* visitEnd.
       final FieldVisitor fv = cw.visitField(
@@ -292,8 +287,6 @@ public class DefaultHxTypeSerializer
 
   protected MethodVisitor visitMethod(final ClassWriter cw,
                                       final HxMethod method) {
-    haxxor.getMethodVerifier().verify(method);
-
     final MethodVisitor mv = cw.visitMethod(
         method.getModifiers(),
         method.getName(),

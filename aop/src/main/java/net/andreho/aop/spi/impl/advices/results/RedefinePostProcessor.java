@@ -5,11 +5,11 @@ import net.andreho.aop.api.redefine.Redefinition;
 import net.andreho.aop.spi.AspectAdvice;
 import net.andreho.aop.spi.AspectContext;
 import net.andreho.aop.spi.ResultPostProcessor;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxSort;
+import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
 import net.andreho.haxxor.cgen.HxInstruction;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxSort;
-import net.andreho.haxxor.spec.api.HxType;
 
 import static net.andreho.haxxor.utils.NamingUtils.toInternalClassname;
 

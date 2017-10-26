@@ -5,11 +5,11 @@ import net.andreho.aop.spi.AspectAdvice;
 import net.andreho.aop.spi.AspectContext;
 import net.andreho.aop.spi.AspectMethodContext;
 import net.andreho.aop.spi.ResultPostProcessor;
+import net.andreho.haxxor.api.HxAnnotation;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.cgen.HxCgenUtils;
 import net.andreho.haxxor.cgen.HxInstruction;
-import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxType;
 
 import java.util.Optional;
 

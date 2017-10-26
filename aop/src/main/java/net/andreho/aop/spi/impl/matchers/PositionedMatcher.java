@@ -1,6 +1,6 @@
 package net.andreho.aop.spi.impl.matchers;
 
-import net.andreho.haxxor.spec.api.HxOrdered;
+import net.andreho.haxxor.api.HxOrdered;
 
 import java.util.Arrays;
 

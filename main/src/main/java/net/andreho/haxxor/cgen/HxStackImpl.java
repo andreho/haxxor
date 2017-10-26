@@ -1,6 +1,6 @@
 package net.andreho.haxxor.cgen;
 
-import net.andreho.haxxor.Utils;
+import net.andreho.haxxor.utils.CommonUtils;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -173,7 +173,7 @@ public class HxStackImpl
 
   @Override
   public Iterator<Object> iterator() {
-    return Utils.iterator(this.stack, 0, this.size);
+    return CommonUtils.iterator(this.stack, 0, this.size);
   }
 
   @Override

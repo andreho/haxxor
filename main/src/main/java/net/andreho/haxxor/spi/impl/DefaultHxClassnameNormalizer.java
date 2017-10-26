@@ -6,12 +6,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static net.andreho.haxxor.spec.api.HxConstants.ARRAY_DIMENSION;
-import static net.andreho.haxxor.spec.api.HxConstants.DESC_ARRAY_PREFIX;
-import static net.andreho.haxxor.spec.api.HxConstants.DESC_PREFIX;
-import static net.andreho.haxxor.spec.api.HxConstants.DESC_SUFFIX;
-import static net.andreho.haxxor.spec.api.HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR;
-import static net.andreho.haxxor.spec.api.HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR;
+import static net.andreho.haxxor.api.HxConstants.ARRAY_DIMENSION;
+import static net.andreho.haxxor.api.HxConstants.DESC_ARRAY_PREFIX;
+import static net.andreho.haxxor.api.HxConstants.DESC_PREFIX;
+import static net.andreho.haxxor.api.HxConstants.DESC_SUFFIX;
+import static net.andreho.haxxor.api.HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR;
+import static net.andreho.haxxor.api.HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR;
 
 /**
  * <br/>Created by a.hofmann on 30.05.2017 at 12:52.

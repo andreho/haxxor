@@ -6,8 +6,8 @@ import net.andreho.asm.org.objectweb.asm.FieldVisitor;
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.Haxxor;
-import net.andreho.haxxor.spec.api.HxTypeReference;
-import net.andreho.haxxor.spec.impl.HxGenericTypeImpl;
+import net.andreho.haxxor.api.HxTypeReference;
+import net.andreho.haxxor.api.impl.HxGenericTypeImpl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -25,8 +25,8 @@ import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Set;
 
-import static net.andreho.haxxor.Utils.normalizeClassname;
-import static net.andreho.haxxor.spec.api.HxTypeTestUtils.checkTypes;
+import static net.andreho.haxxor.api.HxTypeTestUtils.checkTypes;
+import static net.andreho.haxxor.utils.NamingUtils.normalizeClassname;
 
 /**
  * Created by a.hofmann on 19.07.2016.

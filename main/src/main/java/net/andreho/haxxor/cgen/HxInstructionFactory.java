@@ -1,5 +1,6 @@
 package net.andreho.haxxor.cgen;
 
+import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.cgen.instr.BEGIN;
 import net.andreho.haxxor.cgen.instr.END;
 import net.andreho.haxxor.cgen.instr.alloc.ANEWARRAY;
@@ -163,7 +164,6 @@ import net.andreho.haxxor.cgen.instr.switches.LOOKUPSWITCH;
 import net.andreho.haxxor.cgen.instr.switches.TABLESWITCH;
 import net.andreho.haxxor.cgen.instr.sync.MONITORENTER;
 import net.andreho.haxxor.cgen.instr.sync.MONITOREXIT;
-import net.andreho.haxxor.spec.api.HxType;
 
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>

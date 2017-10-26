@@ -2,7 +2,7 @@ package net.andreho.aop.spi;
 
 import net.andreho.aop.spi.impl.MultipleActivator;
 import net.andreho.aop.utils.OrderUtils;
-import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.api.HxType;
 
 import java.util.Collection;
 import java.util.Optional;

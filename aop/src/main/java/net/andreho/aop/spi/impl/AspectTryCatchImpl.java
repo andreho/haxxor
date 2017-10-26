@@ -1,11 +1,11 @@
 package net.andreho.aop.spi.impl;
 
 import net.andreho.aop.spi.AspectTryCatch;
+import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.cgen.HxLocalVariable;
 import net.andreho.haxxor.cgen.HxTryCatch;
 import net.andreho.haxxor.cgen.impl.HxTryCatchImpl;
 import net.andreho.haxxor.cgen.instr.misc.LABEL;
-import net.andreho.haxxor.spec.api.HxType;
 
 import static java.util.Objects.requireNonNull;
 

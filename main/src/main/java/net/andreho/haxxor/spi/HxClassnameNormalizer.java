@@ -17,6 +17,14 @@ public interface HxClassnameNormalizer {
   String toNormalizedClassname(String typeName);
 
   /**
+   * @param cls
+   * @return
+   */
+  default String toNormalizedClassname(Class<?> cls) {
+    return toNormalizedClassname(cls.getName());
+  }
+
+  /**
    * @param typeNames to normalize
    * @return a copy with normalized type-names
    */
@@ -30,5 +38,21 @@ public interface HxClassnameNormalizer {
       names[i] = toNormalizedClassname(names[i]);
     }
     return names;
+  }
+
+  /**
+   * @param classes to normalize
+   * @return a copy with normalized type-names
+   */
+  default String[] toNormalizedClassnames(final Class<?> ... classes) {
+    Objects.requireNonNull(classes,"Given class-array can't be null.");
+    if(classes.length == 0) {
+      return new String[0];
+    }
+    final String[] typeNames = new String[classes.length];
+    for (int i = 0; i < typeNames.length; i++) {
+      typeNames[i] = toNormalizedClassname(classes[i]);
+    }
+    return typeNames;
   }
 }

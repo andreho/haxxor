@@ -1,6 +1,6 @@
 package net.andreho.aop.spi;
 
-import net.andreho.haxxor.spec.api.HxMethod;
+import net.andreho.haxxor.api.HxMethod;
 
 import java.util.List;
 import java.util.Optional;

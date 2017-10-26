@@ -1,8 +1,8 @@
 package net.andreho.haxxor.spi.impl;
 
-import net.andreho.haxxor.Haxxor;
-import net.andreho.haxxor.Utils;
+import net.andreho.haxxor.Hx;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
+import net.andreho.haxxor.utils.CommonUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,13 +14,13 @@ import java.util.Objects;
 public class DefaultHxByteCodeLoader
     implements HxByteCodeLoader {
 
-  private final Haxxor haxxor;
+  private final Hx haxxor;
 
-  public DefaultHxByteCodeLoader(final Haxxor haxxor) {
+  public DefaultHxByteCodeLoader(final Hx haxxor) {
     this.haxxor = Objects.requireNonNull(haxxor, "Haxxor instance can't be null.");
   }
 
-  public Haxxor getHaxxor() {
+  public Hx getHaxxor() {
     return haxxor;
   }
 
@@ -31,7 +31,7 @@ public class DefaultHxByteCodeLoader
       if(inputStream == null) {
         throw new IllegalArgumentException("Class wasn't found: "+className);
       }
-      return Utils.toByteArray(inputStream);
+      return CommonUtils.toByteArray(inputStream);
     } catch (IOException e) {
       throw new IllegalArgumentException(
           "Class '" + className + "' was not found by the associated class loader: " + classLoader, e);

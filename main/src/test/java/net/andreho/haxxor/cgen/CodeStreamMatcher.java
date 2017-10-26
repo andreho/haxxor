@@ -6,13 +6,13 @@ import net.andreho.asm.org.objectweb.asm.Label;
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.asm.org.objectweb.asm.TypePath;
+import net.andreho.haxxor.api.HxMethodBody;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractFieldInstruction;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInvokeInstruction;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractSingleOperandInstruction;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractStringOperandInstruction;
 import net.andreho.haxxor.cgen.instr.invokes.INVOKEDYNAMIC;
 import net.andreho.haxxor.cgen.instr.misc.LINE_NUMBER;
-import net.andreho.haxxor.spec.api.HxMethodBody;
 
 import java.util.Iterator;
 

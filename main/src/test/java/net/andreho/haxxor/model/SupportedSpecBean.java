@@ -1,6 +1,6 @@
 package net.andreho.haxxor.model;
 
-import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.api.HxType;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

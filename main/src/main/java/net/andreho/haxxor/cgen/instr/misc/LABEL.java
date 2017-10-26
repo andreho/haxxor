@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import static net.andreho.haxxor.Utils.isUninitialized;
+import static net.andreho.haxxor.utils.CommonUtils.isUninitialized;
 
 /**
  * <br/>Created by a.hofmann on 11.03.2016.<br/>

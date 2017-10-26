@@ -1,7 +1,7 @@
 package net.andreho.aop.spi.impl.matchers;
 
 import net.andreho.aop.api.spec.query.Operator;
-import net.andreho.haxxor.spec.api.HxAnnotation;
+import net.andreho.haxxor.api.HxAnnotation;
 
 import java.util.Arrays;
 import java.util.regex.Pattern;

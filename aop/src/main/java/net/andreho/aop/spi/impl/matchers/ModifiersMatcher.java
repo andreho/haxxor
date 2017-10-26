@@ -1,8 +1,8 @@
 package net.andreho.aop.spi.impl.matchers;
 
-import net.andreho.haxxor.spec.api.HxMember;
-import net.andreho.haxxor.spec.api.HxModifier;
-import net.andreho.haxxor.spec.api.HxModifiers;
+import net.andreho.haxxor.api.HxMember;
+import net.andreho.haxxor.api.HxModifier;
+import net.andreho.haxxor.api.HxModifiers;
 
 /**
  * <br/>Created by a.hofmann on 15.06.2017 at 01:42.

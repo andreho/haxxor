@@ -1,11 +1,11 @@
 package net.andreho.aop.spi.impl.matchers;
 
 import net.andreho.aop.spi.ElementMatcher;
-import net.andreho.haxxor.spec.api.HxAnnotated;
-import net.andreho.haxxor.spec.api.HxField;
-import net.andreho.haxxor.spec.api.HxMember;
-import net.andreho.haxxor.spec.api.HxNamed;
-import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.api.HxAnnotated;
+import net.andreho.haxxor.api.HxField;
+import net.andreho.haxxor.api.HxMember;
+import net.andreho.haxxor.api.HxNamed;
+import net.andreho.haxxor.api.HxType;
 
 /**
  * <br/>Created by a.hofmann on 17.06.2017 at 02:42.

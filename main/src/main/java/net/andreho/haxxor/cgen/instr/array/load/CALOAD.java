@@ -28,14 +28,6 @@ public class CALOAD
   }
 
   @Override
-  protected void checkArrayType(final Object arrayType) {
-    super.checkArrayType(arrayType);
-    if (!"[C".equals(arrayType)) {
-      throw new IllegalArgumentException("Expected an array of current type: char[]");
-    }
-  }
-
-  @Override
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }

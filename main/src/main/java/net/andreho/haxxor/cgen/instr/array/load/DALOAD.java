@@ -28,14 +28,6 @@ public class DALOAD
   }
 
   @Override
-  protected void checkArrayType(final Object arrayType) {
-    super.checkArrayType(arrayType);
-    if (!"[D".equals(arrayType)) {
-      throw new IllegalArgumentException("Expected an array of current type: double[]");
-    }
-  }
-
-  @Override
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }

@@ -3,8 +3,8 @@ package net.andreho.aop.spi.impl.injectors;
 import net.andreho.aop.spi.AspectContext;
 import net.andreho.aop.spi.ParameterInjector;
 import net.andreho.aop.spi.ParameterInjectorSelector;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxParameter;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxParameter;
 
 import java.util.ArrayList;
 import java.util.List;

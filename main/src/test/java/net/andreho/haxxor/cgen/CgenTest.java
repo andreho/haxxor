@@ -3,10 +3,9 @@ package net.andreho.haxxor.cgen;
 import difflib.PatchFailedException;
 import net.andreho.haxxor.CodeDiffTools;
 import net.andreho.haxxor.Debugger;
-import net.andreho.haxxor.Haxxor;
-import net.andreho.haxxor.HaxxorBuilder;
-import net.andreho.haxxor.Utils;
-import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.Hx;
+import net.andreho.haxxor.api.HxType;
+import net.andreho.haxxor.utils.CommonUtils;
 import net.andreho.resources.Resource;
 import net.andreho.resources.ResourceResolver;
 import net.andreho.resources.ResourceScanner;
@@ -32,7 +31,7 @@ import java.util.function.Supplier;
  */
 public class CgenTest {
 
-  private static Haxxor haxxor;
+  private static Hx haxxor;
 
   @ParameterizedTest
   @MethodSource("availableClasses")
@@ -49,7 +48,7 @@ public class CgenTest {
     final StringWriter original = new StringWriter();
     final StringWriter made = new StringWriter();
 
-    Debugger.trace(Utils.toByteArray(resource.getInputStream()), new PrintWriter(original), Debugger.SKIP_DEBUG);
+    Debugger.trace(CommonUtils.toByteArray(resource.getInputStream()), new PrintWriter(original), Debugger.SKIP_DEBUG);
     Debugger.trace(bytes, new PrintWriter(made), Debugger.SKIP_DEBUG);
 
     String expected = original.toString().trim();
@@ -74,7 +73,7 @@ public class CgenTest {
 
   @BeforeAll
   static void setup() {
-    haxxor = new Haxxor(new HaxxorBuilder(CgenTest.class.getClassLoader()));
+    haxxor = Hx.builder().withClassLoader(CgenTest.class.getClassLoader()).build();
   }
 
   private static Iterable<Resource> availableClasses()

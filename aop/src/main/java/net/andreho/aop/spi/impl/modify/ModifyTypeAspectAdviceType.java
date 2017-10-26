@@ -8,9 +8,9 @@ import net.andreho.aop.spi.ElementMatcher;
 import net.andreho.aop.spi.ParameterInjectorSelector;
 import net.andreho.aop.spi.ResultPostProcessor;
 import net.andreho.aop.spi.impl.advices.AbstractAspectAdviceType;
-import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.api.HxAnnotation;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxType;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;

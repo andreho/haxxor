@@ -1,8 +1,13 @@
 package net.andreho.haxxor.utils;
 
-import static net.andreho.haxxor.spec.api.HxConstants.ARRAY_DIMENSION;
-import static net.andreho.haxxor.spec.api.HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR;
-import static net.andreho.haxxor.spec.api.HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR;
+import net.andreho.asm.org.objectweb.asm.Type;
+import net.andreho.haxxor.api.HxConstants;
+
+import java.util.Objects;
+
+import static net.andreho.haxxor.api.HxConstants.ARRAY_DIMENSION;
+import static net.andreho.haxxor.api.HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR;
+import static net.andreho.haxxor.api.HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR;
 
 /**
  * <br/>Created by a.hofmann on 21.06.2017 at 08:36.
@@ -23,6 +28,93 @@ public abstract class NamingUtils {
 
   private NamingUtils() {
   }
+
+  public static String toPrimitiveClassname(char c) {
+    switch (c) {
+      case 'V':
+        return "void";
+      case 'Z':
+        return "boolean";
+      case 'B':
+        return "byte";
+      case 'S':
+        return "short";
+      case 'C':
+        return "char";
+      case 'I':
+        return "int";
+      case 'F':
+        return "float";
+      case 'J':
+        return "long";
+      case 'D':
+        return "double";
+      default:
+        throw new IllegalArgumentException("Not a primitive literal {V,Z,B,S,C,I,F,J,D}: " + c);
+    }
+  }
+
+  /**
+   * Transforms if needed the given descriptor to a normalized classname of corresponding primitive type
+   * @param desc to check and transform
+   * @return possibly transformed classname or the same descriptor if not a primitive
+   */
+  public static String toPrimitiveClassname(String desc) {
+    //Both examples like: [I or LI; have length over one.
+    if(desc.length() != 1) {
+      return desc;
+    }
+    return toPrimitiveClassname(desc, 0);
+  }
+
+  /**
+   * Transforms the given descriptor to a normalized classname of corresponding primitive type
+   * @param desc to check and transform
+   * @param index to look at
+   * @return transformed classname of the given primitive type at the given index
+   */
+  public static String toPrimitiveClassname(String desc, int index) {
+    return toPrimitiveClassname(desc.charAt(index));
+  }
+
+  /**
+   * @param classname
+   * @return
+   */
+  public static String normalizeClassname(String classname) {
+    Objects.requireNonNull(classname, "Classname can't be null.");
+    String internalForm = classname.replace(HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR, HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR);
+    if(classname.endsWith(";")) {
+      return normalizeType(Type.getType(internalForm));
+    }
+    return normalizeType(Type.getObjectType(internalForm));
+  }
+
+  /**
+   * @param signature
+   * @return
+   */
+  public static String[] normalizeSignature(String signature) {
+    Type[] types = Type.getArgumentTypes(signature);
+    String[] names = new String[types.length];
+    for (int i = 0; i < types.length; i++) {
+      names[i] = normalizeType(types[i]);
+    }
+    return names;
+  }
+
+  /**
+   * @param signature
+   * @return
+   */
+  public static String normalizeReturnType(final String signature) {
+    return normalizeType(Type.getReturnType(signature));
+  }
+
+  private static String normalizeType(final Type type) {
+    return type.getClassName();
+  }
+
 
   private static int simpleNameLength(final String className) {
     int length = className.length() - getDimension(className) * ARRAY_DIMENSION.length();
@@ -185,6 +277,10 @@ public abstract class NamingUtils {
     return index < 0 || index >= length;
   }
 
+  /**
+   * @param cls whose name should be converted to an internal classname
+   * @return an internal classname
+   */
   public static String toInternalClassname(Class<?> cls) {
     return toInternalClassname(cls.getName());
   }

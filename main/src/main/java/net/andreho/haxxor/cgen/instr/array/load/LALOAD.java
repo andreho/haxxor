@@ -28,14 +28,6 @@ public class LALOAD
   }
 
   @Override
-  protected void checkArrayType(final Object arrayType) {
-    super.checkArrayType(arrayType);
-    if (!"[J".equals(arrayType)) {
-      throw new IllegalArgumentException("Expected an array of current type: long[]");
-    }
-  }
-
-  @Override
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }

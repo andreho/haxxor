@@ -1,7 +1,7 @@
 package net.andreho.haxxor.cgen;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.Utils;
+import net.andreho.haxxor.utils.CommonUtils;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -134,6 +134,6 @@ public class HxLocalsImpl
 
   @Override
   public Iterator<Object> iterator() {
-    return Utils.iterator(this.table, 0, this.size);
+    return CommonUtils.iterator(this.table, 0, this.size);
   }
 }

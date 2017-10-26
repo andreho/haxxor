@@ -5,8 +5,8 @@ import net.andreho.aop.api.Profiles;
 import net.andreho.aop.spi.AspectProfile;
 import net.andreho.aop.spi.AspectProfileFactory;
 import net.andreho.aop.spi.ElementMatcherFactory;
-import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.api.HxAnnotation;
+import net.andreho.haxxor.api.HxType;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;

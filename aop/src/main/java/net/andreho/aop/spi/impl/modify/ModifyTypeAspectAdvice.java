@@ -4,8 +4,8 @@ import net.andreho.aop.spi.AspectAdviceType;
 import net.andreho.aop.spi.AspectContext;
 import net.andreho.aop.spi.ElementMatcher;
 import net.andreho.aop.spi.impl.advices.AbstractAspectAdvice;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxType;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

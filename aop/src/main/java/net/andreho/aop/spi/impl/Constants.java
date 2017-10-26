@@ -12,11 +12,11 @@ import net.andreho.aop.api.injectable.Caught;
 import net.andreho.aop.api.injectable.Result;
 import net.andreho.aop.api.mixin.Mixin;
 import net.andreho.aop.api.spec.Disable;
-import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.api.HxEnum;
-import net.andreho.haxxor.spec.api.HxField;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxType;
+import net.andreho.haxxor.api.HxAnnotation;
+import net.andreho.haxxor.api.HxEnum;
+import net.andreho.haxxor.api.HxField;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxType;
 
 /**
  * <br/>Created by a.hofmann on 18.06.2017 at 02:47.

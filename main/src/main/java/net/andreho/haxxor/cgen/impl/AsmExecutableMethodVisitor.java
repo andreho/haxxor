@@ -5,13 +5,13 @@ import net.andreho.asm.org.objectweb.asm.Label;
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.asm.org.objectweb.asm.TypePath;
 import net.andreho.asm.org.objectweb.asm.TypeReference;
-import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.Hx;
+import net.andreho.haxxor.api.HxAnnotation;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxMethodBody;
 import net.andreho.haxxor.cgen.HxCodeStream;
-import net.andreho.haxxor.spec.api.HxAnnotation;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxMethodBody;
-import net.andreho.haxxor.spec.visitors.HxAnnotationDefaultVisitor;
-import net.andreho.haxxor.spec.visitors.HxAnnotationVisitor;
+import net.andreho.haxxor.spi.impl.visitors.HxAnnotationDefaultVisitor;
+import net.andreho.haxxor.spi.impl.visitors.HxAnnotationVisitor;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -26,14 +26,14 @@ public class AsmExecutableMethodVisitor
   protected final HxMethod method;
   protected int parameterIndex = 0;
 
-  public AsmExecutableMethodVisitor(final Haxxor haxxor,
+  public AsmExecutableMethodVisitor(final Hx haxxor,
                                     final HxMethod method,
                                     final MethodVisitor mv) {
     this(haxxor, method, method.getBody(), method.getBody().<HxCodeStream>build(), mv);
   }
 
 
-  public AsmExecutableMethodVisitor(final Haxxor haxxor,
+  public AsmExecutableMethodVisitor(final Hx haxxor,
                                     final HxMethod method,
                                     final HxMethodBody code,
                                     final HxCodeStream codeStream,

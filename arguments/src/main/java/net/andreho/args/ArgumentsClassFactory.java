@@ -1,10 +1,10 @@
 package net.andreho.args;
 
 import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.api.HxField;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
-import net.andreho.haxxor.spec.api.HxField;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxType;
 
 import java.io.IOException;
 import java.nio.file.Files;

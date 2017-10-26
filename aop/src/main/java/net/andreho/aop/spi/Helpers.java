@@ -1,7 +1,7 @@
 package net.andreho.aop.spi;
 
 import net.andreho.asm.org.objectweb.asm.Type;
-import net.andreho.haxxor.spec.api.HxMethod;
+import net.andreho.haxxor.api.HxMethod;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;

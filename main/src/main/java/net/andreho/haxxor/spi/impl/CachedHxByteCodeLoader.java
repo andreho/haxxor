@@ -1,6 +1,6 @@
 package net.andreho.haxxor.spi.impl;
 
-import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.Hx;
 
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
@@ -33,11 +33,11 @@ public class CachedHxByteCodeLoader
   private final ReadWriteLock lock = new ReentrantReadWriteLock();
   private final Map<String, Reference<byte[]>> cache;
 
-  public CachedHxByteCodeLoader(final Haxxor haxxor) {
+  public CachedHxByteCodeLoader(final Hx haxxor) {
     this(haxxor, GLOBAL_CACHE);
   }
 
-  public CachedHxByteCodeLoader(final Haxxor haxxor,
+  public CachedHxByteCodeLoader(final Hx haxxor,
                                 final Map<String, Reference<byte[]>> cache) {
     super(haxxor);
     this.cache = Objects.requireNonNull(cache, "Cache can't be null.");

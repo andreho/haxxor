@@ -6,7 +6,8 @@ import net.andreho.asm.org.objectweb.asm.Label;
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.asm.org.objectweb.asm.Type;
-import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.Hx;
+import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.cgen.HxArguments;
 import net.andreho.haxxor.cgen.HxArrayType;
 import net.andreho.haxxor.cgen.HxCodeStream;
@@ -15,7 +16,6 @@ import net.andreho.haxxor.cgen.HxHandleTag;
 import net.andreho.haxxor.cgen.HxMethodHandle;
 import net.andreho.haxxor.cgen.HxMethodType;
 import net.andreho.haxxor.cgen.instr.misc.LABEL;
-import net.andreho.haxxor.spec.api.HxType;
 
 /**
  * <br/>Created by a.hofmann on 12.06.2017 at 04:42.
@@ -23,15 +23,15 @@ import net.andreho.haxxor.spec.api.HxType;
 public class AsmCodeMethodVisitor
   extends MethodVisitor {
 
-  protected final Haxxor haxxor;
+  protected final Hx haxxor;
   protected final HxCodeStream codeStream;
 
-  public AsmCodeMethodVisitor(final Haxxor haxxor,
+  public AsmCodeMethodVisitor(final Hx haxxor,
                               final HxCodeStream codeStream) {
     this(haxxor, codeStream, null);
   }
 
-  public AsmCodeMethodVisitor(final Haxxor haxxor,
+  public AsmCodeMethodVisitor(final Hx haxxor,
                               final HxCodeStream codeStream,
                               final MethodVisitor mv) {
     super(Opcodes.ASM5, mv);
@@ -40,7 +40,7 @@ public class AsmCodeMethodVisitor
     this.codeStream = codeStream;
   }
 
-  protected Haxxor getHaxxor() {
+  protected Hx getHaxxor() {
     return haxxor;
   }
 

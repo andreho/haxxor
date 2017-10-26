@@ -10,14 +10,14 @@ import net.andreho.aop.api.injectable.locals.ParameterLocal;
 import net.andreho.aop.spi.AspectAdvice;
 import net.andreho.aop.spi.AspectAdviceType;
 import net.andreho.aop.spi.AspectContext;
-import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.Hx;
+import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxParameter;
+import net.andreho.haxxor.api.HxType;
+import net.andreho.haxxor.api.HxTypeReference;
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.spec.api.HxMethod;
-import net.andreho.haxxor.spec.api.HxParameter;
-import net.andreho.haxxor.spec.api.HxType;
-import net.andreho.haxxor.spec.api.HxTypeReference;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -61,7 +61,7 @@ public final class InterceptedParameterInjector
     }
 
     final AspectAdviceType aspectAdviceType = context.getAspectAdvice().getType();
-    final Haxxor haxxor = original.getHaxxor();
+    final Hx haxxor = original.getHaxxor();
 
     int score;
     if(aspectAdviceType.isActivatedThrough(ARG_PASSING_ANNOTATION_TYPE)) {
@@ -106,7 +106,7 @@ public final class InterceptedParameterInjector
     return parameter.hasType(Object.class)? MIN_SUITABLE : NOT_INJECTABLE;
   }
 
-  private int calcDistance(final Haxxor haxxor,
+  private int calcDistance(final Hx haxxor,
                            final HxParameter parameter,
                            final Class<?> type) {
     HxTypeReference parameterType = haxxor.reference(type);

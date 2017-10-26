@@ -1,7 +1,7 @@
 package net.andreho.aop.api.spec;
 
 import net.andreho.aop.spi.ElementMatcher;
-import net.andreho.haxxor.spec.api.HxMethod;
+import net.andreho.haxxor.api.HxMethod;
 
 /**
  * <br/>Created by a.hofmann on 20.06.2017 at 05:06.

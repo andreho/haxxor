@@ -1,6 +1,6 @@
 package net.andreho.aop.spi.impl.matchers;
 
-import net.andreho.haxxor.spec.api.HxNamed;
+import net.andreho.haxxor.api.HxNamed;
 
 /**
  * <br/>Created by a.hofmann on 15.06.2017 at 01:42.

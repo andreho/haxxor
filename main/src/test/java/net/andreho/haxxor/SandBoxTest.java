@@ -1,11 +1,11 @@
 package net.andreho.haxxor;
 
 
+import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.model.AbstractBean;
 import net.andreho.haxxor.model.CodeAnnotationBean;
 import net.andreho.haxxor.model.EnumC;
-import net.andreho.haxxor.spec.api.HxType;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
