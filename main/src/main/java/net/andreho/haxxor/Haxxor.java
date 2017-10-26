@@ -23,6 +23,7 @@ import net.andreho.haxxor.spi.HxTypeDeserializer;
 import net.andreho.haxxor.spi.HxTypeInitializer;
 import net.andreho.haxxor.spi.HxTypeSerializer;
 import net.andreho.haxxor.spi.HxTypeVerifier;
+import net.andreho.haxxor.spi.HxVerificationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +42,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * <br/>Created by a.hofmann on 21.03.2015 at 01:17<br/>
  */
 public class Haxxor
-    implements Hx,
-               HxElementFactory,
-               HxClassnameNormalizer {
+    implements Hx {
 
   private static final Logger LOG = LoggerFactory.getLogger(Haxxor.class.getName());
 
@@ -326,6 +325,7 @@ public class Haxxor
    * @param type to initialize and to prepare for further usage
    * @return the given type
    */
+  @Override
   public HxType initialize(final HxType type) {
     getTypeInitializer().initialize(type);
     return type;
@@ -335,6 +335,7 @@ public class Haxxor
    * @param field to initialize and to prepare for further usage
    * @return the given field
    */
+  @Override
   public HxField initialize(final HxField field) {
     getFieldInitializer().initialize(field);
     return field;
@@ -344,9 +345,37 @@ public class Haxxor
    * @param method to initialize and to prepare for further usage
    * @return the given method
    */
+  @Override
   public HxMethod initialize(final HxMethod method) {
     getMethodInitializer().initialize(method);
     return method;
+  }
+
+  /**
+   * @param type to verify for correctness and other rules
+   * @return the given type
+   */
+  @Override
+  public HxVerificationResult verify(final HxType type) {
+    return getTypeVerifier().verify(type);
+  }
+
+  /**
+   * @param field to verify for correctness and other rules
+   * @return the given field
+   */
+  @Override
+  public HxVerificationResult verify(final HxField field) {
+    return getFieldVerifier().verify(field);
+  }
+
+  /**
+   * @param method to verify for correctness and other rules
+   * @return the given method
+   */
+  @Override
+  public HxVerificationResult verify(final HxMethod method) {
+    return getMethodVerifier().verify(method);
   }
 
   /**
@@ -372,6 +401,7 @@ public class Haxxor
    * @param classname to look for
    * @return <b>true</b> if there is a reference with given typename in this instance, <b>false</b> otherwise
    */
+  @Override
   public boolean hasReference(String classname) {
     classname = toNormalizedClassname(classname);
     return this.referenceCache.containsKey(classname);
@@ -383,7 +413,8 @@ public class Haxxor
    * @param classname to look for
    * @return <b>true</b> if there is a resolved type with given typename in this instance, <b>false</b> otherwise
    */
-  public boolean hasType(String classname) {
+  @Override
+  public boolean hasResolved(String classname) {
     classname = toNormalizedClassname(classname);
     return this.resolvedCache.containsKey(classname);
   }
@@ -394,6 +425,7 @@ public class Haxxor
    * @param classname is the classname of the referenced type
    * @return a new or already cached type reference
    */
+  @Override
   public HxTypeReference reference(String classname) {
     checkClassLoaderAvailability();
     classname = toNormalizedClassname(classname);
@@ -413,6 +445,7 @@ public class Haxxor
    * @param aClass as prototype for a reference
    * @return a new or cached reference to the given class
    */
+  @Override
   public HxTypeReference reference(Class<?> aClass) {
     return reference(aClass.getName());
   }
@@ -423,6 +456,7 @@ public class Haxxor
    * @param classnames to reference
    * @return a collection with possibly not-resolved references
    */
+  @Override
   public List<HxType> referencesAsList(String... classnames) {
     if (classnames.length == 0) {
       return Collections.emptyList();
@@ -439,6 +473,7 @@ public class Haxxor
    * @param classnames
    * @return
    */
+  @Override
   public HxType[] referencesAsArray(String... classnames) {
     if (classnames.length == 0) {
       return Constants.EMPTY_HX_TYPE_ARRAY;
@@ -459,6 +494,7 @@ public class Haxxor
    * @param classname of class to resolve
    * @return a resolved instance of {@link HxType}
    */
+  @Override
   public HxType resolve(String classname) {
     return resolve(classname, this.flags);
   }
@@ -469,6 +505,7 @@ public class Haxxor
    * @param aClass with a valid name
    * @return a resolved instance of {@link HxType}
    */
+  @Override
   public HxType resolve(Class<?> aClass) {
     return resolve(aClass.getName());
   }
@@ -483,6 +520,7 @@ public class Haxxor
    * flags and represented as a {@link HxType}
    * @see Flags
    */
+  @Override
   public HxType resolve(String classname,
                         int flags) {
     checkClassLoaderAvailability();
@@ -511,6 +549,7 @@ public class Haxxor
    * flags and represented as a {@link HxType}
    * @see Flags
    */
+  @Override
   public HxType resolve(String classname,
                         final byte[] byteCode,
                         final int flags) {
@@ -583,15 +622,16 @@ public class Haxxor
    * Registers the given type/reference with the provided typename
    *
    * @param classname to use as key
-   * @param type     to register
+   * @param typeOrReference     to register
    * @return the actually registered type
    */
+  @Override
   public HxType register(final String classname,
-                         final HxType type) {
-    if (type.isReference()) {
-      return storeSynchronizedReference(classname, type.toReference());
+                         final HxType typeOrReference) {
+    if (typeOrReference.isReference()) {
+      return storeSynchronizedReference(classname, typeOrReference.toReference());
     }
-    return storeSynchronizedResolved(classname, type);
+    return storeSynchronizedResolved(classname, typeOrReference);
   }
 
   protected HxTypeReference storeSynchronizedReference(final String classname,

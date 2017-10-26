@@ -14,6 +14,10 @@ public abstract class AbstractSwitchJumpInstruction
                                        final LABEL[] labels) {
     super(defaultLabel);
     this.labels = labels;
+
+    for (LABEL label : labels) {
+      label.addReference(this);
+    }
   }
 
   public LABEL getDefaultLabel() {

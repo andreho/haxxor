@@ -19,7 +19,7 @@ public class ExtendedInstructionCodeStream
 
   public ExtendedInstructionCodeStream(final HxMethodBody methodBody,
                                        final HxInstructionFactory factory) {
-    super(methodBody.getCurrent(), factory);
+    super(methodBody.getLast(), factory);
     this.methodBody = methodBody;
   }
 

@@ -1,6 +1,8 @@
 package net.andreho.haxxor.cgen.instr.array.load;
 
 import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxComputationContext;
+import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractArrayLoadInstruction;
@@ -26,22 +28,20 @@ public class AALOAD
   }
 
   @Override
-  protected void checkArrayType(final Object arrayType) {
-    super.checkArrayType(arrayType);
-    String array = arrayType.toString();
-
-    if (array.length() == 2) {
-      switch (array.charAt(1)) {
-        case 'Z':
-        case 'B':
-        case 'S':
-        case 'C':
-        case 'I':
-        case 'F':
-        case 'J':
-        case 'D':
-          throw new IllegalArgumentException("Expected an reference array type, but got: " + arrayType);
-      }
-    }
+  public void compute(final HxComputationContext context, final HxFrame frame) {
+    context.getExecutor().visit(context, this, frame);
   }
+
+//  @Override
+//  protected void checkArrayType(final Object arrayType) {
+//    super.checkArrayType(arrayType);
+//    final String array = arrayType.toString();
+//
+//    if (array.length() == 2) {
+//      final char c = array.charAt(1);
+//      if(c != 'L' && c != '[') {
+//        throw new IllegalArgumentException("Expected an reference array type, but got: " + arrayType);
+//      }
+//    }
+//  }
 }

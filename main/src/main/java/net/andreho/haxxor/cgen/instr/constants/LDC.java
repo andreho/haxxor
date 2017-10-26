@@ -1,5 +1,7 @@
 package net.andreho.haxxor.cgen.instr.constants;
 
+import net.andreho.haxxor.cgen.HxComputationContext;
+import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.HxMethodHandle;
@@ -97,6 +99,11 @@ public abstract class LDC<T>
     return getType() == ConstantType.LONG || getType() == ConstantType.DOUBLE?
            DOUBLE_SLOT_SIZE :
            SINGLE_SLOT_SIZE;
+  }
+
+  @Override
+  public void compute(final HxComputationContext context, final HxFrame frame) {
+    context.getExecutor().visit(context, this, frame);
   }
 
   @Override

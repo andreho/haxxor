@@ -2,8 +2,10 @@ package net.andreho.haxxor.cgen;
 
 import net.andreho.haxxor.cgen.instr.BEGIN;
 import net.andreho.haxxor.cgen.instr.END;
-import net.andreho.haxxor.cgen.instr.misc.LABEL;
-import net.andreho.haxxor.cgen.instr.misc.NOP;
+import net.andreho.haxxor.cgen.instr.alloc.ANEWARRAY;
+import net.andreho.haxxor.cgen.instr.alloc.MULTIANEWARRAY;
+import net.andreho.haxxor.cgen.instr.alloc.NEW;
+import net.andreho.haxxor.cgen.instr.alloc.NEWARRAY;
 import net.andreho.haxxor.cgen.instr.arithmetic.DADD;
 import net.andreho.haxxor.cgen.instr.arithmetic.DDIV;
 import net.andreho.haxxor.cgen.instr.arithmetic.DMUL;
@@ -104,10 +106,6 @@ import net.andreho.haxxor.cgen.instr.conversion.primitive.I2S;
 import net.andreho.haxxor.cgen.instr.conversion.primitive.L2D;
 import net.andreho.haxxor.cgen.instr.conversion.primitive.L2F;
 import net.andreho.haxxor.cgen.instr.conversion.primitive.L2I;
-import net.andreho.haxxor.cgen.instr.alloc.ANEWARRAY;
-import net.andreho.haxxor.cgen.instr.alloc.MULTIANEWARRAY;
-import net.andreho.haxxor.cgen.instr.alloc.NEW;
-import net.andreho.haxxor.cgen.instr.alloc.NEWARRAY;
 import net.andreho.haxxor.cgen.instr.fields.GETFIELD;
 import net.andreho.haxxor.cgen.instr.fields.GETSTATIC;
 import net.andreho.haxxor.cgen.instr.fields.PUTFIELD;
@@ -118,8 +116,6 @@ import net.andreho.haxxor.cgen.instr.invokes.INVOKESPECIAL;
 import net.andreho.haxxor.cgen.instr.invokes.INVOKESTATIC;
 import net.andreho.haxxor.cgen.instr.invokes.INVOKEVIRTUAL;
 import net.andreho.haxxor.cgen.instr.jumps.GOTO;
-import net.andreho.haxxor.cgen.instr.subroutine.JSR;
-import net.andreho.haxxor.cgen.instr.subroutine.RET;
 import net.andreho.haxxor.cgen.instr.jumps.cond.integer.IF_ICMPEQ;
 import net.andreho.haxxor.cgen.instr.jumps.cond.integer.IF_ICMPGE;
 import net.andreho.haxxor.cgen.instr.jumps.cond.integer.IF_ICMPGT;
@@ -148,7 +144,10 @@ import net.andreho.haxxor.cgen.instr.local.store.FSTORE;
 import net.andreho.haxxor.cgen.instr.local.store.ISTORE;
 import net.andreho.haxxor.cgen.instr.local.store.LSTORE;
 import net.andreho.haxxor.cgen.instr.misc.FRAME;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.cgen.instr.misc.LINE_NUMBER;
+import net.andreho.haxxor.cgen.instr.misc.NAMED_LABEL;
+import net.andreho.haxxor.cgen.instr.misc.NOP;
 import net.andreho.haxxor.cgen.instr.stack.DUP;
 import net.andreho.haxxor.cgen.instr.stack.DUP2;
 import net.andreho.haxxor.cgen.instr.stack.DUP2_X1;
@@ -158,6 +157,8 @@ import net.andreho.haxxor.cgen.instr.stack.DUP_X2;
 import net.andreho.haxxor.cgen.instr.stack.POP;
 import net.andreho.haxxor.cgen.instr.stack.POP2;
 import net.andreho.haxxor.cgen.instr.stack.SWAP;
+import net.andreho.haxxor.cgen.instr.subroutine.JSR;
+import net.andreho.haxxor.cgen.instr.subroutine.RET;
 import net.andreho.haxxor.cgen.instr.switches.LOOKUPSWITCH;
 import net.andreho.haxxor.cgen.instr.switches.TABLESWITCH;
 import net.andreho.haxxor.cgen.instr.sync.MONITORENTER;
@@ -897,5 +898,9 @@ public interface HxInstructionFactory {
 
   default HxInstruction LABEL() {
     return new LABEL();
+  }
+
+  default HxInstruction LABEL(String name) {
+    return new NAMED_LABEL(name);
   }
 }

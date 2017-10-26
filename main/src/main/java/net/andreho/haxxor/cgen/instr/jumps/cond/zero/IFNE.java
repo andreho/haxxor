@@ -1,10 +1,12 @@
 package net.andreho.haxxor.cgen.instr.jumps.cond.zero;
 
 import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxComputationContext;
+import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractSimpleJumpInstruction;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 
 /**
  * IFNE succeeds if and only if value != 0<br/>
@@ -25,6 +27,11 @@ public class IFNE
   @Override
   public IFNE clone(final LABEL label) {
     return new IFNE(label);
+  }
+
+  @Override
+  public void compute(final HxComputationContext context, final HxFrame frame) {
+    context.getExecutor().visit(context, this, frame);
   }
 
   @Override

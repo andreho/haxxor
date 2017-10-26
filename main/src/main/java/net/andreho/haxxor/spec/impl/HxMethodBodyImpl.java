@@ -11,18 +11,18 @@ import net.andreho.haxxor.cgen.HxTryCatch;
 import net.andreho.haxxor.cgen.impl.ExtendedInstructionCodeStream;
 import net.andreho.haxxor.cgen.impl.HxLocalVariableImpl;
 import net.andreho.haxxor.cgen.impl.HxTryCatchImpl;
-import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractSimpleJumpInstruction;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractSwitchJumpInstruction;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.spec.api.HxMethod;
 import net.andreho.haxxor.spec.api.HxMethodBody;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Function;
 
 import static net.andreho.haxxor.Utils.isUninitialized;
@@ -58,6 +58,7 @@ public class HxMethodBodyImpl
     this.reset();
 
     newOwner.setBody(newBody);
+
     return newBody;
   }
 
@@ -71,14 +72,39 @@ public class HxMethodBodyImpl
     final List<HxLocalVariable> localVariables = body.getLocalVariables();
     final Map<Object, LABEL> mapping = new IdentityHashMap<>(32);
 
-    for(HxTryCatch tryCatch : tryCatches) {
-      final LABEL start = remap(mapping, tryCatch.getBegin());
-      final LABEL end = remap(mapping, tryCatch.getEnd());
-      final LABEL handler = remap(mapping, tryCatch.getCatch());
+    copyTryCatches(otherBody, tryCatches, mapping);
 
-      otherBody.addTryCatch(new HxTryCatchImpl(start, end, handler, tryCatch.getExceptionType()));
+    copyLocalVariables(otherBody, localVariables, mapping);
+
+    copyInstructions(body, stream, mapping);
+
+    otherBody.setMaxLocals(body.getMaxLocals());
+    otherBody.setMaxStack(body.getMaxStack());
+    return otherBody;
+  }
+
+  private void copyInstructions(final HxMethodBody body,
+                                final HxCodeStream stream,
+                                final Map<Object, LABEL> mapping) {
+    for (HxInstruction instruction : body) {
+      if(instruction.hasSort(HxInstructionSort.Jump)) {
+        AbstractSimpleJumpInstruction jump = (AbstractSimpleJumpInstruction) instruction;
+        instruction = jump.clone(remap(mapping, jump.getLabel()));
+      } else if(instruction.hasSort(HxInstructionSort.Switches)) {
+        AbstractSwitchJumpInstruction aSwitch = (AbstractSwitchJumpInstruction) instruction;
+        instruction = aSwitch.clone(remap(mapping, aSwitch.getDefaultLabel()), remap(mapping, aSwitch.getLabels()));
+      } else if(instruction.hasType(HxInstructionTypes.Special.LABEL)) {
+        stream.LABEL(remap(mapping, (LABEL) instruction));
+        continue;
+      }
+
+      instruction.visit(stream);
     }
+  }
 
+  private void copyLocalVariables(final HxMethodBody otherBody,
+                                  final List<HxLocalVariable> localVariables,
+                                  final Map<Object, LABEL> mapping) {
     for(HxLocalVariable localVariable : localVariables) {
       final LABEL start = remap(mapping, localVariable.getBegin());
       final LABEL end = remap(mapping, localVariable.getEnd());
@@ -94,25 +120,18 @@ public class HxMethodBodyImpl
         )
       );
     }
+  }
 
-    for (HxInstruction instruction : body) {
-      if(instruction.hasSort(HxInstructionSort.Jump)) {
-        AbstractSimpleJumpInstruction jump = (AbstractSimpleJumpInstruction) instruction;
-        instruction = jump.clone(remap(mapping, jump.getLabel()));
-      } else if(instruction.hasSort(HxInstructionSort.Switches)) {
-        AbstractSwitchJumpInstruction aSwitch = (AbstractSwitchJumpInstruction) instruction;
-        instruction = aSwitch.clone(remap(mapping, aSwitch.getDefaultLabel()), remap(mapping, aSwitch.getLabels()));
-      } else if(instruction.hasType(HxInstructionTypes.Special.LABEL)) {
-        stream.LABEL(remap(mapping, (LABEL) instruction));
-        continue;
-      }
+  private void copyTryCatches(final HxMethodBody otherBody,
+                              final List<HxTryCatch> tryCatches,
+                              final Map<Object, LABEL> mapping) {
+    for(HxTryCatch tryCatch : tryCatches) {
+      final LABEL start = remap(mapping, tryCatch.getBegin());
+      final LABEL end = remap(mapping, tryCatch.getEnd());
+      final LABEL handler = remap(mapping, tryCatch.getCatch());
 
-      instruction.visit(stream);
+      otherBody.addTryCatch(new HxTryCatchImpl(start, end, handler, tryCatch.getExceptionType()));
     }
-
-    otherBody.setMaxLocals(body.getMaxLocals());
-    otherBody.setMaxStack(body.getMaxStack());
-    return otherBody;
   }
 
   private static LABEL remap(final Map<Object, LABEL> mapping, final LABEL label) {
@@ -149,13 +168,17 @@ public class HxMethodBodyImpl
   }
 
   @Override
-  public Optional<HxTryCatch> findTryCatch(final String exceptionType) {
+  public List<HxTryCatch> findTryCatch(final String exceptionType) {
+    List<HxTryCatch> list = Collections.emptyList();
     for(HxTryCatch tryCatch : getTryCatches()) {
       if(Objects.equals(exceptionType, tryCatch.getExceptionType())) {
-        return Optional.of(tryCatch);
+        if(list == Collections.EMPTY_LIST) {
+          list = new ArrayList<>(2);
+        }
+        list.add(tryCatch);
       }
     }
-    return Optional.empty();
+    return list;
   }
 
   @Override
@@ -190,7 +213,7 @@ public class HxMethodBodyImpl
     builder.append(getFirst()).append('\n');
 
     //TRY-CATCH
-    if(hasTryCatch()) {
+    if(hasTryCatches()) {
       builder.append('\n');
       for(HxTryCatch tryCatch : getTryCatches()) {
         builder.append(tryCatch).append('\n');

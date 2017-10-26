@@ -3,9 +3,6 @@ package net.andreho.haxxor.cgen;
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.spec.api.HxSort;
 
-import java.util.Collections;
-import java.util.List;
-
 /**
  * <br/>Created by a.hofmann on 05.06.2017 at 07:47.
  */
@@ -21,13 +18,13 @@ public enum HxArrayType {
 
   final int code;
   final String className;
-  final List<Object> stackOperands;
+  final Object stackOperand;
 
   HxArrayType(int code,
               String className) {
     this.code = code;
     this.className = className;
-    this.stackOperands = Collections.singletonList(className);
+    this.stackOperand = className;
   }
 
   public int getCode() {
@@ -38,8 +35,8 @@ public enum HxArrayType {
     return className;
   }
 
-  public List<Object> getStackOperands() {
-    return this.stackOperands;
+  public Object getStackOperand() {
+    return this.stackOperand;
   }
 
   public static HxArrayType fromCode(int code) {

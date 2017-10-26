@@ -2,13 +2,12 @@ package net.andreho.haxxor.cgen.instr.invokes;
 
 import net.andreho.haxxor.cgen.HxArguments;
 import net.andreho.haxxor.cgen.HxCodeStream;
-import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxComputationContext;
+import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.HxMethodHandle;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInstruction;
-
-import java.util.List;
 
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
@@ -41,8 +40,8 @@ public class INVOKEDYNAMIC
   }
 
   @Override
-  public List<Object> compute(final HxComputingContext context) {
-    return Utils.retrieveType(context, this.desc);
+  public void compute(final HxComputationContext context, final HxFrame frame) {
+    context.getExecutor().visit(context, this, frame);
   }
 
   @Override

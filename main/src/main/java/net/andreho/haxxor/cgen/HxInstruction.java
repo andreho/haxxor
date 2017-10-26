@@ -3,8 +3,8 @@ package net.andreho.haxxor.cgen;
 import net.andreho.haxxor.cgen.impl.InstructionCodeStream;
 import net.andreho.haxxor.cgen.instr.BEGIN;
 import net.andreho.haxxor.cgen.instr.END;
-import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.cgen.instr.misc.FRAME;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.cgen.instr.misc.LINE_NUMBER;
 import net.andreho.haxxor.spec.api.HxAnnotated;
 
@@ -20,10 +20,10 @@ import java.util.function.Predicate;
  * <br/>Created by a.hofmann on 17.11.2015.<br/>
  */
 public interface HxInstruction
-    extends HxVisitable,
-   HxComputable,
-            HxAnnotated<HxInstruction>,
-            Iterable<HxInstruction> {
+  extends HxVisitable,
+          HxComputable,
+          HxAnnotated<HxInstruction>,
+          Iterable<HxInstruction> {
 
   /**
    * @return
@@ -31,14 +31,16 @@ public interface HxInstruction
   boolean hasAnnotations();
 
   /**
-   * @return <b>true</b> if there isn't any further instructions in backward iteration's direction, <b>false</b> otherwise.
+   * @return <b>true</b> if there isn't any further instructions in backward iteration's direction, <b>false</b>
+   * otherwise.
    */
   default boolean isBegin() {
     return false;
   }
 
   /**
-   * @return <b>true</b> if there isn't any further instructions in forward iteration's direction, <b>false</b> otherwise.
+   * @return <b>true</b> if there isn't any further instructions in forward iteration's direction, <b>false</b>
+   * otherwise.
    */
   default boolean isEnd() {
     return false;
@@ -191,11 +193,13 @@ public interface HxInstruction
     HxInstruction previous = getPrevious();
     HxInstruction next = getNext();
 
-    previous.setNext(next);
+    this.setNext(null);
+    this.setPrevious(null);
 
     if (next != null) {
       next.setPrevious(previous);
     }
+    previous.setNext(next);
 
     return previous;
   }
@@ -236,7 +240,7 @@ public interface HxInstruction
   }
 
   default void print(Consumer<HxInstruction> consumer) {
-    for(HxInstruction instruction : this) {
+    for (HxInstruction instruction : this) {
       consumer.accept(instruction);
     }
   }
@@ -255,23 +259,28 @@ public interface HxInstruction
 
   void forEachNext(final Consumer<HxInstruction> consumer);
 
-  void forEachNext(final Predicate<HxInstruction> predicate, final Consumer<HxInstruction> consumer);
+  void forEachNext(final Predicate<HxInstruction> predicate,
+                   final Consumer<HxInstruction> consumer);
 
   void forEachPrevious(final Consumer<HxInstruction> consumer);
 
-  void forEachPrevious(final Predicate<HxInstruction> predicate, final Consumer<HxInstruction> consumer);
+  void forEachPrevious(final Predicate<HxInstruction> predicate,
+                       final Consumer<HxInstruction> consumer);
 
   void forNext(final Consumer<HxInstruction> consumer);
 
-  void forNext(final Predicate<HxInstruction> predicate, final Consumer<HxInstruction> consumer);
+  void forNext(final Predicate<HxInstruction> predicate,
+               final Consumer<HxInstruction> consumer);
 
   void forPrevious(final Consumer<HxInstruction> consumer);
 
-  void forPrevious(final Predicate<HxInstruction> predicate, final Consumer<HxInstruction> consumer);
+  void forPrevious(final Predicate<HxInstruction> predicate,
+                   final Consumer<HxInstruction> consumer);
 
   default HxExtendedCodeStream asStream() {
     return new InstructionCodeStream(this);
   }
+
   default <S extends HxCodeStream<S>> S asStream(Function<HxInstruction, S> factory) {
     return factory.apply(this);
   }
@@ -279,6 +288,7 @@ public interface HxInstruction
   default HxExtendedCodeStream asAnchoredStream() {
     return new InstructionCodeStream(this.getPrevious());
   }
+
   default <S extends HxCodeStream<S>> S asAnchoredStream(Function<HxInstruction, S> factory) {
     return factory.apply(this.getPrevious());
   }

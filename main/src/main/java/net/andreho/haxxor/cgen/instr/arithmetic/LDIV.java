@@ -1,12 +1,11 @@
 package net.andreho.haxxor.cgen.instr.arithmetic;
 
 import net.andreho.haxxor.cgen.HxCodeStream;
-import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxComputationContext;
+import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractZeroOperandInstruction;
-
-import java.util.List;
 
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
@@ -29,8 +28,8 @@ public class LDIV
   }
 
   @Override
-  public List<Object> compute(HxComputingContext context) {
-    return PUSH_LONG;
+  public void compute(final HxComputationContext context, final HxFrame frame) {
+    context.getExecutor().visit(context, this, frame);
   }
 }
 

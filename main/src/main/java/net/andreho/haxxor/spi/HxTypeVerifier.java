@@ -7,4 +7,9 @@ import net.andreho.haxxor.spec.api.HxType;
  */
 @FunctionalInterface
 public interface HxTypeVerifier extends HxVerificator<HxType> {
+  /**
+   * @param type to verify
+   * @return either {@link HxVerificationResult#ok()} or a chain of discovered verification problems
+   */
+  HxVerificationResult verify(HxType type);
 }

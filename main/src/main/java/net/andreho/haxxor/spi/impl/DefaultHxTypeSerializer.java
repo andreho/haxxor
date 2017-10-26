@@ -33,7 +33,8 @@ import java.util.function.BiFunction;
 public class DefaultHxTypeSerializer
   implements HxTypeSerializer {
 
-  private final Haxxor haxxor;
+  protected final Haxxor haxxor;
+
   public DefaultHxTypeSerializer(final Haxxor haxxor) {
     this.haxxor = Objects.requireNonNull(haxxor);
   }
@@ -53,7 +54,7 @@ public class DefaultHxTypeSerializer
                           final boolean computeFrames) {
     haxxor.getTypeVerifier().verify(type);
 
-    final ClassWriter writer = new ClassWriter(computeFrames ? ClassWriter.COMPUTE_FRAMES : 0);
+    final ClassWriter writer = createClassWriter(type, computeFrames);
 
     visitClassHeader(type, writer);
     visitSource(type, writer);
@@ -72,6 +73,11 @@ public class DefaultHxTypeSerializer
     writer.visitEnd();
 
     return writer.toByteArray();
+  }
+
+  protected ClassWriter createClassWriter(final HxType type,
+                                        final boolean computeFrames) {
+    return new ClassWriter(computeFrames ? ClassWriter.COMPUTE_FRAMES : 0);
   }
 
   protected void visitClassHeader(final HxType type,

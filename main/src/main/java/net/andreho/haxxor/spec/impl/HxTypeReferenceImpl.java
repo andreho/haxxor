@@ -45,7 +45,7 @@ public class HxTypeReferenceImpl
 
   private boolean isAvailable() {
     return isPresent() ||
-           getHaxxor().hasType(getName());
+           getHaxxor().hasResolved(getName());
   }
 
   private boolean isPresent() {

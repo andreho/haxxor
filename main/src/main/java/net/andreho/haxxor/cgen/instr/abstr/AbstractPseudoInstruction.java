@@ -1,7 +1,7 @@
 package net.andreho.haxxor.cgen.instr.abstr;
 
 import net.andreho.haxxor.cgen.HxCodeStream;
-import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxComputationContext;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.spec.api.HxAnnotated;
 import net.andreho.haxxor.spec.api.HxAnnotation;
@@ -23,7 +23,7 @@ public abstract class AbstractPseudoInstruction
   }
 
   @Override
-  public List<Object> compute(final HxComputingContext context) {
+  public List<Object> compute(final HxComputationContext context) {
     return AbstractInstruction.NO_STACK_PUSH;
   }
 

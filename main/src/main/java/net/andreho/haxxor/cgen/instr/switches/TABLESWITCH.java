@@ -1,14 +1,14 @@
 package net.andreho.haxxor.cgen.instr.switches;
 
 import net.andreho.haxxor.cgen.HxCodeStream;
-import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxComputationContext;
+import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractSwitchJumpInstruction;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
@@ -36,16 +36,9 @@ public class TABLESWITCH
   }
 
   @Override
-  public List<Object> compute(final HxComputingContext context) {
-    for (LABEL label : getLabels()) {
-      label.addReference(this);
-    }
-
-    this.getDefaultLabel()
-        .addReference(this);
-    return NO_STACK_PUSH;
+  public void compute(final HxComputationContext context, final HxFrame frame) {
+    context.getExecutor().visit(context, this, frame);
   }
-
 
   public int getMin() {
     return this.min;

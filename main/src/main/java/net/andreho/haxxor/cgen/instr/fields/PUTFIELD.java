@@ -1,12 +1,11 @@
 package net.andreho.haxxor.cgen.instr.fields;
 
 import net.andreho.haxxor.cgen.HxCodeStream;
-import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxComputationContext;
+import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractFieldInstruction;
-
-import java.util.List;
 
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
@@ -31,8 +30,8 @@ public class PUTFIELD
   }
 
   @Override
-  public List<Object> compute(final HxComputingContext context) {
-    return NO_STACK_PUSH;
+  public void compute(final HxComputationContext context, final HxFrame frame) {
+    context.getExecutor().visit(context, this, frame);
   }
 
   @Override

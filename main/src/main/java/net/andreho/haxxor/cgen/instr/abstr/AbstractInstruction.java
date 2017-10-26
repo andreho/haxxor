@@ -1,7 +1,6 @@
 package net.andreho.haxxor.cgen.instr.abstr;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
-import net.andreho.haxxor.cgen.HxComputingContext;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionSort;
 import net.andreho.haxxor.cgen.HxInstructionType;
@@ -250,41 +249,38 @@ public abstract class AbstractInstruction extends HxAnnotatedDelegate<HxInstruct
       return desc;
     }
 
-    /**
-     * Retrieves a type of given element descriptor (descriptor is either of a method or of a field)
-     *
-     * @param context to use
-     * @param desc    to analyse (either of a method or a field)
-     * @return a type name in an internal type form (or special constant)
-     */
-    public static List<Object> retrieveType(HxComputingContext context, String desc) {
-      int off;
-      if (desc.charAt(0) != '(' || (off = desc.lastIndexOf(')')) < 0) {
-        throw new IllegalArgumentException("Invalid descriptor: " + desc);
-      }
-
-      switch (desc.charAt(off + 1)) {
-        case 'Z':
-        case 'B':
-        case 'C':
-        case 'S':
-        case 'I':
-          return PUSH_INT;
-        case 'F':
-          return PUSH_FLOAT;
-        case 'J':
-          return PUSH_LONG;
-        case 'D':
-          return PUSH_DOUBLE;
-        case 'V':
-          return NO_STACK_PUSH;
-        default: {
-          return context.getStackPush()
-                        .prepare()
-                        .push(Utils.transformDesc(desc.substring(off + 1)))
-                        .get();
-        }
-      }
-    }
+//    /**
+//     * Retrieves a type of given element descriptor (descriptor is either of a method or of a field)
+//     *
+//     * @param context to use
+//     * @param desc    to analyse (either of a method or a field)
+//     * @return a type name in an internal type form (or special constant)
+//     */
+//    public static void pushTypeFromDescriptor(HxComputationContext context, String desc) {
+//      int off;
+//      if (desc.charAt(0) != '(' || (off = desc.lastIndexOf(')')) < 0) {
+//        throw new IllegalArgumentException("Invalid descriptor: " + desc);
+//      }
+//
+//      switch (desc.charAt(off + 1)) {
+//        case 'Z':
+//        case 'B':
+//        case 'C':
+//        case 'S':
+//        case 'I':
+//          context.getStack().push(PUSH_INT); break;
+//        case 'F':
+//          context.getStack().push(PUSH_FLOAT); break;
+//        case 'J':
+//          context.getStack().push(PUSH_LONG); break;
+//        case 'D':
+//          context.getStack().push(PUSH_DOUBLE); break;
+//        case 'V':
+//          context.getStack().push(NO_STACK_PUSH); break;
+//        default: {
+//          context.getStack().push(Utils.transformDesc(desc.substring(off + 1)));
+//        }
+//      }
+//    }
   }
 }

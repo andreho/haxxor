@@ -2,7 +2,8 @@ package net.andreho.haxxor.cgen.instr.misc;
 
 import net.andreho.asm.org.objectweb.asm.Label;
 import net.andreho.haxxor.cgen.HxCodeStream;
-import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxComputationContext;
+import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
@@ -51,10 +52,8 @@ public class LABEL
   }
 
   @Override
-  public List<Object> compute(final HxComputingContext context) {
-    context.getVisitedLabels()
-           .putIfAbsent(this, getPrevious());
-    return NO_STACK_PUSH;
+  public void compute(final HxComputationContext context, final HxFrame frame) {
+    context.visit(this);
   }
 
   @Override
@@ -72,6 +71,10 @@ public class LABEL
     }
     references.add(instruction);
     return instruction;
+  }
+
+  public List<HxInstruction> getReferences() {
+    return references;
   }
 
   public String print() {

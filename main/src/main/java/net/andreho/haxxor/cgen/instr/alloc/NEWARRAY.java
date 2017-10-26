@@ -2,12 +2,11 @@ package net.andreho.haxxor.cgen.instr.alloc;
 
 import net.andreho.haxxor.cgen.HxArrayType;
 import net.andreho.haxxor.cgen.HxCodeStream;
-import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxComputationContext;
+import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractSingleOperandInstruction;
-
-import java.util.List;
 
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
@@ -34,9 +33,8 @@ public class NEWARRAY
   }
 
   @Override
-  public List<Object> compute(final HxComputingContext context) {
-    return HxArrayType.fromCode(this.operand)
-                      .getStackOperands();
+  public void compute(final HxComputationContext context, final HxFrame frame) {
+    context.getExecutor().visit(context, this, frame);
   }
 
   @Override

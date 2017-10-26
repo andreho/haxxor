@@ -7,4 +7,9 @@ import net.andreho.haxxor.spec.api.HxField;
  */
 @FunctionalInterface
 public interface HxFieldVerifier extends HxVerificator<HxField> {
+  /**
+   * @param field to verify
+   * @return either {@link HxVerificationResult#ok()} or a chain of discovered verification problems
+   */
+  HxVerificationResult verify(HxField field);
 }

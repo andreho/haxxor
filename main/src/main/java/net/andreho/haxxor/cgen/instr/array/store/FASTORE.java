@@ -1,6 +1,8 @@
 package net.andreho.haxxor.cgen.instr.array.store;
 
 import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxComputationContext;
+import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractArrayStoreInstruction;
@@ -26,11 +28,16 @@ public class FASTORE
   }
 
   @Override
-  protected void checkArrayType(final Object arrayType, final int depth) {
-    super.checkArrayType(arrayType, depth);
-    if (!"[F".equals(arrayType)) {
-      throw new IllegalArgumentException("Expected an float[] array type, but got: " + arrayType);
-    }
+  public void compute(final HxComputationContext context, final HxFrame frame) {
+    context.getExecutor().visit(context, this, frame);
   }
+
+//  @Override
+//  protected void checkArrayType(final Object arrayType, final int depth) {
+//    super.checkArrayType(arrayType, depth);
+//    if (!"[F".equals(arrayType)) {
+//      throw new IllegalArgumentException("Expected an float[] array type, but got: " + arrayType);
+//    }
+//  }
 
 }

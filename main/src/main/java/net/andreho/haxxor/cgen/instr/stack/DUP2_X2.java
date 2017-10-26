@@ -1,12 +1,11 @@
 package net.andreho.haxxor.cgen.instr.stack;
 
 import net.andreho.haxxor.cgen.HxCodeStream;
-import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxComputationContext;
+import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractZeroOperandInstruction;
-
-import java.util.List;
 
 /**
  * Duplicate the top one or two operand stack values and insert two, three, or four values down. <br/>
@@ -30,19 +29,7 @@ public class DUP2_X2
   }
 
   @Override
-  public List<Object> compute(final HxComputingContext context) {
-    Object value1 = context.getStack()
-                           .peek();
-    Object value2 = context.getStack()
-                           .peek(1);
-    Object value3 = context.getStack()
-                           .peek(2);
-    Object value4 = context.getStack()
-                           .peek(3);
-
-    return context.getStackPush()
-                  .prepare()
-                  .push(value2, value1, value4, value3, value2, value1)
-                  .get();
+  public void compute(final HxComputationContext context, final HxFrame frame) {
+    context.getExecutor().visit(context, this, frame);
   }
 }

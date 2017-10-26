@@ -25,8 +25,30 @@ public interface HxInstructionType {
    */
   int getPushSize();
 
+//  /**
+//   * @return
+//   */
+//  List<Object> getPopOperands();
+//
+//  /**
+//   * @param desc
+//   * @return
+//   */
+//  List<Object> getPopOperands(String desc);
+//
+//  /**
+//   * @return
+//   */
+//  Object getPushOperand();
+//
+//  /**
+//   * @param desc
+//   * @return
+//   */
+//  Object getPushOperand(String desc);
+
   /**
-   * @param desc
+    * @param desc
    * @return number of consumed operands from stack considering given descriptor
    */
   default int getPopSize(String desc) {

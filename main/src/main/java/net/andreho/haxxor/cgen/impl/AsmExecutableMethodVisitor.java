@@ -27,12 +27,6 @@ public class AsmExecutableMethodVisitor
   protected int parameterIndex = 0;
 
   public AsmExecutableMethodVisitor(final Haxxor haxxor,
-                                    final HxMethod method) {
-    this(haxxor, method, method.getBody(), method.getBody().<HxCodeStream>build(), null);
-  }
-
-
-  public AsmExecutableMethodVisitor(final Haxxor haxxor,
                                     final HxMethod method,
                                     final MethodVisitor mv) {
     this(haxxor, method, method.getBody(), method.getBody().<HxCodeStream>build(), mv);
@@ -76,9 +70,7 @@ public class AsmExecutableMethodVisitor
     final AnnotationVisitor av = super.visitAnnotationDefault();
     //available for methods only :)
     final HxMethod hxMethod = this.method;
-    final Consumer consumer = (Consumer<Object>)
-        (defaultValue) ->
-            hxMethod.setDefaultValue(defaultValue);
+    final Consumer consumer = (Consumer<Object>) hxMethod::setDefaultValue;
 
     return new HxAnnotationDefaultVisitor(haxxor, consumer, av);
   }
@@ -88,9 +80,7 @@ public class AsmExecutableMethodVisitor
                                            final boolean visible) {
     final AnnotationVisitor av = super.visitAnnotation(desc, visible);
     final HxAnnotation annotation = getHaxxor().createAnnotation(desc, visible);
-    final Consumer consumer = (Consumer<HxAnnotation>)
-        (anno) ->
-            this.method.addAnnotation(anno);
+    final Consumer consumer = (Consumer<HxAnnotation>) this.method::addAnnotation;
 
     return new HxAnnotationVisitor(annotation, consumer, av);
   }
@@ -111,7 +101,7 @@ public class AsmExecutableMethodVisitor
     final AnnotationVisitor av = super.visitInsnAnnotation(typeRef, typePath, desc, visible);
     final HxAnnotation annotation = getHaxxor().createAnnotation(desc, visible);
     final Consumer consumer = (Consumer<HxAnnotation>)
-        (anno) -> this.code.getCurrent().addAnnotation(anno);
+        (anno) -> this.code.getLast().addAnnotation(anno);
 
     return new HxAnnotationVisitor(annotation, consumer, av);
   }

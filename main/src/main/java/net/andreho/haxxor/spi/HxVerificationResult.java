@@ -12,7 +12,7 @@ import java.util.Optional;
 public class HxVerificationResult implements Iterable<HxVerificationResult> {
   private static final HxVerificationResult OK = new HxVerificationResult(null, null, "Passed") {
     @Override
-    public HxVerificationResult setNext(final HxVerificationResult next) {
+    public void setNext(final HxVerificationResult next) {
       throw new UnsupportedOperationException("Only failed verification results may be chained together.");
     }
   };
@@ -60,6 +60,13 @@ public class HxVerificationResult implements Iterable<HxVerificationResult> {
   /**
    * @return
    */
+  public boolean isPassed() {
+    return this == ok();
+  }
+
+  /**
+   * @return
+   */
   public boolean isFailed() {
     return this != ok();
   }
@@ -86,6 +93,13 @@ public class HxVerificationResult implements Iterable<HxVerificationResult> {
   }
 
   /**
+   * @return <b>true</b> if there is the next verification problem
+   */
+  public boolean hasNext() {
+    return next != null;
+  }
+
+  /**
    * @return
    */
   public HxVerificationResult getNext() {
@@ -94,11 +108,22 @@ public class HxVerificationResult implements Iterable<HxVerificationResult> {
 
   /**
    * @param next encountered problem
-   * @return the given instance
    */
-  public HxVerificationResult setNext(final HxVerificationResult next) {
+  public void setNext(final HxVerificationResult next) {
     this.next = next;
-    return this;
+  }
+
+  /**
+   * @param next encountered problem
+   * @return the given next verification result
+   */
+  public HxVerificationResult append(final HxVerificationResult next) {
+    HxVerificationResult current = this;
+    while(current.hasNext()) {
+      current = current.getNext();
+    }
+    current.setNext(next);
+    return next;
   }
 
   @Override

@@ -1,6 +1,8 @@
 package net.andreho.haxxor.cgen.instr.invokes;
 
 import net.andreho.haxxor.cgen.HxCodeStream;
+import net.andreho.haxxor.cgen.HxComputationContext;
+import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInvokeInstruction;
@@ -26,6 +28,11 @@ public class INVOKEVIRTUAL
   @Override
   public void visit(HxCodeStream codeStream) {
     codeStream.INVOKEVIRTUAL(this.owner, this.name, this.desc);
+  }
+
+  @Override
+  public void compute(final HxComputationContext context, final HxFrame frame) {
+    context.getExecutor().visit(context, this, frame);
   }
 
   @Override

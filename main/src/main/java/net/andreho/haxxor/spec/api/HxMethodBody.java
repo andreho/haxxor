@@ -8,7 +8,6 @@ import net.andreho.haxxor.cgen.HxLocalVariable;
 import net.andreho.haxxor.cgen.HxTryCatch;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -32,7 +31,7 @@ public interface HxMethodBody
   HxMethodBody moveTo(HxMethod newOwner);
 
   /**
-   * @return owning method or constructor of this code block
+   * @return owning method or constructor of this body
    */
   HxMethod getMethod();
 
@@ -40,11 +39,6 @@ public interface HxMethodBody
    * @return the getFirst instruction of associated code
    */
   HxInstruction getFirst();
-
-  /**
-   * @return the last added instruction or {@link HxMethodBody#getFirst()} if there isn't any instructions
-   */
-  HxInstruction getCurrent();
 
   /**
    * @return the end instruction of associated code
@@ -106,6 +100,11 @@ public interface HxMethodBody
   List<HxLocalVariable> getLocalVariables();
 
   /**
+   * @param localVariables of this method body
+   */
+  void setLocalVariables(final List<HxLocalVariable> localVariables);
+
+  /**
    * @return <b>true</b> if there is some information about local variables, <b>false</b> otherwise.
    */
   default boolean hasLocalVariables() {
@@ -144,9 +143,14 @@ public interface HxMethodBody
   List<HxTryCatch> getTryCatches();
 
   /**
+   * @param tryCatches of this method's body
+   */
+  void setTryCatches(final List<HxTryCatch> tryCatches);
+
+  /**
    * @return
    */
-  default boolean hasTryCatch() {
+  default boolean hasTryCatches() {
     return !getTryCatches().isEmpty();
   }
 
@@ -159,7 +163,7 @@ public interface HxMethodBody
 
   /**
    * @param tryCatch block to add
-   * @return
+   * @return this
    */
   HxMethodBody addTryCatch(HxTryCatch tryCatch);
 
@@ -167,13 +171,13 @@ public interface HxMethodBody
    * @param exceptionType
    * @return
    */
-  Optional<HxTryCatch> findTryCatch(String exceptionType);
+  List<HxTryCatch> findTryCatch(String exceptionType);
 
   /**
    * @param exceptionType
    * @return
    */
-  default Optional<HxTryCatch> findTryCatch(HxType exceptionType) {
+  default List<HxTryCatch> findTryCatch(HxType exceptionType) {
     return findTryCatch(exceptionType.getName());
   }
 
@@ -181,7 +185,7 @@ public interface HxMethodBody
    * @param exceptionType
    * @return
    */
-  default Optional<HxTryCatch> findTryCatch(Class<? extends Throwable> exceptionType) {
+  default List<HxTryCatch> findTryCatch(Class<? extends Throwable> exceptionType) {
     return findTryCatch(Utils.toClassName(exceptionType));
   }
 

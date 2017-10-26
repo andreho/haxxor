@@ -1,13 +1,12 @@
 package net.andreho.haxxor.cgen.instr.subroutine;
 
 import net.andreho.haxxor.cgen.HxCodeStream;
-import net.andreho.haxxor.cgen.HxComputingContext;
+import net.andreho.haxxor.cgen.HxComputationContext;
+import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractSimpleJumpInstruction;
-
-import java.util.List;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
@@ -35,8 +34,7 @@ public class JSR
   }
 
   @Override
-  public List<Object> compute(final HxComputingContext context) {
-    super.compute(context);
-    return PUSH_INT;
+  public void compute(final HxComputationContext context, final HxFrame frame) {
+    context.getExecutor().visit(context, this, frame);
   }
 }
