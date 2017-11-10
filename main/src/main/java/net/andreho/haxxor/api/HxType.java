@@ -1425,7 +1425,7 @@ public interface HxType
    * @return a list with all added elements that belong to the given stub class
    * @see net.andreho.haxxor.api.stub.Stub
    */
-  default List<HxMember<?>> addTemplate(Class<?> stubClass) {
+  default HxType addTemplate(Class<?> stubClass) {
     return addTemplate(getHaxxor().resolve(stubClass));
   }
 
@@ -1434,7 +1434,7 @@ public interface HxType
    * @return a list with all added elements that belong to the given stub class
    * @see net.andreho.haxxor.api.stub.Stub
    */
-  default List<HxMember<?>> addTemplate(HxType stubType) {
-    return Collections.emptyList();
+  default HxType addTemplate(HxType stubType) {
+    return this;
   }
 }

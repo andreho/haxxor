@@ -64,7 +64,6 @@ public abstract class CommonUtils {
     return outputStream.toByteArray();
   }
 
-
   /**
    * @param array
    * @param <T>
@@ -112,20 +111,11 @@ public abstract class CommonUtils {
   public static final <T> Iterator<T> iterator(final T[] array,
                                                final int offset,
                                                final int length) {
-    return new Iterator<T>() {
-      final int len = Math.min(array.length, length);
-      int i = Math.min(array.length, offset);
-
-      @Override
-      public boolean hasNext() {
-        return i < len;
-      }
-
-      @Override
-      public T next() {
-        return array[i++];
-      }
-    };
+    return new ArrayIterator<>(
+      Math.min(array.length, offset),
+      Math.min(array.length, length),
+      array
+    );
   }
 
   /**
@@ -150,5 +140,31 @@ public abstract class CommonUtils {
     final T[] copied = Arrays.copyOf(left, left.length + right.length);
     System.arraycopy(right, 0, copied, left.length, right.length);
     return copied;
+  }
+
+  private static class ArrayIterator<T>
+    implements Iterator<T> {
+
+    private final T[] array;
+    private final int len;
+    int idx;
+
+    public ArrayIterator(final int idx,
+                         final int len,
+                         final T[] array) {
+      this.idx = idx;
+      this.len = len;
+      this.array = array;
+    }
+
+    @Override
+    public boolean hasNext() {
+      return idx < len;
+    }
+
+    @Override
+    public T next() {
+      return array[idx++];
+    }
   }
 }

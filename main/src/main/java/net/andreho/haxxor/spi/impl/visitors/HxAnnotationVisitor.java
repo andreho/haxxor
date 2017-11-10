@@ -52,7 +52,7 @@ public class HxAnnotationVisitor
 
   private void addArray(final String name, final Object array) {
     if(array == HxConstants.EMPTY_ARRAY) {
-      annotation.attribute(name, (HxConstants.EmptyArray[]) array);
+      annotation.setAttribute(name, (HxConstants.EmptyArray[]) array);
       return;
     }
 
@@ -61,36 +61,36 @@ public class HxAnnotationVisitor
     }
 
     if(array instanceof boolean[]) {
-      annotation.attribute(name, (boolean[]) array);
+      annotation.setAttribute(name, (boolean[]) array);
     } else if(array instanceof byte[]) {
-      annotation.attribute(name, (byte[]) array);
+      annotation.setAttribute(name, (byte[]) array);
     } else if(array instanceof short[]) {
-      annotation.attribute(name, (short[]) array);
+      annotation.setAttribute(name, (short[]) array);
     } else if(array instanceof char[]) {
-      annotation.attribute(name, (char[]) array);
+      annotation.setAttribute(name, (char[]) array);
     } else if(array instanceof int[]) {
-      annotation.attribute(name, (int[]) array);
+      annotation.setAttribute(name, (int[]) array);
     } else if(array instanceof float[]) {
-      annotation.attribute(name, (float[]) array);
+      annotation.setAttribute(name, (float[]) array);
     } else if(array instanceof double[]) {
-      annotation.attribute(name, (double[]) array);
+      annotation.setAttribute(name, (double[]) array);
     } else if(array instanceof long[]) {
-      annotation.attribute(name, (long[]) array);
+      annotation.setAttribute(name, (long[]) array);
     } else if(array instanceof String[]) {
-      annotation.attribute(name, (String[]) array);
+      annotation.setAttribute(name, (String[]) array);
     } else if(array instanceof HxType[]) {
-      annotation.attribute(name, (HxType[]) array);
+      annotation.setAttribute(name, (HxType[]) array);
     } else if(array instanceof HxEnum[]) {
-      annotation.attribute(name, (HxEnum[]) array);
+      annotation.setAttribute(name, (HxEnum[]) array);
     } else if(array instanceof HxAnnotation[]) {
-      annotation.attribute(name, (HxAnnotation[]) array);
+      annotation.setAttribute(name, (HxAnnotation[]) array);
     } else {
       throw new IllegalStateException("Unsupported array-type: "+array.getClass());
     }
   }
 
   private void addAnnotation(final String name, final HxAnnotation annotation) {
-    this.annotation.attribute(name, annotation);
+    this.annotation.setAttribute(name, annotation);
   }
 
 
@@ -101,47 +101,47 @@ public class HxAnnotationVisitor
 
     if (value.getClass().isArray()) {
       if (value instanceof int[]) {
-        annotation.attribute(name, (int[]) value);
+        annotation.setAttribute(name, (int[]) value);
       } else if (value instanceof double[]) {
-        annotation.attribute(name, (double[]) value);
+        annotation.setAttribute(name, (double[]) value);
       } else if (value instanceof long[]) {
-        annotation.attribute(name, (long[]) value);
+        annotation.setAttribute(name, (long[]) value);
       } else if (value instanceof float[]) {
-        annotation.attribute(name, (float[]) value);
+        annotation.setAttribute(name, (float[]) value);
       } else if (value instanceof byte[]) {
-        annotation.attribute(name, (byte[]) value);
+        annotation.setAttribute(name, (byte[]) value);
       } else if (value instanceof char[]) {
-        annotation.attribute(name, (char[]) value);
+        annotation.setAttribute(name, (char[]) value);
       } else if (value instanceof short[]) {
-        annotation.attribute(name, (short[]) value);
+        annotation.setAttribute(name, (short[]) value);
       } else {
         //if(value instanceof boolean[])
-        annotation.attribute(name, (boolean[]) value);
+        annotation.setAttribute(name, (boolean[]) value);
       }
     } else if (value instanceof Number) {
       if (value instanceof Byte) {
-        annotation.attribute(name, (Byte) value);
+        annotation.setAttribute(name, (Byte) value);
       } else if (value instanceof Short) {
-        annotation.attribute(name, (Short) value);
+        annotation.setAttribute(name, (Short) value);
       } else if (value instanceof Integer) {
-        annotation.attribute(name, (Integer) value);
+        annotation.setAttribute(name, (Integer) value);
       } else if (value instanceof Float) {
-        annotation.attribute(name, (Float) value);
+        annotation.setAttribute(name, (Float) value);
       } else if (value instanceof Long) {
-        annotation.attribute(name, (Long) value);
+        annotation.setAttribute(name, (Long) value);
       } else {
         //if(value instanceof Double)
-        annotation.attribute(name, (Double) value);
+        annotation.setAttribute(name, (Double) value);
       }
     } else if (value instanceof Boolean) {
-      annotation.attribute(name, (Boolean) value);
+      annotation.setAttribute(name, (Boolean) value);
     } else if (value instanceof Character) {
-      annotation.attribute(name, (Character) value);
+      annotation.setAttribute(name, (Character) value);
     } else if (value instanceof String) {
-      annotation.attribute(name, (String) value);
+      annotation.setAttribute(name, (String) value);
     } else {
       Type type = (Type) value;
-      annotation.attribute(name, getHaxxor().reference(type.getClassName()));
+      annotation.setAttribute(name, getHaxxor().reference(type.getClassName()));
     }
   }
 
@@ -151,7 +151,7 @@ public class HxAnnotationVisitor
     checkAnnotationSemantic(name);
 
     final HxType enumType = getHaxxor().reference(desc);
-    this.annotation.attribute(name, new HxEnum(enumType, value));
+    this.annotation.setAttribute(name, new HxEnum(enumType, value));
   }
 
   @Override

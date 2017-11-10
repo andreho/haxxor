@@ -198,74 +198,74 @@ public class HxAnnotationImpl
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                boolean value) {
+  public HxAnnotation setAttribute(String name,
+                                   boolean value) {
     return set(name, new BooleanAnnotationAttribute(name, value));
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                byte value) {
+  public HxAnnotation setAttribute(String name,
+                                   byte value) {
     return set(name, new ByteAnnotationAttribute(name, value));
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                char value) {
+  public HxAnnotation setAttribute(String name,
+                                   char value) {
     return set(name, new CharacterAnnotationAttribute(name, value));
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                short value) {
+  public HxAnnotation setAttribute(String name,
+                                   short value) {
     return set(name, new ShortAnnotationAttribute(name, value));
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                int value) {
+  public HxAnnotation setAttribute(String name,
+                                   int value) {
     return set(name, new IntegerAnnotationAttribute(name, value));
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                float value) {
+  public HxAnnotation setAttribute(String name,
+                                   float value) {
     return set(name, new FloatAnnotationAttribute(name, value));
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                long value) {
+  public HxAnnotation setAttribute(String name,
+                                   long value) {
     return set(name, new LongAnnotationAttribute(name, value));
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                double value) {
+  public HxAnnotation setAttribute(String name,
+                                   double value) {
     return set(name, new DoubleAnnotationAttribute(name, value));
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                String value) {
+  public HxAnnotation setAttribute(String name,
+                                   String value) {
     return set(name, new StringAnnotationAttribute(name, value));
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                HxEnum value) {
+  public HxAnnotation setAttribute(String name,
+                                   HxEnum value) {
     return set(name, new EnumAnnotationAttribute(name, value));
   }
 
   @Override
-  public HxAnnotation attribute(final String name,
-                                final Class<?> value) {
-    return attribute(name, reference(value.getName()));
+  public HxAnnotation setAttribute(final String name,
+                                   final Class<?> value) {
+    return setAttribute(name, reference(value.getName()));
   }
 
   @Override
-  public <E extends Enum<E>> HxAnnotation attribute(String name,
-                                                    E value) {
+  public <E extends Enum<E>> HxAnnotation setAttribute(String name,
+                                                       E value) {
     return set(name, new EnumAnnotationAttribute(
         name,
         HxEnum.toHxEnum(getType().getHaxxor(), value))
@@ -273,80 +273,80 @@ public class HxAnnotationImpl
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                HxType value) {
+  public HxAnnotation setAttribute(String name,
+                                   HxType value) {
     return set(name, new ClassAnnotationAttribute(name, value));
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                HxAnnotation value) {
+  public HxAnnotation setAttribute(String name,
+                                   HxAnnotation value) {
     return set(name, new SubAnnotationAttribute(name, value));
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                boolean[] values) {
+  public HxAnnotation setAttribute(String name,
+                                   boolean[] values) {
     return set(name, new BooleanArrayAnnotationAttribute(name, values));
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                byte[] values) {
+  public HxAnnotation setAttribute(String name,
+                                   byte[] values) {
     return set(name, new ByteArrayAnnotationAttribute(name, values));
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                char[] values) {
+  public HxAnnotation setAttribute(String name,
+                                   char[] values) {
     return set(name, new CharacterArrayAnnotationAttribute(name, values));
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                short[] values) {
+  public HxAnnotation setAttribute(String name,
+                                   short[] values) {
     return set(name, new ShortArrayAnnotationAttribute(name, values));
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                int[] values) {
+  public HxAnnotation setAttribute(String name,
+                                   int[] values) {
     return set(name, new IntegerArrayAnnotationAttribute(name, values));
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                float[] values) {
+  public HxAnnotation setAttribute(String name,
+                                   float[] values) {
     return set(name, new FloatArrayAnnotationAttribute(name, values));
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                long[] values) {
+  public HxAnnotation setAttribute(String name,
+                                   long[] values) {
     return set(name, new LongArrayAnnotationAttribute(name, values));
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                double[] values) {
+  public HxAnnotation setAttribute(String name,
+                                   double[] values) {
     return set(name, new DoubleArrayAnnotationAttribute(name, values));
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                String[] values) {
+  public HxAnnotation setAttribute(String name,
+                                   String[] values) {
     return set(name, new StringArrayAnnotationAttribute(name, values));
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                HxEnum[] values) {
+  public HxAnnotation setAttribute(String name,
+                                   HxEnum[] values) {
     return set(name, new EnumArrayAnnotationAttribute(name, values));
   }
 
   @Override
-  public <E extends Enum<E>> HxAnnotation attribute(String name,
-                                                    E[] values) {
+  public <E extends Enum<E>> HxAnnotation setAttribute(String name,
+                                                       E[] values) {
     return set(
         name,
         new EnumArrayAnnotationAttribute(
@@ -357,31 +357,31 @@ public class HxAnnotationImpl
   }
 
   @Override
-  public HxAnnotation attribute(final String name,
-                                final Class<?>[] values) {
+  public HxAnnotation setAttribute(final String name,
+                                   final Class<?>[] values) {
     final Hx haxxor = type.getHaxxor();
     final HxType[] hxTypes =
         Arrays.stream(values)
               .map(cls -> haxxor.reference(cls.getName()))
               .toArray(HxType[]::new);
-    return attribute(name, hxTypes);
+    return setAttribute(name, hxTypes);
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                HxType[] values) {
+  public HxAnnotation setAttribute(String name,
+                                   HxType[] values) {
     return set(name, new ClassArrayAnnotationAttribute(name, values));
   }
 
   @Override
-  public HxAnnotation attribute(String name,
-                                HxAnnotation[] values) {
+  public HxAnnotation setAttribute(String name,
+                                   HxAnnotation[] values) {
     return set(name, new SubAnnotationArrayAttribute(name, values));
   }
 
   @Override
-  public HxAnnotation attribute(final String name,
-                                final HxConstants.EmptyArray[] value) {
+  public HxAnnotation setAttribute(final String name,
+                                   final HxConstants.EmptyArray[] value) {
     return set(name, new EmptyArrayAnnotationAttribute(name, value));
   }
 

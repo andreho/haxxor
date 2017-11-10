@@ -27,6 +27,7 @@ public interface HxAnnotationAttribute<V, T> extends Cloneable {
    * the referenced {@link java.lang.annotation.Annotation annotation}
    * @see HxEnum
    * @see HxType
+   * @throws IllegalStateException
    */
   T original(Class<?> type);
 

@@ -96,7 +96,7 @@ public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>
     if(repeatableAnnotationOptional.isPresent()) {
       repeatableAnnotation = repeatableAnnotationOptional.get();
       final HxAnnotation[] values = concat(repeatableAnnotation.getAttribute("value", EMPTY_ANNOTATIONS_ARRAY), annotation);
-      repeatableAnnotation.attribute("value", values);
+      repeatableAnnotation.setAttribute("value", values);
     } else {
       final HxAnnotation currentAnnotation = initializeAnnotationsMap()
         .putIfAbsent(annotation.getType().getName(), annotation);
@@ -107,7 +107,7 @@ public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>
         removeAnnotation(currentAnnotation);
         repeatableAnnotation =
           annotation.getType().getHaxxor().createAnnotation(repeatableAnnotationType, true);
-        repeatableAnnotation.attribute("value", new HxAnnotation[]{currentAnnotation});
+        repeatableAnnotation.setAttribute("value", new HxAnnotation[]{currentAnnotation});
 
         addAnnotation(repeatableAnnotation);
         addRepeatableAnnotationIfNeeded(currentAnnotation, repeatableAnnotationType);

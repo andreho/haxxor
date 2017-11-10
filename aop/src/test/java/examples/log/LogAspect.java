@@ -63,7 +63,7 @@ public class LogAspect {
                                 .setModifiers(HxField.Modifiers.PUBLIC, HxField.Modifiers.STATIC, HxType.Modifiers.FINAL);
 
     HxAnnotation hxAnnotation = haxxor.createAnnotation(Attribute.class, true);
-    hxAnnotation.attribute("value", LOGGER_ATTRIBUTE);
+    hxAnnotation.setAttribute("value", LOGGER_ATTRIBUTE);
     field.addAnnotation(hxAnnotation);
     hxType.addField(field);
 

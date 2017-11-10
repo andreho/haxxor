@@ -5,13 +5,13 @@ import net.andreho.haxxor.cgen.HxComputationContext;
 import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.abstr.AbstractArrayStoreInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.ArrayStoreInstruction;
 
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
 public class LASTORE
-    extends AbstractArrayStoreInstruction {
+  extends ArrayStoreInstruction {
 
   public LASTORE() {
     super();

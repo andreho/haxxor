@@ -5,13 +5,13 @@ import net.andreho.haxxor.cgen.HxComputationContext;
 import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.abstr.AbstractFieldInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.FieldInstruction;
 
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
 public class PUTSTATIC
-  extends AbstractFieldInstruction {
+  extends FieldInstruction {
 
   public PUTSTATIC(String owner,
                    String name,

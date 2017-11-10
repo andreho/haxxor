@@ -118,61 +118,61 @@ public interface HxAnnotation
 
   //----------------------------------------------------------------------------------------------------------------
 
-  HxAnnotation attribute(final String name, boolean value);
+  HxAnnotation setAttribute(final String name, boolean value);
 
-  HxAnnotation attribute(final String name, byte value);
+  HxAnnotation setAttribute(final String name, byte value);
 
-  HxAnnotation attribute(final String name, char value);
+  HxAnnotation setAttribute(final String name, char value);
 
-  HxAnnotation attribute(final String name, short value);
+  HxAnnotation setAttribute(final String name, short value);
 
-  HxAnnotation attribute(final String name, int value);
+  HxAnnotation setAttribute(final String name, int value);
 
-  HxAnnotation attribute(final String name, float value);
+  HxAnnotation setAttribute(final String name, float value);
 
-  HxAnnotation attribute(final String name, long value);
+  HxAnnotation setAttribute(final String name, long value);
 
-  HxAnnotation attribute(final String name, double value);
+  HxAnnotation setAttribute(final String name, double value);
 
-  HxAnnotation attribute(final String name, String value);
+  HxAnnotation setAttribute(final String name, String value);
 
-  <E extends Enum<E>> HxAnnotation attribute(final String name, E value);
+  <E extends Enum<E>> HxAnnotation setAttribute(final String name, E value);
 
-  HxAnnotation attribute(final String name, HxEnum value);
+  HxAnnotation setAttribute(final String name, HxEnum value);
 
-  HxAnnotation attribute(final String name, Class<?> value);
+  HxAnnotation setAttribute(final String name, Class<?> value);
 
-  HxAnnotation attribute(final String name, HxType value);
+  HxAnnotation setAttribute(final String name, HxType value);
 
-  HxAnnotation attribute(final String name, HxAnnotation value);
+  HxAnnotation setAttribute(final String name, HxAnnotation value);
 
-  HxAnnotation attribute(final String name, boolean[] value);
+  HxAnnotation setAttribute(final String name, boolean[] value);
 
-  HxAnnotation attribute(final String name, byte[] value);
+  HxAnnotation setAttribute(final String name, byte[] value);
 
-  HxAnnotation attribute(final String name, char[] value);
+  HxAnnotation setAttribute(final String name, char[] value);
 
-  HxAnnotation attribute(final String name, short[] value);
+  HxAnnotation setAttribute(final String name, short[] value);
 
-  HxAnnotation attribute(final String name, int[] value);
+  HxAnnotation setAttribute(final String name, int[] value);
 
-  HxAnnotation attribute(final String name, float[] value);
+  HxAnnotation setAttribute(final String name, float[] value);
 
-  HxAnnotation attribute(final String name, long[] value);
+  HxAnnotation setAttribute(final String name, long[] value);
 
-  HxAnnotation attribute(final String name, double[] value);
+  HxAnnotation setAttribute(final String name, double[] value);
 
-  HxAnnotation attribute(final String name, String[] value);
+  HxAnnotation setAttribute(final String name, String[] value);
 
-  HxAnnotation attribute(final String name, HxEnum[] value);
+  HxAnnotation setAttribute(final String name, HxEnum[] value);
 
-  <E extends Enum<E>> HxAnnotation attribute(final String name, E[] value);
+  <E extends Enum<E>> HxAnnotation setAttribute(final String name, E[] value);
 
-  HxAnnotation attribute(final String name, Class<?>[] value);
+  HxAnnotation setAttribute(final String name, Class<?>[] value);
 
-  HxAnnotation attribute(final String name, HxType[] value);
+  HxAnnotation setAttribute(final String name, HxType[] value);
 
-  HxAnnotation attribute(final String name, HxAnnotation[] value);
+  HxAnnotation setAttribute(final String name, HxAnnotation[] value);
 
-  HxAnnotation attribute(final String name, HxConstants.EmptyArray[] value);
+  HxAnnotation setAttribute(final String name, HxConstants.EmptyArray[] value);
 }

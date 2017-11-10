@@ -2438,6 +2438,13 @@ public class ClassReader {
                 break;
             }
         }
+        return createString(buf, strLen);
+    }
+
+    /**
+     * Modification needed for a string-deduplication
+     */
+    protected String createString(final char[] buf, final int strLen) {
         return new String(buf, 0, strLen);
     }
 

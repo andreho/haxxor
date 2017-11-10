@@ -4,6 +4,7 @@ import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.api.HxTypeReference;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
 import net.andreho.haxxor.spi.HxClassnameNormalizer;
+import net.andreho.haxxor.spi.HxDeduplicationCache;
 import net.andreho.haxxor.spi.HxElementFactory;
 import net.andreho.haxxor.spi.HxFieldInitializer;
 import net.andreho.haxxor.spi.HxFieldVerifier;
@@ -21,6 +22,8 @@ import net.andreho.haxxor.spi.impl.DefaultHxElementFactory;
 import net.andreho.haxxor.spi.impl.DefaultHxTypeDeserializer;
 import net.andreho.haxxor.spi.impl.DefaultHxTypeInitializer;
 import net.andreho.haxxor.spi.impl.DefaultHxTypeSerializer;
+import net.andreho.haxxor.spi.impl.DefaultTrieBasedDeduplicationCache;
+import net.andreho.haxxor.spi.impl.NoOpDeduplicationCache;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -101,6 +104,19 @@ public class HaxxorBuilder {
    */
   public ClassLoader provideClassLoader(final Hx haxxor) {
     return classLoader;
+  }
+
+  /**
+   * Creates a new deduplication cache for the given haxxor-instance
+   *
+   * @param haxxor instance that requires this component
+   * @return new new deduplication cache associated with given haxxor instance
+   */
+  public HxDeduplicationCache createDeduplicationCache(final Hx haxxor) {
+    if(concurrent) {
+      return new NoOpDeduplicationCache();
+    }
+    return new DefaultTrieBasedDeduplicationCache();
   }
 
   /**

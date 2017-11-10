@@ -13,6 +13,7 @@ import net.andreho.haxxor.api.impl.HxArrayTypeImpl;
 import net.andreho.haxxor.api.impl.HxPrimitiveTypeImpl;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
 import net.andreho.haxxor.spi.HxClassnameNormalizer;
+import net.andreho.haxxor.spi.HxDeduplicationCache;
 import net.andreho.haxxor.spi.HxElementFactory;
 import net.andreho.haxxor.spi.HxFieldInitializer;
 import net.andreho.haxxor.spi.HxFieldVerifier;
@@ -54,6 +55,7 @@ public class Haxxor
   private final Map<String, HxTypeReference> referenceCache;
   private final WeakReference<ClassLoader> classLoaderWeakReference;
   private final HxClassnameNormalizer classNameNormalizer;
+  private final HxDeduplicationCache deduplicationCache;
   private final HxTypeDeserializer typeDeserializer;
   private final HxTypeSerializer typeSerializer;
   private final HxFieldInitializer fieldInitializer;
@@ -147,6 +149,7 @@ public class Haxxor
     this.byteCodeLoader = builder.createByteCodeLoader(this);
     this.resolvedCache = builder.createResolvedCache(this);
     this.referenceCache = builder.createReferenceCache(this);
+    this.deduplicationCache = builder.createDeduplicationCache(this);
     this.typeInitializer = builder.createTypeInitializer(this);
     this.fieldInitializer = builder.createFieldInitializer(this);
     this.methodInitializer = builder.createMethodInitializer(this);
@@ -222,6 +225,15 @@ public class Haxxor
   @Override
   public Haxxor getHaxxor() {
     return this;
+  }
+
+  public boolean isConcurrent() {
+    return concurrent;
+  }
+
+  @Override
+  public HxDeduplicationCache getDeduplicationCache() {
+    return deduplicationCache;
   }
 
   /**
@@ -786,9 +798,11 @@ public class Haxxor
   }
 
   protected void doFullVerification(final HxType type) {
+    //Type itself
     HxVerificationResult result = verify(type);
     HxVerificationResult current = result;
 
+    //Fields
     for(HxField field : type.getFields()) {
       HxVerificationResult subResult = verify(field);
 
@@ -801,6 +815,7 @@ public class Haxxor
       }
     }
 
+    //Methods
     for(HxMethod method : type.getMethods()) {
       HxVerificationResult subResult = verify(method);
 

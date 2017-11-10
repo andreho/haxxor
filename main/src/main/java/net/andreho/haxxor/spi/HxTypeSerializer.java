@@ -8,17 +8,19 @@ import net.andreho.haxxor.api.HxType;
 @FunctionalInterface
 public interface HxTypeSerializer {
   /**
-   * @param type
-   * @return
+   * @param type to serialize
+   * @return byte-code of the given type
+   * @throws HxVerificationException
    */
   default byte[] serialize(HxType type) {
     return serialize(type, true);
   }
 
   /**
-   * @param type
+   * @param type to serialize
    * @param computeFrames
-   * @return
+   * @return byte-code of the given type
+   * @throws HxVerificationException
    */
   byte[] serialize(HxType type, boolean computeFrames);
 }

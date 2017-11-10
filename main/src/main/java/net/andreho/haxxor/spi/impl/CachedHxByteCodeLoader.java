@@ -1,6 +1,7 @@
 package net.andreho.haxxor.spi.impl;
 
 import net.andreho.haxxor.Hx;
+import net.andreho.haxxor.spi.HxParameters;
 
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
@@ -18,7 +19,7 @@ public class CachedHxByteCodeLoader
     extends DefaultHxByteCodeLoader {
 
   public static final String MAX_CACHE_SIZE_PARAMETER =
-      "hx.bytecode.loader.max_cache_size";
+    HxParameters.HX_BYTECODE_LOADER_MAX_CACHE_SIZE;
   public static final int MAXIMAL_CACHE_SIZE =
       Math.max(1, Integer.parseInt(System.getProperty(MAX_CACHE_SIZE_PARAMETER, "1000")));
 
