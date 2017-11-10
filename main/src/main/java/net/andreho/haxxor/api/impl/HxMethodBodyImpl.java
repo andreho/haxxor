@@ -13,8 +13,8 @@ import net.andreho.haxxor.cgen.HxTryCatch;
 import net.andreho.haxxor.cgen.impl.ExtendedInstructionCodeStream;
 import net.andreho.haxxor.cgen.impl.HxLocalVariableImpl;
 import net.andreho.haxxor.cgen.impl.HxTryCatchImpl;
-import net.andreho.haxxor.cgen.instr.abstr.SimpleJumpInstruction;
-import net.andreho.haxxor.cgen.instr.abstr.SwitchJumpInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.AbstractSimpleJumpInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.AbstractSwitchJumpInstruction;
 import net.andreho.haxxor.cgen.instr.misc.LABEL;
 
 import java.util.ArrayList;
@@ -88,10 +88,10 @@ public class HxMethodBodyImpl
                                 final Map<Object, LABEL> mapping) {
     for (HxInstruction instruction : body) {
       if(instruction.hasSort(HxInstructionSort.Jump)) {
-        SimpleJumpInstruction jump = (SimpleJumpInstruction) instruction;
+        AbstractSimpleJumpInstruction jump = (AbstractSimpleJumpInstruction) instruction;
         instruction = jump.clone(remap(mapping, jump.getLabel()));
       } else if(instruction.hasSort(HxInstructionSort.Switches)) {
-        SwitchJumpInstruction aSwitch = (SwitchJumpInstruction) instruction;
+        AbstractSwitchJumpInstruction aSwitch = (AbstractSwitchJumpInstruction) instruction;
         instruction = aSwitch.clone(remap(mapping, aSwitch.getDefaultLabel()), remap(mapping, aSwitch.getLabels()));
       } else if(instruction.hasType(HxInstructionTypes.Special.LABEL)) {
         stream.LABEL(remap(mapping, (LABEL) instruction));

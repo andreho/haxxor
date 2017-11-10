@@ -5,14 +5,14 @@ import net.andreho.haxxor.cgen.HxComputationContext;
 import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.abstr.SimpleJumpInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.AbstractSimpleJumpInstruction;
 import net.andreho.haxxor.cgen.instr.misc.LABEL;
 
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
 public class IF_ICMPLE
-  extends SimpleJumpInstruction {
+  extends AbstractSimpleJumpInstruction {
 
   public IF_ICMPLE(LABEL label) {
     super(label);

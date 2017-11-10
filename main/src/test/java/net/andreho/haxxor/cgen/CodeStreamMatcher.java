@@ -7,10 +7,10 @@ import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.asm.org.objectweb.asm.TypePath;
 import net.andreho.haxxor.api.HxMethodBody;
-import net.andreho.haxxor.cgen.instr.abstr.FieldInstruction;
-import net.andreho.haxxor.cgen.instr.abstr.InvokeInstruction;
-import net.andreho.haxxor.cgen.instr.abstr.SingleOperandInstruction;
-import net.andreho.haxxor.cgen.instr.abstr.StringOperandInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.AbstractFieldInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.AbstractInvokeInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.AbstractSingleOperandInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.AbstractStringOperandInstruction;
 import net.andreho.haxxor.cgen.instr.invokes.INVOKEDYNAMIC;
 import net.andreho.haxxor.cgen.instr.misc.LINE_NUMBER;
 
@@ -81,7 +81,7 @@ public class CodeStreamMatcher extends MethodVisitor {
     HxInstruction hxInstruction = visitSingleInstruction();
     checkOpcode(opcode, hxInstruction);
 
-    SingleOperandInstruction instruction = (SingleOperandInstruction) hxInstruction;
+    AbstractSingleOperandInstruction instruction = (AbstractSingleOperandInstruction) hxInstruction;
     assertEquals(operand, instruction.getOperand());
   }
 
@@ -92,7 +92,7 @@ public class CodeStreamMatcher extends MethodVisitor {
     HxInstruction hxInstruction = visitSingleInstruction();
     checkOpcode(opcode, hxInstruction);
 
-    SingleOperandInstruction instruction = (SingleOperandInstruction) hxInstruction;
+    AbstractSingleOperandInstruction instruction = (AbstractSingleOperandInstruction) hxInstruction;
     assertEquals(var, instruction.getOperand());
   }
 
@@ -104,7 +104,7 @@ public class CodeStreamMatcher extends MethodVisitor {
     HxInstruction hxInstruction = visitSingleInstruction();
     checkOpcode(opcode, hxInstruction);
 
-    StringOperandInstruction instruction = (StringOperandInstruction) hxInstruction;
+    AbstractStringOperandInstruction instruction = (AbstractStringOperandInstruction) hxInstruction;
     assertEquals(type, instruction.getOperand());
   }
 
@@ -118,7 +118,7 @@ public class CodeStreamMatcher extends MethodVisitor {
     HxInstruction hxInstruction = visitSingleInstruction();
     checkOpcode(opcode, hxInstruction);
 
-    FieldInstruction instruction = (FieldInstruction) hxInstruction;
+    AbstractFieldInstruction instruction = (AbstractFieldInstruction) hxInstruction;
     assertEquals(owner, instruction.getOwner());
     assertEquals(name, instruction.getName());
     assertEquals(desc, instruction.getDescriptor());
@@ -142,7 +142,7 @@ public class CodeStreamMatcher extends MethodVisitor {
     HxInstruction hxInstruction = visitSingleInstruction();
     checkOpcode(opcode, hxInstruction);
 
-    InvokeInstruction instruction = (InvokeInstruction) hxInstruction;
+    AbstractInvokeInstruction instruction = (AbstractInvokeInstruction) hxInstruction;
     assertEquals(owner, instruction.getOwner());
     assertEquals(name, instruction.getName());
     assertEquals(desc, instruction.getDescriptor());

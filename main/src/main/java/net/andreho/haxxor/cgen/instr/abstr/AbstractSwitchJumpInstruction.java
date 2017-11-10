@@ -5,13 +5,13 @@ import net.andreho.haxxor.cgen.instr.misc.LABEL;
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
-public abstract class SwitchJumpInstruction
-  extends JumpInstruction {
+public abstract class AbstractSwitchJumpInstruction
+  extends AbstractJumpInstruction {
 
   protected final LABEL[] labels;
 
-  public SwitchJumpInstruction(final LABEL defaultLabel,
-                               final LABEL[] labels) {
+  public AbstractSwitchJumpInstruction(final LABEL defaultLabel,
+                                       final LABEL[] labels) {
     super(defaultLabel);
     this.labels = labels;
 
@@ -28,5 +28,5 @@ public abstract class SwitchJumpInstruction
     return labels;
   }
 
-  public abstract SwitchJumpInstruction clone(LABEL defaultLabel, LABEL[] labels);
+  public abstract AbstractSwitchJumpInstruction clone(LABEL defaultLabel, LABEL[] labels);
 }

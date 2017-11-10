@@ -3,7 +3,7 @@ package net.andreho.haxxor.cgen.instr.abstr;
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
-public abstract class InvokeInstruction
+public abstract class AbstractInvokeInstruction
     extends AbstractInstruction {
 
   protected final String owner;
@@ -11,11 +11,11 @@ public abstract class InvokeInstruction
   protected final String desc;
   protected final boolean isInterface;
 
-  public InvokeInstruction(String owner, String name, String desc) {
+  public AbstractInvokeInstruction(String owner, String name, String desc) {
     this(owner, name, desc, false);
   }
 
-  public InvokeInstruction(String owner, String name, String desc, boolean isInterface) {
+  public AbstractInvokeInstruction(String owner, String name, String desc, boolean isInterface) {
     super();
     this.owner = owner;
     this.name = name;
@@ -49,7 +49,7 @@ public abstract class InvokeInstruction
     return this.isInterface;
   }
 
-  public abstract <INST extends InvokeInstruction> INST clone(String owner, String name, String desc, boolean isInterface);
+  public abstract <INST extends AbstractInvokeInstruction> INST clone(String owner, String name, String desc, boolean isInterface);
 
   @Override
   public String toString() {

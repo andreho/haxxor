@@ -11,7 +11,7 @@ import net.andreho.haxxor.cgen.HxExtendedCodeStream;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionSort;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.abstr.InvokeInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.AbstractInvokeInstruction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -309,8 +309,8 @@ public abstract class HxAbstractType
       for (HxMethod constructor : constructors) {
         if (constructor.hasBody()) {
           for (HxInstruction inst : constructor.getBody()) {
-            if (inst.hasSort(HxInstructionSort.Invocation) && inst instanceof InvokeInstruction) {
-              final InvokeInstruction invokeInstruction = (InvokeInstruction) inst;
+            if (inst.hasSort(HxInstructionSort.Invocation) && inst instanceof AbstractInvokeInstruction) {
+              final AbstractInvokeInstruction invokeInstruction = (AbstractInvokeInstruction) inst;
 
               if (invokeInstruction.hasType(HxInstructionTypes.Invocation.INVOKESPECIAL) &&
                   HxConstants.CONSTRUCTOR_METHOD_NAME.equals(invokeInstruction.getName())) {

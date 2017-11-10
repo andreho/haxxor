@@ -5,13 +5,13 @@ import net.andreho.haxxor.cgen.HxComputationContext;
 import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.abstr.FieldInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.AbstractFieldInstruction;
 
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
 public class PUTFIELD
-  extends FieldInstruction {
+  extends AbstractFieldInstruction {
 
   public PUTFIELD(String owner,
                   String name,
