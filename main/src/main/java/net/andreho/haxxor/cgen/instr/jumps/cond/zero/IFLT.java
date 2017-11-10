@@ -5,7 +5,7 @@ import net.andreho.haxxor.cgen.HxComputationContext;
 import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.abstr.AbstractSimpleJumpInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.SimpleJumpInstruction;
 import net.andreho.haxxor.cgen.instr.misc.LABEL;
 
 /**
@@ -13,7 +13,7 @@ import net.andreho.haxxor.cgen.instr.misc.LABEL;
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
 public class IFLT
-  extends AbstractSimpleJumpInstruction {
+  extends SimpleJumpInstruction {
 
   public IFLT(LABEL label) {
     super(label);

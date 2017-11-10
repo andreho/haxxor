@@ -5,7 +5,7 @@ import net.andreho.haxxor.cgen.HxComputationContext;
 import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.abstr.AbstractSwitchJumpInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.SwitchJumpInstruction;
 import net.andreho.haxxor.cgen.instr.misc.LABEL;
 
 import java.util.Arrays;
@@ -14,7 +14,7 @@ import java.util.Arrays;
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
 public class TABLESWITCH
-  extends AbstractSwitchJumpInstruction {
+  extends SwitchJumpInstruction {
 
   protected final int min;
   protected final int max;

@@ -5,12 +5,12 @@ import net.andreho.haxxor.cgen.instr.misc.LABEL;
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
-public abstract class AbstractJumpInstruction
+public abstract class JumpInstruction
     extends AbstractInstruction {
 
   protected final LABEL label;
 
-  public AbstractJumpInstruction(LABEL label) {
+  public JumpInstruction(LABEL label) {
     super();
     this.label = label;
     label.addReference(this);

@@ -15,8 +15,8 @@ import net.andreho.haxxor.cgen.HxExtendedCodeStream;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionSort;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.abstr.AbstractFieldInstruction;
-import net.andreho.haxxor.cgen.instr.abstr.AbstractInvokeInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.FieldInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.InvokeInstruction;
 import net.andreho.haxxor.cgen.instr.constants.LDC;
 
 import java.util.Collection;
@@ -193,7 +193,7 @@ public class MixinAspectAdvice
   private Optional<HxInstruction> findSuperConstructorCall(final HxMethod constructor) {
     return constructor.getBody().getFirst().findFirst(instr -> {
       if (instr.hasType(HxInstructionTypes.Invocation.INVOKESPECIAL)) {
-        AbstractInvokeInstruction invokeInstruction = (AbstractInvokeInstruction) instr;
+        InvokeInstruction invokeInstruction = (InvokeInstruction) instr;
         if ("<init>".equals(invokeInstruction.getName()) &&
             constructor.getDeclaringType().hasSuperType(invokeInstruction.getOwner())) {
           return true;
@@ -247,8 +247,8 @@ public class MixinAspectAdvice
                                              final HxType mixin,
                                              final HxMethod clonedMethod) {
     clonedMethod.getBody().forEach(inst -> {
-      if (inst.hasSort(HxInstructionSort.Invocation) && inst instanceof AbstractInvokeInstruction) {
-        final AbstractInvokeInstruction invokeInstruction = (AbstractInvokeInstruction) inst;
+      if (inst.hasSort(HxInstructionSort.Invocation) && inst instanceof InvokeInstruction) {
+        final InvokeInstruction invokeInstruction = (InvokeInstruction) inst;
         if (mixin.hasNameViaExtends(invokeInstruction.getOwner())) {
           invokeInstruction.replaceWith(
             invokeInstruction.clone(type.toInternalName(),
@@ -257,13 +257,13 @@ public class MixinAspectAdvice
                                     invokeInstruction.isInterface()));
         }
       } else if (inst.hasSort(HxInstructionSort.Fields)) {
-        final AbstractFieldInstruction abstractFieldInstruction = (AbstractFieldInstruction) inst;
+        final FieldInstruction fieldInstruction = (FieldInstruction) inst;
 
-        if (mixin.hasNameViaExtends(abstractFieldInstruction.getOwner())) {
-          abstractFieldInstruction.replaceWith(
-            abstractFieldInstruction.clone(type.toInternalName(),
-                                           abstractFieldInstruction.getName(),
-                                           abstractFieldInstruction.getDescriptor()));
+        if (mixin.hasNameViaExtends(fieldInstruction.getOwner())) {
+          fieldInstruction.replaceWith(
+            fieldInstruction.clone(type.toInternalName(),
+                                   fieldInstruction.getName(),
+                                   fieldInstruction.getDescriptor()));
         }
       } else if (inst.hasType(HxInstructionTypes.Constants.LDC)) {
         LDC<?> ldc = (LDC<?>) inst;
