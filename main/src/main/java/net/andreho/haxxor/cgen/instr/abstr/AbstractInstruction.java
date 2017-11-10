@@ -6,9 +6,6 @@ import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionSort;
 import net.andreho.haxxor.cgen.HxInstructionType;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -21,23 +18,8 @@ public abstract class AbstractInstruction extends HxAnnotatedDelegate<HxInstruct
     implements HxInstruction {
 
   public static final Predicate<HxInstruction> ANY_INSTRUCTION_PREDICATE = ins -> true;
-  public static final List<Object> NO_STACK_PUSH = Collections.emptyList();
   protected static final int SINGLE_SLOT_SIZE = 1;
   protected static final int DOUBLE_SLOT_SIZE = SINGLE_SLOT_SIZE + SINGLE_SLOT_SIZE;
-  //----------------------------------------------------------------------------------------------------------------
-  protected static final List<Object> PUSH_NULL = Collections.singletonList(Opcodes.NULL);
-  protected static final List<Object> PUSH_UNINITIALIZED_THIS = Collections.singletonList(Opcodes.UNINITIALIZED_THIS);
-  protected static final List<Object> PUSH_STRING = Collections.singletonList("java/lang/String");
-  protected static final List<Object> PUSH_METHOD = Collections.singletonList("java/lang/invoke/MethodType");
-  protected static final List<Object> PUSH_HANDLE = Collections.singletonList("java/lang/invoke/MethodHandle");
-  protected static final List<Object> PUSH_TYPE = Collections.singletonList("java/lang/Class");
-  protected static final List<Object> PUSH_ADDRESS = Collections.singletonList(Opcodes.INTEGER);
-  protected static final List<Object> PUSH_INT = PUSH_ADDRESS;
-  protected static final List<Object> PUSH_FLOAT = Collections.singletonList(Opcodes.FLOAT);
-  protected static final List<Object> PUSH_LONG = Collections.unmodifiableList(
-      Arrays.asList(Opcodes.LONG, Opcodes.TOP));
-  protected static final List<Object> PUSH_DOUBLE = Collections.unmodifiableList(
-      Arrays.asList(Opcodes.DOUBLE, Opcodes.TOP));
 
   protected HxInstruction next;
   protected HxInstruction previous;
