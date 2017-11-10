@@ -5,13 +5,13 @@ import net.andreho.haxxor.cgen.HxComputationContext;
 import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.abstr.AbstractZeroOperandInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.ZeroOperandInstruction;
 
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
 public class LCMP
-    extends AbstractZeroOperandInstruction {
+  extends ZeroOperandInstruction {
 
   public LCMP() {
     super();

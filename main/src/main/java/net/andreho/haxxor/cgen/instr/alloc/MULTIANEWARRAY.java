@@ -5,13 +5,13 @@ import net.andreho.haxxor.cgen.HxComputationContext;
 import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.abstr.AbstractStringOperandInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.StringOperandInstruction;
 
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
 public class MULTIANEWARRAY
-    extends AbstractStringOperandInstruction {
+  extends StringOperandInstruction {
 
   private final int dimension;
 

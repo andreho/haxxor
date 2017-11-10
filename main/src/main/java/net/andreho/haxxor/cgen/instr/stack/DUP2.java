@@ -5,14 +5,14 @@ import net.andreho.haxxor.cgen.HxComputationContext;
 import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.abstr.AbstractZeroOperandInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.ZeroOperandInstruction;
 
 /**
  * Duplicate the top one or two operand stack values.<br/>
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
 public class DUP2
-    extends AbstractZeroOperandInstruction {
+  extends ZeroOperandInstruction {
 
   public DUP2() {
     super();

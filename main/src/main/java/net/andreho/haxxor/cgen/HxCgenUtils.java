@@ -1,6 +1,6 @@
 package net.andreho.haxxor.cgen;
 
-import net.andreho.haxxor.cgen.instr.abstr.AbstractLocalAccessInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.LocalAccessInstruction;
 
 /**
  * <br/>Created by a.hofmann on 19.06.2017 at 03:14.
@@ -27,7 +27,7 @@ public abstract class HxCgenUtils {
   private static void shiftAccessToLocalVariables(final HxInstruction instruction,
                                                   final int parametersOffset,
                                                   final int offsetAddition) {
-    final AbstractLocalAccessInstruction accessInstruction = (AbstractLocalAccessInstruction) instruction;
+    final LocalAccessInstruction accessInstruction = (LocalAccessInstruction) instruction;
     int slotIndex = accessInstruction.getOperand();
     if (slotIndex >= parametersOffset) {
       accessInstruction.setOperand(slotIndex + offsetAddition);

@@ -6,13 +6,13 @@ import net.andreho.haxxor.cgen.HxComputationContext;
 import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.abstr.AbstractSingleOperandInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.SingleOperandInstruction;
 
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
 public class NEWARRAY
-    extends AbstractSingleOperandInstruction {
+  extends SingleOperandInstruction {
 
   public NEWARRAY(HxArrayType type) {
     super(type.getCode());

@@ -14,7 +14,7 @@ import java.util.function.Predicate;
 /**
  * <br/>Created by a.hofmann on 19.03.2016.<br/>
  */
-public abstract class AbstractPseudoInstruction
+public abstract class PseudoInstruction
     implements HxInstruction {
 
   @Override
