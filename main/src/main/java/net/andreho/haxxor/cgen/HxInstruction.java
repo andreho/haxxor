@@ -155,10 +155,10 @@ public interface HxInstruction
   default HxInstruction prepend(HxInstruction inst) {
     Objects.requireNonNull(inst);
 
-    if (hasPrevious()) {
-      return getPrevious().append(inst);
+    if (!hasPrevious()) {
+      throw new IllegalStateException("There isn't any previous instruction.");
     }
-    throw new IllegalStateException("There isn't any previous instruction.");
+    return getPrevious().append(inst);
   }
 
   /**
@@ -267,14 +267,14 @@ public interface HxInstruction
   void forEachPrevious(final Predicate<HxInstruction> predicate,
                        final Consumer<HxInstruction> consumer);
 
-  void forNext(final Consumer<HxInstruction> consumer);
+  boolean forNext(final Consumer<HxInstruction> consumer);
 
-  void forNext(final Predicate<HxInstruction> predicate,
+  boolean forNext(final Predicate<HxInstruction> predicate,
                final Consumer<HxInstruction> consumer);
 
-  void forPrevious(final Consumer<HxInstruction> consumer);
+  boolean forPrevious(final Consumer<HxInstruction> consumer);
 
-  void forPrevious(final Predicate<HxInstruction> predicate,
+  boolean forPrevious(final Predicate<HxInstruction> predicate,
                    final Consumer<HxInstruction> consumer);
 
   default HxExtendedCodeStream asStream() {

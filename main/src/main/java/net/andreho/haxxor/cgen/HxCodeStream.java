@@ -9,6 +9,13 @@ import net.andreho.haxxor.cgen.instr.misc.LABEL;
 public interface HxCodeStream<Stream extends HxCodeStream<Stream>> {
 
   /**
+   * @return
+   */
+  default Stream subStream() {
+    return (Stream) this;
+  }
+
+  /**
    * Begins code creation
    *
    * @return this

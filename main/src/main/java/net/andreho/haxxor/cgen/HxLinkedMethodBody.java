@@ -1,6 +1,6 @@
 package net.andreho.haxxor.cgen;
 
-import net.andreho.haxxor.cgen.instr.misc.COMPOSITE;
+import net.andreho.haxxor.cgen.instr.misc.COMPOUND;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * <br/>Created by a.hofmann on 19.03.2016.<br/>
  */
-public class HxLinkedMethodBody extends COMPOSITE
+public class HxLinkedMethodBody extends COMPOUND
     implements Iterable<HxInstruction> {
 
   protected List<HxLocalVariable> localVariables;

@@ -5,6 +5,8 @@ import net.andreho.haxxor.api.impl.HxAnnotatedDelegate;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionSort;
 import net.andreho.haxxor.cgen.HxInstructionType;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
+import net.andreho.haxxor.cgen.instr.misc.COMPOUND;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -14,15 +16,72 @@ import java.util.function.Predicate;
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
-public abstract class AbstractInstruction extends HxAnnotatedDelegate<HxInstruction>
-    implements HxInstruction {
+public abstract class AbstractInstruction
+  extends HxAnnotatedDelegate<HxInstruction>
+  implements HxInstruction {
 
-  public static final Predicate<HxInstruction> ANY_INSTRUCTION_PREDICATE = ins -> true;
   protected static final int SINGLE_SLOT_SIZE = 1;
   protected static final int DOUBLE_SLOT_SIZE = SINGLE_SLOT_SIZE + SINGLE_SLOT_SIZE;
+  public static final Predicate<HxInstruction> ANY_INSTRUCTION_PREDICATE = ins -> true;
 
   protected HxInstruction next;
   protected HxInstruction previous;
+
+  private static boolean forNext(
+    final HxInstruction instruction,
+    final Predicate<HxInstruction> predicate,
+    final Consumer<HxInstruction> consumer,
+    int count) {
+    Objects.requireNonNull(predicate, "Predicate can't be null.");
+    Objects.requireNonNull(consumer, "Consumer can't be null.");
+
+    boolean found = false;
+
+    for (HxInstruction current = instruction; !current.isEnd(); current = current.getNext()) {
+      if(current.hasType(HxInstructionTypes.Special.COMPOSITE)) {
+        final COMPOUND compound = (COMPOUND) current;
+        if(!compound.isEmpty() && forNext(compound.getFirst(), predicate, consumer, count)) {
+          found = true;
+        }
+      }
+      if (predicate.test(current)) {
+        consumer.accept(current);
+        found = true;
+        if (count-- <= 0) {
+          break;
+        }
+      }
+    }
+    return found;
+  }
+
+  private static boolean forPrevious(
+    final HxInstruction instruction,
+    final Predicate<HxInstruction> predicate,
+    final Consumer<HxInstruction> consumer,
+    int count) {
+    Objects.requireNonNull(predicate, "Predicate can't be null.");
+    Objects.requireNonNull(consumer, "Consumer can't be null.");
+
+    boolean found = false;
+
+    for (HxInstruction current = instruction; !current.isBegin(); current = current.getPrevious()) {
+      if(current.hasType(HxInstructionTypes.Special.COMPOSITE)) {
+        final COMPOUND compound = (COMPOUND) current;
+        if(!compound.isEmpty() && forPrevious(compound.getFirst(), predicate, consumer, count)) {
+          found = true;
+        }
+      }
+      if (predicate.test(current)) {
+        consumer.accept(current);
+        found = true;
+        if (count-- <= 0) {
+          break;
+        }
+      }
+    }
+    return found;
+  }
 
   public AbstractInstruction() {
   }
@@ -85,11 +144,23 @@ public abstract class AbstractInstruction extends HxAnnotatedDelegate<HxInstruct
   @Override
   public Optional<HxInstruction> findFirst(final Predicate<HxInstruction> predicate) {
     Objects.requireNonNull(predicate, "Predicate can't be null.");
-    for(HxInstruction instruction = this;
-        !instruction.isEnd();
-        instruction = instruction.getNext()) {
-      if(predicate.test(instruction)) {
+    for (HxInstruction instruction = this;
+         !instruction.isEnd();
+         instruction = instruction.getNext()) {
+
+      if (predicate.test(instruction)) {
         return Optional.of(instruction);
+      }
+
+      if(instruction.hasType(HxInstructionTypes.Special.COMPOSITE)) {
+        final COMPOUND compound = (COMPOUND) instruction;
+        if(!compound.isEmpty()) {
+          final HxInstruction compositeBegin = compound.getFirst();
+          final Optional<HxInstruction> found = compositeBegin.findFirst(predicate);
+          if(found.isPresent()) {
+            return found;
+          }
+        }
       }
     }
     return Optional.empty();
@@ -98,11 +169,23 @@ public abstract class AbstractInstruction extends HxAnnotatedDelegate<HxInstruct
   @Override
   public Optional<HxInstruction> findLast(final Predicate<HxInstruction> predicate) {
     Objects.requireNonNull(predicate, "Predicate can't be null.");
-    for(HxInstruction instruction = this;
-        !instruction.isBegin();
-        instruction = instruction.getPrevious()) {
-      if(predicate.test(instruction)) {
+    for (HxInstruction instruction = this;
+         !instruction.isBegin();
+         instruction = instruction.getPrevious()) {
+
+      if (predicate.test(instruction)) {
         return Optional.of(instruction);
+      }
+
+      if(instruction.hasType(HxInstructionTypes.Special.COMPOSITE)) {
+        final COMPOUND compound = (COMPOUND) instruction;
+        if(!compound.isEmpty()) {
+          final HxInstruction compositeEnd = compound.getLast();
+          final Optional<HxInstruction> found = compositeEnd.findLast(predicate);
+          if(found.isPresent()) {
+            return found;
+          }
+        }
       }
     }
     return Optional.empty();
@@ -110,84 +193,46 @@ public abstract class AbstractInstruction extends HxAnnotatedDelegate<HxInstruct
 
   @Override
   public void forEachNext(final Consumer<HxInstruction> consumer) {
-    forNext(ANY_INSTRUCTION_PREDICATE, consumer, Integer.MAX_VALUE);
+    forNext(this, ANY_INSTRUCTION_PREDICATE, consumer, Integer.MAX_VALUE);
   }
 
   @Override
   public void forEachNext(final Predicate<HxInstruction> predicate,
                           final Consumer<HxInstruction> consumer) {
-    forNext(predicate, consumer, Integer.MAX_VALUE);
+    forNext(this, predicate, consumer, Integer.MAX_VALUE);
   }
 
   @Override
   public void forEachPrevious(final Consumer<HxInstruction> consumer) {
-    forPrevious(ANY_INSTRUCTION_PREDICATE, consumer, Integer.MAX_VALUE);
+    forPrevious(this, ANY_INSTRUCTION_PREDICATE, consumer, Integer.MAX_VALUE);
   }
 
   @Override
   public void forEachPrevious(final Predicate<HxInstruction> predicate,
                               final Consumer<HxInstruction> consumer) {
-    forPrevious(predicate, consumer, Integer.MAX_VALUE);
+    forPrevious(this, predicate, consumer, Integer.MAX_VALUE);
   }
 
   @Override
-  public void forNext(final Consumer<HxInstruction> consumer) {
-    forNext(ANY_INSTRUCTION_PREDICATE, consumer, 1);
+  public boolean forNext(final Consumer<HxInstruction> consumer) {
+    return forNext(this, ANY_INSTRUCTION_PREDICATE, consumer, 1);
   }
 
   @Override
-  public void forNext(final Predicate<HxInstruction> predicate,
-                      final Consumer<HxInstruction> consumer) {
-    forNext(predicate, consumer, 1);
+  public boolean forNext(final Predicate<HxInstruction> predicate,
+                         final Consumer<HxInstruction> consumer) {
+    return forNext(this, predicate, consumer, 1);
   }
 
   @Override
-  public void forPrevious(final Consumer<HxInstruction> consumer) {
-    forPrevious(ANY_INSTRUCTION_PREDICATE, consumer, 1);
+  public boolean forPrevious(final Consumer<HxInstruction> consumer) {
+    return forPrevious(this, ANY_INSTRUCTION_PREDICATE, consumer, 1);
   }
 
   @Override
-  public void forPrevious(final Predicate<HxInstruction> predicate,
-                          final Consumer<HxInstruction> consumer) {
-    forPrevious(predicate, consumer, 1);
-  }
-
-  private void forNext(final Predicate<HxInstruction> predicate,
-                      final Consumer<HxInstruction> consumer,
-                      int count) {
-    Objects.requireNonNull(predicate, "Predicate can't be null.");
-    Objects.requireNonNull(consumer, "Consumer can't be null.");
-
-    for(HxInstruction instruction = this;
-        !instruction.isEnd();
-        instruction = instruction.getNext()) {
-
-      if(predicate.test(instruction)) {
-        consumer.accept(instruction);
-        if(count-- <= 0) {
-          break;
-        }
-      }
-    }
-  }
-
-  private void forPrevious(final Predicate<HxInstruction> predicate,
-                          final Consumer<HxInstruction> consumer,
-                          int count) {
-    Objects.requireNonNull(predicate, "Predicate can't be null.");
-    Objects.requireNonNull(consumer, "Consumer can't be null.");
-
-    for(HxInstruction instruction = this;
-        !instruction.isBegin();
-        instruction = instruction.getPrevious()) {
-
-      if(predicate.test(instruction)) {
-        consumer.accept(instruction);
-        if(count-- <= 0) {
-          break;
-        }
-      }
-    }
+  public boolean forPrevious(final Predicate<HxInstruction> predicate,
+                             final Consumer<HxInstruction> consumer) {
+    return forPrevious(this, predicate, consumer, 1);
   }
 
   @Override
@@ -203,7 +248,8 @@ public abstract class AbstractInstruction extends HxAnnotatedDelegate<HxInstruct
      * @param opcode to test
      * @param name   to test
      */
-    public static void checkMethodName(int opcode, String name) {
+    public static void checkMethodName(int opcode,
+                                       String name) {
       if ("<clinit>".equals(name) || ("<init>".equals(name) && opcode != Opcodes.INVOKESPECIAL)) {
         throw new IllegalArgumentException("Invalid method name for an interface method call: " + name);
       }
