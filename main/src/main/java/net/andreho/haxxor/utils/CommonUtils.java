@@ -3,6 +3,7 @@ package net.andreho.haxxor.utils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -117,6 +118,38 @@ public abstract class CommonUtils {
       array
     );
   }
+
+  /**
+   * @param array to copy without removed element
+   * @param idx of element to ignore
+   * @param <T>
+   * @return
+   */
+  public static <T> T[] copyWithout(final T[] array, final int idx) {
+    final T[] copy = (T[]) Array.newInstance(array.getClass().getComponentType(), array.length - 1);
+    for(int i = 0, j = 0; i < array.length; i++) {
+      if(i == idx) {
+        continue;
+      }
+      copy[j++] = array[i];
+    }
+    return copy;
+  }
+
+
+  /**
+   * @param first
+   * @param second
+   * @param <T>
+   * @return
+   */
+  public static <T> T[] asArray(T first, T second) {
+    T[] array = (T[]) Array.newInstance(first.getClass(), 2);
+    array[0] = first;
+    array[1] = second;
+    return array;
+  }
+
 
   /**
    * @param array

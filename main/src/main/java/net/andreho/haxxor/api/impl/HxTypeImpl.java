@@ -7,6 +7,7 @@ import net.andreho.haxxor.api.HxSourceInfo;
 import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.spi.HxVerificationException;
 import net.andreho.haxxor.spi.HxVerificationResult;
+import net.andreho.haxxor.utils.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import static net.andreho.haxxor.utils.CommonUtils.asArray;
 import static net.andreho.haxxor.utils.CommonUtils.isUninitialized;
 
 /**
@@ -37,7 +39,7 @@ public class HxTypeImpl
   protected Optional<String> genericSignature = Optional.empty();
 
   protected List<HxField> fields = Collections.emptyList();
-  protected Map<String, HxField> fieldMap = Collections.emptyMap();
+  protected Map<String, Object> fieldMap = Collections.emptyMap();
 
   protected List<HxMethod> methods = Collections.emptyList();
   protected Map<String, Collection<HxMethod>> methodMap = Collections.emptyMap();
@@ -173,26 +175,95 @@ public class HxTypeImpl
 
   @Override
   public Optional<HxField> findField(String name) {
-    return Optional.ofNullable(fieldMap.get(name));
+    Object entry = fieldMap.get(name);
+    HxField found = null;
+    if(entry != null) {
+      if(entry instanceof HxField) {
+        found = (HxField) entry;
+      } else {
+        found = ((HxField[]) entry)[0];
+      }
+    }
+    return Optional.ofNullable(found);
+  }
+
+  @Override
+  protected Optional<HxField> findField(final String name,
+                                        final Optional<HxType> typeOptional) {
+    if(!typeOptional.isPresent()) {
+      return findField(name);
+    }
+
+    HxField found = null;
+    Object entry = fieldMap.get(name);
+
+    if(entry instanceof HxField) {
+      found = (HxField) entry;
+      if(!found.hasType(typeOptional.get())) {
+        found = null;
+      }
+    } else {
+      HxField[] array = (HxField[]) entry;
+      for(HxField field : array) {
+        if(field.hasType(typeOptional.get())) {
+          found = field;
+          break;
+        }
+      }
+    }
+    return Optional.ofNullable(found);
   }
 
   @Override
   public Optional<HxField> findFieldDirectly(final String name,
                                              final String descriptor) {
+    HxField found = null;
+    Object entry = fieldMap.get(name);
 
-    for(HxField field : fields) {
-      if(field.hasName(name) &&
-         field.hasDescriptor(descriptor)) {
-        return Optional.of(field);
+    if(entry instanceof HxField) {
+      found = (HxField) entry;
+      if(!found.hasDescriptor(descriptor)) {
+        found = null;
+      }
+    } else {
+      HxField[] array = (HxField[]) entry;
+      for(HxField field : array) {
+        if(field.hasDescriptor(descriptor)) {
+          found = field;
+          break;
+        }
       }
     }
-
-    return Optional.empty();
+    return Optional.ofNullable(found);
   }
 
   @Override
   public List<HxField> getFields() {
     return fields;
+  }
+
+  protected boolean addFieldInternally(final HxField given) {
+    Object entry = fieldMap.get(given.getName());
+    if(entry instanceof HxField) {
+      if(given.equals(entry)) {
+        return false;
+      }
+      fieldMap.put(given.getName(), asArray(entry, given));
+    } else if(entry instanceof HxField[]) {
+      int found = -1;
+      HxField[] array = (HxField[]) entry;
+
+      for(int i = 0; i < array.length; i++) {
+        if(given.equals(array[i])) {
+          return false;
+        }
+        fieldMap.put(given.getName(), CommonUtils.concat(array, given));
+      }
+    } else {
+      return fieldMap.put(given.getName(), given) == null;
+    }
+
+    return true;
   }
 
   @Override
@@ -205,8 +276,7 @@ public class HxTypeImpl
     initialize(Part.FIELDS);
 
     if (field.getDeclaringMember() != null ||
-        hasField(field.getName()) ||
-        fieldMap.put(field.getName(), field) != null) {
+        !addFieldInternally(field)) {
 
       throw new IllegalArgumentException("Given field exists already: " + field);
     }
@@ -218,7 +288,7 @@ public class HxTypeImpl
   }
 
   @Override
-  public HxType setFields(List<HxField> fields) {
+  public HxType setFields(final List<HxField> fields) {
     if (isUninitialized(fields)) {
       this.fields = Collections.emptyList();
       this.fieldMap = Collections.emptyMap();
@@ -231,20 +301,48 @@ public class HxTypeImpl
       removeField(this.fields.get(i));
     }
 
-    if(!this.fields.isEmpty() || !this.fieldMap.isEmpty()) {
-      throw new IllegalStateException("Setting fields to given value lead to an inconsistent state.");
-    }
+    expectEmptyFields();
 
     for (HxField field : fields) {
-      if (this.fieldMap.put(field.getName(), field) != null) {
-        throw new IllegalStateException("Ambiguous field: " + field);
-      }
-
-      field.setDeclaringMember(this);
-      this.fields.add(field);
+      addField(field);
     }
 
     return this;
+  }
+
+  private void expectEmptyFields() {
+    if(!this.fields.isEmpty() || !this.fieldMap.isEmpty()) {
+      throw new IllegalStateException("Setting fields to given value lead to an inconsistent state.");
+    }
+  }
+
+  protected boolean removeFieldInternally(HxField given) {
+    Object entry = fieldMap.get(given.getName());
+    if(entry instanceof HxField) {
+      if(given.equals(entry)) {
+        fieldMap.remove(given.getName());
+        return true;
+      }
+    } else {
+      int found = -1;
+      HxField[] array = (HxField[]) entry;
+
+      for(int i = 0; i < array.length; i++) {
+        if(given.equals(array[i])) {
+          found = i;
+          break;
+        }
+      }
+      if(found > -1) {
+        if(array.length > 1) {
+          fieldMap.put(given.getName(), CommonUtils.copyWithout(array, found));
+        } else {
+          fieldMap.remove(given.getName());
+        }
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override
@@ -253,7 +351,7 @@ public class HxTypeImpl
       throw new IllegalArgumentException("Given field must exist within this type: " + field);
     }
 
-    if (!hasField(field.getName()) || fieldMap.remove(field.getName()) != field) {
+    if (!removeFieldInternally(field)) {
       throw new IllegalArgumentException("Given field must exist within this type: " + field);
     }
 
@@ -335,15 +433,19 @@ public class HxTypeImpl
       removeMethod(this.methods.get(i));
     }
 
-    if(!this.methods.isEmpty() || !this.methodMap.isEmpty()) {
-      throw new IllegalStateException("Setting methods to given value lead to an inconsistent state.");
-    }
+    expectEmptyMethods();
 
     for (HxMethod method : methods) {
       addMethod(method);
     }
 
     return this;
+  }
+
+  private void expectEmptyMethods() {
+    if(!this.methods.isEmpty() || !this.methodMap.isEmpty()) {
+      throw new IllegalStateException("Setting methods to given value lead to an inconsistent state.");
+    }
   }
 
   @Override

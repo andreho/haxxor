@@ -498,6 +498,33 @@ public interface HxType
   Optional<HxField> findField(String name);
 
   /**
+   * Gets the first available field with given name
+   *
+   * @param name of a field to search
+   * @param type of a field to search
+   * @return {@link Optional#empty() empty} or a field with given name
+   */
+  Optional<HxField> findField(String name, HxType type);
+
+  /**
+   * Gets the first available field with given name
+   *
+   * @param name of a field to search
+   * @param type of a field to search
+   * @return {@link Optional#empty() empty} or a field with given name
+   */
+  Optional<HxField> findField(String name, Class<?> type);
+
+  /**
+   * Gets the first available field with given name
+   *
+   * @param name of a field to search
+   * @param type of a field to search
+   * @return {@link Optional#empty() empty} or a field with given name
+   */
+  Optional<HxField> findField(String name, String type);
+
+  /**
    * @param name       of the searched field
    * @param descriptor form of the searched field's type
    * @return {@link Optional#empty() empty} or a field with given name and descriptor
@@ -857,10 +884,26 @@ public interface HxType
   Optional<HxMethod> findConstructorDirectly(String descriptor);
 
   /**
+   * Finds all unimplemented methods,
+   * which must be implemented by a possible extending or implementing concrete type
+   * @return a collection with unimplemented methods
+   */
+  default Collection<HxMethod> findUnimplementedMethods() {
+    return Collections.emptyList();
+  }
+
+  /**
    * @return
    */
   default Optional<HxMethod> findDefaultConstructor() {
     return findConstructor(Collections.emptyList());
+  }
+
+  /**
+   * @return a set with constructors that propagate their invocation to a constructor defined by the super type
+   */
+  default Collection<HxMethod> findForwardingConstructors() {
+    return Collections.emptySet();
   }
 
   /**
@@ -893,12 +936,6 @@ public interface HxType
     return findConstructor(constructor.getParameterTypes());
   }
 
-  /**
-   * @return a set with constructors that propagate their invocation to a constructor defined by the super type
-   */
-  default Collection<HxMethod> findForwardingConstructors() {
-    return Collections.emptySet();
-  }
 
   /**
    * @param signature of wanted constructor as list

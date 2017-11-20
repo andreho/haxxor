@@ -195,6 +195,28 @@ public abstract class HxAbstractType
   }
 
   @Override
+  public Optional<HxField> findField(final String name,
+                                     final HxType type) {
+    return findField(name, Optional.empty());
+  }
+
+  @Override
+  public Optional<HxField> findField(final String name,
+                                     final Class<?> type) {
+    return findField(name, getHaxxor().reference(type));
+  }
+
+  @Override
+  public Optional<HxField> findField(final String name,
+                                     final String type) {
+    return findField(name, getHaxxor().reference(type));
+  }
+
+  protected Optional<HxField> findField(final String name, final Optional<HxType> typeOptional) {
+    return Optional.empty();
+  }
+
+  @Override
   public Optional<HxField> findFieldDirectly(final String name,
                                              final String descriptor) {
     return Optional.empty();
