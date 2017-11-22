@@ -657,8 +657,9 @@ public abstract class HxAbstractType
       name = toDescriptor()
         .replace(HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR,
                  HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR);
+      return Class.forName(name, true, classLoader);
     }
-    return Class.forName(name, true, classLoader);
+    return getHaxxor().loadClass(classLoader, null, getName(), toByteCode());
   }
 
   @Override

@@ -3,6 +3,7 @@ package net.andreho.haxxor;
 import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.api.HxTypeReference;
 import net.andreho.haxxor.spi.HxClassLoaderHolder;
+import net.andreho.haxxor.spi.HxClassLoadingHandler;
 import net.andreho.haxxor.spi.HxClassnameNormalizer;
 import net.andreho.haxxor.spi.HxDeduplicationCacheAware;
 import net.andreho.haxxor.spi.HxElementFactory;
@@ -21,7 +22,8 @@ public interface Hx extends HxClassnameNormalizer,
                             HxInitializationAware,
                             HxTypeSerializer,
                             HxVerificationAware,
-                            HxDeduplicationCacheAware {
+                            HxDeduplicationCacheAware,
+                            HxClassLoadingHandler {
 
   static HaxxorBuilder builder() {
     return HaxxorBuilder.newBuilder();

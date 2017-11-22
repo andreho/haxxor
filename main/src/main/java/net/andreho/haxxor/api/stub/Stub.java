@@ -8,9 +8,15 @@ import java.lang.annotation.Target;
 /**
  * <br/>Created by a.hofmann on 13.10.2017 at 22:20.
  */
-@Target({ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.PARAMETER})
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Stub {
+  /**
+   * Defines a set of classes and interfaces, that must be realized by the target class.
+   * @return a set with classes
+   */
+  java.lang.Class<?>[] requires() default {};
+
   @Target({ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.TYPE_USE})
   @Retention(RetentionPolicy.RUNTIME)
   @interface Ignore {}
@@ -18,45 +24,6 @@ public @interface Stub {
   @Target(ElementType.METHOD)
   @Retention(RetentionPolicy.RUNTIME)
   @interface Override {}
-
-  @Target({ElementType.TYPE, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.PARAMETER})
-  @Retention(RetentionPolicy.RUNTIME)
-  @interface Autowire {
-    boolean strict() default false;
-  }
-
-  @Target(ElementType.METHOD)
-  @Retention(RetentionPolicy.RUNTIME)
-  @interface Before {}
-
-  @Target(ElementType.METHOD)
-  @Retention(RetentionPolicy.RUNTIME)
-  @interface After {}
-
-  @Target(ElementType.METHOD)
-  @Retention(RetentionPolicy.RUNTIME)
-  @interface Catch {}
-
-  /**
-   * The marked method must return a {@link Class} instance and doesn't consume any arguments
-   * <br/>Created by a.hofmann on 13.10.2017 at 22:20.
-   */
-  @Target({ElementType.FIELD, ElementType.METHOD})
-  @Retention(RetentionPolicy.RUNTIME)
-  @interface DeclaringClass {}
-
-  /**
-   * <br/>Created by a.hofmann on 13.10.2017 at 22:20.
-   */
-  @Target({ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.PARAMETER})
-  @Retention(RetentionPolicy.RUNTIME)
-  @interface Constructor {}
-  /**
-   * <br/>Created by a.hofmann on 13.10.2017 at 22:20.
-   */
-  @Target({ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.PARAMETER})
-  @Retention(RetentionPolicy.RUNTIME)
-  @interface Method {}
 
   /**
    * <br/>Created by a.hofmann on 13.10.2017 at 22:20.
@@ -68,26 +35,34 @@ public @interface Stub {
   }
 
   /**
+   * The marked <b>static</b> method must  return a {@link java.lang.Class} instance and doesn't consume any arguments
    * <br/>Created by a.hofmann on 13.10.2017 at 22:20.
    */
   @Target({ElementType.METHOD})
   @Retention(RetentionPolicy.RUNTIME)
-  @interface Super {
+  @interface Class {}
+
+  /**
+   * <br/>Created by a.hofmann on 13.10.2017 at 22:20.
+   */
+  @Target({ElementType.METHOD})
+  @Retention(RetentionPolicy.RUNTIME)
+  @interface Method {
     /**
      * @return prefix value of the referenced method's name
      */
-    String value() default "super_";
+    String value() default "";
   }
 
   /**
    * <br/>Created by a.hofmann on 13.10.2017 at 22:20.
    */
-  @Target({ElementType.METHOD, ElementType.FIELD})
+  @Target({ElementType.FIELD})
   @Retention(RetentionPolicy.RUNTIME)
-  @interface Original {
+  @interface Field {
     /**
-     * @return prefix value of the referenced method's name
+     * @return prefix value of the referenced field's name
      */
-    String value() default "original_";
+    String value() default "";
   }
 }

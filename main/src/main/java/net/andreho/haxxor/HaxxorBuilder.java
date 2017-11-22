@@ -3,6 +3,7 @@ package net.andreho.haxxor;
 import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.api.HxTypeReference;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
+import net.andreho.haxxor.spi.HxClassLoadingHandler;
 import net.andreho.haxxor.spi.HxClassnameNormalizer;
 import net.andreho.haxxor.spi.HxDeduplicationCache;
 import net.andreho.haxxor.spi.HxElementFactory;
@@ -10,13 +11,14 @@ import net.andreho.haxxor.spi.HxFieldInitializer;
 import net.andreho.haxxor.spi.HxFieldVerifier;
 import net.andreho.haxxor.spi.HxMethodInitializer;
 import net.andreho.haxxor.spi.HxMethodVerifier;
-import net.andreho.haxxor.spi.HxStubInterpreter;
+import net.andreho.haxxor.spi.HxStubHandler;
 import net.andreho.haxxor.spi.HxTypeDeserializer;
 import net.andreho.haxxor.spi.HxTypeInitializer;
 import net.andreho.haxxor.spi.HxTypeSerializer;
 import net.andreho.haxxor.spi.HxTypeVerifier;
 import net.andreho.haxxor.spi.HxVerificationResult;
 import net.andreho.haxxor.spi.impl.CachedHxByteCodeLoader;
+import net.andreho.haxxor.spi.impl.CompoundHxStubHandler;
 import net.andreho.haxxor.spi.impl.DefaultHxClassnameNormalizer;
 import net.andreho.haxxor.spi.impl.DefaultHxElementFactory;
 import net.andreho.haxxor.spi.impl.DefaultHxTypeDeserializer;
@@ -24,6 +26,8 @@ import net.andreho.haxxor.spi.impl.DefaultHxTypeInitializer;
 import net.andreho.haxxor.spi.impl.DefaultHxTypeSerializer;
 import net.andreho.haxxor.spi.impl.DefaultTrieBasedDeduplicationCache;
 import net.andreho.haxxor.spi.impl.NoOpDeduplicationCache;
+import net.andreho.haxxor.spi.impl.ReflectingClassLoadingHandler;
+import net.andreho.haxxor.spi.impl.ServiceStubHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -256,10 +260,12 @@ public class HaxxorBuilder {
    * @param haxxor is the requesting instance
    * @return a
    */
-  public HxStubInterpreter createStubInterpreter(final Hx haxxor) {
-    return (target, stub) -> {
-      throw new UnsupportedOperationException("Not implemented");
-    };
+  public HxStubHandler createStubHandler(final Hx haxxor) {
+    return new CompoundHxStubHandler(new ServiceStubHandler());
+  }
+
+  public HxClassLoadingHandler createClassLoadingHandler(final Hx haxxor) {
+    return new ReflectingClassLoadingHandler();
   }
 
   /**

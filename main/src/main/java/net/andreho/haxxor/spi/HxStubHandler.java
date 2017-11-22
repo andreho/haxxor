@@ -6,11 +6,11 @@ import net.andreho.haxxor.api.HxType;
  * <br/>Created by a.hofmann on 21.10.2017 at 14:28.
  */
 @FunctionalInterface
-public interface HxStubInterpreter {
+public interface HxStubHandler {
 
   /**
-   * @param target
-   * @param stub
+   * @param target for the given stub class
+   * @param stub class
    */
-  void interpret(HxType target, HxType stub);
+  void handle(HxType target, HxType stub) throws HxStubException;
 }

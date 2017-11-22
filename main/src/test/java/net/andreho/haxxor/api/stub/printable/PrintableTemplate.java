@@ -12,8 +12,8 @@ import java.util.List;
  * <br/>Created by a.hofmann on 18.11.2017 at 16:03.
  */
 public class PrintableTemplate implements Printable {
-  @Stub.DeclaringClass static Class<?> __class__() { return PrintableTemplate.class; }
-  //------------------------------------------------------------------------------------------------------------------
+  @Stub.Class static Class __class__() { return PrintableTemplate.class; }
+
   private static final String[] NAMES;
   private static final MethodHandle[] HANDLES;
 
@@ -22,7 +22,7 @@ public class PrintableTemplate implements Printable {
     final List<MethodHandle> handles = new ArrayList<>();
     final MethodHandles.Lookup lookup = MethodHandles.lookup();
     try {
-      Class<?> current = __class__();
+      Class current = __class__();
       while(current != null && current != Object.class) {
         for(Field field : current.getFields()) {
           if(field.isAnnotationPresent(Printable.Element.class)) {
@@ -48,7 +48,8 @@ public class PrintableTemplate implements Printable {
       for (int i = 0; i < NAMES.length; i++) {
         final String name = names[i];
         final MethodHandle handle = handles[i];
-        current = current.property(name).print(handle.invokeExact(this));
+        current = current.property(name)
+                         .print(handle.invokeExact(this));
       }
     } finally {
       return current.leave(this);

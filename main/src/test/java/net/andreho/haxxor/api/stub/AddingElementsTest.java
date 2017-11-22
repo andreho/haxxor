@@ -2,8 +2,6 @@ package net.andreho.haxxor.api.stub;
 
 import net.andreho.haxxor.Debugger;
 import net.andreho.haxxor.Haxxor;
-import net.andreho.haxxor.api.HxType;
-import net.andreho.haxxor.api.stub.identifiable.IdentifiableTemplate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,12 +21,12 @@ class AddingElementsTest {
 
   @Test
   void addIdentifiableTemplate() {
-    HxType type = hx.createType("net.andreho.test.hx.template.FieldsAdd")
-                    .makePublic()
-                    .setSuperType(SuperClass.class);
-
-
-    type.addTemplate(IdentifiableTemplate.class);
+//    HxType type = hx.createType("net.andreho.test.hx.template.FieldsAdd")
+//                    .makePublic()
+//                    .setSuperType(SuperClass.class);
+//
+//
+//    type.addTemplate(IdentifiableTemplate.class);
   }
 
   public static void main(String[] args) {

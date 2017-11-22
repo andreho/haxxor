@@ -12,6 +12,7 @@ import net.andreho.haxxor.api.HxTypeReference;
 import net.andreho.haxxor.api.impl.HxArrayTypeImpl;
 import net.andreho.haxxor.api.impl.HxPrimitiveTypeImpl;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
+import net.andreho.haxxor.spi.HxClassLoadingHandler;
 import net.andreho.haxxor.spi.HxClassnameNormalizer;
 import net.andreho.haxxor.spi.HxDeduplicationCache;
 import net.andreho.haxxor.spi.HxElementFactory;
@@ -19,7 +20,7 @@ import net.andreho.haxxor.spi.HxFieldInitializer;
 import net.andreho.haxxor.spi.HxFieldVerifier;
 import net.andreho.haxxor.spi.HxMethodInitializer;
 import net.andreho.haxxor.spi.HxMethodVerifier;
-import net.andreho.haxxor.spi.HxStubInterpreter;
+import net.andreho.haxxor.spi.HxStubHandler;
 import net.andreho.haxxor.spi.HxTypeDeserializer;
 import net.andreho.haxxor.spi.HxTypeInitializer;
 import net.andreho.haxxor.spi.HxTypeSerializer;
@@ -30,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.ref.WeakReference;
+import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -65,7 +67,8 @@ public class Haxxor
   private final HxFieldVerifier fieldVerifier;
   private final HxMethodVerifier methodVerifier;
   private final HxTypeInitializer typeInitializer;
-  private final HxStubInterpreter stubInterpreter;
+  private final HxStubHandler stubHandler;
+  private final HxClassLoadingHandler classLoadingHandler;
   private final boolean concurrent;
 
   /**
@@ -160,7 +163,8 @@ public class Haxxor
     this.fieldVerifier = builder.createFieldVerifier(this);
     this.methodVerifier = builder.createMethodVerifier(this);
     this.classNameNormalizer = builder.createClassNameNormalizer(this);
-    this.stubInterpreter = builder.createStubInterpreter(this);
+    this.stubHandler = builder.createStubHandler(this);
+    this.classLoadingHandler = builder.createClassLoadingHandler(this);
     this.readWriteLock = new ReentrantReadWriteLock();
     this.concurrent = builder.isConcurrent();
 
@@ -316,8 +320,12 @@ public class Haxxor
   /**
    * @return the associated stub-interpreter
    */
-  public HxStubInterpreter getStubInterpreter() {
-    return stubInterpreter;
+  public HxStubHandler getStubHandler() {
+    return stubHandler;
+  }
+
+  public HxClassLoadingHandler getClassLoadingHandler() {
+    return classLoadingHandler;
   }
 
   /**
@@ -389,6 +397,14 @@ public class Haxxor
   @Override
   public HxVerificationResult verify(final HxMethod method) {
     return getMethodVerifier().verify(method);
+  }
+
+  @Override
+  public Class<?> loadClass(final ClassLoader classLoader,
+                            final ProtectionDomain protectionDomain,
+                            final String className,
+                            final byte[] bytecode) {
+    return getClassLoadingHandler().loadClass(classLoader, protectionDomain, className, bytecode);
   }
 
   /**
