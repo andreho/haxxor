@@ -4,6 +4,7 @@ import net.andreho.asm.org.objectweb.asm.AnnotationVisitor;
 import net.andreho.asm.org.objectweb.asm.ClassWriter;
 import net.andreho.asm.org.objectweb.asm.FieldVisitor;
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
+import net.andreho.asm.org.objectweb.asm.MethodWriter;
 import net.andreho.asm.org.objectweb.asm.Type;
 import net.andreho.haxxor.Hx;
 import net.andreho.haxxor.api.HxAnnotated;
@@ -81,7 +82,7 @@ public class DefaultHxTypeSerializer
   protected void visitClassHeader(final HxType type,
                                   final ClassWriter writer) {
     writer.visit(type.getVersion().getCode(),
-                 type.getModifiers(),
+                 type.getModifiers() & HxType.ALLOWED_MODIFIERS,
                  type.toInternalName(),
                  type.getGenericSignature().orElse(null),
                  type.getSuperType().get().toInternalName(),
@@ -229,7 +230,7 @@ public class DefaultHxTypeSerializer
 
       //( visitAnnotation | visitTypeAnnotation | visitAttribute )* visitEnd.
       final FieldVisitor fv = cw.visitField(
-          field.getModifiers(),
+          field.getModifiers() & HxField.ALLOWED_MODIFIERS,
           field.getName(),
           field.getType().toDescriptor(),
           field.getGenericSignature().orElse(null),
@@ -287,18 +288,30 @@ public class DefaultHxTypeSerializer
 
   protected MethodVisitor visitMethod(final ClassWriter cw,
                                       final HxMethod method) {
-    final MethodVisitor mv = cw.visitMethod(
-        method.getModifiers(),
-        method.getName(),
-        method.toDescriptor(),
-        method.getGenericSignature().orElse(null),
-        method.getExceptionTypes().stream().map(HxType::toInternalName).toArray(String[]::new)
-    );
+    final MethodVisitor mv =
+      //MethodWriter was made public
+      new MethodWriter(cw,
+                       method.getModifiers() & HxMethod.ALLOWED_MODIFIERS,
+                       method.getName(),
+                       method.toDescriptor(),
+                       method.getGenericSignature().orElse(null),
+                       method.getExceptionTypes().stream().map(HxType::toInternalName).toArray(String[]::new),
+                       false,
+                       true);
+//    cw.visitMethod(
+//      method.getModifiers(),
+//      method.getName(),
+//      method.toDescriptor(),
+//      method.getGenericSignature().orElse(null),
+//      method.getExceptionTypes().stream().map(HxType::toInternalName).toArray(String[]::new)
+//    );
 
     visitParameters(method, mv);
+
     if(method.getDeclaringType().isAnnotation()) {
       visitAnnotationDefault(method, mv);
     }
+
     visitAnnotations(method, mv::visitAnnotation);
     visitParameterAnnotations(method, mv);
     visitTypeAnnotations(method, mv);

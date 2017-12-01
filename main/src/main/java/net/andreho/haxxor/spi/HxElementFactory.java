@@ -14,10 +14,12 @@ import java.lang.annotation.Annotation;
 /**
  * <br/>Created by a.hofmann on 08.04.2017 at 08:50.
  */
-public interface HxElementFactory extends HxProvider {
+public interface HxElementFactory
+  extends HxProvider {
 
   /**
    * Creates a new modifiable instance with given name
+   *
    * @param className of new type instance
    * @return a new and empty instance of <code>HxType</code>
    */
@@ -25,6 +27,7 @@ public interface HxElementFactory extends HxProvider {
 
   /**
    * Creates a new reference to an existing type with given name
+   *
    * @param className of an existing type
    * @return a new and empty instance of <code>HxType</code>
    */
@@ -32,6 +35,7 @@ public interface HxElementFactory extends HxProvider {
 
   /**
    * Creates a new reference to an existing type
+   *
    * @param resolvedType for referencing
    * @return a new and empty instance of <code>HxType</code>
    */
@@ -39,18 +43,20 @@ public interface HxElementFactory extends HxProvider {
 
   /**
    * Creates a new unbound field with given type and name
-   * @param cls of new field
+   *
+   * @param type      of new field
    * @param fieldName of new field
    * @return a new unbound field instance
    */
-  default HxField createField(final Class<?> cls,
-                      final String fieldName) {
-    return createField(cls.getName(), fieldName);
+  default HxField createField(final Class<?> type,
+                              final String fieldName) {
+    return createField(type.getName(), fieldName);
   }
 
   /**
    * Creates a new unbound field with given type and name
-   * @param type of new field
+   *
+   * @param type      of new field
    * @param fieldName of new field
    * @return a new unbound field instance
    */
@@ -61,15 +67,17 @@ public interface HxElementFactory extends HxProvider {
 
   /**
    * Creates a new unbound field with given type and name
-   * @param className of new field
+   *
+   * @param typename  of new field
    * @param fieldName of new field
    * @return a new unbound field instance
    */
-  HxField createField(final String className,
+  HxField createField(final String typename,
                       final String fieldName);
 
   /**
    * Creates a new unbound constructor with given parameters
+   *
    * @param parameterTypes of new constructor
    * @return a new unbound constructor instance
    */
@@ -77,6 +85,7 @@ public interface HxElementFactory extends HxProvider {
 
   /**
    * Creates a new unbound constructor with given parameters
+   *
    * @param parameterTypes of new constructor
    * @return a new unbound constructor instance
    */
@@ -84,6 +93,7 @@ public interface HxElementFactory extends HxProvider {
 
   /**
    * Creates a new unbound constructor with given parameters
+   *
    * @param parameterTypes of new constructor
    * @return a new unbound constructor instance
    */
@@ -93,16 +103,19 @@ public interface HxElementFactory extends HxProvider {
 
   /**
    * Creates a new unbound constructor-reference with given declaring-type and parameters
-   * @param declaringType of new constructor-reference
+   *
+   * @param declaringType  of new constructor-reference
    * @param parameterTypes of new constructor-reference
    * @return a new constructor-reference instance
    */
-  HxMethod createConstructorReference(final String declaringType, final String... parameterTypes);
+  HxMethod createConstructorReference(final String declaringType,
+                                      final String... parameterTypes);
 
   /**
    * Creates a new unbound method with given name, return-type and parameters
-   * @param returnType of new method
-   * @param methodName of new method
+   *
+   * @param returnType     of new method
+   * @param methodName     of new method
    * @param parameterTypes of new method
    * @return a new unbound method instance
    */
@@ -112,8 +125,9 @@ public interface HxElementFactory extends HxProvider {
 
   /**
    * Creates a new unbound method with given name, return-type and parameters
-   * @param returnType of new method
-   * @param methodName of new method
+   *
+   * @param returnType     of new method
+   * @param methodName     of new method
    * @param parameterTypes of new method
    * @return a new unbound method instance
    */
@@ -123,14 +137,15 @@ public interface HxElementFactory extends HxProvider {
 
   /**
    * Creates a new unbound method with given name, return-type and parameters
-   * @param returnType of new method
-   * @param methodName of new method
+   *
+   * @param returnType     of new method
+   * @param methodName     of new method
    * @param parameterTypes of new method
    * @return a new unbound method instance
    */
   default HxMethod createMethod(final Class<?> returnType,
-                        final String methodName,
-                        final Class<?>... parameterTypes) {
+                                final String methodName,
+                                final Class<?>... parameterTypes) {
     return createMethod(returnType.getName(),
                         methodName,
                         getHaxxor().toNormalizedClassnames(parameterTypes));
@@ -138,16 +153,17 @@ public interface HxElementFactory extends HxProvider {
 
   /**
    * Creates a new unbound method-reference with given name, return-type and parameters
-   * @param declaringType of new method-reference
-   * @param returnType of new method-reference
-   * @param methodName of new method-reference
+   *
+   * @param declaringType  of new method-reference
+   * @param returnType     of new method-reference
+   * @param methodName     of new method-reference
    * @param parameterTypes of new method-reference
    * @return a new method-reference instance
    */
   default HxMethod createMethodReference(final Class<?> declaringType,
-                                 final Class<?> returnType,
-                                 final String methodName,
-                                 final Class<?>... parameterTypes) {
+                                         final Class<?> returnType,
+                                         final String methodName,
+                                         final Class<?>... parameterTypes) {
     return createMethodReference(
       declaringType.getName(),
       returnType.getName(),
@@ -158,9 +174,10 @@ public interface HxElementFactory extends HxProvider {
 
   /**
    * Creates a new unbound method-reference with given name, return-type and parameters
-   * @param declaringType of new method-reference
-   * @param returnType of new method-reference
-   * @param methodName of new method-reference
+   *
+   * @param declaringType  of new method-reference
+   * @param returnType     of new method-reference
+   * @param methodName     of new method-reference
    * @param parameterTypes of new method-reference
    * @return a new method-reference instance
    */
@@ -171,6 +188,7 @@ public interface HxElementFactory extends HxProvider {
 
   /**
    * Creates a new unbound parameter with given type
+   *
    * @param className of new parameter
    * @return a new unbound parameter instance
    */
@@ -178,6 +196,7 @@ public interface HxElementFactory extends HxProvider {
 
   /**
    * Creates a new unbound parameter with given type
+   *
    * @param cls of new parameter
    * @return a new unbound parameter instance
    */
@@ -187,6 +206,7 @@ public interface HxElementFactory extends HxProvider {
 
   /**
    * Creates a new unbound parameter with given type
+   *
    * @param parameterType of new parameter
    * @return a new unbound parameter instance
    */
@@ -196,8 +216,9 @@ public interface HxElementFactory extends HxProvider {
 
   /**
    * Creates a new unbound annotation with given type and visibility
+   *
    * @param className of new annotation
-   * @param visible is the visibility of new annotation
+   * @param visible   is the visibility of new annotation
    * @return a new unbound parameter instance
    */
   HxAnnotation createAnnotation(final String className,
@@ -205,19 +226,21 @@ public interface HxElementFactory extends HxProvider {
 
   /**
    * Creates a new unbound annotation with given type and visibility
-   * @param cls of new annotation
+   *
+   * @param cls     of new annotation
    * @param visible is the visibility of new annotation
    * @return a new unbound parameter instance
    */
   default HxAnnotation createAnnotation(final Class<? extends Annotation> cls,
-                                final boolean visible) {
+                                        final boolean visible) {
     return createAnnotation(cls.getName(), visible);
   }
 
   /**
    * Creates a new unbound annotation with given type and visibility
+   *
    * @param annotationType of new annotation
-   * @param visible is the visibility of new annotation
+   * @param visible        is the visibility of new annotation
    * @return a new unbound parameter instance
    */
   default HxAnnotation createAnnotation(final HxType annotationType,

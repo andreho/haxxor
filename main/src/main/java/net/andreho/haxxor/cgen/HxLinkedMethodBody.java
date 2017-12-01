@@ -1,5 +1,7 @@
 package net.andreho.haxxor.cgen;
 
+import net.andreho.haxxor.cgen.instr.BEGIN;
+import net.andreho.haxxor.cgen.instr.END;
 import net.andreho.haxxor.cgen.instr.misc.COMPOUND;
 
 import java.util.Collections;
@@ -29,7 +31,9 @@ public class HxLinkedMethodBody extends COMPOUND
     this.localVariables = Collections.emptyList();
     this.tryCatches = Collections.emptyList();
 
-    this.first = this.last = null;
+    this.first = new BEGIN();
+    this.last = new END();
+    first.append(this.last);
   }
 
   public List<HxLocalVariable> getLocalVariables() {

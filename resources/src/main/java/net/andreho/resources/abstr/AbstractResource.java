@@ -19,6 +19,8 @@ import java.util.Optional;
 public abstract class AbstractResource<T>
     implements Resource {
 
+  private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
+  static final int TEMP_BUFFER_CAPACITY = 256;
   private final URL source;
   private final String name;
   private final ResourceType resourceType;

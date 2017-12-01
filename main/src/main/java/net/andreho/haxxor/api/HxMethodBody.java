@@ -13,7 +13,8 @@ import java.util.function.Function;
  * <br/>Created by a.hofmann on 18.03.2016.<br/>
  */
 public interface HxMethodBody
-  extends Iterable<HxInstruction>,
+  extends HxInstruction,
+          Iterable<HxInstruction>,
           Cloneable {
 
   /**

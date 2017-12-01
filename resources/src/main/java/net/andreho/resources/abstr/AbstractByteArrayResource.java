@@ -16,7 +16,8 @@ import java.net.URL;
 public abstract class AbstractByteArrayResource
     extends AbstractResource<byte[]> {
 
-  private static final int MAX_CACHEABLE_BYTES = Integer.MAX_VALUE - 16;
+  private static final int MAX_CACHEABLE_BYTES = Integer.MAX_VALUE - 8;
+  static final int READ_BUFFER_LENGTH = 2048;
   private final Object lock = new Object();
 
   public AbstractByteArrayResource(final URL source,
@@ -29,8 +30,9 @@ public abstract class AbstractByteArrayResource
   public final InputStream getInputStream()
   throws IOException {
     if (isCached()) {
-      Reference<byte[]> cachedReference = this.cachedReference;
+      final Reference<byte[]> cachedReference = this.cachedReference;
       final byte[] content = cachedReference.get();
+
       if (content != null) {
         return new ByteArrayInputStream(content);
       }
@@ -45,14 +47,13 @@ public abstract class AbstractByteArrayResource
     }
 
     final byte[] result = new byte[(int) length()];
-    try (InputStream inputStream = getInputStream()) {
-      int awaited = result.length;
-      int count;
-      while ((count = inputStream.read(result)) > -1) {
-        awaited -= count;
-        if (awaited <= 0) {
-          break;
-        }
+    try (final InputStream inputStream = getInputStream()) {
+      final int amount = result.length;
+      int offset = 0;
+      int read;
+
+      while (offset < amount && (read = inputStream.read(result, offset, amount - offset)) > -1) {
+        offset += read;
       }
     }
     return result;
@@ -63,7 +64,7 @@ public abstract class AbstractByteArrayResource
     final byte[] result;
     try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
       try (final InputStream inputStream = getInputStream()) {
-        final byte[] buffer = new byte[2048];
+        final byte[] buffer = new byte[READ_BUFFER_LENGTH];
 
         int count;
         while ((count = inputStream.read(buffer)) > -1) {
@@ -80,17 +81,15 @@ public abstract class AbstractByteArrayResource
   throws IOException {
     if (!isCached()) {
       synchronized (this.lock) {
-        if (isCached()) {
-          return true;
+        if (!isCached()) {
+          byte[] result;
+          if (hasLength()) {
+            result = readContentWithLength();
+          } else {
+            result = readContentWithOutLength();
+          }
+          this.cachedReference = createCachedReference(result);
         }
-        byte[] result;
-
-        if (hasLength()) {
-          result = readContentWithLength();
-        } else {
-          result = readContentWithOutLength();
-        }
-        this.cachedReference = createCachedReference(result);
       }
       return true;
     }
@@ -99,5 +98,20 @@ public abstract class AbstractByteArrayResource
 
   protected Reference<byte[]> createCachedReference(final byte[] result) {
     return new SoftReference<>(result);
+  }
+
+  @Override
+  public byte[] toByteArray() throws IOException {
+    if(isCached()) {
+      byte[] content = this.cachedReference.get();
+      if(content != null) {
+        return content;
+      }
+    }
+
+    if(hasLength()) {
+      return readContentWithLength();
+    }
+    return readContentWithOutLength();
   }
 }

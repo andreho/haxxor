@@ -15,12 +15,14 @@ public interface ResourceType {
 
   ResourceType XML_TYPE = new PatternResourceTypeImpl("*.xml", ".*\\.(?i)xml");
 
+  ResourceType XSD_TYPE = new PatternResourceTypeImpl("*.xsd", ".*\\.(?i)xsd");
+
   ResourceType JSON_TYPE = new PatternResourceTypeImpl("*.json", ".*\\.(?i)json");
 
   ResourceType YAML_TYPE = new PatternResourceTypeImpl("*.yml", ".*\\.(?i)yml");
 
   ResourceType SERVICE_DECLARATION_TYPE = new PatternResourceTypeImpl("/META-INF/services/*",
-                                                                      "\\/META-INF\\/services\\/.*");
+                                                                      "\\/META-INF\\/services\\/[\\w].+");
 
   ResourceType UNKNOWN_TYPE = new PatternResourceTypeImpl("*.*", ".*\\.[^\\.]+");
 

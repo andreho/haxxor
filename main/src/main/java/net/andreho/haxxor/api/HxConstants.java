@@ -11,6 +11,7 @@ public abstract class HxConstants {
   }
   public static final String CLASS_INITIALIZER_METHOD_NAME = "<clinit>";
   public static final String CONSTRUCTOR_METHOD_NAME = "<init>";
+  public static final HxType[] EMPTY_TYPE_ARRAY = new HxType[0];
   public static final EmptyArray[] EMPTY_ARRAY = EmptyArray.INSTANCE;
   public static final String JAVA_LANG_OBJECT = "java.lang.Object";
   public static final char JAVA_PACKAGE_SEPARATOR_CHAR = '.';

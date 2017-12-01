@@ -34,10 +34,12 @@ public class JarEntryResourceImpl
   protected InputStream openInputStream()
   throws IOException {
     final ZipFile zipFile = new ZipFile(this.jarFile);
-    ZipEntry entry = zipFile.getEntry(getName());
+    final ZipEntry entry = zipFile.getEntry(getName());
+
     if (entry == null) {
       throw new IllegalStateException("Resource isn't available anymore: " + this.jarFile + "/!" + getName());
     }
+
     return zipFile.getInputStream(entry);
   }
 

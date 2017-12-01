@@ -2,6 +2,9 @@ package net.andreho.haxxor.api;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.api.impl.HxParameterImpl;
+import net.andreho.haxxor.cgen.HxInstruction;
+import net.andreho.haxxor.cgen.HxInstructionTypes;
+import net.andreho.haxxor.cgen.instr.abstr.InvokeInstruction;
 import net.andreho.haxxor.utils.collections.MappedList;
 
 import java.io.IOException;
@@ -12,6 +15,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -82,6 +86,17 @@ public interface HxMethod
     @Override
     public int toBit() {
       return bit;
+    }
+  }
+
+  /**
+   */
+  enum InternalModifiers implements HxModifier {
+    DIRTY() {
+      @Override
+      public int toBit() {
+        return 0x10000;
+      }
     }
   }
 
@@ -175,6 +190,39 @@ public interface HxMethod
    */
   default boolean hasReturnType(HxSort sort) {
     return getReturnType().getSort() == sort;
+  }
+
+  /**
+   * @return
+   */
+  default boolean isForwardingConstructor() {
+    final Optional<HxType> superOpt = getDeclaringType().getSuperType();
+
+    if(isConstructor() &&
+       superOpt.isPresent() &&
+       hasBody()) {
+      final HxInstruction first = getBody().getFirst();
+
+      if(first != null) {
+        final HxType superClass = superOpt.get();
+
+        for(HxInstruction current : first) {
+          if(current.hasType(HxInstructionTypes.Invocation.INVOKESPECIAL)) {
+            InvokeInstruction invokeInstruction = (InvokeInstruction) current;
+
+            if(HxConstants.CONSTRUCTOR_METHOD_NAME.equals(invokeInstruction.getName())) {
+              if(superClass.hasName(invokeInstruction.getOwner())) {
+                return true;
+              }
+              if(getDeclaringType().hasName(invokeInstruction.getOwner())) {
+                return false;
+              }
+            }
+          }
+        }
+      }
+    }
+    return false;
   }
 
   /**
@@ -522,7 +570,7 @@ public interface HxMethod
    * @return
    */
   default HxMethod makeInternal() {
-    return setModifiers((~(Opcodes.ACC_PUBLIC | Opcodes.ACC_PROTECTED | Opcodes.ACC_PRIVATE)) & getModifiers());
+    return removeModifiers(Opcodes.ACC_PUBLIC | Opcodes.ACC_PROTECTED | Opcodes.ACC_PRIVATE);
   }
 
   /**
@@ -536,7 +584,7 @@ public interface HxMethod
    * @return
    */
   default HxMethod makeStatic() {
-    return setModifiers((~(Opcodes.ACC_ABSTRACT | Opcodes.ACC_FINAL)) & getModifiers())
+    return removeModifiers(Opcodes.ACC_ABSTRACT | Opcodes.ACC_FINAL)
       .addModifier(Modifiers.STATIC);
   }
 
@@ -551,7 +599,7 @@ public interface HxMethod
    * @return
    */
   default HxMethod makeAbstract() {
-    return setModifiers((~(Opcodes.ACC_STATIC | Opcodes.ACC_FINAL)) & getModifiers())
+    return removeModifiers(Opcodes.ACC_STATIC | Opcodes.ACC_FINAL)
       .addModifier(Modifiers.ABSTRACT);
   }
 
@@ -608,7 +656,7 @@ public interface HxMethod
    * @return
    */
   default HxMethod makeFinal() {
-    return setModifiers((~(Opcodes.ACC_STATIC | Opcodes.ACC_ABSTRACT)) & getModifiers())
+    return removeModifiers(Opcodes.ACC_STATIC | Opcodes.ACC_ABSTRACT)
       .addModifier(Modifiers.FINAL);
   }
 

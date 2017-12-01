@@ -2,6 +2,7 @@ package net.andreho.haxxor.cgen.impl;
 
 import net.andreho.haxxor.api.HxMethodBody;
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
+import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionFactory;
 import net.andreho.haxxor.cgen.instr.misc.LABEL;
 
@@ -13,13 +14,15 @@ public class ExtendedInstructionCodeStream
 
   private final HxMethodBody methodBody;
 
-  public ExtendedInstructionCodeStream(final HxMethodBody methodBody) {
-    this(methodBody, methodBody.getInstructionFactory());
+  public ExtendedInstructionCodeStream(final HxMethodBody methodBody,
+                                       final HxInstruction instruction) {
+    this(methodBody, instruction, methodBody.getInstructionFactory());
   }
 
   public ExtendedInstructionCodeStream(final HxMethodBody methodBody,
+                                       final HxInstruction instruction,
                                        final HxInstructionFactory factory) {
-    super(methodBody.getLast(), factory);
+    super(instruction, factory);
     this.methodBody = methodBody;
   }
 

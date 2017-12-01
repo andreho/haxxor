@@ -4,6 +4,7 @@ import net.andreho.haxxor.Hx;
 import net.andreho.haxxor.api.HxAnnotation;
 import net.andreho.haxxor.api.HxMember;
 import net.andreho.haxxor.api.HxType;
+import net.andreho.haxxor.api.Version;
 
 import java.io.Serializable;
 import java.util.Arrays;

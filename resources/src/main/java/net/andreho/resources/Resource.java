@@ -98,4 +98,10 @@ public interface Resource
    * @return <b>true</b> if the length of this resource is known or may be fetched, <b>false</b> otherwise.
    */
   boolean hasLength();
+
+  /**
+   * @return
+   */
+  byte[] toByteArray()
+  throws IOException;
 }

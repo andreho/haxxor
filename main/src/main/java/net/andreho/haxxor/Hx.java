@@ -3,7 +3,7 @@ package net.andreho.haxxor;
 import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.api.HxTypeReference;
 import net.andreho.haxxor.spi.HxClassLoaderHolder;
-import net.andreho.haxxor.spi.HxClassLoadingHandler;
+import net.andreho.haxxor.spi.HxClassResolver;
 import net.andreho.haxxor.spi.HxClassnameNormalizer;
 import net.andreho.haxxor.spi.HxDeduplicationCacheAware;
 import net.andreho.haxxor.spi.HxElementFactory;
@@ -23,7 +23,7 @@ public interface Hx extends HxClassnameNormalizer,
                             HxTypeSerializer,
                             HxVerificationAware,
                             HxDeduplicationCacheAware,
-                            HxClassLoadingHandler {
+                            HxClassResolver {
 
   static HaxxorBuilder builder() {
     return HaxxorBuilder.newBuilder();
@@ -51,13 +51,19 @@ public interface Hx extends HxClassnameNormalizer,
    * @param classnames
    * @return
    */
-  List<HxType> referencesAsList(String... classnames);
+  HxType[] references(String... classnames);
+
+  /**
+   * @param classes
+   * @return
+   */
+  HxType[] references(Class<?>... classes);
 
   /**
    * @param classnames
    * @return
    */
-  HxType[] referencesAsArray(String... classnames);
+  List<HxType> referencesAsList(String... classnames);
 
   /**
    * @param classname
@@ -72,18 +78,26 @@ public interface Hx extends HxClassnameNormalizer,
   HxType resolve(String classname);
 
   /**
-   * @param aClass
+   * @param cls
    * @return
    */
-  HxType resolve(Class<?> aClass);
+  HxType resolve(Class<?> cls);
 
   /**
    * @param classname
    * @param flags
    * @return
    */
-  HxType resolve(String classname,
-                 int flags);
+  HxType resolve(String classname, int flags);
+
+  /**
+   * @param classname
+   * @param byteCode
+   * @return
+   */
+  default HxType resolve(String classname, byte[] byteCode) {
+    return resolve(classname, byteCode, 0);
+  }
 
   /**
    * @param classname

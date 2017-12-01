@@ -185,7 +185,7 @@ class HxTypeTest {
     final HxType type = haxxor.createType(TEST_CLASS_NAME_1);
 
     loop:
-    for (HxType.Part part : HxType.Part.values()) {
+    for (InitializablePart part : InitializablePart.values()) {
       switch (part) {
         case ANNOTATIONS: {
           checkInitialization(type, part, () -> type.getAnnotations().values());
@@ -214,7 +214,7 @@ class HxTypeTest {
   }
 
   private <E, T extends Collection<E>> void checkInitialization(final HxType type,
-                                                                final HxType.Part part,
+                                                                final InitializablePart part,
                                                                 final Supplier<T> supplier) {
     assertTrue(CommonUtils.isUninitialized(supplier.get()));
     type.initialize(part);
@@ -228,7 +228,7 @@ class HxTypeTest {
   @DisplayName("The byte-code version of new types must be set to 1.8")
   void getVersion() {
     assertTrue(haxxor.createType(TEST_CLASS_NAME_1)
-                     .getVersion() == HxType.Version.V1_8);
+                     .getVersion() == Version.V1_8);
   }
 
   @Test
@@ -331,7 +331,7 @@ class HxTypeTest {
     checkClassArrays(new Class[]{Serializable.class, Comparable.class, Runnable.class}, type.getInterfaces());
     type.setInterfaces(
         Arrays.asList(
-            haxxor.referencesAsArray(
+            haxxor.references(
                 Serializable.class.getName(),
                 Comparable.class.getName(),
                 Runnable.class.getName())
@@ -384,7 +384,7 @@ class HxTypeTest {
     HxType type = haxxor.createType(TEST_CLASS_NAME_1);
     assertTrue(type.getInnerTypes()
                    .isEmpty());
-    type.initialize(HxType.Part.INNER_TYPES)
+    type.initialize(InitializablePart.INNER_TYPES)
         .getInnerTypes()
         .add(haxxor.reference(TEST_CLASS_NAME_2));
     assertEquals(1, type.getInnerTypes()
@@ -668,7 +668,7 @@ class HxTypeTest {
         Optional<HxMethod> hxMethod2 = hxType.findMethod(
             haxxor.reference(returnTypeName),
             name,
-            haxxor.referencesAsArray(parameters)
+            haxxor.references(parameters)
         );
 
         assertTrue(hxMethod2.isPresent());

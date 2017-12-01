@@ -3,7 +3,7 @@ package net.andreho.haxxor;
 import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.api.HxTypeReference;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
-import net.andreho.haxxor.spi.HxClassLoadingHandler;
+import net.andreho.haxxor.spi.HxClassResolver;
 import net.andreho.haxxor.spi.HxClassnameNormalizer;
 import net.andreho.haxxor.spi.HxDeduplicationCache;
 import net.andreho.haxxor.spi.HxElementFactory;
@@ -26,7 +26,7 @@ import net.andreho.haxxor.spi.impl.DefaultHxTypeInitializer;
 import net.andreho.haxxor.spi.impl.DefaultHxTypeSerializer;
 import net.andreho.haxxor.spi.impl.DefaultTrieBasedDeduplicationCache;
 import net.andreho.haxxor.spi.impl.NoOpDeduplicationCache;
-import net.andreho.haxxor.spi.impl.ReflectingClassLoadingHandler;
+import net.andreho.haxxor.spi.impl.ReflectingClassResolver;
 import net.andreho.haxxor.spi.impl.ServiceStubHandler;
 
 import java.util.HashMap;
@@ -45,7 +45,7 @@ public class HaxxorBuilder {
   /**
    * @return
    */
-  static HaxxorBuilder newBuilder() {
+  public static HaxxorBuilder newBuilder() {
     return new HaxxorBuilder();
   }
 
@@ -258,14 +258,19 @@ public class HaxxorBuilder {
    * Creates a new stub-interpreter
    *
    * @param haxxor is the requesting instance
-   * @return a
+   * @return
    */
   public HxStubHandler createStubHandler(final Hx haxxor) {
     return new CompoundHxStubHandler(new ServiceStubHandler());
   }
 
-  public HxClassLoadingHandler createClassLoadingHandler(final Hx haxxor) {
-    return new ReflectingClassLoadingHandler();
+  /**
+   * Creates a new class-resolver
+   * @param haxxor is the requesting instance
+   * @return
+   */
+  public HxClassResolver createClassResolver(final Hx haxxor) {
+    return new ReflectingClassResolver();
   }
 
   /**

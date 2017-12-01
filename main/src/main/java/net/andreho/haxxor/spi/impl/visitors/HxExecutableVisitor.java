@@ -4,6 +4,7 @@ import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.haxxor.Hx;
 import net.andreho.haxxor.api.HxMethod;
 import net.andreho.haxxor.api.HxType;
+import net.andreho.haxxor.api.InitializablePart;
 import net.andreho.haxxor.cgen.impl.AsmExecutableMethodVisitor;
 
 import java.util.Objects;
@@ -35,6 +36,6 @@ public class HxExecutableVisitor
     super.visitEnd();
 
     final HxType declaringType = this.declaringType;
-    declaringType.initialize(HxType.Part.METHODS).addMethod(this.method);
+    declaringType.initialize(InitializablePart.METHODS).addMethod(this.method);
   }
 }

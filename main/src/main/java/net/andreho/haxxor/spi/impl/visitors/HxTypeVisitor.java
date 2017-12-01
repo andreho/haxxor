@@ -13,6 +13,8 @@ import net.andreho.haxxor.api.HxField;
 import net.andreho.haxxor.api.HxMethod;
 import net.andreho.haxxor.api.HxSourceInfo;
 import net.andreho.haxxor.api.HxType;
+import net.andreho.haxxor.api.InitializablePart;
+import net.andreho.haxxor.api.Version;
 
 import java.util.Collections;
 import java.util.function.Consumer;
@@ -30,12 +32,12 @@ public class HxTypeVisitor
   private final Hx haxxor;
   private HxType type;
 
-  public HxTypeVisitor(Hx haxxor) {
+  public HxTypeVisitor(final Hx haxxor) {
     this(haxxor, null);
   }
 
-  public HxTypeVisitor(Hx haxxor,
-                       ClassVisitor cv) {
+  public HxTypeVisitor(final Hx haxxor,
+                       final ClassVisitor cv) {
     super(Opcodes.ASM5, cv);
     this.haxxor = haxxor;
   }
@@ -56,7 +58,7 @@ public class HxTypeVisitor
     this.type = this.haxxor.createType(name);
 
     this.type
-        .setVersion(HxType.Version.of(version))
+        .setVersion(Version.of(version))
         .setModifiers(access)
         .setSuperType(superName)
         .setGenericSignature(signature);
@@ -109,7 +111,7 @@ public class HxTypeVisitor
                                            boolean visible) {
     final HxAnnotation hxAnnotation =
         this.haxxor.createAnnotation(desc, visible);
-    this.type.initialize(HxType.Part.ANNOTATIONS);
+    this.type.initialize(InitializablePart.ANNOTATIONS);
     final Consumer consumer = (Consumer<HxAnnotation>) this.type::addAnnotation;
     return new HxAnnotationVisitor(hxAnnotation, consumer, super.visitAnnotation(desc, visible));
   }
@@ -136,7 +138,7 @@ public class HxTypeVisitor
                                  Object value) {
     final FieldVisitor fv = super.visitField(access, name, desc, signature, value);
 
-    this.type.initialize(HxType.Part.FIELDS);
+    this.type.initialize(InitializablePart.FIELDS);
     HxField hxField = this.haxxor
         .createField(toPrimitiveClassname(desc), name)
         .setModifiers(access)
@@ -156,17 +158,17 @@ public class HxTypeVisitor
 
     final String[] parameterTypes = normalizeSignature(desc);
     final String returnType = normalizeReturnType(desc);
-    final HxMethod parameterizable =
+    final HxMethod method =
       this.haxxor
         .createMethod(returnType, name, parameterTypes)
         .setModifiers(access)
         .setGenericSignature(signature);
 
     if (exceptions != null && exceptions.length > 0) {
-      parameterizable.setExceptionTypes(this.haxxor.referencesAsArray(exceptions));
+      method.setExceptionTypes(this.haxxor.references(exceptions));
     }
 
-    return new HxExecutableVisitor(haxxor, type, parameterizable, mv);
+    return new HxExecutableVisitor(haxxor, type, method, mv);
   }
 
   @Override

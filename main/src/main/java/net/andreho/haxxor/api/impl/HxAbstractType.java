@@ -5,13 +5,12 @@ import net.andreho.haxxor.api.HxConstants;
 import net.andreho.haxxor.api.HxField;
 import net.andreho.haxxor.api.HxGenericType;
 import net.andreho.haxxor.api.HxMethod;
+import net.andreho.haxxor.api.HxMethodBody;
 import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.api.HxTypeReference;
+import net.andreho.haxxor.api.InitializablePart;
+import net.andreho.haxxor.api.Version;
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
-import net.andreho.haxxor.cgen.HxInstruction;
-import net.andreho.haxxor.cgen.HxInstructionSort;
-import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.abstr.InvokeInstruction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +46,6 @@ public abstract class HxAbstractType
       if (lhs.getDimension() != rhs.getDimension()) {
         return -1;
       }
-
       return estimateDistance(
         lhs.getComponentType().get(),
         rhs.getComponentType().get(),
@@ -147,15 +145,15 @@ public abstract class HxAbstractType
   }
 
   @Override
-  public HxType initialize(Part... parts) {
-    for (Part part : parts) {
+  public HxType initialize(InitializablePart... parts) {
+    for (InitializablePart part : parts) {
       initialize(part);
     }
     return this;
   }
 
   @Override
-  public HxType initialize(Part part) {
+  public HxType initialize(InitializablePart part) {
     return this;
   }
 
@@ -177,60 +175,39 @@ public abstract class HxAbstractType
   }
 
   @Override
-  public HxType addFieldAt(int index,
-                           HxField field) {
-    //NO OP
-    return this;
-  }
-
-  @Override
-  public HxType removeField(HxField field) {
-    //NO OP
-    return this;
-  }
-
-  @Override
   public Optional<HxField> findField(String name) {
-    return Optional.empty();
+    return Optional.ofNullable(findFieldInternally(name));
   }
 
   @Override
   public Optional<HxField> findField(final String name,
                                      final HxType type) {
-    return findField(name, Optional.empty());
+    return Optional.ofNullable(findFieldInternally(name, type));
   }
 
   @Override
   public Optional<HxField> findField(final String name,
                                      final Class<?> type) {
-    return findField(name, getHaxxor().reference(type));
+    return Optional.ofNullable(findFieldInternally(name, getHaxxor().reference(type)));
   }
 
   @Override
   public Optional<HxField> findField(final String name,
                                      final String type) {
-    return findField(name, getHaxxor().reference(type));
+    return Optional.ofNullable(findFieldInternally(name, getHaxxor().reference(type)));
   }
 
-  protected Optional<HxField> findField(final String name, final Optional<HxType> typeOptional) {
-    return Optional.empty();
+  protected HxField findFieldInternally(final String name) {
+    return findFieldInternally(name, null);
   }
 
-  @Override
-  public Optional<HxField> findFieldDirectly(final String name,
-                                             final String descriptor) {
-    return Optional.empty();
-  }
-
-  @Override
-  public List<HxField> getFields() {
-    return Collections.emptyList();
-  }
-
-  @Override
-  public HxType setFields(List<HxField> fields) {
-    //NO OP
-    return this;
+  protected HxField findFieldInternally(final String name, final HxType fieldType) {
+    for(HxField field : getFields()) {
+      if(field.hasName(name) && (fieldType == null || field.hasType(fieldType))) {
+        return field;
+      }
+    }
+    return null;
   }
 
   @Override
@@ -319,38 +296,23 @@ public abstract class HxAbstractType
 
   @Override
   public Collection<HxMethod> findForwardingConstructors() {
-    if (!isInterface() && !isArray() && !isPrimitive() &&
+    if (!isInterface() &&
+        !isArray() &&
+        !isPrimitive() &&
         !hasName("java.lang.Object") &&
         getSuperType().isPresent()) {
 
-      final HxType superType = getSuperType().get();
       final Collection<HxMethod> constructors = getConstructors();
       final Collection<HxMethod> forwardingConstructors = new ArrayList<>(2);
 
       loop:
       for (HxMethod constructor : constructors) {
-        if (constructor.hasBody()) {
-          for (HxInstruction inst : constructor.getBody()) {
-            if (inst.hasSort(HxInstructionSort.Invocation) && inst instanceof InvokeInstruction) {
-              final InvokeInstruction invokeInstruction = (InvokeInstruction) inst;
-
-              if (invokeInstruction.hasType(HxInstructionTypes.Invocation.INVOKESPECIAL) &&
-                  HxConstants.CONSTRUCTOR_METHOD_NAME.equals(invokeInstruction.getName())) {
-
-                if (superType.hasName(invokeInstruction.getOwner())) {
-                  forwardingConstructors.add(constructor);
-                  continue loop;
-                } else if (hasName(invokeInstruction.getOwner())) {
-                  continue loop;
-                }
-              }
-            }
-          }
+        if(constructor.isForwardingConstructor()) {
+          forwardingConstructors.add(constructor);
         }
       }
       return forwardingConstructors;
     }
-
     return Collections.emptySet();
   }
 
@@ -372,7 +334,7 @@ public abstract class HxAbstractType
       .THIS() //Uninitialized
       .INVOKESPECIAL(defaultSuperConstructor.get())
       .RETURN();
-
+    addMethod(defaultConstructor);
     return Optional.of(defaultConstructor);
   }
 
@@ -387,9 +349,10 @@ public abstract class HxAbstractType
       .createMethod("void", HxConstants.CLASS_INITIALIZER_METHOD_NAME)
       .setModifiers(HxMethod.Modifiers.STATIC);
 
-    HxExtendedCodeStream stream = classInitializer.getBody().getFirst().asStream();
+    HxMethodBody body = classInitializer.getBody();
+    HxExtendedCodeStream stream = body.asStream();
     stream.RETURN();
-
+    addMethod(classInitializer);
     return Optional.of(classInitializer);
   }
 
@@ -420,7 +383,7 @@ public abstract class HxAbstractType
 
   @Override
   public Optional<HxMethod> findConstructor(String... signature) {
-    return findConstructor(getHaxxor().referencesAsArray(signature));
+    return findConstructor(getHaxxor().references(signature));
   }
 
   @Override
@@ -483,33 +446,33 @@ public abstract class HxAbstractType
   }
 
   @Override
-  public Collection<HxField> fields(Predicate<HxField> predicate,
+  public List<HxField> fields(Predicate<HxField> predicate,
                                     boolean recursive) {
-    return Collections.emptySet();
+    return Collections.emptyList();
   }
 
   @Override
-  public Collection<HxMethod> methods(Predicate<HxMethod> predicate,
+  public List<HxMethod> methods(Predicate<HxMethod> predicate,
                                       boolean recursive) {
-    return Collections.emptySet();
+    return Collections.emptyList();
   }
 
   @Override
-  public Collection<HxMethod> constructors(Predicate<HxMethod> predicate,
+  public List<HxMethod> constructors(Predicate<HxMethod> predicate,
                                            boolean recursive) {
-    return Collections.emptySet();
+    return Collections.emptyList();
   }
 
   @Override
-  public Collection<HxType> types(Predicate<HxType> predicate,
+  public List<HxType> types(Predicate<HxType> predicate,
                                   boolean recursive) {
-    return Collections.emptySet();
+    return Collections.emptyList();
   }
 
   @Override
-  public Collection<HxType> interfaces(Predicate<HxType> predicate,
+  public List<HxType> interfaces(Predicate<HxType> predicate,
                                        boolean recursive) {
-    return Collections.emptySet();
+    return Collections.emptyList();
   }
 
   @Override
@@ -646,7 +609,7 @@ public abstract class HxAbstractType
 
   @Override
   public byte[] toByteCode() {
-    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException("This class '"+getName()+"' can't be transformed to bytecode.");
   }
 
   @Override
@@ -659,7 +622,7 @@ public abstract class HxAbstractType
                  HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR);
       return Class.forName(name, true, classLoader);
     }
-    return getHaxxor().loadClass(classLoader, null, getName(), toByteCode());
+    return getHaxxor().resolveClass(classLoader, null, getName(), toByteCode());
   }
 
   @Override

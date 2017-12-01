@@ -233,7 +233,7 @@ public interface HxField
   }
 
   default HxField makeInternal() {
-    return setModifiers((~(Opcodes.ACC_PUBLIC | Opcodes.ACC_PROTECTED | Opcodes.ACC_PRIVATE)));
+    return removeModifiers(Opcodes.ACC_PUBLIC | Opcodes.ACC_PROTECTED | Opcodes.ACC_PRIVATE);
   }
 
   /**
@@ -244,7 +244,7 @@ public interface HxField
   }
 
   default HxField makeVolatile() {
-    return setModifiers((~Opcodes.ACC_FINAL) & getModifiers()).addModifier(Modifiers.VOLATILE);
+    return removeModifiers(Opcodes.ACC_FINAL).addModifier(Modifiers.VOLATILE);
   }
 
   /**
@@ -288,7 +288,7 @@ public interface HxField
   }
 
   default HxField makeFinal() {
-    return setModifiers((~Opcodes.ACC_VOLATILE) & getModifiers()).addModifier(Modifiers.FINAL);
+    return removeModifiers(Opcodes.ACC_VOLATILE).addModifier(Modifiers.FINAL);
   }
 
   /**

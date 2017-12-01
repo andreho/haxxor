@@ -18,63 +18,21 @@ import java.util.function.Predicate;
  * Created by a.hofmann on 30.05.2015.
  */
 public interface HxType
-  extends HxAnnotated<HxType>,
-          HxMember<HxType>,
-          HxOwned<HxType>,
-          HxGeneric<HxType>,
-          HxGenericElement<HxType>,
-          HxAccessible<HxType>,
-          HxNamed,
-          HxProvider {
+  extends
+    HxFieldAnalysis<HxType>,
+    HxAnnotated<HxType>,
+    HxMember<HxType>,
+    HxOwned<HxType>,
+    HxGeneric<HxType>,
+    HxGenericElement<HxType>,
+    HxAccessible<HxType>,
+    HxNamed,
+    HxProvider {
 
   int ALLOWED_MODIFIERS =
     Opcodes.ACC_PUBLIC | Opcodes.ACC_PRIVATE | Opcodes.ACC_PROTECTED | Opcodes.ACC_STATIC | Opcodes.ACC_FINAL |
     Opcodes.ACC_SUPER | Opcodes.ACC_INTERFACE | Opcodes.ACC_ABSTRACT | Opcodes.ACC_ANNOTATION |
     Opcodes.ACC_ENUM | Opcodes.ACC_SYNTHETIC;
-
-  /**
-   */
-  enum Version {
-    V1_5(Opcodes.V1_5),
-    V1_6(Opcodes.V1_6),
-    V1_7(Opcodes.V1_7),
-    V1_8(Opcodes.V1_8);
-
-    final int code;
-
-    public static Version of(int ver) {
-      switch (ver) {
-        case Opcodes.V1_5:
-          return V1_5;
-        case Opcodes.V1_6:
-          return V1_6;
-        case Opcodes.V1_7:
-          return V1_7;
-        case Opcodes.V1_8:
-          return V1_8;
-      }
-      throw new IllegalArgumentException("Unsupported version: " + ver);
-    }
-
-    Version(int code) {
-      this.code = code;
-    }
-
-    public int getCode() {
-      return code;
-    }
-  }
-
-  /**
-   *
-   */
-  enum Part {
-    ANNOTATIONS,
-    INTERFACES,
-    FIELDS,
-    METHODS,
-    INNER_TYPES
-  }
 
   /**
    *
@@ -132,7 +90,7 @@ public interface HxType
    * @param parts to initialize
    * @return this
    */
-  HxType initialize(Part... parts);
+  HxType initialize(InitializablePart... parts);
 
   /**
    * Initializes given part
@@ -140,7 +98,7 @@ public interface HxType
    * @param part to initialize
    * @return this
    */
-  HxType initialize(Part part);
+  HxType initialize(InitializablePart part);
 
   /**
    * @return byte-code version
@@ -320,7 +278,7 @@ public interface HxType
     if (!type.isInterface()) {
       throw new IllegalArgumentException("Not an interface: " + type);
     }
-    final List<HxType> interfaces = initialize(Part.INTERFACES).getInterfaces();
+    final List<HxType> interfaces = initialize(InitializablePart.INTERFACES).getInterfaces();
     if (!interfaces.contains(type)) {
       interfaces.add(type);
     }
@@ -374,7 +332,7 @@ public interface HxType
    * @return this
    */
   default HxType addInnerType(final HxType innerType) {
-    initialize(Part.INNER_TYPES).getInnerTypes().add(innerType);
+    initialize(InitializablePart.INNER_TYPES).getInnerTypes().add(innerType);
     return this;
   }
 
@@ -412,25 +370,6 @@ public interface HxType
   Optional<HxMethod> getEnclosingMethod();
 
   /**
-   * @param field to search for
-   * @return <b>-1</b> if given field doesn't belong to this type,
-   * otherwise zero-based position of the given field in the {@link #getFields()} list
-   */
-  default int indexOf(HxField field) {
-    if (!equals(field.getDeclaringMember())) {
-      return -1;
-    }
-    int idx = 0;
-    for (HxField hxField : getFields()) {
-      if (field == hxField || field.equals(hxField)) {
-        return idx;
-      }
-      idx++;
-    }
-    return -1;
-  }
-
-  /**
    * @param method to search for
    * @return <b>-1</b> if given method doesn't belong to this type,
    * otherwise zero-based position of the given method in the {@link #getMethods()} list
@@ -447,99 +386,6 @@ public interface HxType
       idx++;
     }
     return -1;
-  }
-
-  /**
-   * @return
-   */
-  List<HxField> getFields();
-
-  /**
-   * @param fields
-   * @return
-   */
-  HxType setFields(List<HxField> fields);
-
-  /**
-   * Adds given field to this type at specific position
-   *
-   * @param field to add
-   * @return this
-   * @throws IllegalArgumentException if given field is already present in this type
-   */
-  default HxType addField(HxField field) {
-    return addFieldAt(getFields().size(), field);
-  }
-
-  /**
-   * Adds given field to this type at specific position
-   *
-   * @param index where to insert given field
-   * @param field to add
-   * @return this
-   * @throws IllegalArgumentException if given field is already present in this type
-   */
-  HxType addFieldAt(int index,
-                    HxField field);
-
-  /**
-   * @param field to remove
-   * @return this
-   * @throws IllegalArgumentException if given field doesn't belong to this type
-   */
-  HxType removeField(HxField field);
-
-  /**
-   * Gets the first available field with given name
-   *
-   * @param name of a field to search
-   * @return {@link Optional#empty() empty} or a field with given name
-   */
-  Optional<HxField> findField(String name);
-
-  /**
-   * Gets the first available field with given name
-   *
-   * @param name of a field to search
-   * @param type of a field to search
-   * @return {@link Optional#empty() empty} or a field with given name
-   */
-  Optional<HxField> findField(String name, HxType type);
-
-  /**
-   * Gets the first available field with given name
-   *
-   * @param name of a field to search
-   * @param type of a field to search
-   * @return {@link Optional#empty() empty} or a field with given name
-   */
-  Optional<HxField> findField(String name, Class<?> type);
-
-  /**
-   * Gets the first available field with given name
-   *
-   * @param name of a field to search
-   * @param type of a field to search
-   * @return {@link Optional#empty() empty} or a field with given name
-   */
-  Optional<HxField> findField(String name, String type);
-
-  /**
-   * @param name       of the searched field
-   * @param descriptor form of the searched field's type
-   * @return {@link Optional#empty() empty} or a field with given name and descriptor
-   */
-  Optional<HxField> findFieldDirectly(String name,
-                                      String descriptor);
-
-  /**
-   * Checks whether there is a field with given name or not
-   *
-   * @param name of a field
-   * @return <b>true</b> if there is a field with given name, <b>false</b> otherwise.
-   */
-  default boolean hasField(String name) {
-    return findField(name).isPresent();
   }
 
   /**
@@ -625,7 +471,7 @@ public interface HxType
                                         String... parameters) {
     return findMethod(getHaxxor().reference(returnType),
                       name,
-                      getHaxxor().referencesAsArray(parameters));
+                      getHaxxor().references(parameters));
   }
 
   /**
@@ -691,7 +537,7 @@ public interface HxType
    */
   default Optional<HxMethod> findMethod(String name,
                                         String... parameters) {
-    return findMethod(name, getHaxxor().referencesAsArray(parameters));
+    return findMethod(name, getHaxxor().references(parameters));
   }
 
   /**
@@ -705,7 +551,7 @@ public interface HxType
                                         Class<?>... parameters) {
     return findMethod(getHaxxor().reference(returnType.getName()),
                       name,
-                      getHaxxor().referencesAsArray(getHaxxor().toNormalizedClassnames(parameters)));
+                      getHaxxor().references(getHaxxor().toNormalizedClassnames(parameters)));
   }
 
   /**
@@ -715,7 +561,7 @@ public interface HxType
    */
   default Optional<HxMethod> findMethod(String name,
                                         Class<?>... parameters) {
-    return findMethod(name, getHaxxor().referencesAsArray(getHaxxor().toNormalizedClassnames(parameters)));
+    return findMethod(name, getHaxxor().references(getHaxxor().toNormalizedClassnames(parameters)));
   }
 
   /**
@@ -956,7 +802,7 @@ public interface HxType
    * @return
    */
   default Optional<HxMethod> findConstructor(String... signature) {
-    return findConstructor(getHaxxor().referencesAsArray(signature));
+    return findConstructor(getHaxxor().references(signature));
   }
 
   /**
@@ -1105,40 +951,10 @@ public interface HxType
   }
 
   /**
-   * @return
-   */
-  default Collection<HxField> fields() {
-    return fields((f) -> true);
-  }
-
-  /**
    * @param predicate
    * @return
    */
-  default Collection<HxField> fields(Predicate<HxField> predicate) {
-    return fields(predicate, false);
-  }
-
-  /**
-   * @param predicate
-   * @param recursive
-   * @return
-   */
-  Collection<HxField> fields(Predicate<HxField> predicate,
-                             boolean recursive);
-
-  /**
-   * @return
-   */
-  default Collection<HxMethod> methods() {
-    return methods((m) -> true);
-  }
-
-  /**
-   * @param predicate
-   * @return
-   */
-  default Collection<HxMethod> methods(Predicate<HxMethod> predicate) {
+  default List<HxMethod> methods(Predicate<HxMethod> predicate) {
     return methods(predicate, false);
   }
 
@@ -1147,21 +963,15 @@ public interface HxType
    * @param recursive
    * @return
    */
-  Collection<HxMethod> methods(Predicate<HxMethod> predicate,
+  List<HxMethod> methods(Predicate<HxMethod> predicate,
                                boolean recursive);
 
-  /**
-   * @return
-   */
-  default Collection<HxMethod> constructors() {
-    return constructors((c) -> true);
-  }
 
   /**
    * @param predicate
    * @return
    */
-  default Collection<HxMethod> constructors(Predicate<HxMethod> predicate) {
+  default List<HxMethod> constructors(Predicate<HxMethod> predicate) {
     return constructors(predicate, false);
   }
 
@@ -1170,21 +980,15 @@ public interface HxType
    * @param recursive
    * @return
    */
-  Collection<HxMethod> constructors(Predicate<HxMethod> predicate,
+  List<HxMethod> constructors(Predicate<HxMethod> predicate,
                                     boolean recursive);
 
-  /**
-   * @return
-   */
-  default Collection<HxType> types() {
-    return types((t) -> true);
-  }
 
   /**
    * @param predicate
    * @return
    */
-  default Collection<HxType> types(Predicate<HxType> predicate) {
+  default List<HxType> types(Predicate<HxType> predicate) {
     return types(predicate, false);
   }
 
@@ -1193,21 +997,14 @@ public interface HxType
    * @param recursive
    * @return
    */
-  Collection<HxType> types(Predicate<HxType> predicate,
+  List<HxType> types(Predicate<HxType> predicate,
                            boolean recursive);
-
-  /**
-   * @return
-   */
-  default Collection<HxType> interfaces() {
-    return interfaces((i) -> true);
-  }
 
   /**
    * @param predicate
    * @return
    */
-  default Collection<HxType> interfaces(Predicate<HxType> predicate) {
+  default List<HxType> interfaces(Predicate<HxType> predicate) {
     return interfaces(predicate, false);
   }
 
@@ -1216,7 +1013,7 @@ public interface HxType
    * @param recursive
    * @return
    */
-  Collection<HxType> interfaces(Predicate<HxType> predicate,
+  List<HxType> interfaces(Predicate<HxType> predicate,
                                 boolean recursive);
 
   /**
@@ -1372,8 +1169,7 @@ public interface HxType
    */
   default boolean isInstantiable() {
     return !isPrimitive() &&
-           !hasModifiers(Modifiers.ABSTRACT) &&
-           !hasModifiers(Modifiers.INTERFACE);
+           !isAbstract();
   }
 
   /**
@@ -1405,7 +1201,7 @@ public interface HxType
   }
 
   /**
-   * @param descriptor
+   * @param descriptor of a type to compare with
    * @return <b>true</b> if this type has the given descriptor
    */
   default boolean hasDescriptor(String descriptor) {

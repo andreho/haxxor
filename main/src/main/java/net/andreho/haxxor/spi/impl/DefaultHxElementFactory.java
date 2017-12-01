@@ -62,14 +62,14 @@ public class DefaultHxElementFactory
   }
 
   @Override
-  public HxField createField(final String internalTypeName,
+  public HxField createField(final String typename,
                              final String fieldName) {
-    return new HxFieldImpl(haxxor.reference(internalTypeName), fieldName);
+    return new HxFieldImpl(haxxor.reference(typename), fieldName);
   }
 
   @Override
   public HxMethod createConstructor(final String... parameterTypes) {
-    return createConstructor(haxxor.referencesAsArray(parameterTypes));
+    return createConstructor(haxxor.references(parameterTypes));
   }
 
   @Override
@@ -91,7 +91,7 @@ public class DefaultHxElementFactory
   public HxMethod createMethod(final String returnType,
                                final String methodName,
                                final String... parameterTypes) {
-    return createMethod(createReference(returnType), methodName, haxxor.referencesAsArray(parameterTypes));
+    return createMethod(createReference(returnType), methodName, haxxor.references(parameterTypes));
   }
 
   @Override

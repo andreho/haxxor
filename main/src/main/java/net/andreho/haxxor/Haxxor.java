@@ -12,7 +12,7 @@ import net.andreho.haxxor.api.HxTypeReference;
 import net.andreho.haxxor.api.impl.HxArrayTypeImpl;
 import net.andreho.haxxor.api.impl.HxPrimitiveTypeImpl;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
-import net.andreho.haxxor.spi.HxClassLoadingHandler;
+import net.andreho.haxxor.spi.HxClassResolver;
 import net.andreho.haxxor.spi.HxClassnameNormalizer;
 import net.andreho.haxxor.spi.HxDeduplicationCache;
 import net.andreho.haxxor.spi.HxElementFactory;
@@ -68,7 +68,7 @@ public class Haxxor
   private final HxMethodVerifier methodVerifier;
   private final HxTypeInitializer typeInitializer;
   private final HxStubHandler stubHandler;
-  private final HxClassLoadingHandler classLoadingHandler;
+  private final HxClassResolver classResolver;
   private final boolean concurrent;
 
   /**
@@ -147,11 +147,14 @@ public class Haxxor
     super();
 
     this.flags = flags;
+    this.concurrent = builder.isConcurrent();
+    this.readWriteLock = new ReentrantReadWriteLock();
     this.classLoaderWeakReference = new WeakReference<>(builder.provideClassLoader(this));
+    this.classResolver = builder.createClassResolver(this);
 
-    this.byteCodeLoader = builder.createByteCodeLoader(this);
     this.resolvedCache = builder.createResolvedCache(this);
     this.referenceCache = builder.createReferenceCache(this);
+    this.byteCodeLoader = builder.createByteCodeLoader(this);
     this.deduplicationCache = builder.createDeduplicationCache(this);
     this.typeInitializer = builder.createTypeInitializer(this);
     this.fieldInitializer = builder.createFieldInitializer(this);
@@ -164,9 +167,6 @@ public class Haxxor
     this.methodVerifier = builder.createMethodVerifier(this);
     this.classNameNormalizer = builder.createClassNameNormalizer(this);
     this.stubHandler = builder.createStubHandler(this);
-    this.classLoadingHandler = builder.createClassLoadingHandler(this);
-    this.readWriteLock = new ReentrantReadWriteLock();
-    this.concurrent = builder.isConcurrent();
 
     postInitialization();
   }
@@ -324,8 +324,8 @@ public class Haxxor
     return stubHandler;
   }
 
-  public HxClassLoadingHandler getClassLoadingHandler() {
-    return classLoadingHandler;
+  public HxClassResolver getClassResolver() {
+    return classResolver;
   }
 
   /**
@@ -400,11 +400,11 @@ public class Haxxor
   }
 
   @Override
-  public Class<?> loadClass(final ClassLoader classLoader,
-                            final ProtectionDomain protectionDomain,
-                            final String className,
-                            final byte[] bytecode) {
-    return getClassLoadingHandler().loadClass(classLoader, protectionDomain, className, bytecode);
+  public Class<?> resolveClass(final ClassLoader classLoader,
+                               final ProtectionDomain protectionDomain,
+                               final String className,
+                               final byte[] bytecode) {
+    return getClassResolver().resolveClass(classLoader, protectionDomain, className, bytecode);
   }
 
   /**
@@ -504,7 +504,7 @@ public class Haxxor
    * @return
    */
   @Override
-  public HxType[] referencesAsArray(String... classnames) {
+  public HxType[] references(String... classnames) {
     if (classnames.length == 0) {
       return Constants.EMPTY_HX_TYPE_ARRAY;
     }
@@ -513,6 +513,21 @@ public class Haxxor
     for (int i = 0; i < classnames.length; i++) {
       String typeName = classnames[i];
       output[i] = reference(typeName);
+    }
+
+    return output;
+  }
+
+  @Override
+  public HxType[] references(final Class<?>... classes) {
+    if (classes.length == 0) {
+      return Constants.EMPTY_HX_TYPE_ARRAY;
+    }
+    HxType[] output = new HxType[classes.length];
+
+    for (int i = 0; i < classes.length; i++) {
+      Class<?> cls = classes[i];
+      output[i] = reference(cls);
     }
 
     return output;
@@ -532,12 +547,12 @@ public class Haxxor
   /**
    * Resolves corresponding type by its name to a {@link HxType haxxor type}
    *
-   * @param aClass with a valid name
+   * @param cls with a valid name
    * @return a resolved instance of {@link HxType}
    */
   @Override
-  public HxType resolve(Class<?> aClass) {
-    return resolve(aClass.getName());
+  public HxType resolve(Class<?> cls) {
+    return resolve(cls.getName());
   }
 
   /**
@@ -731,7 +746,7 @@ public class Haxxor
 
   @Override
   public HxType createType(final String className) {
-    return elementFactory.createType(toNormalizedClassname(className));
+    return initialize(elementFactory.createType(toNormalizedClassname(className)));
   }
 
   @Override
@@ -745,19 +760,19 @@ public class Haxxor
   }
 
   @Override
-  public HxField createField(final String className,
+  public HxField createField(final String typename,
                              final String fieldName) {
-    return elementFactory.createField(toNormalizedClassname(className), fieldName);
+    return initialize(elementFactory.createField(toNormalizedClassname(typename), fieldName));
   }
 
   @Override
   public HxMethod createConstructor(final String... parameterTypes) {
-    return elementFactory.createConstructor(toNormalizedClassnames(parameterTypes));
+    return initialize(elementFactory.createConstructor(toNormalizedClassnames(parameterTypes)));
   }
 
   @Override
   public HxMethod createConstructor(final HxType... parameterTypes) {
-    return elementFactory.createConstructor(parameterTypes);
+    return initialize(elementFactory.createConstructor(parameterTypes));
   }
 
   @Override
@@ -771,16 +786,16 @@ public class Haxxor
   public HxMethod createMethod(final String returnType,
                                final String methodName,
                                final String... parameterTypes) {
-    return elementFactory.createMethod(toNormalizedClassname(returnType),
+    return initialize(elementFactory.createMethod(toNormalizedClassname(returnType),
                                        methodName,
-                                       toNormalizedClassnames(parameterTypes));
+                                       toNormalizedClassnames(parameterTypes)));
   }
 
   @Override
   public HxMethod createMethod(final HxType returnType,
                                final String methodName,
                                final HxType... parameterTypes) {
-    return elementFactory.createMethod(returnType, methodName, parameterTypes);
+    return initialize(elementFactory.createMethod(returnType, methodName, parameterTypes));
   }
 
   @Override

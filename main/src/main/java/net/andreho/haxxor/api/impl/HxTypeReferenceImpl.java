@@ -10,6 +10,8 @@ import net.andreho.haxxor.api.HxMethod;
 import net.andreho.haxxor.api.HxModifier;
 import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.api.HxTypeReference;
+import net.andreho.haxxor.api.InitializablePart;
+import net.andreho.haxxor.api.Version;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
@@ -214,12 +216,12 @@ public class HxTypeReferenceImpl
   }
 
   @Override
-  public HxType initialize(final Part... parts) {
+  public HxType initialize(final InitializablePart... parts) {
     return toType().initialize(parts);
   }
 
   @Override
-  public HxType initialize(final Part part) {
+  public HxType initialize(final InitializablePart part) {
     return toType().initialize(part);
   }
 
@@ -297,27 +299,27 @@ public class HxTypeReferenceImpl
   }
 
   @Override
-  public Collection<HxField> fields(Predicate<HxField> predicate, boolean recursive) {
+  public List<HxField> fields(Predicate<HxField> predicate, boolean recursive) {
     return toType().fields(predicate, recursive);
   }
 
   @Override
-  public Collection<HxMethod> methods(Predicate<HxMethod> predicate, boolean recursive) {
+  public List<HxMethod> methods(Predicate<HxMethod> predicate, boolean recursive) {
     return toType().methods(predicate, recursive);
   }
 
   @Override
-  public Collection<HxMethod> constructors(Predicate<HxMethod> predicate, boolean recursive) {
+  public List<HxMethod> constructors(Predicate<HxMethod> predicate, boolean recursive) {
     return toType().constructors(predicate, recursive);
   }
 
   @Override
-  public Collection<HxType> types(Predicate<HxType> predicate, boolean recursive) {
+  public List<HxType> types(Predicate<HxType> predicate, boolean recursive) {
     return toType().types(predicate, recursive);
   }
 
   @Override
-  public Collection<HxType> interfaces(Predicate<HxType> predicate, boolean recursive) {
+  public List<HxType> interfaces(Predicate<HxType> predicate, boolean recursive) {
     return toType().interfaces(predicate, recursive);
   }
 

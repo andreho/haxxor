@@ -134,7 +134,7 @@ class HaxxorTest {
     String second = TEST_BEAN_CLASSNAME;
     String third = "L" + ValueBean.class.getName()
                                         .replace('.', '/') + ";";
-    HxType[] array = haxxor.referencesAsArray(
+    HxType[] array = haxxor.references(
         first,
         second,
         third);

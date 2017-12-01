@@ -34,7 +34,7 @@ public interface ResourceSourceLocator {
   }
 
   /**
-   * @return evaluates resources given by class-path JVM parameter
+   * @return evaluates resources given by class-path JVM's parameter
    */
   static ResourceSourceLocator usingClassPath() {
     return new ClassPathResourceLocatorImpl();

@@ -196,7 +196,13 @@ public class HxMethodBodyImpl
     if (rebuild) {
       reset();
     }
-    return (S) new ExtendedInstructionCodeStream(this);
+    HxInstruction instruction = this.getLast();
+    if(instruction != null) {
+      instruction = instruction.getPrevious();
+    } else {
+      instruction = this;
+    }
+    return (S) new ExtendedInstructionCodeStream(this, instruction);
   }
 
   @Override
