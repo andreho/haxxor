@@ -15,7 +15,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -338,7 +337,7 @@ public abstract class HxTypeTestUtils {
   public static void checkAnnotated(final AnnotatedElement annotated,
                                     final HxAnnotated hxAnnotated) {
     final Annotation[] declaredAnnotations = annotated.getDeclaredAnnotations();
-    final Collection<HxAnnotation> hxAnnotations = hxAnnotated.getAnnotations().values();
+    final List<HxAnnotation> hxAnnotations = hxAnnotated.getAnnotations();
     try {
       checkAnnotations(declaredAnnotations, hxAnnotations.toArray(new HxAnnotation[0]));
     } catch (Exception e) {

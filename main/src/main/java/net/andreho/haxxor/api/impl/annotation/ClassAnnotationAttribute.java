@@ -23,7 +23,7 @@ public class ClassAnnotationAttribute
     WeakReference<Class<?>> reference = this.classReference;
     if (reference == null) {
       try {
-        Class<?> cls = getValue().loadClass(type.getClassLoader());
+        Class<?> cls = getValue().toClass(type.getClassLoader());
         this.classReference = reference = new WeakReference<>(cls);
       } catch (ClassNotFoundException ex) {
         throw new IllegalStateException("Given class-loader was unable to load the given enum-class: " + getValue(),

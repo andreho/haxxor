@@ -4,7 +4,8 @@ import net.andreho.haxxor.api.HxAnnotated;
 import net.andreho.haxxor.api.HxAnnotation;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Predicate;
 
 /**
@@ -32,10 +33,10 @@ public class HxAnnotatedDelegate<A extends HxAnnotated<A>> implements HxAnnotate
   }
 
   @Override
-  public Map<String, HxAnnotation> getAnnotations() {
+  public List<HxAnnotation> getAnnotations() {
     HxAnnotated annotated = this.annotated;
     if(annotated == null) {
-      return HxAnnotated.DEFAULT_ANNOTATION_MAP;
+      return HxAnnotated.DEFAULT_ANNOTATION_COLLECTION;
     }
     return annotated.getAnnotations();
   }
@@ -60,18 +61,24 @@ public class HxAnnotatedDelegate<A extends HxAnnotated<A>> implements HxAnnotate
   }
 
   @Override
-  public Collection<HxAnnotated> getSuperAnnotated() {
+  public List<HxAnnotated> getSuperAnnotated() {
     return HxAnnotated.DEFAULT_SUPER_ANNOTATED_COLLECTION;
   }
 
   @Override
-  public Collection<HxAnnotation> getAnnotationsByType(final String type) {
+  public List<HxAnnotation> getAnnotationsByType(final String type) {
+    if(!hasAnnotations()) {
+      return Collections.emptyList();
+    }
     return initAnnotated().getAnnotationsByType(type);
   }
 
   @Override
-  public Collection<HxAnnotation> annotations(final Predicate<HxAnnotation> predicate,
+  public List<HxAnnotation> annotations(final Predicate<HxAnnotation> predicate,
                                               final boolean recursive) {
+    if(!hasAnnotations()) {
+      return Collections.emptyList();
+    }
     return initAnnotated().annotations(predicate, recursive);
   }
 }

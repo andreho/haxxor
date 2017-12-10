@@ -6,7 +6,6 @@ import net.andreho.haxxor.api.HxMethod;
 import net.andreho.haxxor.api.HxParameter;
 import net.andreho.haxxor.api.HxProvider;
 import net.andreho.haxxor.api.HxType;
-import net.andreho.haxxor.api.HxTypeReference;
 
 import java.lang.annotation.Annotation;
 
@@ -31,7 +30,7 @@ public interface HxElementFactory
    * @param className of an existing type
    * @return a new and empty instance of <code>HxType</code>
    */
-  HxTypeReference createReference(final String className);
+  HxType createReference(final String className);
 
   /**
    * Creates a new reference to an existing type
@@ -39,7 +38,7 @@ public interface HxElementFactory
    * @param resolvedType for referencing
    * @return a new and empty instance of <code>HxType</code>
    */
-  HxTypeReference createReference(final HxType resolvedType);
+  HxType createReference(final HxType resolvedType);
 
   /**
    * Creates a new unbound field with given type and name
@@ -56,23 +55,23 @@ public interface HxElementFactory
   /**
    * Creates a new unbound field with given type and name
    *
-   * @param type      of new field
+   * @param fieldType      of new field
    * @param fieldName of new field
    * @return a new unbound field instance
    */
-  default HxField createField(final HxType type,
+  default HxField createField(final HxType fieldType,
                               final String fieldName) {
-    return createField(type.getName(), fieldName);
+    return createField(fieldType.getName(), fieldName);
   }
 
   /**
    * Creates a new unbound field with given type and name
    *
-   * @param typename  of new field
+   * @param fieldType  of new field
    * @param fieldName of new field
    * @return a new unbound field instance
    */
-  HxField createField(final String typename,
+  HxField createField(final String fieldType,
                       final String fieldName);
 
   /**

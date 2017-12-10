@@ -5,13 +5,15 @@ package net.andreho.haxxor.api;
  */
 public interface HxAccessible<A extends HxMember<A> & HxOwned<A>> extends HxMember<A>, HxOwned<A> {
   /**
-   * @return
+   * @return a declaring type or self if this is a none inner type
    */
-  HxType getDeclaringType();
+  default HxType getDeclaringType() {
+    return (HxType) getDeclaringMember();
+  }
 
   /**
-   * @param type
-   * @return
+   * @param type whose access should be checked
+   * @return <b>true</b> if this class may be accessed from methods of the given one type, <b>false</b> otherwise
    */
   default boolean isAccessibleFrom(HxType type) {
     final HxType declaringType = getDeclaringType();
@@ -28,10 +30,10 @@ public interface HxAccessible<A extends HxMember<A> & HxOwned<A>> extends HxMemb
   }
 
   /**
-   * @param member
-   * @return
+   * @param method whose access should be checked
+   * @return <b>true</b> if this class may be accessed from the given method, <b>false</b> otherwise
    */
-  default boolean isAccessibleFrom(HxOwned<?> member) {
-    return isAccessibleFrom((HxType) member.getDeclaringMember());
+  default boolean isAccessibleFrom(HxMethod method) {
+    return isAccessibleFrom(method.getDeclaringMember());
   }
 }

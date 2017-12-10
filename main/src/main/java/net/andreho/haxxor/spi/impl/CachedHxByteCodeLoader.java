@@ -8,6 +8,7 @@ import java.lang.ref.SoftReference;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -46,15 +47,15 @@ public class CachedHxByteCodeLoader
 
   @Override
   @SuppressWarnings("Duplicates")
-  public byte[] load(final ClassLoader classLoader, final String className) {
+  public Optional<byte[]> load(final ClassLoader classLoader, final String className) {
     byte[] bytes = getCached(className);
-    if (bytes == null) {
-      bytes = loadContent(classLoader, className);
+    if (bytes != null) {
+      return Optional.of(bytes);
     }
-    return bytes;
+    return loadContent(classLoader, className);
   }
 
-  private byte[] loadContent(final ClassLoader classLoader, final String className) {
+  private Optional<byte[]> loadContent(final ClassLoader classLoader, final String className) {
     byte[] content;
     final Lock lock = this.lock.writeLock();
     lock.lock();
@@ -62,13 +63,15 @@ public class CachedHxByteCodeLoader
       content = getCached(className);
 
       if (content == null) {
-        content = super.load(classLoader, className);
-        cache.put(className, new SoftReference<>(content));
+        Optional<byte[]> bytes = super.load(classLoader, className);
+        if(bytes.isPresent()) {
+          cache.put(className, new SoftReference<>(content = bytes.get()));
+        }
       }
     } finally {
       lock.unlock();
     }
-    return content;
+    return Optional.ofNullable(content);
   }
 
   private byte[] getCached(final String className) {

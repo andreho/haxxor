@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,8 +16,20 @@ import java.util.Map;
  */
 public abstract class CommonUtils {
   private static final int DEFAULT_READ_BUFFER_LENGTH = 2048;
+  private static final Class<?> ARRAY_TO_LIST_WRAPPER_CLASS = Arrays.asList().getClass();
+  private static final Class<?> SINGLETON_LIST_WRAPPER_CLASS = Collections.singletonList(null).getClass();
 
   private CommonUtils() {
+  }
+
+  /**
+   * @param list to check
+   * @return <b>true</b> if the given list can only be partially modified, <b>false</b> otherwise
+   */
+  public static boolean isModifiable(List<?> list) {
+    return
+      ARRAY_TO_LIST_WRAPPER_CLASS != list.getClass() ||
+      SINGLETON_LIST_WRAPPER_CLASS != list.getClass();
   }
 
   /**
@@ -149,7 +162,6 @@ public abstract class CommonUtils {
     array[1] = second;
     return array;
   }
-
 
   /**
    * @param array

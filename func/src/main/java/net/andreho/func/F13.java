@@ -14,7 +14,7 @@ public interface F13<R,A,B,C,D,E,F,G,H,I,J,K,L,M> extends FN<R>, Bindable<A,F12<
   }
 
   /**
-   * @param args
+   * @param args to use for invocation
    * @return
    */
   default R call(Object... args) {

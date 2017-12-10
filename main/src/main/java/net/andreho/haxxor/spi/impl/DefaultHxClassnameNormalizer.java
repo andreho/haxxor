@@ -61,14 +61,15 @@ public class DefaultHxClassnameNormalizer
     String type = typeName.substring(off, len);
     String primitive = null;
 
-    //Do we had an internal array representation, like: [B, [[I etc.
+    //Do we have an internal array representation, like: [B, [[I etc.
     if (dim > 0 && type.length() == 1) {
       primitive = PRIMITIVES.get(type);
     }
 
     if (primitive != null) {
       type = primitive;
-    } else if (type.indexOf(JAVA_PACKAGE_SEPARATOR_CHAR) == -1 && type.indexOf(INTERNAL_PACKAGE_SEPARATOR_CHAR) > -1) {
+    } else if (//type.indexOf(JAVA_PACKAGE_SEPARATOR_CHAR) == -1 &&
+               type.indexOf(INTERNAL_PACKAGE_SEPARATOR_CHAR) > -1) {
       type = type.replace(INTERNAL_PACKAGE_SEPARATOR_CHAR, JAVA_PACKAGE_SEPARATOR_CHAR);
     }
 

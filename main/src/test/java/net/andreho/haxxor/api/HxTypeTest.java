@@ -2,6 +2,7 @@ package net.andreho.haxxor.api;
 
 import net.andreho.asm.org.objectweb.asm.Type;
 import net.andreho.haxxor.Haxxor;
+import net.andreho.haxxor.Hx;
 import net.andreho.haxxor.model.AnnotatedBeanWithJava8Features;
 import net.andreho.haxxor.model.ComplexBean;
 import net.andreho.haxxor.model.EmbeddingClassesBean;
@@ -121,7 +122,7 @@ class HxTypeTest {
       "double[] doubleArray",
       "java.lang.String[] stringArray"
   };
-  private Haxxor haxxor;
+  private Hx haxxor;
 
   private static Collection<Class<?>> shuffledClasses(Collection<Class<?>> classes) {
     ArrayList<Class<?>> list = new ArrayList<>(classes);
@@ -162,7 +163,7 @@ class HxTypeTest {
     return strings;
   }
 
-  private static List<HxMethod> createNewMethods(Haxxor haxxor) {
+  private static List<HxMethod> createNewMethods(Hx haxxor) {
     return Arrays.asList(
         haxxor.createMethod("boolean", "isDone"),
         haxxor.createMethod("java.lang.String", "getMessage"),
@@ -176,7 +177,7 @@ class HxTypeTest {
 
   @BeforeEach
   void setupEnvironment() {
-    haxxor = new Haxxor(Haxxor.Flags.SKIP_CODE); //Haxxor.Flags.SKIP_CODE
+    haxxor = Hx.builder().withFlags(Haxxor.Flags.SKIP_CODE).build(); //Haxxor.Flags.SKIP_CODE
   }
 
   @Test
@@ -188,7 +189,7 @@ class HxTypeTest {
     for (InitializablePart part : InitializablePart.values()) {
       switch (part) {
         case ANNOTATIONS: {
-          checkInitialization(type, part, () -> type.getAnnotations().values());
+          checkInitialization(type, part, () -> type.getAnnotations());
         }
         break;
         case INNER_TYPES: {
@@ -356,7 +357,7 @@ class HxTypeTest {
   @MethodSource(TEST_CLASSES_AND_PRIMITIVES)
   @DisplayName("References must be computed and reported properly")
   void isReference(String typeName) {
-    HxTypeReference reference = haxxor.reference(typeName);
+    HxType reference = haxxor.reference(typeName);
     HxType type = haxxor.resolve(typeName);
 
     assertTrue(reference.isReference());

@@ -6,6 +6,8 @@ import net.andreho.asm.org.objectweb.asm.FieldVisitor;
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.asm.org.objectweb.asm.MethodWriter;
 import net.andreho.asm.org.objectweb.asm.Type;
+import net.andreho.asm.org.objectweb.asm.TypePath;
+import net.andreho.asm.org.objectweb.asm.TypeReference;
 import net.andreho.haxxor.Hx;
 import net.andreho.haxxor.api.HxAnnotated;
 import net.andreho.haxxor.api.HxAnnotation;
@@ -26,6 +28,7 @@ import net.andreho.haxxor.spi.HxTypeSerializer;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiFunction;
 
 /**
@@ -34,6 +37,7 @@ import java.util.function.BiFunction;
 public class DefaultHxTypeSerializer
   implements HxTypeSerializer {
 
+  private static final TypeReference SUPER_TYPE_REFERENCE = TypeReference.newSuperTypeReference(-1);
   protected final Hx haxxor;
 
   public DefaultHxTypeSerializer(final Hx haxxor) {
@@ -65,23 +69,22 @@ public class DefaultHxTypeSerializer
     visitFields(type, writer);
     HxMethod clinit = visitMethods(type, writer);
 
-    if(clinit != null) {
+    if (clinit != null) {
       visitMethod(writer, clinit);
     }
 
     writer.visitEnd();
-
     return writer.toByteArray();
   }
 
   protected ClassWriter createClassWriter(final HxType type,
-                                        final boolean computeFrames) {
+                                          final boolean computeFrames) {
     return new ClassWriter(computeFrames ? ClassWriter.COMPUTE_FRAMES : 0);
   }
 
   protected void visitClassHeader(final HxType type,
                                   final ClassWriter writer) {
-    writer.visit(type.getVersion().getCode(),
+    writer.visit(type.getVersion().toInteger(),
                  type.getModifiers() & HxType.ALLOWED_MODIFIERS,
                  type.toInternalName(),
                  type.getGenericSignature().orElse(null),
@@ -97,7 +100,7 @@ public class DefaultHxTypeSerializer
 
   protected void visitOuterClass(final HxType type,
                                  final ClassWriter writer) {
-    if(type.getDeclaringMember() == null) {
+    if (type.getDeclaringMember() == null) {
       return;
     }
 
@@ -114,11 +117,11 @@ public class DefaultHxTypeSerializer
 
   protected void visitAnnotations(final HxAnnotated<?> annotated,
                                   final BiFunction<String, Boolean, AnnotationVisitor> visitAnnotation) {
-    for (HxAnnotation annotation : annotated.getAnnotations().values()) {
+    for (HxAnnotation annotation : annotated.getAnnotations()) {
       visitAnnotation(annotation,
                       visitAnnotation.apply(
-                          annotation.getType().toDescriptor(),
-                          annotation.isVisible()
+                        annotation.getType().toDescriptor(),
+                        annotation.isVisible()
                       )
       ).visitEnd();
     }
@@ -132,51 +135,51 @@ public class DefaultHxTypeSerializer
       String name = attribute.getName();
       Object value = attribute.getValue();
 
-      if(value instanceof HxEnum) {
+      if (value instanceof HxEnum) {
 
         HxEnum hxEnum = (HxEnum) value;
         av.visitEnum(name, hxEnum.getType().toDescriptor(), hxEnum.getName());
-      } else if(value instanceof HxEnum[]) {
+      } else if (value instanceof HxEnum[]) {
 
         HxEnum[] hxEnums = (HxEnum[]) value;
         AnnotationVisitor arrayVisitor = av.visitArray(name);
-        for(HxEnum hxEnum : hxEnums) {
+        for (HxEnum hxEnum : hxEnums) {
           arrayVisitor.visitEnum(null, hxEnum.getType().toDescriptor(), hxEnum.getName());
         }
         arrayVisitor.visitEnd();
-      } else if(value instanceof String[]) {
+      } else if (value instanceof String[]) {
 
         String[] array = (String[]) value;
         AnnotationVisitor arrayVisitor = av.visitArray(name);
-        for(String str : array) {
+        for (String str : array) {
           arrayVisitor.visit(null, str);
         }
         arrayVisitor.visitEnd();
-      } else if(value instanceof HxType) {
+      } else if (value instanceof HxType) {
 
         HxType type = (HxType) value;
         av.visit(name, Type.getType(type.toDescriptor()));
-      } else if(value instanceof HxType[]) {
+      } else if (value instanceof HxType[]) {
 
         HxType[] types = (HxType[]) value;
         AnnotationVisitor arrayVisitor = av.visitArray(name);
-        for(HxType type : types) {
+        for (HxType type : types) {
           arrayVisitor.visit(null, Type.getType(type.toDescriptor()));
         }
         arrayVisitor.visitEnd();
-      } else if(value instanceof HxAnnotation) {
+      } else if (value instanceof HxAnnotation) {
 
         HxAnnotation subAnnotation = (HxAnnotation) value;
         AnnotationVisitor subAnnotationVisitor = av.visitAnnotation(name, subAnnotation.getType().toDescriptor());
         visitAnnotation(subAnnotation, subAnnotationVisitor).visitEnd();
-      } else if(value instanceof HxAnnotation[]) {
+      } else if (value instanceof HxAnnotation[]) {
 
         HxAnnotation[] subAnnotations = (HxAnnotation[]) value;
         AnnotationVisitor arrayVisitor = av.visitArray(name);
-        for(HxAnnotation subAnnotation : subAnnotations) {
+        for (HxAnnotation subAnnotation : subAnnotations) {
           visitAnnotation(
-              subAnnotation,
-              arrayVisitor.visitAnnotation(null, subAnnotation.getType().toDescriptor())).visitEnd();
+            subAnnotation,
+            arrayVisitor.visitAnnotation(null, subAnnotation.getType().toDescriptor())).visitEnd();
         }
         arrayVisitor.visitEnd();
       } else {
@@ -186,9 +189,35 @@ public class DefaultHxTypeSerializer
     return av;
   }
 
+  protected void visitTypeAnnotation(TypeReference typeRef,
+                                     TypePath typePath,
+                                     HxAnnotation annotation,
+                                     ClassWriter cw) {
+    AnnotationVisitor av = cw.visitTypeAnnotation(
+      typeRef.getValue(),
+      typePath,
+      annotation.getType().toDescriptor(),
+      annotation.isVisible());
+    visitAnnotation(annotation, av);
+  }
+
   protected void visitTypeAnnotations(final HxType type,
                                       final ClassWriter cw) {
-    //NO OP
+    if (type.getAnnotatedSuperType().isPresent()) {
+      final HxAnnotated<?> annotated = type.getAnnotatedSuperType().get();
+      for (HxAnnotation annotation : annotated.getAnnotations()) {
+        visitTypeAnnotation(SUPER_TYPE_REFERENCE, null, annotation, cw);
+      }
+    }
+    for (int i = 0, len = type.getInterfaces().size(); i < len; i++) {
+      Optional<HxAnnotated<?>> annotatedInterface = type.getAnnotatedInterface(i);
+      if (annotatedInterface.isPresent()) {
+        final HxAnnotated<?> annotated = annotatedInterface.get();
+        for (HxAnnotation annotation : annotated.getAnnotations()) {
+          visitTypeAnnotation(TypeReference.newSuperTypeReference(i), null, annotation, cw);
+        }
+      }
+    }
   }
 
   protected void visitAttributes(final HxType type,
@@ -216,8 +245,8 @@ public class DefaultHxTypeSerializer
 //    System.out.println(HxType.Modifiers.toSet(declared.getModifiers()));
 
     if (declared.isMemberType()) {
-      final String outerName = simpleName == null?
-        null : name.substring(0, name.length() - simpleName.length() - 1);
+      final String outerName = simpleName == null ?
+                               null : name.substring(0, name.length() - simpleName.length() - 1);
       cw.visitInnerClass(name, outerName, simpleName, declared.getModifiers());
     } else {
       cw.visitInnerClass(name, null, simpleName, declared.getModifiers());
@@ -230,11 +259,11 @@ public class DefaultHxTypeSerializer
 
       //( visitAnnotation | visitTypeAnnotation | visitAttribute )* visitEnd.
       final FieldVisitor fv = cw.visitField(
-          field.getModifiers() & HxField.ALLOWED_MODIFIERS,
-          field.getName(),
-          field.getType().toDescriptor(),
-          field.getGenericSignature().orElse(null),
-          field.getDefaultValue()
+        field.getModifiers() & HxField.ALLOWED_MODIFIERS,
+        field.getName(),
+        field.getType().toDescriptor(),
+        field.getGenericSignature().orElse(null),
+        field.getDefaultValue()
       );
 
       visitAnnotations(field, fv::visitAnnotation);
@@ -274,10 +303,10 @@ public class DefaultHxTypeSerializer
    */
 
   protected HxMethod visitMethods(final HxType type,
-                              final ClassWriter cw) {
+                                  final ClassWriter cw) {
     HxMethod clinit = null;
     for (HxMethod method : type.getMethods()) {
-      if(method.isClassInitializer() && clinit == null) {
+      if (method.isClassInitializer() && clinit == null) {
         clinit = method;
         continue;
       }
@@ -308,7 +337,7 @@ public class DefaultHxTypeSerializer
 
     visitParameters(method, mv);
 
-    if(method.getDeclaringType().isAnnotation()) {
+    if (method.getDeclaringType().isAnnotation()) {
       visitAnnotationDefault(method, mv);
     }
 
@@ -332,26 +361,26 @@ public class DefaultHxTypeSerializer
 
   private void visitParameter(final MethodVisitor mv,
                               final HxParameter parameter) {
-    if(parameter.isNamePresent()) {
+    if (parameter.isNamePresent()) {
       mv.visitParameter(parameter.getName(), parameter.getModifiers());
     }
   }
 
   protected void visitAnnotationDefault(final HxMethod method,
                                         final MethodVisitor mv) {
-    if(!method.isAnnotationAttribute()) {
+    if (!method.isAnnotationAttribute()) {
       return;
     }
 
     final Object defaultValue = method.getDefaultValue();
 
-    if(defaultValue == null) {
+    if (defaultValue == null) {
       return;
     }
 
     final AnnotationVisitor av = mv.visitAnnotationDefault();
 
-    if(defaultValue != HxConstants.EMPTY_ARRAY) {
+    if (defaultValue != HxConstants.EMPTY_ARRAY) {
       if (defaultValue.getClass().isArray()) {
         final Class<?> arrayType = defaultValue.getClass().getComponentType();
         if (arrayType.isPrimitive()) {
@@ -425,7 +454,7 @@ public class DefaultHxTypeSerializer
 
   protected void visitTypeAnnotations(final HxMethod method,
                                       final MethodVisitor mv) {
-    if(!method.isGeneric()) {
+    if (!method.isGeneric()) {
       // because of 'throws' and possible annotations on checked exceptions
     }
 
@@ -492,10 +521,10 @@ public class DefaultHxTypeSerializer
                                      final MethodVisitor mv) {
     for (HxTryCatch tryCatch : code.getTryCatches()) {
       codeStream.TRY_CATCH(
-          tryCatch.getBegin(),
-          tryCatch.getEnd(),
-          tryCatch.getCatch(),
-          tryCatch.getExceptionType()
+        tryCatch.getBegin(),
+        tryCatch.getEnd(),
+        tryCatch.getCatch(),
+        tryCatch.getExceptionType()
       );
 //      visitAnnotations(tryCatch, mv::visitTryCatchAnnotation);
     }

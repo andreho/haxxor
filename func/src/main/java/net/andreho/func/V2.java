@@ -20,7 +20,6 @@ public interface V2<A,B> extends VN, Bindable<A, V1<B>> {
 
   /**
    * @param args
-   * @return
    */
   default void call(Object... args) {
     call((A) args[0], (B) args[1]);
@@ -29,7 +28,6 @@ public interface V2<A,B> extends VN, Bindable<A, V1<B>> {
   /**
    * @param a
    * @param b
-   * @return
    */
   void call(A a,
          B b);

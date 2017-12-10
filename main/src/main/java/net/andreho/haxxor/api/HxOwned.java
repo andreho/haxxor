@@ -8,10 +8,14 @@ public interface HxOwned<O extends HxOwned<O>> {
   /**
    * @return
    */
-  HxMember getDeclaringMember();
+  default HxMember getDeclaringMember() {
+    return null;
+  }
 
   /**
    * @param declaringMember
    */
-  O setDeclaringMember(HxMember declaringMember);
+  default O setDeclaringMember(HxMember declaringMember) {
+    throw new UnsupportedOperationException("This element can't be owned by any other element: "+this);
+  }
 }

@@ -3,11 +3,12 @@ package net.andreho.haxxor.api.impl;
 import net.andreho.haxxor.api.HxConstants;
 import net.andreho.haxxor.api.HxMethod;
 import net.andreho.haxxor.api.HxType;
-import net.andreho.haxxor.utils.NamingUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
+
+import static net.andreho.haxxor.api.impl.HxImplTools.checkDescriptorsParameters;
 
 /**
  * Created by a.hofmann on 30.05.2015.
@@ -19,99 +20,6 @@ public class HxMethodImpl
   protected final String name;
   protected HxType returnType;
   protected Object defaultValue;
-
-  /**
-   * @param type
-   * @param desc
-   * @return
-   */
-  static int checkDescriptorsParameters(final HxType type,
-                                               final String desc) {
-    return checkDescriptorsParameters(type, desc, 0, desc.length());
-  }
-
-  static int checkDescriptorsParameters(final HxType type,
-                                        final String desc,
-                                        int index,
-                                        final int length) {
-    int dim = 0;
-    while (index < length) {
-      char c = desc.charAt(index);
-      switch (c) {
-        case '[':
-          dim++;
-          break;
-        case 'V':
-        case 'Z':
-        case 'B':
-        case 'S':
-        case 'C':
-        case 'I':
-        case 'F':
-        case 'J':
-        case 'D':
-          if (!isTypeWithDimension(type, NamingUtils.toPrimitiveClassname(c), dim)) {
-            return -1;
-          }
-          return index + 1;
-        case 'L':
-          int sc = desc.indexOf(';', index + 2);
-          if (sc < 0) {
-            throw new IllegalArgumentException("Invalid descriptor: " + desc);
-          }
-          if (!isTypeWithDescriptorAndDimension(
-            type,
-            desc,
-            dim,
-            index + 1,
-            sc)) {
-            return -1;
-          }
-          return sc + 1;
-      }
-      index++;
-    }
-    return -1;
-  }
-
-  private static boolean isTypeWithDimension(final HxType type,
-                                             final String className,
-                                             final int dim) {
-    HxType componentType = type;
-    while (componentType.isArray()) {
-      componentType = componentType.getComponentType().get();
-    }
-    return type.getDimension() == dim && className.equals(componentType.getName());
-  }
-
-  private static boolean isTypeWithDescriptorAndDimension(final HxType type,
-                                                          final String descriptor,
-                                                          final int dim,
-                                                          final int from,
-                                                          final int to) {
-    HxType componentType = type;
-    while (componentType.isArray()) {
-      componentType = componentType.getComponentType().get();
-    }
-
-    final String classname = componentType.getName();
-    if (type.getDimension() != dim || classname.length() != (to - from)) {
-      return false;
-    }
-
-    for (int i = 0, len = classname.length(); i < len; i++) {
-      char a = classname.charAt(i);
-      char b = descriptor.charAt(i + from);
-
-      if (a == '.' && (a == b || b == '/')) {
-        continue;
-      }
-      if (a != b) {
-        return false;
-      }
-    }
-    return true;
-  }
 
   public HxMethodImpl(final String name) {
     if (name == null || name.isEmpty()) {

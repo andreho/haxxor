@@ -6,6 +6,8 @@ import net.andreho.haxxor.api.HxConstants;
 import java.util.Objects;
 
 import static net.andreho.haxxor.api.HxConstants.ARRAY_DIMENSION;
+import static net.andreho.haxxor.api.HxConstants.DESC_ARRAY_PREFIX;
+import static net.andreho.haxxor.api.HxConstants.DESC_ARRAY_PREFIX_STR;
 import static net.andreho.haxxor.api.HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR;
 import static net.andreho.haxxor.api.HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR;
 
@@ -115,19 +117,18 @@ public abstract class NamingUtils {
     return type.getClassName();
   }
 
-
-  private static int simpleNameLength(final String className) {
-    int length = className.length() - getDimension(className) * ARRAY_DIMENSION.length();
-    int offset = className.lastIndexOf('$');
+  private static int simpleNameLength(final String classname) {
+    int length = classname.length() - getDimension(classname) * ARRAY_DIMENSION.length();
+    int offset = classname.lastIndexOf('$');
     if (offset < 0) {
-      return length - className.lastIndexOf('.');
+      return length - classname.lastIndexOf('.');
     }
     length -= offset;
-    if (length < 1 || className.charAt(offset) != '$') {
+    if (length < 1 || classname.charAt(offset) != '$') {
       throw new InternalError("Malformed class name");
     }
     offset += 1;
-    while (offset < length && isDigit(className.charAt(offset))) {
+    while (offset < length && isDigit(classname.charAt(offset))) {
       offset++;
     }
     return length - offset;
@@ -233,9 +234,9 @@ public abstract class NamingUtils {
   }
 
   /**
-   * @param value
-   * @param offset
-   * @param length
+   * @param value to check
+   * @param offset in the value
+   * @param length of the value
    * @return
    */
   public static boolean isDescriptor(String value,
@@ -256,8 +257,8 @@ public abstract class NamingUtils {
         return isDescriptor(value, offset + 1, length);
       case 'L': {
         int semiColumn = value.indexOf(';', offset + 1);
-        return inRange(offset + 2, length + 1, semiColumn) &&
-               hasNot(value, offset + 2, semiColumn, '.');
+        return inRange(offset + 2, length + 1, semiColumn);
+               //&& hasNot(value, offset + 2, semiColumn, '.');
       }
     }
     return false;
@@ -290,8 +291,10 @@ public abstract class NamingUtils {
    * @return
    */
   public static String toInternalClassname(String classname) {
-    if (isDescriptor(classname) ||
-        isPrimitive(classname)) {
+    if (isPrimitive(classname)) {
+      return classname;
+    }
+    if (isDescriptor(classname)) {
       return classname;
     }
     return classname.replace(JAVA_PACKAGE_SEPARATOR_CHAR, INTERNAL_PACKAGE_SEPARATOR_CHAR);
@@ -361,7 +364,7 @@ public abstract class NamingUtils {
   }
 
   /**
-   * @param classname
+   * @param classname is a common binary classname like: java.lang.String or int[]
    * @return
    */
   public static String toDescriptor(String classname, int offset, int length) {
@@ -386,45 +389,98 @@ public abstract class NamingUtils {
   }
 
   /**
-   * @param className
+   * @param classnameA is either a binary or internal classname
+   * @param classnameB is either a binary or internal classname
    * @return
    */
-  public static boolean isAnonymous(String className) {
-    return simpleNameLength(className) == 0;
+  public static boolean equalClassnames(String classnameA, String classnameB) {
+    return equalClassnames(classnameA, 0, classnameB, 0, Math.min(classnameA.length(), classnameB.length()));
   }
 
   /**
-   * @param className
+   * @param classnameA is either a binary or internal classname
+   * @param offA is the begin of the part with classname A
+   * @param classnameB is either a binary or internal classname
+   * @param offB is the begin of the part with classname B
+   * @param len is the overall length to compare
    * @return
    */
-  public static boolean hasSimpleName(String className) {
-    return simpleNameLength(className) > 0;
+  public static boolean equalClassnames(String classnameA, int offA, String classnameB, int offB, int len) {
+    for(int i = 0; i < len; i++) {
+      char a = classnameA.charAt(offA + i);
+      char b = classnameB.charAt(offB + i);
+
+      if(a != b) {
+        if((a == '.' && b == '/') || (a == '/' && b == '.')) {
+          continue;
+        }
+        return false;
+      }
+    }
+    return true;
   }
 
   /**
-   * @param className
+   * @param classname
    * @return
    */
-  public static boolean hasSimpleBinaryName(String className) {
-    return className.lastIndexOf('$') > -1;
+  public static boolean isAnonymous(String classname) {
+    return simpleNameLength(classname) == 0;
   }
 
   /**
-   * @param className
+   * @param classname
    * @return
    */
-  public static boolean isArray(String className) {
-    return className.endsWith(ARRAY_DIMENSION);
+  public static boolean hasSimpleName(String classname) {
+    return simpleNameLength(classname) > 0;
   }
 
   /**
-   * @param className
+   * @param classname
    * @return
    */
-  public static int getDimension(String className) {
+  public static boolean hasSimpleBinaryName(String classname) {
+    return classname.lastIndexOf('$') > -1;
+  }
+
+  /**
+   * @param classname is the fully-qualified classname
+   * @return <b>null</b> if top element or minimal simple-name of the referenced class
+   */
+  public static String toSimpleBinaryName(String classname) {
+    int dollarIndex = classname.lastIndexOf('$');
+    if (dollarIndex < 0) {
+      return null;
+    }
+    return classname.substring(dollarIndex);
+  }
+
+  /**
+   * @param classname
+   * @return
+   */
+  public static boolean isArray(String classname) {
+    return classname.startsWith(DESC_ARRAY_PREFIX_STR) ||
+           classname.endsWith(ARRAY_DIMENSION);
+  }
+
+  /**
+   * @param classname
+   * @return
+   */
+  public static int getDimension(String classname) {
     int dims = 0;
-    int offset = className.length() - ARRAY_DIMENSION.length();
-    while (className.startsWith(ARRAY_DIMENSION, offset)) {
+    //Do we have a descriptor form?
+    if(classname.startsWith(DESC_ARRAY_PREFIX_STR)) {
+      while(classname.charAt(dims) == DESC_ARRAY_PREFIX) {
+        dims++;
+      }
+      return dims;
+    }
+    //We have a binary classname
+    int offset = classname.length() - ARRAY_DIMENSION.length();
+    while (offset >= 0 && classname.startsWith(ARRAY_DIMENSION, offset)) {
       offset -= ARRAY_DIMENSION.length();
       dims++;
     }
@@ -432,14 +488,14 @@ public abstract class NamingUtils {
   }
 
   /**
-   * @param className is the fully-qualified classname
+   * @param classname is the fully-qualified binary classname
    * @return <b>null</b> if top element or minimal simple-name of the referenced class
    */
-  public static String toSimpleName(String className) {
-    int dims = getDimension(className);
+  public static String toSimpleName(String classname) {
+    int dims = getDimension(classname);
     if (dims > 0) {
       final String componentClassname =
-        className.substring(0, className.length() - dims * ARRAY_DIMENSION.length());
+        classname.substring(0, classname.length() - dims * ARRAY_DIMENSION.length());
       final StringBuilder builder = new StringBuilder(toSimpleName(componentClassname));
 
       for (int i = 0; i < dims; i++) {
@@ -448,10 +504,10 @@ public abstract class NamingUtils {
       return builder.toString();
     }
 
-    String simpleName = toSimpleBinaryName(className);
+    String simpleName = toSimpleBinaryName(classname);
     if (simpleName == null) {
       // top level class
-      simpleName = className;
+      simpleName = classname;
       int dotIndex = simpleName.lastIndexOf(".");
       return dotIndex < 0 ?
              simpleName :
@@ -473,17 +529,5 @@ public abstract class NamingUtils {
 
   private static boolean isDigit(final char c) {
     return c >= '0' && c <= '9';
-  }
-
-  /**
-   * @param className is the fully-qualified classname
-   * @return <b>null</b> if top element or minimal simple-name of the referenced class
-   */
-  public static String toSimpleBinaryName(String className) {
-    int dollarIndex = className.lastIndexOf('$');
-    if (dollarIndex < 0) {
-      return null;
-    }
-    return className.substring(dollarIndex);
   }
 }

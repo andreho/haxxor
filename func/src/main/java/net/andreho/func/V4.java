@@ -23,7 +23,6 @@ public interface V4<A, B, C, D>
 
   /**
    * @param args
-   * @return
    */
   default void call(Object... args) {
     call((A) args[0], (B) args[1], (C) args[2], (D) args[3]);
@@ -32,7 +31,6 @@ public interface V4<A, B, C, D>
   /**
    * @param a
    * @param b
-   * @return
    */
   void call(A a,
             B b,

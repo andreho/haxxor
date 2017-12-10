@@ -23,6 +23,9 @@ public interface HxTypeVariable
    */
   List<HxGenericElement<?>> getInterfaceBounds();
 
+  /**
+   * @return
+   */
   //Either a Type or one of Parameterizable
   HxMember getGenericDeclaration();
 }

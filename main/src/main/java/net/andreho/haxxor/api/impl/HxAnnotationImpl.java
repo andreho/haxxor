@@ -7,7 +7,6 @@ import net.andreho.haxxor.api.HxConstants;
 import net.andreho.haxxor.api.HxEnum;
 import net.andreho.haxxor.api.HxMethod;
 import net.andreho.haxxor.api.HxType;
-import net.andreho.haxxor.api.HxTypeReference;
 import net.andreho.haxxor.api.impl.annotation.BooleanAnnotationAttribute;
 import net.andreho.haxxor.api.impl.annotation.ByteAnnotationAttribute;
 import net.andreho.haxxor.api.impl.annotation.CharacterAnnotationAttribute;
@@ -35,21 +34,24 @@ import net.andreho.haxxor.api.impl.annotation.arrays.StringArrayAnnotationAttrib
 import net.andreho.haxxor.api.impl.annotation.arrays.SubAnnotationArrayAttribute;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+
+import static net.andreho.haxxor.utils.CommonUtils.isUninitialized;
 
 /**
  * Created by a.hofmann on 30.05.2015.
  */
 public class HxAnnotationImpl
-    extends HxOwnedImpl<HxAnnotation>
-    implements HxAnnotation {
+  extends HxOwnedImpl<HxAnnotation>
+  implements HxAnnotation {
 
   private static final Class<Target> TARGET_ANNOTATION_TYPE = Target.class;
 
@@ -75,7 +77,7 @@ public class HxAnnotationImpl
 
     this.type = prototype.type;
     this.visible = prototype.visible;
-    if(prototype.attributeMap.isEmpty()) {
+    if (prototype.attributeMap.isEmpty()) {
       this.attributeMap = Collections.emptyMap();
     } else {
       this.attributeMap = new LinkedHashMap<>(prototype.attributeMap.size());
@@ -86,22 +88,16 @@ public class HxAnnotationImpl
   }
 
   @Override
-  public RetentionPolicy getRetention() {
-    if(visible) {
-      return RetentionPolicy.RUNTIME;
-    }
-    return RetentionPolicy.CLASS;
-  }
-
-  @Override
-  public ElementType[] getElementTypes() {
-    Optional<HxAnnotation> targetAnnotation = getType().getAnnotation(TARGET_ANNOTATION_TYPE);
-    if(targetAnnotation.isPresent()) {
-      HxAnnotation annotation = targetAnnotation.get();
-      HxEnum[] hxEnums = annotation.getAttribute("value");
-      return HxEnum.toEnumArray(ElementType.class, hxEnums);
-    }
-    return new ElementType[0];
+  public Set<ElementType> getElementTypes() {
+    final Optional<HxAnnotation> optional = getType().getAnnotation(TARGET_ANNOTATION_TYPE);
+    return optional
+      .map((annotation -> {
+        HxEnum[] hxEnums = annotation.getAttribute("value");
+        Set<ElementType> set = EnumSet.noneOf(ElementType.class);
+        set.addAll(Arrays.asList(HxEnum.toEnumArray(ElementType.class, hxEnums)));
+        return set;
+      }))
+      .orElse(Collections.emptySet());
   }
 
   @Override
@@ -116,7 +112,7 @@ public class HxAnnotationImpl
 
   @Override
   public Map<String, HxAnnotationAttribute<?, ?>> getAttributeMap() {
-    return attributeMap;
+    return this.attributeMap;
   }
 
   @Override
@@ -126,7 +122,7 @@ public class HxAnnotationImpl
 
   @Override
   public <V> V getAttribute(String name) {
-    final HxAnnotationAttribute<?, ?> attribute = attributeMap.get(name);
+    final HxAnnotationAttribute<?, ?> attribute = this.attributeMap.get(name);
 
     if (attribute != null) {
       return (V) attribute.getValue();
@@ -139,7 +135,7 @@ public class HxAnnotationImpl
   public <V> V getAttribute(final String name,
                             final V defaultValue) {
     Object attribute = getAttribute(name);
-    if(attribute == null || attribute == HxConstants.EMPTY_ARRAY) {
+    if (attribute == null || attribute == HxConstants.EMPTY_ARRAY) {
       return defaultValue;
     }
     return (V) attribute;
@@ -150,7 +146,7 @@ public class HxAnnotationImpl
                             final Class<V> type) {
     Object attribute = getAttribute(name);
     //Sometimes possible
-    if(type.isArray() && attribute == HxConstants.EMPTY_ARRAY) {
+    if (type.isArray() && attribute == HxConstants.EMPTY_ARRAY) {
       attribute = Array.newInstance(type.getComponentType(), 0);
     }
     return type.cast(attribute);
@@ -158,27 +154,38 @@ public class HxAnnotationImpl
 
   @Override
   public <V> V getDefaultAttribute(final String name) {
-    HxMethod method =
-        getType().findMethod(name)
-                 .orElseThrow(() ->
-                                  new IllegalArgumentException(
-                                      "Method for annotation's attribute not found: " +name
-                                  )
-                 );
+    final HxMethod method =
+      getType()
+        .findMethod(name)
+        .orElseThrow(
+          () ->
+            new IllegalArgumentException(
+              "Method for annotation's attribute not found: " + name
+            )
+        );
     return (V) method.getDefaultValue();
   }
 
-  private HxAnnotation set(String name,
-                           HxAnnotationAttribute<?, ?> entry) {
-    Map<String, HxAnnotationAttribute<?, ?>> attributeMap = this.attributeMap;
-    if(attributeMap == Collections.EMPTY_MAP) {
-      this.attributeMap = attributeMap = new LinkedHashMap<>();
-    }
+  protected HxAnnotation set(String name,
+                             HxAnnotationAttribute<?, ?> entry) {
+    Map<String, HxAnnotationAttribute<?, ?>> attributeMap = initializeInternalStorageIfNeeded();
     attributeMap.put(name, entry);
     return this;
   }
 
-  private HxTypeReference reference(String classname) {
+  protected Map<String, HxAnnotationAttribute<?, ?>> createInternalStorage() {
+    return new LinkedHashMap<>();
+  }
+
+  protected Map<String, HxAnnotationAttribute<?, ?>> initializeInternalStorageIfNeeded() {
+    Map<String, HxAnnotationAttribute<?, ?>> attributeMap = this.attributeMap;
+    if (isUninitialized(attributeMap)) {
+      this.attributeMap = attributeMap = createInternalStorage();
+    }
+    return attributeMap;
+  }
+
+  private HxType reference(String classname) {
     return getHaxxor().reference(classname);
   }
 
@@ -267,8 +274,8 @@ public class HxAnnotationImpl
   public <E extends Enum<E>> HxAnnotation setAttribute(String name,
                                                        E value) {
     return set(name, new EnumAnnotationAttribute(
-        name,
-        HxEnum.toHxEnum(getType().getHaxxor(), value))
+      name,
+      HxEnum.toHxEnum(getType().getHaxxor(), value))
     );
   }
 
@@ -348,11 +355,11 @@ public class HxAnnotationImpl
   public <E extends Enum<E>> HxAnnotation setAttribute(String name,
                                                        E[] values) {
     return set(
+      name,
+      new EnumArrayAnnotationAttribute(
         name,
-        new EnumArrayAnnotationAttribute(
-            name,
-            HxEnum.toHxEnumArray(getType().getHaxxor(), values)
-        )
+        HxEnum.toHxEnumArray(getType().getHaxxor(), values)
+      )
     );
   }
 
@@ -361,9 +368,9 @@ public class HxAnnotationImpl
                                    final Class<?>[] values) {
     final Hx haxxor = type.getHaxxor();
     final HxType[] hxTypes =
-        Arrays.stream(values)
-              .map(cls -> haxxor.reference(cls.getName()))
-              .toArray(HxType[]::new);
+      Arrays.stream(values)
+            .map(cls -> haxxor.reference(cls.getName()))
+            .toArray(HxType[]::new);
     return setAttribute(name, hxTypes);
   }
 
@@ -399,13 +406,13 @@ public class HxAnnotationImpl
   }
 
   private boolean hasEqualAttributes(HxAnnotation other) {
-    if(this.attributeMap.size() != other.getAttributeMap().size()) {
+    if (this.attributeMap.size() != other.getAttributeMap().size()) {
       return false;
     }
     for (Map.Entry<String, HxAnnotationAttribute<?, ?>> entry : getAttributeMap().entrySet()) {
       final HxAnnotationAttribute<?, ?> attribute = entry.getValue();
-      if(!other.hasAttribute(attribute.getName()) ||
-         !attribute.hasValue(other.getAttribute(attribute.getName()))) {
+      if (!other.hasAttribute(attribute.getName()) ||
+          !attribute.hasValue(other.getAttribute(attribute.getName()))) {
 
         return false;
       }

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Optional;
 
 import static net.andreho.haxxor.utils.CommonUtils.toByteArray;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -27,7 +28,7 @@ class DefaultHxByteCodeLoaderTest
 
   @BeforeEach
   void setup() {
-    this.haxxor = new Haxxor(0, new HaxxorBuilder() {
+    this.haxxor = new Haxxor(new HaxxorBuilder() {
       @Override
       public HxByteCodeLoader createByteCodeLoader(final Hx haxxor) {
         return byteCodeLoader = new DefaultHxByteCodeLoader(haxxor);
@@ -36,15 +37,15 @@ class DefaultHxByteCodeLoaderTest
   }
 
   @Override
-  public byte[] load(final ClassLoader classLoader, final String className) {
+  public Optional<byte[]> load(final ClassLoader classLoader, final String className) {
     return byteCodeLoader.load(classLoader, className);
   }
 
   @Test
   void testLoadByteCode()
   throws IOException {
-    byte[] loaded = load(this.getClass().getClassLoader(), MinimalBean.class.getName());
-    byte[] original = null;
+    Optional<byte[]> loaded = load(this.getClass().getClassLoader(), MinimalBean.class.getName());
+    byte[] original;
 
     try (InputStream inputStream = haxxor.getClassLoader().getResourceAsStream(
         MinimalBean.class.getName()
@@ -55,6 +56,6 @@ class DefaultHxByteCodeLoaderTest
       assertNotNull(original);
     }
 
-    assertTrue(Arrays.equals(original, loaded));
+    assertTrue(Arrays.equals(original, loaded.get()));
   }
 }

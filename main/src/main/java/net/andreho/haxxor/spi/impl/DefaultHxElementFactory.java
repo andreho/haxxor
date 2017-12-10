@@ -7,9 +7,7 @@ import net.andreho.haxxor.api.HxField;
 import net.andreho.haxxor.api.HxMethod;
 import net.andreho.haxxor.api.HxParameter;
 import net.andreho.haxxor.api.HxType;
-import net.andreho.haxxor.api.HxTypeReference;
 import net.andreho.haxxor.api.impl.HxAnnotationImpl;
-import net.andreho.haxxor.api.impl.HxArrayTypeImpl;
 import net.andreho.haxxor.api.impl.HxFieldImpl;
 import net.andreho.haxxor.api.impl.HxMethodImpl;
 import net.andreho.haxxor.api.impl.HxMethodReferenceImpl;
@@ -38,33 +36,35 @@ public class DefaultHxElementFactory
   }
 
   @Override
-  public HxType createType(final String internalTypeName) {
-    if(haxxor.hasResolved(internalTypeName)) {
-      return haxxor.resolve(internalTypeName);
+  public HxType createType(final String classname) {
+    if(haxxor.hasResolved(classname)) {
+      return haxxor.resolve(classname);
     }
-    if(internalTypeName.endsWith("[]")) {
-      return new HxArrayTypeImpl(haxxor, internalTypeName);
+    if(classname.endsWith(HxConstants.ARRAY_DIMENSION)) {
+      return this.haxxor.reference(
+        classname.substring(0, classname.length() - HxConstants.ARRAY_DIMENSION.length())
+      );
     }
-    return new HxTypeImpl(haxxor, internalTypeName);
+    return new HxTypeImpl(haxxor, classname);
   }
 
   @Override
-  public HxTypeReference createReference(final String internalTypeName) {
-    if(haxxor.hasReference(internalTypeName)) {
-      return haxxor.reference(internalTypeName);
+  public HxType createReference(final String classname) {
+    if(haxxor.hasReference(classname)) {
+      return haxxor.reference(classname);
     }
-    return new HxTypeReferenceImpl(haxxor, internalTypeName);
+    return new HxTypeReferenceImpl(haxxor, classname);
   }
 
   @Override
-  public HxTypeReference createReference(final HxType resolvedType) {
+  public HxType createReference(final HxType resolvedType) {
     return new HxTypeReferenceImpl(haxxor, resolvedType);
   }
 
   @Override
-  public HxField createField(final String typename,
+  public HxField createField(final String fieldType,
                              final String fieldName) {
-    return new HxFieldImpl(haxxor.reference(typename), fieldName);
+    return new HxFieldImpl(haxxor.reference(fieldType), fieldName);
   }
 
   @Override

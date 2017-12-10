@@ -21,14 +21,12 @@ public interface V0
 
   /**
    * @param args
-   * @return
    */
   default void call(Object... args) {
     call();
   }
 
   /**
-   * @return
    */
   void call();
 }

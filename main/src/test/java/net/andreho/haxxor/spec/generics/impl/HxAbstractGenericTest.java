@@ -6,7 +6,7 @@ import net.andreho.asm.org.objectweb.asm.FieldVisitor;
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.Haxxor;
-import net.andreho.haxxor.api.HxTypeReference;
+import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.api.impl.HxGenericTypeImpl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -92,7 +92,7 @@ public class HxAbstractGenericTest
     System.out.println();
 
     if (signature != null) {
-      HxTypeReference reference = haxxor.reference(name);
+      HxType reference = haxxor.reference(name);
       HxGenericTypeImpl genericType = new HxGenericTypeImpl(reference, signature);
 
       System.out.println(genericType);

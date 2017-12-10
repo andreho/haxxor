@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 /**
  * <br/>Created by a.hofmann on 29.11.2017 at 07:03.
  */
-public interface HxFieldAnalysis<O extends HxFieldOwner<O>> extends HxFieldOwner<O> {
+public interface HxFieldAnalysis<O extends HxFieldManager<O>> extends HxFieldManager<O> {
   /**
    * Loads the declared fields if needed and then caches them internally for the faster analysis
    * @return owner instance
@@ -19,17 +19,17 @@ public interface HxFieldAnalysis<O extends HxFieldOwner<O>> extends HxFieldOwner
   }
 
   /**
-   * @param predicate
-   * @return
+   * @param predicate for test on each declared field
+   * @return a modifiable unbind list with all passing fields
    */
   default List<HxField> fields(Predicate<HxField> predicate) {
     return fields(predicate, false);
   }
 
   /**
-   * @param predicate for test on declared fields
-   * @param recursive whether to visit fields of super-types or not
-   * @return
+   * @param predicate for test on each declared field
+   * @param recursive whether to visit fields of super-types or not (interfaces are not included)
+   * @return a modifiable unbind list with all passing fields
    */
   default List<HxField> fields(Predicate<HxField> predicate, boolean recursive) {
     return Collections.emptyList();
@@ -107,6 +107,7 @@ public interface HxFieldAnalysis<O extends HxFieldOwner<O>> extends HxFieldOwner
   /**
    * @param prototype
    * @return
+   * @implNote uses only name, type and modifiers of the given field prototype
    */
   default Optional<HxField> findOrCreateField(HxField prototype) {
     final Optional<HxField> optional = findOrCreateField(prototype.getName(), prototype.getType());
@@ -116,8 +117,10 @@ public interface HxFieldAnalysis<O extends HxFieldOwner<O>> extends HxFieldOwner
   }
 
   /**
-   * @param prototype
+   * Finds an existing field using given prototype or creates it otherwise for this type
+   * @param prototype to use for a field
    * @return
+   * @implNote uses only name, type and modifiers of the given field prototype
    */
   default Optional<HxField> findOrCreateField(Field prototype) {
     final Optional<HxField> optional = findOrCreateField(prototype.getName(), prototype.getType());
@@ -127,21 +130,23 @@ public interface HxFieldAnalysis<O extends HxFieldOwner<O>> extends HxFieldOwner
   }
 
   /**
+   * Finds an existing field with given parameters or creates it otherwise for this type
    * @param name of the field to look for or to create
-   * @param typename of the field to look for or to create
+   * @param type of the field to look for or to create
    * @return optional with field
    */
-  default Optional<HxField> findOrCreateField(String name, String typename) {
-    final Optional<HxField> optional = findField(name, typename);
+  default Optional<HxField> findOrCreateField(String name, String type) {
+    final Optional<HxField> optional = findField(name, type);
     if(optional.isPresent()) {
       return optional;
     }
-    final HxField field = getHaxxor().createField(typename, name);
+    final HxField field = getHaxxor().createField(type, name);
     addField(field);
     return Optional.of(field);
   }
 
   /**
+   * Finds an existing field with given parameters or creates it otherwise for this type
    * @param name of the field to look for or to create
    * @param type of the field to look for or to create
    * @return optional with field
@@ -151,6 +156,7 @@ public interface HxFieldAnalysis<O extends HxFieldOwner<O>> extends HxFieldOwner
   }
 
   /**
+   * Finds an existing field with given parameters or creates it otherwise for this type
    * @param name of the field to look for or to create
    * @param type of the field to look for or to create
    * @return optional with field

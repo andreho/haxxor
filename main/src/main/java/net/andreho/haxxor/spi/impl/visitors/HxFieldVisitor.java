@@ -7,8 +7,8 @@ import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.asm.org.objectweb.asm.TypePath;
 import net.andreho.haxxor.api.HxAnnotation;
 import net.andreho.haxxor.api.HxField;
+import net.andreho.haxxor.api.HxInitializablePart;
 import net.andreho.haxxor.api.HxType;
-import net.andreho.haxxor.api.InitializablePart;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -52,7 +52,7 @@ public class HxFieldVisitor
   @Override
   public void visitEnd() {
     super.visitEnd();
-    this.type.initialize(InitializablePart.FIELDS)
+    this.type.initialize(HxInitializablePart.FIELDS)
              .addField(this.field);
   }
 }

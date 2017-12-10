@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -89,16 +88,17 @@ public interface HxMethod
     }
   }
 
-  /**
-   */
-  enum InternalModifiers implements HxModifier {
-    DIRTY() {
-      @Override
-      public int toBit() {
-        return 0x10000;
-      }
-    }
-  }
+//  /**
+//   */
+//  enum InternalModifiers
+//    implements HxModifier {
+//    DIRTY() {
+//      @Override
+//      public int toBit() {
+//        return 0x10000;
+//      }
+//    }
+//  }
 
   /**
    * @return
@@ -196,25 +196,25 @@ public interface HxMethod
    * @return
    */
   default boolean isForwardingConstructor() {
-    final Optional<HxType> superOpt = getDeclaringType().getSuperType();
+    final Optional<HxType> optional = getDeclaringType().getSuperType();
 
-    if(isConstructor() &&
-       superOpt.isPresent() &&
-       hasBody()) {
+    if (isConstructor() &&
+        optional.isPresent() &&
+        hasBody()) {
       final HxInstruction first = getBody().getFirst();
 
-      if(first != null) {
-        final HxType superClass = superOpt.get();
+      if (first != null) {
+        final HxType superClass = optional.get();
 
-        for(HxInstruction current : first) {
-          if(current.hasType(HxInstructionTypes.Invocation.INVOKESPECIAL)) {
+        for (HxInstruction current : first) {
+          if (current.hasType(HxInstructionTypes.Invocation.INVOKESPECIAL)) {
             InvokeInstruction invokeInstruction = (InvokeInstruction) current;
 
-            if(HxConstants.CONSTRUCTOR_METHOD_NAME.equals(invokeInstruction.getName())) {
-              if(superClass.hasName(invokeInstruction.getOwner())) {
+            if (HxConstants.CONSTRUCTOR_METHOD_NAME.equals(invokeInstruction.getName())) {
+              if (superClass.hasName(invokeInstruction.getOwner())) {
                 return true;
               }
-              if(getDeclaringType().hasName(invokeInstruction.getOwner())) {
+              if (getDeclaringType().hasName(invokeInstruction.getOwner())) {
                 return false;
               }
             }
@@ -235,16 +235,16 @@ public interface HxMethod
    * @return this
    * @implSpec return value can't be null
    */
-  default HxMethod setReturnType(String returnType) {
-    return setReturnType(getHaxxor().reference(returnType));
-  }
+  HxMethod setReturnType(HxType returnType);
 
   /**
    * @param returnType of this method
    * @return this
    * @implSpec return value can't be null
    */
-  HxMethod setReturnType(HxType returnType);
+  default HxMethod setReturnType(String returnType) {
+    return setReturnType(getHaxxor().reference(returnType));
+  }
 
   /**
    * @return <b>-1</b> if this executable element wasn't found or not bound to any type,
@@ -323,6 +323,47 @@ public interface HxMethod
   }
 
   /**
+   * @param parameters to check against
+   * @return
+   */
+  default boolean hasParameters(String... parameters) {
+    return hasParameters(getHaxxor().references(parameters));
+  }
+
+  /**
+   * @param parameters to check against
+   * @return
+   */
+  default boolean hasParameters(Class<?>... parameters) {
+    return hasParameters(getHaxxor().references(parameters));
+  }
+
+  /**
+   * @param parameters to check against
+   * @return
+   */
+  default boolean hasParameters(HxType... parameters) {
+    return hasParameters(Arrays.asList(parameters));
+  }
+
+  /**
+   * @param parameters to check against
+   * @return
+   */
+  default boolean hasParameters(List<HxType> parameters) {
+    if (parameters.size() != getParametersCount()) {
+      return false;
+    }
+    for (int i = 0, arity = getParametersCount(); i < arity; i++) {
+      HxType type = getParameterTypeAt(i);
+      if (!type.equals(parameters.get(i))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
    * @return number of slots on local variable table to hold this parameters' list;
    * <b>this</b> for member methods isn't included.
    */
@@ -354,14 +395,6 @@ public interface HxMethod
    * @param types of new parameters of this method
    * @return this
    */
-  default HxMethod setParameterTypes(HxType... types) {
-    return setParameterTypes(Arrays.asList(types));
-  }
-
-  /**
-   * @param types of new parameters of this method
-   * @return this
-   */
   default HxMethod setParameterTypes(List<HxType> types) {
     final List<HxParameter> parameters = new ArrayList<>(types.size());
     for (HxType type : types) {
@@ -371,7 +404,15 @@ public interface HxMethod
   }
 
   /**
-   * @return the list with all parameters
+   * @param types of new parameters of this method
+   * @return this
+   */
+  default HxMethod setParameterTypes(HxType... types) {
+    return setParameterTypes(Arrays.asList(types));
+  }
+
+  /**
+   * @return the list with all parameters of this method
    */
   List<HxParameter> getParameters();
 
@@ -379,15 +420,15 @@ public interface HxMethod
    * @param parameters
    * @return this
    */
-  default HxMethod setParameters(HxParameter... parameters) {
-    return setParameters(Arrays.asList(parameters));
-  }
+  HxMethod setParameters(List<HxParameter> parameters);
 
   /**
    * @param parameters
    * @return this
    */
-  HxMethod setParameters(List<HxParameter> parameters);
+  default HxMethod setParameters(HxParameter... parameters) {
+    return setParameters(new ArrayList<>(Arrays.asList(parameters)));
+  }
 
   /**
    * @param parameter
@@ -434,7 +475,15 @@ public interface HxMethod
   }
 
   /**
-   * @param type
+   * @param type of next parameter to add
+   * @return
+   */
+  default HxMethod addParameterType(Class<?> type) {
+    return addParameterType(getHaxxor().reference(type));
+  }
+
+  /**
+   * @param type of next parameter to add
    * @return
    */
   default HxMethod addParameterType(HxType type) {
@@ -447,7 +496,7 @@ public interface HxMethod
    * @return this
    */
   default HxMethod setExceptionTypes(HxType... exceptionTypes) {
-    return setExceptionTypes(Arrays.asList(exceptionTypes));
+    return setExceptionTypes(new ArrayList<>(Arrays.asList(exceptionTypes)));
   }
 
   /**
@@ -492,8 +541,8 @@ public interface HxMethod
   /**
    * @return a collection with overridden methods or constructors
    */
-  default Collection<HxMethod> getOverriddenMembers() {
-    return Collections.emptySet();
+  default List<HxMethod> getOverriddenMembers() {
+    return Collections.emptyList();
   }
 
   /**
@@ -682,18 +731,14 @@ public interface HxMethod
   default Appendable toDescriptor(Appendable builder) {
     try {
       builder.append('(');
-
       for (int i = 0, len = getParametersCount(); i < len; i++) {
         getParameterTypeAt(i).toDescriptor(builder);
       }
-
       builder.append(')');
       getReturnType().toDescriptor(builder);
-
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }
-
     return builder;
   }
 

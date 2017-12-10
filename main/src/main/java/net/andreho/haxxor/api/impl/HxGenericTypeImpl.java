@@ -35,10 +35,10 @@ public class HxGenericTypeImpl extends HxAbstractInterpretable implements HxGene
 
   public HxGenericTypeImpl initialize() {
     if(isUninitialized(typeVariables)) {
-      typeVariables = new ArrayList<>();
+      this.typeVariables = new ArrayList<>();
     }
     if(isUninitialized(interfaces)) {
-      interfaces = new ArrayList<>();
+      this.interfaces = new ArrayList<>();
     }
     return this;
   }

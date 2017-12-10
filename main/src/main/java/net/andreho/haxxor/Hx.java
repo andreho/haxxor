@@ -1,13 +1,13 @@
 package net.andreho.haxxor;
 
 import net.andreho.haxxor.api.HxType;
-import net.andreho.haxxor.api.HxTypeReference;
 import net.andreho.haxxor.spi.HxClassLoaderHolder;
 import net.andreho.haxxor.spi.HxClassResolver;
 import net.andreho.haxxor.spi.HxClassnameNormalizer;
 import net.andreho.haxxor.spi.HxDeduplicationCacheAware;
 import net.andreho.haxxor.spi.HxElementFactory;
 import net.andreho.haxxor.spi.HxInitializationAware;
+import net.andreho.haxxor.spi.HxProvidable;
 import net.andreho.haxxor.spi.HxTypeSerializer;
 import net.andreho.haxxor.spi.HxVerificationAware;
 
@@ -25,6 +25,16 @@ public interface Hx extends HxClassnameNormalizer,
                             HxDeduplicationCacheAware,
                             HxClassResolver {
 
+  /**
+   * @return
+   */
+  static Hx create() {
+    return builder().build();
+  }
+
+  /**
+   * @return
+   */
   static HaxxorBuilder builder() {
     return HaxxorBuilder.newBuilder();
   }
@@ -39,13 +49,13 @@ public interface Hx extends HxClassnameNormalizer,
    * @param classname
    * @return
    */
-  HxTypeReference reference(String classname);
+  HxType reference(String classname);
 
   /**
    * @param aClass
    * @return
    */
-  HxTypeReference reference(Class<?> aClass);
+  HxType reference(Class<?> aClass);
 
   /**
    * @param classnames
@@ -116,4 +126,26 @@ public interface Hx extends HxClassnameNormalizer,
    */
   HxType register(String classname,
                   HxType typeOrReference);
+
+  /**
+   * @param hxType
+   */
+  void resolveFields(HxType hxType);
+
+  /**
+   * @param hxType
+   */
+  void resolveMethods(HxType hxType);
+
+  /**
+   * @param type
+   */
+  void resolveFieldsAndMethods(HxType type);
+
+  /**
+   * @param providable
+   * @param <T>
+   * @return
+   */
+  <T> T providePart(HxProvidable<T> providable);
 }

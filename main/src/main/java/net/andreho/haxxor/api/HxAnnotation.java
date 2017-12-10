@@ -5,6 +5,7 @@ import net.andreho.haxxor.Hx;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Implementation notes: <br/>
@@ -28,16 +29,6 @@ public interface HxAnnotation
   }
 
   /**
-   * @return
-   */
-  RetentionPolicy getRetention();
-
-  /**
-   * @return
-   */
-  ElementType[] getElementTypes();
-
-  /**
    * @return type of this annotation
    */
   HxType getType();
@@ -47,6 +38,22 @@ public interface HxAnnotation
    * with retention policy equal to {@link RetentionPolicy#RUNTIME}
    */
   boolean isVisible();
+
+  /**
+   * @return
+   */
+  default RetentionPolicy getRetention() {
+    //return RetentionPolicy.SOURCE; -> is never stored in the bytecode
+    if(isVisible()) {
+      return RetentionPolicy.RUNTIME;
+    }
+    return RetentionPolicy.CLASS;
+  }
+
+  /**
+   * @return
+   */
+  Set<ElementType> getElementTypes();
 
   /**
    * @return map with annotation's attributes
@@ -112,67 +119,220 @@ public interface HxAnnotation
   <V> V getDefaultAttribute(String name);
 
   /**
-   * @return
+   * @return is the number of attributes stored in this annotation
    */
   int size();
 
+  /**
+   * @return
+   */
+  default boolean isEmpty() {
+    return size() == 0;
+  }
+
   //----------------------------------------------------------------------------------------------------------------
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, boolean value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, byte value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, char value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, short value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, int value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, float value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, long value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, double value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, String value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   <E extends Enum<E>> HxAnnotation setAttribute(final String name, E value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, HxEnum value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, Class<?> value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, HxType value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, HxAnnotation value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, boolean[] value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, byte[] value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, char[] value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, short[] value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, int[] value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, float[] value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, long[] value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, double[] value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, String[] value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, HxEnum[] value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   <E extends Enum<E>> HxAnnotation setAttribute(final String name, E[] value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, Class<?>[] value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, HxType[] value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   */
   HxAnnotation setAttribute(final String name, HxAnnotation[] value);
 
+  /**
+   * @param name of the annotation's attribute
+   * @param value of the annotation's attribute
+   * @return this annotation
+   * @see HxConstants#EMPTY_ARRAY
+   */
   HxAnnotation setAttribute(final String name, HxConstants.EmptyArray[] value);
 }

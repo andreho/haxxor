@@ -20,14 +20,12 @@ public interface V1<A> extends VN, Bindable<A,V0> {
 
   /**
    * @param args
-   * @return
    */
   default void call(Object... args) {
     call((A) args[0]);
   }
 
   /**
-   * @return
    */
   void call(A a);
 }

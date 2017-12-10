@@ -1,7 +1,6 @@
 package net.andreho.haxxor;
 
 import net.andreho.haxxor.api.HxType;
-import net.andreho.haxxor.api.HxTypeReference;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
 import net.andreho.haxxor.spi.HxClassResolver;
 import net.andreho.haxxor.spi.HxClassnameNormalizer;
@@ -38,9 +37,9 @@ import java.util.Objects;
  */
 public class HaxxorBuilder {
 
-  private int flags;
   private boolean concurrent;
   private ClassLoader classLoader;
+  private int flags = Haxxor.Flags.SKIP_FIELDS | Haxxor.Flags.SKIP_METHODS;
 
   /**
    * @return
@@ -79,6 +78,7 @@ public class HaxxorBuilder {
    *
    * @param flags to use
    * @return this
+   * @see net.andreho.haxxor.Haxxor.Flags
    */
   public HaxxorBuilder withFlags(int flags) {
     this.flags = flags;
@@ -100,6 +100,10 @@ public class HaxxorBuilder {
    */
   boolean isConcurrent() {
     return concurrent;
+  }
+
+  int getFlags() {
+    return flags;
   }
 
   /**
@@ -200,7 +204,7 @@ public class HaxxorBuilder {
    * @param haxxor is the requesting instance
    * @return
    */
-  public Map<String, HxTypeReference> createReferenceCache(final Hx haxxor) {
+  public Map<String, HxType> createReferenceCache(final Hx haxxor) {
     return new HashMap<>();
   }
 
@@ -277,6 +281,6 @@ public class HaxxorBuilder {
    * @return
    */
   public Hx build() {
-    return new Haxxor(this.flags, this);
+    return new Haxxor(this);
   }
 }

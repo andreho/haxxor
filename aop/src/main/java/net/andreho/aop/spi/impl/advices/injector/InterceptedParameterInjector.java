@@ -14,7 +14,6 @@ import net.andreho.haxxor.Hx;
 import net.andreho.haxxor.api.HxMethod;
 import net.andreho.haxxor.api.HxParameter;
 import net.andreho.haxxor.api.HxType;
-import net.andreho.haxxor.api.HxTypeReference;
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
@@ -109,7 +108,7 @@ public final class InterceptedParameterInjector
   private int calcDistance(final Hx haxxor,
                            final HxParameter parameter,
                            final Class<?> type) {
-    HxTypeReference parameterType = haxxor.reference(type);
+    HxType parameterType = haxxor.reference(type);
     return parameterType.distanceTo(parameter.getType());
   }
 

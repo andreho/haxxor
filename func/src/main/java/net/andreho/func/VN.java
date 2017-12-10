@@ -8,7 +8,6 @@ public interface VN
 
   /**
    * @param args
-   * @return
    */
   void call(Object... args);
 }

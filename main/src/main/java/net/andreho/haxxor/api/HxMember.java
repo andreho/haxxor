@@ -5,14 +5,14 @@ package net.andreho.haxxor.api;
  * Created by a.hofmann on 31.05.2015.
  */
 public interface HxMember<M extends HxMember<M>> {
-
-
   /**
    * Changes modifiers bit-set to the given set of modifiers
    * @param modifiers
    * @return this
    */
-  M setModifiers(int modifiers);
+  default M setModifiers(int modifiers) {
+    throw new UnsupportedOperationException("This type has an unmodifiable set of modifiers: "+this);
+  }
 
   /**
    * @return applied modifiers (e.g.: public/private/volatile/abstract etc.)

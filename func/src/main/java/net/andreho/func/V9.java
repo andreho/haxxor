@@ -14,6 +14,11 @@ public interface V9<A, B, C, D, E, F, G, H, I>
       call(target, (B) b, (C) c, (D) d, (E) e, (F) f, (G) g, (H) h, (I) i);
   }
 
+  /**
+   * @param result
+   * @param <R>
+   * @return
+   */
   default <R> F9<R,A,B,C,D,E,F,G,H,I> toFunc(final R result) {
     return (a, b, c, d, e, f, g, h, i) -> {
       call(a, b, c, d, e, f, g, h, i);
@@ -23,7 +28,6 @@ public interface V9<A, B, C, D, E, F, G, H, I>
 
   /**
    * @param args
-   * @return
    */
   default void call(Object... args) {
     call((A) args[0],
@@ -47,7 +51,6 @@ public interface V9<A, B, C, D, E, F, G, H, I>
    * @param g
    * @param h
    * @param i
-   * @return
    */
   void call(A a,
             B b,

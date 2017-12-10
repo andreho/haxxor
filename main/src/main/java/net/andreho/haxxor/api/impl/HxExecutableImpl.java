@@ -7,7 +7,6 @@ import net.andreho.haxxor.api.HxParameter;
 import net.andreho.haxxor.api.HxType;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -27,7 +26,7 @@ public abstract class HxExecutableImpl
 
   protected List<HxParameter> parameters = DEFAULT_EMPTY_PARAMETERS;
   protected List<HxType> exceptions = DEFAULT_EMPTY_EXCEPTIONS;
-  protected Optional<String> genericSignature = Optional.empty();
+  protected String genericSignature;
   protected HxMethodBody body;
 
   public HxExecutableImpl() {
@@ -62,7 +61,7 @@ public abstract class HxExecutableImpl
     if(type == null) {
       return -1;
     }
-    return type.indexOf(this);
+    return type.indexOfMethod(this);
   }
 
   @Override
@@ -155,22 +154,18 @@ public abstract class HxExecutableImpl
 
   @Override
   public Optional<String> getGenericSignature() {
-    return genericSignature;
+    return Optional.ofNullable(genericSignature);
   }
 
   @Override
   public HxMethod setGenericSignature(String genericSignature) {
-    if(genericSignature == null || genericSignature.isEmpty()) {
-      this.genericSignature = Optional.empty();
-    } else {
-      this.genericSignature = Optional.of(genericSignature);
-    }
+    this.genericSignature = genericSignature;
     return this;
   }
 
   @Override
-  public Collection<HxMethod> getOverriddenMembers() {
-    if(getDeclaringType() == null) {
+  public List<HxMethod> getOverriddenMembers() {
+    if(getDeclaringMember() == null) {
       return Collections.emptyList();
     }
 
@@ -189,14 +184,11 @@ public abstract class HxExecutableImpl
     }
 
     current = getDeclaringType();
+    for(HxType itf : current.interfaces((itf) -> true, true)) {
+      itf.findMethod(name, parameterTypes).ifPresent(methods::add);
+    }
 
     while(current != null) {
-      for(HxType itf : current.getInterfaces()) {
-        Optional<HxMethod> method = itf.findMethod(name, parameterTypes);
-        if(method.isPresent()) {
-          methods.add(method.get());
-        }
-      }
 
       if(!current.hasSuperType()) {
         break;

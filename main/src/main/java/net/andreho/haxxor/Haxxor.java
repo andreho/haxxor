@@ -7,8 +7,8 @@ import net.andreho.haxxor.api.HxConstants;
 import net.andreho.haxxor.api.HxField;
 import net.andreho.haxxor.api.HxMethod;
 import net.andreho.haxxor.api.HxParameter;
+import net.andreho.haxxor.api.HxSort;
 import net.andreho.haxxor.api.HxType;
-import net.andreho.haxxor.api.HxTypeReference;
 import net.andreho.haxxor.api.impl.HxArrayTypeImpl;
 import net.andreho.haxxor.api.impl.HxPrimitiveTypeImpl;
 import net.andreho.haxxor.spi.HxByteCodeLoader;
@@ -20,6 +20,7 @@ import net.andreho.haxxor.spi.HxFieldInitializer;
 import net.andreho.haxxor.spi.HxFieldVerifier;
 import net.andreho.haxxor.spi.HxMethodInitializer;
 import net.andreho.haxxor.spi.HxMethodVerifier;
+import net.andreho.haxxor.spi.HxProvidable;
 import net.andreho.haxxor.spi.HxStubHandler;
 import net.andreho.haxxor.spi.HxTypeDeserializer;
 import net.andreho.haxxor.spi.HxTypeInitializer;
@@ -30,23 +31,27 @@ import net.andreho.haxxor.spi.HxVerificationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableList;
 
 /**
  * This class is <b>NOT THREAD-SAFE.</b>
  * <br/>Created by a.hofmann on 21.03.2015 at 01:17<br/>
  */
 public class Haxxor
-    implements Hx {
+  implements Hx {
 
   private static final Logger LOG = LoggerFactory.getLogger(Haxxor.class.getName());
 
@@ -54,7 +59,7 @@ public class Haxxor
   private final ReadWriteLock readWriteLock;
   private final HxByteCodeLoader byteCodeLoader;
   private final Map<String, HxType> resolvedCache;
-  private final Map<String, HxTypeReference> referenceCache;
+  private final Map<String, HxType> referenceCache;
   private final WeakReference<ClassLoader> classLoaderWeakReference;
   private final HxClassnameNormalizer classNameNormalizer;
   private final HxDeduplicationCache deduplicationCache;
@@ -70,83 +75,21 @@ public class Haxxor
   private final HxStubHandler stubHandler;
   private final HxClassResolver classResolver;
   private final boolean concurrent;
+  private final List<HxType> arrayInterfaces;
 
-  /**
-   * <br/>Created by a.hofmann on 30.05.2017 at 12:45.
-   */
-  public static abstract class Flags {
-
-    /**
-     * Flag to skip method code. If this class is set <code>CODE</code>
-     * attribute won't be visited. This can be used, for example, to retrieve
-     * annotations for methods and method parameters.
-     */
-    public static final int SKIP_CODE = 1;
-
-    /**
-     * Flag to skip the debug information in the class. If this flag is set the
-     * debug information of the class is not visited, i.e. the
-     * {@link MethodVisitor#visitLocalVariable visitLocalVariable} and
-     * {@link MethodVisitor#visitLineNumber visitLineNumber} methods will not be
-     * called.
-     */
-    public static final int SKIP_DEBUG = 2;
-
-    /**
-     * Flag to skip the stack map frames in the class. If this flag is set the
-     * stack map frames of the class is not visited, i.e. the
-     * {@link MethodVisitor#visitFrame visitFrame} method will not be called.
-     * This flag is useful when the {@link ClassWriter#COMPUTE_FRAMES} option is
-     * used: it avoids visiting frames that will be ignored and recomputed from
-     * scratch in the class writer.
-     */
-    public static final int SKIP_FRAMES = 4;
-
-//    /**
-//     * Flag to expand the stack map frames. By default stack map frames are
-//     * visited in their original format (i.e. "expanded" for classes whose
-//     * version is less than V1_6, and "compressed" for the other classes). If
-//     * this flag is set, stack map frames are always visited in expanded format
-//     * (this option adds a decompression/recompression step in ClassReader and
-//     * ClassWriter which degrades performances quite a lot).
-//     */
-//    public static final int EXPAND_FRAMES = 8;
-
-    private Flags() {
-    }
+  private static <T> T notNull(T current,
+                               T notNull) {
+    return current == null ? notNull : current;
   }
 
   public Haxxor() {
-    this(0, new HaxxorBuilder(Haxxor.class.getClassLoader()));
+    this(new HaxxorBuilder(Haxxor.class.getClassLoader()));
   }
 
   public Haxxor(final HaxxorBuilder builder) {
-    this(0, builder);
-  }
-
-  /**
-   * @param flags
-   * @see Haxxor.Flags
-   */
-  public Haxxor(final int flags) {
-    this(flags, new HaxxorBuilder(Haxxor.class.getClassLoader()));
-  }
-
-  /**
-   * @param flags
-   * @param classLoader
-   * @see Haxxor.Flags
-   */
-  public Haxxor(final int flags,
-                final ClassLoader classLoader) {
-    this(flags, new HaxxorBuilder(classLoader));
-  }
-
-  public Haxxor(final int flags,
-                final HaxxorBuilder builder) {
     super();
 
-    this.flags = flags;
+    this.flags = builder.getFlags();
     this.concurrent = builder.isConcurrent();
     this.readWriteLock = new ReentrantReadWriteLock();
     this.classLoaderWeakReference = new WeakReference<>(builder.provideClassLoader(this));
@@ -169,12 +112,13 @@ public class Haxxor
     this.stubHandler = builder.createStubHandler(this);
 
     postInitialization();
+    this.arrayInterfaces = createDefaultInterfacesOfArray();
   }
 
   protected void postInitialization() {
     String name = "void";
     HxPrimitiveTypeImpl type =
-        new HxPrimitiveTypeImpl(this, toNormalizedClassname(name));
+      new HxPrimitiveTypeImpl(this, toNormalizedClassname(name));
     register(name, type);
 
     name = "boolean";
@@ -213,17 +157,13 @@ public class Haxxor
     register(name, createReference(name));
   }
 
-  /**
-   * @return
-   */
-  protected HxType readClass(final String classname,
-                             final byte[] byteCode,
-                             final int flags) {
-    return getTypeDeserializer().deserialize(classname, byteCode, flags);
-  }
-
-  protected boolean isArray(final String classname) {
-    return classname.endsWith(HxConstants.ARRAY_DIMENSION);
+  protected List<HxType> createDefaultInterfacesOfArray() {
+    return unmodifiableList(
+      asList(
+        reference(Cloneable.class.getName()),
+        reference(Serializable.class.getName())
+      )
+    );
   }
 
   @Override
@@ -338,7 +278,7 @@ public class Haxxor
   /**
    * @return a cache with references to a type
    */
-  public Map<String, HxTypeReference> getReferenceCache() {
+  public Map<String, HxType> getReferenceCache() {
     return this.referenceCache;
   }
 
@@ -433,8 +373,7 @@ public class Haxxor
    */
   @Override
   public boolean hasReference(String classname) {
-    classname = toNormalizedClassname(classname);
-    return this.referenceCache.containsKey(classname);
+    return fetchReferenceCache(toNormalizedClassname(classname)) != null;
   }
 
   /**
@@ -445,30 +384,18 @@ public class Haxxor
    */
   @Override
   public boolean hasResolved(String classname) {
-    classname = toNormalizedClassname(classname);
-    return this.resolvedCache.containsKey(classname);
+    return fetchResolvedCache(toNormalizedClassname(classname)) != null;
   }
 
   /**
    * Tries to reference wanted type by its internal-name without to resolve it
    *
-   * @param classname is the classname of the referenced type
+   * @param classname is the classname of the referenced type (like: int, java.lang.String or byte[])
    * @return a new or already cached type reference
    */
   @Override
-  public HxTypeReference reference(String classname) {
-    checkClassLoaderAvailability();
-    classname = toNormalizedClassname(classname);
-    HxTypeReference reference = fetchReferenceCache(classname);
-
-    if (reference == null) {
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("New reference: {}", classname);
-      }
-      return storeSynchronizedReference(classname, createReference(classname));
-    }
-
-    return reference;
+  public HxType reference(final String classname) {
+    return referenceInternally(toNormalizedClassname(classname));
   }
 
   /**
@@ -476,8 +403,25 @@ public class Haxxor
    * @return a new or cached reference to the given class
    */
   @Override
-  public HxTypeReference reference(Class<?> aClass) {
-    return reference(aClass.getName());
+  public HxType reference(Class<?> aClass) {
+    if (aClass.isArray()) {
+      return reference(aClass.getName());
+    }
+    return referenceInternally(aClass.getName());
+  }
+
+  private HxType referenceInternally(final String classname) {
+    checkClassLoaderAvailability();
+    HxType reference = fetchReferenceCache(classname);
+    if (reference == null) {
+      reference = isArray(classname) ? new HxArrayTypeImpl(reference(minusArrayDimension(classname)))
+                                     : createReference(classname);
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("Creating reference: {}", classname);
+      }
+      return storeReference(classname, reference);
+    }
+    return reference;
   }
 
   /**
@@ -500,7 +444,7 @@ public class Haxxor
   }
 
   /**
-   * @param classnames
+   * @param classnames for references to use (like: int, java.lang.String or byte[])
    * @return
    */
   @Override
@@ -536,7 +480,7 @@ public class Haxxor
   /**
    * Resolves corresponding type by the given name to a {@link HxType haxxor type}
    *
-   * @param classname of class to resolve
+   * @param classname of class to resolve (like: int, java.lang.String or byte[])
    * @return a resolved instance of {@link HxType}
    */
   @Override
@@ -552,43 +496,122 @@ public class Haxxor
    */
   @Override
   public HxType resolve(Class<?> cls) {
-    return resolve(cls.getName());
+    if (cls.isPrimitive()) {
+      return reference(cls);
+    }
+    if (cls.isArray()) {
+      return resolve(cls.getName());
+    }
+    return resolveInternally(cls.getName());
   }
 
   /**
    * Resolves corresponding type by its name to a {@link HxType haxxor type}
    *
-   * @param classname of class to resolve
-   * @param flags describes how to resolve desired type
+   * @param classname of class to resolve in binary format (like: int, java.lang.String or byte[])
+   * @param flags     describes how to resolve desired type
    * @return a resolved instance of {@link HxType}
    * @implNote resolution means that the corresponding <code>*.class</code> file is loaded, parsed according to given
    * flags and represented as a {@link HxType}
    * @see Flags
    */
   @Override
-  public HxType resolve(String classname,
-                        int flags) {
-    checkClassLoaderAvailability();
-    classname = toNormalizedClassname(classname);
-    HxType type = fetchResolvedCache(classname);
+  public HxType resolve(final String classname,
+                        final int flags) {
+    return resolveInternally(toNormalizedClassname(classname), flags);
+  }
 
-    if (type != null) {
-      return type;
-    }
+  private HxType resolveInternally(final String classname) {
+    return resolveInternally(classname, this.flags);
+  }
+
+  private HxType resolveInternally(final String classname,
+                                   final int flags) {
+    checkClassLoaderAvailability();
+    HxType type;
 
     if (isArray(classname)) {
-      return register(classname, new HxArrayTypeImpl(this, classname));
+      type = fetchReferenceCache(classname);
+      if (type != null) {
+        return type;
+      }
+      return register(classname, new HxArrayTypeImpl(resolveInternally(minusArrayDimension(classname))));
+    } else if(isPrimitive(classname)){
+      return fetchReferenceCache(classname);
     }
-    return resolveInternally(
-      classname,
-      getByteCodeLoader().load(getClassLoader(), classname), flags
-    );
+
+    type = fetchResolvedCache(classname);
+
+    if (type == null) {
+      type = readAndRegister(
+        classname,
+        loadByteCode(classname).orElseThrow(
+          () -> new IllegalStateException("Unable to load content of the class with name: " + classname)),
+        flags);
+
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("Resolved: {}", classname);
+      }
+    }
+    return type;
+  }
+
+  /**
+   * @param classname
+   * @param byteCode
+   * @param flags
+   * @return
+   */
+  private HxType readAndRegister(final String classname,
+                                 final byte[] byteCode,
+                                 final int flags) {
+    return register(classname, readClass(classname, byteCode, flags));
+  }
+
+  /**
+   * @param classname
+   * @param byteCode
+   * @param flags
+   * @return
+   */
+  protected HxType readClass(final String classname,
+                             final byte[] byteCode,
+                             final int flags) {
+    return deserializeBytecodeTo(createType(classname), byteCode, flags);
+  }
+
+  /**
+   * @param type
+   * @param byteCode
+   * @param flags
+   * @return
+   */
+  protected HxType deserializeBytecodeTo(final HxType type,
+                                         final byte[] byteCode,
+                                         final int flags) {
+    return getTypeDeserializer().deserialize(type, byteCode, flags);
+  }
+
+  protected boolean isArray(final String classname) {
+    return classname.endsWith(HxConstants.ARRAY_DIMENSION);
+  }
+
+  protected boolean isPrimitive(final String classname) {
+    return HxSort.fromName(classname).isPrimitive();
+  }
+
+  protected String minusArrayDimension(final String classname) {
+    return classname.substring(0, classname.length() - HxConstants.ARRAY_DIMENSION.length());
+  }
+
+  protected Optional<byte[]> loadByteCode(final String classname) {
+    return getByteCodeLoader().load(getClassLoader(), classname);
   }
 
   /**
    * @param classname of class to resolve
-   * @param byteCode that describes the class itself
-   * @param flags describes how to resolve the desired type
+   * @param byteCode  that describes the class itself
+   * @param flags     describes how to resolve the desired type
    * @return a resolved instance of {@link HxType}
    * @implNote resolution means that the corresponding <code>*.class</code> file is loaded, parsed according to given
    * flags and represented as a {@link HxType}
@@ -606,11 +629,11 @@ public class Haxxor
       return type;
     }
 
-    return resolveInternally(classname, byteCode, flags);
+    return readAndRegister(classname, byteCode, flags);
   }
 
   protected HxType fetchResolvedCache(final String classname) {
-    if(!concurrent) {
+    if (!concurrent) {
       return readResolvedCache(classname);
     }
 
@@ -631,15 +654,14 @@ public class Haxxor
     return this.resolvedCache.get(classname);
   }
 
-  protected HxTypeReference fetchReferenceCache(final String classname) {
-    if(!concurrent) {
+  protected HxType fetchReferenceCache(final String classname) {
+    if (!concurrent) {
       return readReferenceCache(classname);
     }
-
     return readReferenceCacheGuarded(classname);
   }
 
-  private HxTypeReference readReferenceCacheGuarded(final String classname) {
+  private HxType readReferenceCacheGuarded(final String classname) {
     final Lock lock = readWriteLock.readLock();
     lock.lock();
     try {
@@ -649,47 +671,62 @@ public class Haxxor
     }
   }
 
-  private HxTypeReference readReferenceCache(final String classname) {
+  private HxType readReferenceCache(final String classname) {
     return this.referenceCache.get(classname);
   }
 
-  private HxType resolveInternally(String classname,
-                                   final byte[] byteCode,
-                                   final int flags) {
-    HxType type = readClass(classname, byteCode, flags);
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("Resolving: {}", classname);
+  protected void resolveElements(final HxType hxType,
+                                 final int flags) {
+    if (hxType.getHaxxor() != this) {
+      throw new IllegalArgumentException("Given type must be managed by this instance.");
     }
-    return register(classname, type);
+    Optional<byte[]> bytes = loadByteCode(hxType.getName());
+    if (bytes.isPresent()) {
+      deserializeBytecodeTo(hxType, bytes.get(), flags);
+    }
+  }
+
+  @Override
+  public void resolveFields(final HxType hxType) {
+    resolveElements(hxType, Flags.SKIP_CLASS_INTERNALS | Flags.SKIP_METHODS);
+  }
+
+  @Override
+  public void resolveMethods(final HxType hxType) {
+    resolveElements(hxType, Flags.SKIP_CLASS_INTERNALS | Flags.SKIP_FIELDS);
+  }
+
+  @Override
+  public void resolveFieldsAndMethods(final HxType hxType) {
+    resolveElements(hxType, Flags.SKIP_CLASS_INTERNALS);
   }
 
   /**
    * Registers the given type/reference with the provided typename
    *
-   * @param classname to use as key
-   * @param typeOrReference     to register
+   * @param classname       to use as key
+   * @param typeOrReference to register
    * @return the actually registered type
    */
   @Override
   public HxType register(final String classname,
                          final HxType typeOrReference) {
     if (typeOrReference.isReference()) {
-      return storeSynchronizedReference(classname, typeOrReference.toReference());
+      return storeReference(classname, typeOrReference.toReference());
     }
-    return storeSynchronizedResolved(classname, typeOrReference);
+    return storeResolved(classname, typeOrReference);
   }
 
-  protected HxTypeReference storeSynchronizedReference(final String classname,
-                                                       final HxTypeReference reference) {
-    if(!concurrent) {
-      return writeToReferenceCache(classname, reference);
+  protected HxType storeReference(final String classname,
+                                  final HxType reference) {
+    if (concurrent) {
+      return writeToReferenceCacheGuarded(classname, reference);
     }
-
-    return writeToReferenceCacheGuarded(classname, reference);
+    return writeToReferenceCache(classname, reference);
   }
 
-  private HxTypeReference writeToReferenceCacheGuarded(final String classname,
-                                                       final HxTypeReference reference) {
+  private HxType writeToReferenceCacheGuarded(final String classname,
+                                              final HxType reference) {
     final Lock lock = readWriteLock.writeLock();
     lock.lock();
     try {
@@ -699,22 +736,17 @@ public class Haxxor
     }
   }
 
-  private static  <T> T notNull(T current, T notNull) {
-    return current == null? notNull : current;
-  }
-
-  private HxTypeReference writeToReferenceCache(final String classname,
-                                                final HxTypeReference reference) {
+  private HxType writeToReferenceCache(final String classname,
+                                       final HxType reference) {
     return notNull(this.referenceCache.putIfAbsent(classname, reference), reference);
   }
 
-  protected HxType storeSynchronizedResolved(final String classname,
-                                             final HxType resolved) {
-    if(!concurrent) {
-      return writeToResolvedCache(classname, resolved);
+  protected HxType storeResolved(final String classname,
+                                 final HxType resolved) {
+    if (concurrent) {
+      return writeToResolvedCacheGuarded(classname, resolved);
     }
-
-    return writeToResolvedCacheGuarded(classname, resolved);
+    return writeToResolvedCache(classname, resolved);
   }
 
   private HxType writeToResolvedCacheGuarded(final String classname,
@@ -750,19 +782,19 @@ public class Haxxor
   }
 
   @Override
-  public HxTypeReference createReference(final String className) {
+  public HxType createReference(final String className) {
     return elementFactory.createReference(toNormalizedClassname(className));
   }
 
   @Override
-  public HxTypeReference createReference(final HxType resolvedType) {
+  public HxType createReference(final HxType resolvedType) {
     return elementFactory.createReference(resolvedType);
   }
 
   @Override
-  public HxField createField(final String typename,
+  public HxField createField(final String fieldType,
                              final String fieldName) {
-    return initialize(elementFactory.createField(toNormalizedClassname(typename), fieldName));
+    return initialize(elementFactory.createField(toNormalizedClassname(fieldType), fieldName));
   }
 
   @Override
@@ -777,7 +809,7 @@ public class Haxxor
 
   @Override
   public HxMethod createConstructorReference(final String declaringType,
-                                                  final String... parameterTypes) {
+                                             final String... parameterTypes) {
     return elementFactory.createConstructorReference(toNormalizedClassname(declaringType),
                                                      toNormalizedClassnames(parameterTypes));
   }
@@ -787,8 +819,8 @@ public class Haxxor
                                final String methodName,
                                final String... parameterTypes) {
     return initialize(elementFactory.createMethod(toNormalizedClassname(returnType),
-                                       methodName,
-                                       toNormalizedClassnames(parameterTypes)));
+                                                  methodName,
+                                                  toNormalizedClassnames(parameterTypes)));
   }
 
   @Override
@@ -824,21 +856,20 @@ public class Haxxor
   public byte[] serialize(final HxType type,
                           final boolean computeFrames) {
     doFullVerification(type);
-
     return getTypeSerializer().serialize(type, computeFrames);
   }
 
   protected void doFullVerification(final HxType type) {
-    //Type itself
+    //Check given type itself
     HxVerificationResult result = verify(type);
     HxVerificationResult current = result;
 
-    //Fields
-    for(HxField field : type.getFields()) {
+    //Check fields
+    for (HxField field : type.getFields()) {
       HxVerificationResult subResult = verify(field);
 
-      if(subResult.isFailed()) {
-        if(result.isFailed()) {
+      if (subResult.isFailed()) {
+        if (result.isFailed()) {
           current = current.append(subResult);
         } else {
           result = current = subResult;
@@ -846,12 +877,12 @@ public class Haxxor
       }
     }
 
-    //Methods
-    for(HxMethod method : type.getMethods()) {
+    //Check methods
+    for (HxMethod method : type.getMethods()) {
       HxVerificationResult subResult = verify(method);
 
-      if(subResult.isFailed()) {
-        if(result.isFailed()) {
+      if (subResult.isFailed()) {
+        if (result.isFailed()) {
           current = current.append(subResult);
         } else {
           result = current = subResult;
@@ -859,20 +890,93 @@ public class Haxxor
       }
     }
 
-    if(result.isFailed()) {
+    if (result.isFailed()) {
       throw new HxVerificationException(result);
     }
   }
 
   @Override
-  public String toString() {
-    final StringBuilder builder = new StringBuilder();
-
-    for (Entry<String, HxType> entry : getResolvedCache().entrySet()) {
-      builder.append(entry.getKey())
-             .append('\n');
+  public <T> T providePart(final HxProvidable<T> providable) {
+    if(providable.equals(HxProvidable.Defaults.DEFAULT_INTERFACES_FOR_ARRAY)) {
+      return (T) this.arrayInterfaces;
     }
+    return null;
+  }
 
-    return builder.toString();
+  @Override
+  public String toString() {
+//    final StringBuilder builder = new StringBuilder();
+//    for (Entry<String, HxType> entry : getResolvedCache().entrySet()) {
+//      builder.append(entry.getKey())
+//             .append('\n');
+//    }
+//    return builder.toString();
+    return "Hx{refs="+getReferenceCache().size() + ", types="+getResolvedCache().size()+", active="+isActive()+"}";
+  }
+
+  /**
+   * <br/>Created by a.hofmann on 30.05.2017 at 12:45.
+   *
+   * @see #SKIP_CODE
+   * @see #SKIP_DEBUG
+   * @see #SKIP_FRAMES
+   * @see #SKIP_FIELDS
+   * @see #SKIP_METHODS
+   * @see #SKIP_CLASS_INTERNALS
+   */
+  public static abstract class Flags {
+
+    /**
+     * Flag to skip method code. If this class is set <code>CODE</code>
+     * attribute won't be visited. This can be used, for example, to retrieve
+     * annotations for methods and method parameters.
+     */
+    public static final int SKIP_CODE = 1;
+
+    /**
+     * Flag to skip the debug information in the class. If this flag is set the
+     * debug information of the class is not visited, i.e. the
+     * {@link MethodVisitor#visitLocalVariable visitLocalVariable} and
+     * {@link MethodVisitor#visitLineNumber visitLineNumber} methods will not be
+     * called.
+     */
+    public static final int SKIP_DEBUG = 2;
+
+    /**
+     * Flag to skip the stack map frames in the class. If this flag is set the
+     * stack map frames of the class is not visited, i.e. the
+     * {@link MethodVisitor#visitFrame visitFrame} method will not be called.
+     * This flag is useful when the {@link ClassWriter#COMPUTE_FRAMES} option is
+     * used: it avoids visiting frames that will be ignored and recomputed from
+     * scratch in the class writer.
+     */
+    public static final int SKIP_FRAMES = 4;
+
+//    /**
+//     * Flag to expand the stack map frames. By default stack map frames are
+//     * visited in their original format (i.e. "expanded" for classes whose
+//     * version is less than V1_6, and "compressed" for the other classes). If
+//     * this flag is set, stack map frames are always visited in expanded format
+//     * (this option adds a decompression/recompression step in ClassReader and
+//     * ClassWriter which degrades performances quite a lot).
+//     */
+//    public static final int EXPAND_FRAMES = 8;
+
+    /**
+     * Don't process and store all properties of a class incl. its annotations.
+     * This means that this class must already exist in the managing haxxor-instance.
+     */
+    public static final int SKIP_CLASS_INTERNALS = 0x1_0000;
+    /**
+     * Don't process and store declared fields
+     */
+    public static final int SKIP_FIELDS = 0x2_0000;
+    /**
+     * Don't process and store declared methods and constructors
+     */
+    public static final int SKIP_METHODS = 0x4_0000;
+
+    private Flags() {
+    }
   }
 }

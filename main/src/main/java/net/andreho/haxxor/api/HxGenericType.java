@@ -7,7 +7,6 @@ import java.util.Optional;
  * <br/>Created by a.hofmann on 08.06.2017 at 00:13.
  */
 public interface HxGenericType extends HxProvider {
-
   /**
    * @return
    */

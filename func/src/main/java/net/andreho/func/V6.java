@@ -23,7 +23,6 @@ public interface V6<A, B, C, D, E, F>
 
   /**
    * @param args
-   * @return
    */
   default void call(Object... args) {
     call((A) args[0], (B) args[1], (C) args[2], (D) args[3], (E) args[4], (F) args[5]);
@@ -36,7 +35,6 @@ public interface V6<A, B, C, D, E, F>
    * @param d
    * @param e
    * @param f
-   * @return
    */
   void call(A a,
             B b,

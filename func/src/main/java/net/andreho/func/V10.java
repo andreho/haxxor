@@ -14,6 +14,11 @@ public interface V10<A, B, C, D, E, F, G, H, I, J>
       call(target, (B) b, (C) c, (D) d, (E) e, (F) f, (G) g, (H) h, (I) i, (J) j);
   }
 
+  /**
+   * @param result
+   * @param <R>
+   * @return
+   */
   default <R> F10<R,A,B,C,D,E,F,G,H,I,J> toFunc(final R result) {
     return (a, b, c, d, e, f, g, h, i, j) -> {
       call(a, b, c, d, e, f, g, h, i, j);
@@ -22,8 +27,7 @@ public interface V10<A, B, C, D, E, F, G, H, I, J>
   }
 
   /**
-   * @param args
-   * @return
+   * @param args to use for invocation
    */
   default void call(Object... args) {
     call((A) args[0],

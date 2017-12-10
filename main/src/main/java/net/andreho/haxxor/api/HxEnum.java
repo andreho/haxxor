@@ -4,6 +4,7 @@ import net.andreho.haxxor.Hx;
 
 import java.lang.reflect.Array;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * <br/>Created by a.hofmann on 04.06.2015.<br/>
@@ -48,7 +49,7 @@ public final class HxEnum implements HxNamed, HxTyped, HxOrdered {
   public static <E extends Enum<E>> E[] toEnumArray(ClassLoader classLoader, Class<E> enumType, HxEnum... array) {
     final E[] result = (E[]) Array.newInstance(enumType, array.length);
     for (int i = 0; i < array.length; i++) {
-      result[i] = (E) array[i].loadEnum(classLoader);
+      result[i] = array[i].loadEnum(classLoader);
     }
     return result;
   }
@@ -81,7 +82,12 @@ public final class HxEnum implements HxNamed, HxTyped, HxOrdered {
 
   @Override
   public int getIndex() {
-    return getType().findField(getName()).map(HxField::getIndex).orElse(-1);
+    return getField().map(HxField::getIndex).orElse(-1);
+  }
+
+  @Override
+  public String getName() {
+    return name;
   }
 
   @Override
@@ -89,9 +95,8 @@ public final class HxEnum implements HxNamed, HxTyped, HxOrdered {
     return type;
   }
 
-  @Override
-  public String getName() {
-    return name;
+  public Optional<HxField> getField() {
+    return getType().findField(getName(), getType());
   }
 
   public <E extends Enum<E>> E loadEnum() {
@@ -104,7 +109,7 @@ public final class HxEnum implements HxNamed, HxTyped, HxOrdered {
       return (E) e;
     }
     try {
-      final Class<E> enumClass = (Class<E>) type.loadClass(classLoader);
+      final Class<E> enumClass = (Class<E>) type.toClass(classLoader);
       e = Enum.valueOf(enumClass, name);
     } catch (ClassNotFoundException ex) {
       throw new IllegalStateException("Given class-loader was unable to load the given enum-class: "+getType(), ex);

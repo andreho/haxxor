@@ -71,7 +71,7 @@ class HaxxorTest {
 
     assertFalse(haxxor.hasResolved("java.lang.Object"));
 
-    HxTypeReference reference = haxxor.reference("java.lang.Object");
+    HxType reference = haxxor.reference("java.lang.Object");
     HxType resolvedType = haxxor.resolve("java.lang.Object");
 
     assertTrue(haxxor.hasResolved("java.lang.Object"));
@@ -80,10 +80,10 @@ class HaxxorTest {
 
   @Test
   void reference() {
-    HxTypeReference reference =
+    HxType reference =
         haxxor.reference(TEST_BEAN_CLASSNAME);
     assertNotNull(reference);
-    HxType type = reference.toType();
+    HxType type = ((HxTypeReference) reference).toType();
     assertNotNull(type);
     assertFalse(type instanceof HxTypeReference);
     assertTrue(haxxor.hasReference(TEST_BEAN_CLASSNAME));
@@ -92,7 +92,7 @@ class HaxxorTest {
 
   @Test
   void referenceForArray() {
-    HxTypeReference reference =
+    HxType reference =
         haxxor.reference(TEST_BEAN_CLASSNAME + "[][]");
     assertNotNull(reference);
     HxType type = reference;
@@ -170,7 +170,7 @@ class HaxxorTest {
   @Test
   void createReference() {
     String typeName = TEST_BEAN_CLASSNAME;
-    HxTypeReference type = haxxor.createReference(typeName);
+    HxType type = haxxor.createReference(typeName);
     assertNotNull(type);
 
     assertTrue(type.isReference());

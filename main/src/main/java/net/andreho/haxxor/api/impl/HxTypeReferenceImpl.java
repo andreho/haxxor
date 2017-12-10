@@ -5,19 +5,19 @@ import net.andreho.haxxor.api.HxAnnotated;
 import net.andreho.haxxor.api.HxAnnotation;
 import net.andreho.haxxor.api.HxField;
 import net.andreho.haxxor.api.HxGenericType;
+import net.andreho.haxxor.api.HxInitializablePart;
 import net.andreho.haxxor.api.HxMember;
 import net.andreho.haxxor.api.HxMethod;
 import net.andreho.haxxor.api.HxModifier;
 import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.api.HxTypeReference;
-import net.andreho.haxxor.api.InitializablePart;
 import net.andreho.haxxor.api.Version;
+import net.andreho.haxxor.utils.NamingUtils;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -32,7 +32,7 @@ public class HxTypeReferenceImpl
   private volatile Reference<HxType> reference;
 
   public HxTypeReferenceImpl(final Hx haxxor, final HxType type) {
-    super(haxxor, Objects.requireNonNull(type, "Referenced reference can't be null.").getName());
+    super(haxxor, Objects.requireNonNull(type, "Given type can't be null.").getName());
     this.reference = new WeakReference<>(type);
   }
 
@@ -133,7 +133,8 @@ public class HxTypeReferenceImpl
   @Override
   public boolean isMemberType() {
     if(!isAvailable() && hasModifiers()) {
-      return getSimpleBinaryName() != null && !isLocalOrAnonymousClass();
+      return NamingUtils.toSimpleBinaryName(getName()) != null &&
+             !isLocalOrAnonymousClass();
     }
     return toType().isMemberType();
   }
@@ -216,12 +217,7 @@ public class HxTypeReferenceImpl
   }
 
   @Override
-  public HxType initialize(final InitializablePart... parts) {
-    return toType().initialize(parts);
-  }
-
-  @Override
-  public HxType initialize(final InitializablePart part) {
+  public HxType initialize(final HxInitializablePart part) {
     return toType().initialize(part);
   }
 
@@ -336,12 +332,12 @@ public class HxTypeReferenceImpl
   }
 
   @Override
-  public Collection<HxAnnotated> getSuperAnnotated() {
+  public List<HxAnnotated> getSuperAnnotated() {
     return toType().getSuperAnnotated();
   }
 
   @Override
-  public Map<String, HxAnnotation> getAnnotations() {
+  public List<HxAnnotation> getAnnotations() {
     return toType().getAnnotations();
   }
 
@@ -368,12 +364,12 @@ public class HxTypeReferenceImpl
   }
 
   @Override
-  public Collection<HxAnnotation> getAnnotationsByType(String type) {
+  public List<HxAnnotation> getAnnotationsByType(String type) {
     return toType().getAnnotationsByType(type);
   }
 
   @Override
-  public Collection<HxAnnotation> annotations(Predicate<HxAnnotation> predicate, boolean recursive) {
+  public List<HxAnnotation> annotations(Predicate<HxAnnotation> predicate, boolean recursive) {
     return toType().annotations(predicate, recursive);
   }
 

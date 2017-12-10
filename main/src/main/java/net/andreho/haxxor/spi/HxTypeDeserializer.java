@@ -7,20 +7,21 @@ import net.andreho.haxxor.api.HxType;
  */
 @FunctionalInterface
 public interface HxTypeDeserializer {
+
   /**
-   * @param classname
+   * @param type
    * @param byteCode
    * @return
    */
-  default HxType deserialize(final String classname, byte[] byteCode) {
-    return deserialize(classname, byteCode, 0);
+  default HxType deserialize(final HxType type, byte[] byteCode) {
+    return deserialize(type, byteCode, 0);
   }
 
   /**
-   * @param classname
+   * @param type
    * @param byteCode
    * @param flags
    * @return
    */
-  HxType deserialize(final String classname, byte[] byteCode, int flags);
+  HxType deserialize(final HxType type, byte[] byteCode, int flags);
 }

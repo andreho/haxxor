@@ -83,7 +83,7 @@ public class HxFieldImpl
     if(hxType == null) {
       return -1;
     }
-    return hxType.indexOf(this);
+    return hxType.indexOfField(this);
   }
 
   @Override
@@ -170,6 +170,6 @@ public class HxFieldImpl
         HxConstants.UNDEFINED_TYPE :
         getDeclaringMember().toString();
 
-    return declaring + "." + getName();
+    return declaring + "." + getName() + " " + getType();
   }
 }

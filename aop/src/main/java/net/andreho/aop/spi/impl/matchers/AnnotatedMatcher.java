@@ -26,7 +26,7 @@ public class AnnotatedMatcher<A extends HxAnnotated<A> & HxNamed>
 
   @Override
   public boolean matches(final A annotated) {
-    for(HxAnnotation annotation : annotated.getAnnotations().values()) {
+    for(HxAnnotation annotation : annotated.getAnnotations()) {
       final HxType hxType = annotation.getType();
 
       if(value.matches(hxType) &&
