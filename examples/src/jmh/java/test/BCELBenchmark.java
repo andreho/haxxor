@@ -49,6 +49,7 @@ public class BCELBenchmark
 
   public static void main(String[] args)
   throws Exception {
+    loadResources();
     final long totalMemory = getTotalMemory();
     final Blackhole blackhole = createBlackhole();
     final BCELBenchmark benchmark = new BCELBenchmark();

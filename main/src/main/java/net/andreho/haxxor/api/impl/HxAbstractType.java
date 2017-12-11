@@ -10,9 +10,11 @@ import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.cgen.HxExtendedCodeStream;
 import net.andreho.haxxor.utils.NamingUtils;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -102,6 +104,81 @@ public abstract class HxAbstractType
   }
 
   @Override
+  public Optional<HxField> findOrCreateField(final HxField prototype) {
+    Optional<HxField> fieldOptional = findField(prototype);
+    if(fieldOptional.isPresent()) {
+      return fieldOptional;
+    }
+    HxField fieldClone = prototype.clone();
+    addField(fieldClone);
+    return Optional.of(fieldClone);
+  }
+
+  @Override
+  public Optional<HxField> findOrCreateField(final Field prototype) {
+    Optional<HxField> fieldOptional = findField(prototype);
+    if(fieldOptional.isPresent()) {
+      return fieldOptional;
+    }
+    HxField fieldClone = getHaxxor()
+      .createField(prototype.getType(), prototype.getName())
+      .setModifiers(prototype.getModifiers());
+    //Copy field's annotations?
+    addField(fieldClone);
+    return Optional.of(fieldClone);
+  }
+
+  @Override
+  public Optional<HxField> findFieldRecursively(final String name,
+                                                final String type) {
+    HxType current = this;
+    while(current != null) {
+      Optional<HxField> fieldOptional = current.findField(name, type);
+      if(fieldOptional.isPresent()) {
+        HxField field = fieldOptional.get();
+        if(field.isAccessibleFrom(this)) {
+          return fieldOptional;
+        }
+      }
+      current = current.getSuperType().orElse(null);
+    }
+    return Optional.empty();
+  }
+
+  @Override
+  public Optional<HxMethod> findMethodRecursively(final HxType returnType,
+                                                  final String name,
+                                                  final List<HxType> parameters) {
+    HxType current = this;
+    while(current != null) {
+      Optional<HxMethod> methodOptional = current.findMethod(returnType, name, parameters);
+      if(methodOptional.isPresent()) {
+        HxMethod method = methodOptional.get();
+        if(method.isAccessibleFrom(this)) {
+          return methodOptional;
+        }
+      }
+      if(current.isInterface()) {
+        break;
+      }
+      current = current.getSuperType().orElse(null);
+    }
+    current = this;
+    while(current != null && !current.hasSuperType(Object.class)) {
+      for(HxType itf : current.getInterfaces()) {
+        Optional<HxMethod> methodOptional =
+          itf.findMethodRecursively(returnType, name, parameters);
+        //All methods of an interface must be public
+        if(methodOptional.isPresent()) {
+          return methodOptional;
+        }
+      }
+      current = current.getSuperType().orElse(null);
+    }
+    return Optional.empty();
+  }
+
+  @Override
   public Collection<HxMethod> findForwardingConstructors() {
     if (!isInterface() &&
         !isArray() &&
@@ -156,8 +233,7 @@ public abstract class HxAbstractType
       .setModifiers(HxMethod.Modifiers.STATIC);
 
     HxMethodBody body = classInitializer.getBody();
-    HxExtendedCodeStream stream = body.asStream();
-    stream.RETURN();
+    body.build().RETURN();
     addMethod(classInitializer);
     return Optional.of(classInitializer);
   }

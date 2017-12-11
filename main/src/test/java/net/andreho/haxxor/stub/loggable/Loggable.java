@@ -1,4 +1,4 @@
-package net.andreho.haxxor.api.stub.loggable;
+package net.andreho.haxxor.stub.loggable;
 
 import java.util.logging.Logger;
 

@@ -52,9 +52,9 @@ public interface HxFieldAnalysis<O extends HxFieldManager<O>> extends HxFieldMan
   }
 
   /**
-   * Gets the first available field with given name
+   * Searches the first available field with given name
    *
-   * @param name of a field to search
+   * @param name of a field to look for
    * @return {@link Optional#empty() empty} or a field with the given name
    */
   default Optional<HxField> findField(String name) {
@@ -67,10 +67,10 @@ public interface HxFieldAnalysis<O extends HxFieldManager<O>> extends HxFieldMan
   }
 
   /**
-   * Gets the first available field with given name
+   * Searches the declared field with given name and type
    *
-   * @param name of a field to search
-   * @param type of a field to search
+   * @param name of a field to look for
+   * @param type of a field to look for
    * @return {@link Optional#empty() empty} or a field with given name
    */
   default Optional<HxField> findField(String name, HxType type) {
@@ -78,10 +78,10 @@ public interface HxFieldAnalysis<O extends HxFieldManager<O>> extends HxFieldMan
   }
 
   /**
-   * Gets the first available field with given name
+   * Searches the declared field with given name and type
    *
-   * @param name of a field to search
-   * @param type of a field to search
+   * @param name of a field to look for
+   * @param type of a field to look for
    * @return {@link Optional#empty() empty} or a field with given name
    */
   default Optional<HxField> findField(String name, Class<?> type) {
@@ -89,10 +89,10 @@ public interface HxFieldAnalysis<O extends HxFieldManager<O>> extends HxFieldMan
   }
 
   /**
-   * Gets the first available field with given name
+   * Searches the declared field with given name and type
    *
-   * @param name of a field to search
-   * @param type of a field to search
+   * @param name of a field to look for
+   * @param type of a field to look for
    * @return {@link Optional#empty() empty} or a field with given name
    */
   default Optional<HxField> findField(String name, String type) {
@@ -105,15 +105,54 @@ public interface HxFieldAnalysis<O extends HxFieldManager<O>> extends HxFieldMan
   }
 
   /**
-   * @param prototype
+   * Searches for the given prototype field recursively in class-hierarchy
+   *
+   * @param field to look for
+   * @return {@link Optional#empty() empty} or a field with given name and type
+   */
+  default Optional<HxField> findFieldRecursively(HxField field) {
+    return findFieldRecursively(field.getName(), field.getType());
+  }
+
+  /**
+   * Searches the declared field with given name and type recursively in class-hierarchy
+   *
+   * @param name of a field to look for
+   * @param type of a field to look for
+   * @return {@link Optional#empty() empty} or a field with given name and type
+   */
+  default Optional<HxField> findFieldRecursively(String name, HxType type) {
+    return findFieldRecursively(name, type.getName());
+  }
+
+  /**
+   * Searches the declared field with given name and type recursively in class-hierarchy
+   *
+   * @param name of a field to look for
+   * @param type of a field to look for
+   * @return {@link Optional#empty() empty} or a field with given name and type
+   */
+  default Optional<HxField> findFieldRecursively(String name, Class<?> type) {
+    return findFieldRecursively(name, type.getName());
+  }
+
+  /**
+   * Searches the declared field with given name and type recursively in class-hierarchy
+   *
+   * @param name of a field to look for
+   * @param type of a field to look for
+   * @return {@link Optional#empty() empty} or a field with given name and type
+   */
+  default Optional<HxField> findFieldRecursively(String name, String type) {
+    return Optional.empty();
+  }
+
+  /**
+   * @param prototype to look for
    * @return
-   * @implNote uses only name, type and modifiers of the given field prototype
    */
   default Optional<HxField> findOrCreateField(HxField prototype) {
-    final Optional<HxField> optional = findOrCreateField(prototype.getName(), prototype.getType());
-    return optional.map(
-      field -> field.setModifiers(prototype.getModifiers())
-    );
+    return findOrCreateField(prototype.getName(), prototype.getType());
   }
 
   /**
@@ -123,10 +162,7 @@ public interface HxFieldAnalysis<O extends HxFieldManager<O>> extends HxFieldMan
    * @implNote uses only name, type and modifiers of the given field prototype
    */
   default Optional<HxField> findOrCreateField(Field prototype) {
-    final Optional<HxField> optional = findOrCreateField(prototype.getName(), prototype.getType());
-    return optional.map(
-      field -> field.setModifiers(prototype.getModifiers())
-    );
+    return findOrCreateField(prototype.getName(), prototype.getType());
   }
 
   /**

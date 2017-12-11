@@ -22,7 +22,7 @@ public class CachedHxByteCodeLoader
   public static final String MAX_CACHE_SIZE_PARAMETER =
     HxParameters.HX_BYTECODE_LOADER_MAX_CACHE_SIZE;
   public static final int MAXIMAL_CACHE_SIZE =
-      Math.max(1, Integer.parseInt(System.getProperty(MAX_CACHE_SIZE_PARAMETER, "1000")));
+      Math.max(1, Integer.parseInt(System.getProperty(MAX_CACHE_SIZE_PARAMETER, "4096")));
 
   private static final Map<String, Reference<byte[]>> GLOBAL_CACHE =
       new LinkedHashMap<String, Reference<byte[]>>() {

@@ -46,7 +46,7 @@ public class HxMethodBodyImpl
 
   @Override
   public HxMethodBody moveTo(final HxMethod newOwner) {
-    HxMethodBodyImpl newBody = new HxMethodBodyImpl(newOwner);
+    HxMethodBodyImpl newBody = createMethodBody(newOwner);
 
     newBody.first = first;
     newBody.last = last;
@@ -63,9 +63,16 @@ public class HxMethodBodyImpl
   }
 
   @Override
+  public HxMethodBody copyTo(final HxMethod newOwner) {
+    HxMethodBody body = clone(newOwner);
+    newOwner.setBody(body);
+    return body;
+  }
+
+  @Override
   public HxMethodBody clone(HxMethod owner) {
     final HxMethodBody body = this;
-    final HxMethodBody otherBody = new HxMethodBodyImpl(owner);
+    final HxMethodBody otherBody = createMethodBody(owner);
     final HxCodeStream stream = otherBody.build();
 
     final List<HxTryCatch> tryCatches = body.getTryCatches();
@@ -73,14 +80,16 @@ public class HxMethodBodyImpl
     final Map<Object, LABEL> mapping = new IdentityHashMap<>(32);
 
     copyTryCatches(otherBody, tryCatches, mapping);
-
     copyLocalVariables(otherBody, localVariables, mapping);
-
     copyInstructions(body, stream, mapping);
 
     otherBody.setMaxLocals(body.getMaxLocals());
     otherBody.setMaxStack(body.getMaxStack());
     return otherBody;
+  }
+
+  protected HxMethodBodyImpl createMethodBody(final HxMethod owner) {
+    return new HxMethodBodyImpl(owner);
   }
 
   private void copyInstructions(final HxMethodBody body,

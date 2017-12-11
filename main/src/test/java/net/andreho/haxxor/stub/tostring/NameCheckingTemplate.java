@@ -1,5 +1,5 @@
-package net.andreho.haxxor.api.stub.tostring;
-import net.andreho.haxxor.api.stub.Stub;
+package net.andreho.haxxor.stub.tostring;
+import net.andreho.haxxor.stub.Stub;
 
 interface NameProvider {
   String getName();
@@ -7,7 +7,8 @@ interface NameProvider {
 }
 
 class NamedClass implements NameProvider {
-  protected String name;
+  private String name;
+
   @Override
   public String getName() {
     return name;
@@ -15,6 +16,7 @@ class NamedClass implements NameProvider {
   public void setName(String name) {
     this.name = name;
   }
+  @Override
   public String toString() {
     return name;
   }

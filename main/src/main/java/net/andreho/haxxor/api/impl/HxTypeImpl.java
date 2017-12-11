@@ -35,10 +35,6 @@ import static net.andreho.haxxor.utils.CommonUtils.isUninitialized;
 public class HxTypeImpl
   extends HxAbstractType
   implements HxType {
-//  protected static final int INTERNALS_LOADED = 0x1_0000;
-//  protected static final int ANNOTATIONS_LOADED = 0x2_0000;
-  protected static final int FIELDS_LOADED = 0x4_0000;
-  protected static final int METHODS_LOADED = 0x8_0000;
 
   protected Version version = Version.V1_7;
   protected HxSourceInfo sourceInfo;
@@ -257,23 +253,21 @@ public class HxTypeImpl
   }
 
   private boolean areFieldsLoaded() {
-    return (this.modifiers & FIELDS_LOADED) != 0;
+    return (this.modifiers & Internals.FIELDS_LOADED) != 0;
   }
 
   private void markLoadedFields() {
-    this.modifiers |= FIELDS_LOADED;
+    this.modifiers |= Internals.FIELDS_LOADED;
   }
 
   private void removeMarkForLoadedFields() {
-    this.modifiers &= ~FIELDS_LOADED;
+    this.modifiers &= ~Internals.FIELDS_LOADED;
   }
 
   @Override
   public HxType loadFields() {
     if (!areFieldsLoaded()) {
-      initialize(HxInitializablePart.FIELDS)
-        .getHaxxor()
-        .resolveFields(this);
+        getHaxxor().resolveFields(this);
       markLoadedFields();
     }
     return this;
@@ -473,23 +467,42 @@ public class HxTypeImpl
   }
 
   private boolean areMethodsLoaded() {
-    return (this.modifiers & METHODS_LOADED) != 0;
+    return (this.modifiers & Internals.METHODS_LOADED) != 0;
   }
 
   private void markLoadedMethods() {
-    this.modifiers |= METHODS_LOADED;
+    this.modifiers |= Internals.METHODS_LOADED;
   }
 
   private void removeMarkForLoadedMethods() {
-    this.modifiers &= ~METHODS_LOADED;
+    this.modifiers &= ~Internals.METHODS_LOADED;
+  }
+
+  @Override
+  public HxType loadFieldsAndMethods() {
+    int bits = 0;
+    if(!areFieldsLoaded()) {
+      bits |= 1;
+    }
+    if(!areMethodsLoaded()) {
+      bits |= 2;
+    }
+    switch (bits) {
+      case 1: loadFields(); break;
+      case 2: loadMethods(); break;
+      case 3:
+          getHaxxor().resolveFieldsAndMethods(this);
+        markLoadedFields();
+        markLoadedMethods();
+      break;
+    }
+    return this;
   }
 
   @Override
   public HxType loadMethods() {
     if (!areMethodsLoaded()) {
-      initialize(HxInitializablePart.METHODS)
-        .getHaxxor()
-        .resolveMethods(this);
+        getHaxxor().resolveMethods(this);
       markLoadedMethods();
     }
     return this;

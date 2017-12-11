@@ -1,4 +1,4 @@
-package net.andreho.haxxor.api.stub;
+package net.andreho.haxxor.stub;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -28,14 +28,14 @@ public @interface Stub {
   /**
    * <br/>Created by a.hofmann on 13.10.2017 at 22:20.
    */
-  @Target({ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.PARAMETER})
+  @Target({ElementType.PARAMETER, ElementType.METHOD}) //ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR,
   @Retention(RetentionPolicy.RUNTIME)
   @interface Named {
     String value() default "";
   }
 
   /**
-   * The marked <b>static</b> method must  return a {@link java.lang.Class} instance and doesn't consume any arguments
+   * The marked <b>static</b> method must return a {@link java.lang.Class} instance and doesn't consume any arguments
    * <br/>Created by a.hofmann on 13.10.2017 at 22:20.
    */
   @Target({ElementType.METHOD})

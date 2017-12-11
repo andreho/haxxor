@@ -37,6 +37,7 @@ public class AsmCoreApiBenchmark
 
   public static void main(String[] args)
   throws Exception {
+    loadResources();
     final long totalMemory = getTotalMemory();
     final Blackhole blackhole = createBlackhole();
     final AsmCoreApiBenchmark benchmark = new AsmCoreApiBenchmark();
@@ -116,7 +117,9 @@ public class AsmCoreApiBenchmark
         final ClassVisitor wcv = new ModifyingClassVisitor(cw);
 
         cr.accept(wcv, 0);
-        bh.consume(cw.toByteArray());
+        if(bh != null) {
+          bh.consume(cw.toByteArray());
+        }
       }
     } catch (Exception e) {
       throw new IllegalStateException(current.getName(), e);

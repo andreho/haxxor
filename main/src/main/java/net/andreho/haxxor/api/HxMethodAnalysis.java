@@ -195,7 +195,8 @@ public interface HxMethodAnalysis<O extends HxMethodManager<O>>
     for (HxMethod method : getMethods()) {
       if (method.hasName(name) &&
           method.hasParameters(parameters) &&
-         (!returnType.isPresent() || Objects.equals(returnType.get(), method.getReturnType()))) {
+         (!returnType.isPresent() ||
+          Objects.equals(returnType.get(), method.getReturnType()))) {
         return Optional.of(method);
       }
     }
@@ -235,7 +236,7 @@ public interface HxMethodAnalysis<O extends HxMethodManager<O>>
   default Optional<HxMethod> findMethod(HxType returnType,
                                         String name,
                                         List<HxType> parameters) {
-    return findMethod(Optional.of(returnType), name, parameters);
+    return findMethod(Optional.ofNullable(returnType), name, parameters);
   }
 
   /**
@@ -289,6 +290,72 @@ public interface HxMethodAnalysis<O extends HxMethodManager<O>>
   default Optional<HxMethod> findMethod(String name,
                                         Class<?>... parameters) {
     return findMethod(name, getHaxxor().references(getHaxxor().toNormalizedClassnames(parameters)));
+  }
+
+  /**
+   * @param prototype
+   * @return
+   */
+  default Optional<HxMethod> findMethodRecursively(HxMethod prototype) {
+    return findMethodRecursively(prototype.getReturnType(),
+                                 prototype.getName(),
+                                 prototype.getParameterTypes());
+  }
+
+  /**
+   * @param returnType of the method to find
+   * @param name       of the method to find
+   * @param parameters of the method to find
+   * @return
+   */
+  default Optional<HxMethod> findMethodRecursively(String returnType,
+                                                   String name,
+                                                   String ... parameters) {
+    return findMethodRecursively(
+      returnType==null? null : getHaxxor().reference(returnType),
+      name,
+      getHaxxor().references(parameters)
+    );
+  }
+
+  /**
+   * @param returnType of the method to find
+   * @param name       of the method to find
+   * @param parameters of the method to find
+   * @return
+   */
+  default Optional<HxMethod> findMethodRecursively(Class<?> returnType,
+                                                   String name,
+                                                   Class<?> ... parameters) {
+    return findMethodRecursively(
+      returnType == null? null : getHaxxor().reference(returnType),
+      name,
+      getHaxxor().references(parameters)
+    );
+  }
+
+  /**
+   * @param returnType of the method to find
+   * @param name       of the method to find
+   * @param parameters of the method to find
+   * @return
+   */
+  default Optional<HxMethod> findMethodRecursively(HxType returnType,
+                                                   String name,
+                                                   HxType ... parameters) {
+    return findMethodRecursively(returnType, name, Arrays.asList(parameters));
+  }
+
+  /**
+   * @param returnType of the method to find
+   * @param name       of the method to find
+   * @param parameters of the method to find
+   * @return
+   */
+  default Optional<HxMethod> findMethodRecursively(HxType returnType,
+                                                   String name,
+                                                   List<HxType> parameters) {
+    return findMethod(returnType, name, parameters);
   }
 
   /**

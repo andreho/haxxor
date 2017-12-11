@@ -41,7 +41,8 @@ import java.util.logging.Logger;
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @BenchmarkMode({Mode.AverageTime, Mode.Throughput})
 public class AsmTreeApiBenchmark
-  extends AbstractBenchmark implements Opcodes {
+  extends AbstractBenchmark
+  implements Opcodes {
 
   static final String LOGGER_DESC = Type.getDescriptor(Logger.class);
   static final String LOGGER_FACTORY_SIGNATURE = "(Ljava/lang/String;)" + LOGGER_DESC;
@@ -51,6 +52,7 @@ public class AsmTreeApiBenchmark
 
   public static void main(String[] args)
   throws Exception {
+    loadResources();
     final long totalMemory = getTotalMemory();
     final Blackhole blackhole = createBlackhole();
     final AsmTreeApiBenchmark benchmark = new AsmTreeApiBenchmark();
@@ -173,7 +175,7 @@ public class AsmTreeApiBenchmark
         break;
       }
     }
-    if(clinit == null) {
+    if (clinit == null) {
       clinit = new MethodNode(
         ACC_STATIC, "<clinit>", "()V", null, null
       );

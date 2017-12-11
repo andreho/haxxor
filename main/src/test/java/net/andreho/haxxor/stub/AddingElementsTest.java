@@ -1,4 +1,4 @@
-package net.andreho.haxxor.api.stub;
+package net.andreho.haxxor.stub;
 
 import net.andreho.haxxor.Debugger;
 import net.andreho.haxxor.Haxxor;

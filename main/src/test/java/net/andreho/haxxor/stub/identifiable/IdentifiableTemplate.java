@@ -1,6 +1,6 @@
-package net.andreho.haxxor.api.stub.identifiable;
+package net.andreho.haxxor.stub.identifiable;
 
-import net.andreho.haxxor.api.stub.Stub;
+import net.andreho.haxxor.stub.Stub;
 
 import java.util.concurrent.atomic.AtomicLong;
 

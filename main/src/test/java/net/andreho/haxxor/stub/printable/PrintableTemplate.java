@@ -1,6 +1,6 @@
-package net.andreho.haxxor.api.stub.printable;
+package net.andreho.haxxor.stub.printable;
 
-import net.andreho.haxxor.api.stub.Stub;
+import net.andreho.haxxor.stub.Stub;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;

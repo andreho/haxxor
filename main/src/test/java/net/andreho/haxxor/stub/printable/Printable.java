@@ -1,4 +1,4 @@
-package net.andreho.haxxor.api.stub.printable;
+package net.andreho.haxxor.stub.printable;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

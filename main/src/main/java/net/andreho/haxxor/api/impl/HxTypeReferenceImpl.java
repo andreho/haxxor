@@ -67,11 +67,12 @@ public class HxTypeReferenceImpl
 
   @Override
   public HxType toType() {
+    HxType type;
     Reference<HxType> reference = this.reference;
-    if(reference == null || reference.get() == null) {
-      this.reference = reference = new WeakReference<>(getHaxxor().resolve(getName()));
+    if(reference == null || (type = reference.get()) == null) {
+      this.reference = reference = new WeakReference<>(type = getHaxxor().resolve(getName()));
     }
-    return reference.get();
+    return type;
   }
 
   @Override
@@ -415,8 +416,9 @@ public class HxTypeReferenceImpl
 
   @Override
   public Appendable toDescriptor(final Appendable builder) {
-    if(isPrimitive()) {
-      return reference.get().toDescriptor(builder);
+    if(isPrimitive() ||
+       isArray()) {
+      return toType().toDescriptor(builder);
     }
     return super.toDescriptor(builder);
   }

@@ -42,6 +42,7 @@ public class JavassistBenchmark
 
   public static void main(String[] args)
   throws Exception {
+    loadResources();
     final long totalMemory = getTotalMemory();
     final Blackhole blackhole = createBlackhole();
     final JavassistBenchmark benchmark = new JavassistBenchmark();
@@ -139,7 +140,7 @@ public class JavassistBenchmark
   throws NotFoundException, CannotCompileException {
     if (!ctClass.isInterface()) {
       ctClass.addInterface(classPool.get(LoggableInterface.class.getName()));
-      
+
       try {
         ctClass.getDeclaredField("$LOG");
       } catch (NotFoundException e) {

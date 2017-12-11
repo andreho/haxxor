@@ -104,7 +104,7 @@ public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>
   }
 
   private void checkAnnotationExistence(final HxAnnotation annotation) {
-    if(isAnnotationPresent(annotation.getType())) {
+    if(isAnnotationPresent(annotation.getType().getName())) {
       throw new IllegalStateException(
         "Invalid attempt to add multiple an annotation with an already existing type: " + annotation.getType());
     }

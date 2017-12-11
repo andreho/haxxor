@@ -8,6 +8,7 @@ import net.andreho.haxxor.spi.HxDeduplicationCacheAware;
 import net.andreho.haxxor.spi.HxElementFactory;
 import net.andreho.haxxor.spi.HxInitializationAware;
 import net.andreho.haxxor.spi.HxProvidable;
+import net.andreho.haxxor.spi.HxStubInjector;
 import net.andreho.haxxor.spi.HxTypeSerializer;
 import net.andreho.haxxor.spi.HxVerificationAware;
 
@@ -23,6 +24,7 @@ public interface Hx extends HxClassnameNormalizer,
                             HxTypeSerializer,
                             HxVerificationAware,
                             HxDeduplicationCacheAware,
+                            HxStubInjector,
                             HxClassResolver {
 
   /**
@@ -105,9 +107,7 @@ public interface Hx extends HxClassnameNormalizer,
    * @param byteCode
    * @return
    */
-  default HxType resolve(String classname, byte[] byteCode) {
-    return resolve(classname, byteCode, 0);
-  }
+  HxType resolve(String classname, byte[] byteCode);
 
   /**
    * @param classname

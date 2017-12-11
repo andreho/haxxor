@@ -101,7 +101,6 @@ public class HxFieldImpl
     if (type == null) {
       throw new IllegalArgumentException("Field's type can't be null");
     }
-
     this.type = type;
     return this;
   }

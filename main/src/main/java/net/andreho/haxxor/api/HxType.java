@@ -1,6 +1,7 @@
 package net.andreho.haxxor.api;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
+import net.andreho.haxxor.stub.errors.HxStubException;
 
 import java.util.Optional;
 import java.util.Set;
@@ -79,6 +80,13 @@ public interface HxType
     }
   }
 
+  class Internals {
+//    public static final int INTERNALS_LOADED = 0x1_0000;
+//    public static final int ANNOTATIONS_LOADED = 0x2_0000;
+    public static final int FIELDS_LOADED = 0x4_0000;
+    public static final int METHODS_LOADED = 0x8_0000;
+  }
+
   /**
    * @return byte-code version
    */
@@ -137,7 +145,6 @@ public interface HxType
    * @return
    */
   default HxType loadFieldsAndMethods() {
-    getHaxxor().resolveFieldsAndMethods(this);
     return this;
   }
 
@@ -177,20 +184,26 @@ public interface HxType
   /**
    * @param stubClass to wire in
    * @return a list with all added elements that belong to the given stub class
-   * @see net.andreho.haxxor.api.stub.Stub
+   * @see net.andreho.haxxor.stub.Stub
    * @throws UnsupportedOperationException if this type can't be modified
    */
-  default HxType addTemplate(Class<?> stubClass) {
-    return addTemplate(getHaxxor().resolve(stubClass));
+  default HxType addTemplate(Class<?> stubClass)
+  throws HxStubException {
+    if(stubClass.isPrimitive() || stubClass.isArray() || stubClass.isInterface()) {
+      throw new IllegalArgumentException("Given stub type is invalid: "+stubClass.getName());
+    }
+    return addTemplate(getHaxxor().resolve(stubClass.getName(), 0));
   }
 
   /**
    * @param stubType to wire into this type
    * @return a list with all added elements that belong to the given stub class
-   * @see net.andreho.haxxor.api.stub.Stub
+   * @see net.andreho.haxxor.stub.Stub
    * @throws UnsupportedOperationException if this type can't be modified
    */
-  default HxType addTemplate(HxType stubType) {
+  default HxType addTemplate(HxType stubType)
+  throws HxStubException {
+    getHaxxor().injectStub(this, stubType);
     return this;
   }
 }

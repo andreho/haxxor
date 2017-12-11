@@ -1,6 +1,5 @@
 package test;
 
-import net.andreho.haxxor.Debugger;
 import net.andreho.haxxor.HaxxorBuilder;
 import net.andreho.haxxor.Hx;
 import net.andreho.haxxor.api.HxMethod;
@@ -39,78 +38,17 @@ import static test.AsmTreeApiBenchmark.LOGGER_INTERNAL_TYPE;
 @Measurement(iterations = 100)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class HaxxorBenchmark extends AbstractBenchmark {
-  @Override
-  @Benchmark
-  public void read(final Blackhole bh) throws Exception {
-    final Hx hx = new HaxxorBuilder() {
-      @Override
-      public HxDeduplicationCache createDeduplicationCache(final Hx haxxor) {
-//        return new DefaultTrieBasedDeduplicationCache();
-        return new NoOpDeduplicationCache();
-      }
-    }.build();
-
-    Resource current = null;
-
-    try {
-      for (final Resource resource : getResourceCollection()) {
-        current = resource;
-        String className = resource.getName().replace('/', '.');
-        className = className.substring(0, className.length() - ".class".length());
-
-        HxType type = hx.resolve(className, resource.toByteArray(), 0);
-
-        if (type.getName().equals("*")) {
-          bh.consume(type);
-          System.out.println("Unreachable");
-        }
-      }
-    } catch (Exception e) {
-      throw new IllegalStateException(current.getName(), e);
-    }
-  }
-
-  @Override
-  @Benchmark
-  public void write(final Blackhole bh) throws Exception {
-    final Hx hx = new HaxxorBuilder() {
-      @Override
-      public HxDeduplicationCache createDeduplicationCache(final Hx haxxor) {
-//        return new DefaultTrieBasedDeduplicationCache();
-        return new NoOpDeduplicationCache();
-      }
-    }.build();
-
-    Resource current = null;
-
-    try {
-      for (final Resource resource : getResourceCollection()) {
-        current = resource;
-        String className = resource.getName().replace('/', '.');
-        className = className.substring(0, className.length() - ".class".length());
-
-        HxType type = hx.resolve(className, resource.toByteArray(), 0);
-
-        modifyType(hx, type);
-
-        byte[] bytes = type.toByteCode();
-        Debugger.trace(bytes);
-        bh.consume(bytes);
-      }
-    } catch (Exception e) {
-      throw new IllegalStateException(current.getName(), e);
-    }
-  }
+public class HaxxorBenchmark
+  extends AbstractBenchmark {
 
   public static void main(String[] args)
   throws Exception {
+    loadResources();
     final long totalMemory = getTotalMemory();
     final Blackhole blackhole = createBlackhole();
     final HaxxorBenchmark benchmark = new HaxxorBenchmark();
 
     //testRead(blackhole, benchmark);
-
     testWrite(blackhole, benchmark);
 
     done(blackhole);
@@ -152,18 +90,20 @@ public class HaxxorBenchmark extends AbstractBenchmark {
     }
   }
 
-  private void modifyType(final Hx hx, final HxType type) {
-    if(!type.isInterface()) {
+  static void modifyType(final Hx hx,
+                         final HxType type) {
+    if (!type.isInterface() && !type.isMemberType()) {
       type
+        .loadFieldsAndMethods()
         .addInterface(LoggableInterface.class)
         .addField(hx.createField(Logger.class, "$LOG")
                     .makePrivate().makeFinal().makeStatic());
 
       type.findOrCreateClassInitializer().map(clinit -> {
         clinit.getBody().getFirst().asStream()
-          .LDC(type.getName())
-          .INVOKESTATIC(LOGGER_INTERNAL_TYPE, "getLogger", LOGGER_FACTORY_SIGNATURE, false)
-          .PUTSTATIC(type.toInternalName(), "$LOG", LOGGER_DESC);
+              .LDC(type.getName())
+              .INVOKESTATIC(LOGGER_INTERNAL_TYPE, "getLogger", LOGGER_FACTORY_SIGNATURE, false)
+              .PUTSTATIC(type.toInternalName(), "$LOG", LOGGER_DESC);
         return clinit;
       });
 
@@ -172,6 +112,71 @@ public class HaxxorBenchmark extends AbstractBenchmark {
          .GETSTATIC(type.toInternalName(), "$LOG", LOGGER_DESC)
          .ARETURN();
       type.addMethod(log);
+    }
+  }
+
+  @Override
+  @Benchmark
+  public void read(final Blackhole bh)
+  throws Exception {
+    final Hx hx = new HaxxorBuilder() {
+      @Override
+      public HxDeduplicationCache createDeduplicationCache(final Hx haxxor) {
+//        return new DefaultTrieBasedDeduplicationCache();
+        return new NoOpDeduplicationCache();
+      }
+    }.build();
+
+    Resource current = null;
+
+    try {
+      for (final Resource resource : getResourceCollection()) {
+        current = resource;
+        String className = resource.getName().replace('/', '.');
+        className = className.substring(0, className.length() - ".class".length());
+
+        HxType type = hx.resolve(className, resource.toByteArray());
+
+        if (type.getName().equals("*")) {
+          bh.consume(type);
+          System.out.println("Unreachable");
+        }
+      }
+    } catch (Exception e) {
+      throw new IllegalStateException(current.getName(), e);
+    }
+  }
+
+  @Override
+  @Benchmark
+  public void write(final Blackhole bh)
+  throws Exception {
+    final Hx hx = new HaxxorBuilder() {
+      @Override
+      public HxDeduplicationCache createDeduplicationCache(final Hx haxxor) {
+//        return new DefaultTrieBasedDeduplicationCache();
+        return new NoOpDeduplicationCache();
+      }
+    }.build();
+
+    Resource current = null;
+
+    try {
+      for (final Resource resource : getResourceCollection()) {
+        current = resource;
+        String className = resource.getName().replace('/', '.');
+        className = className.substring(0, className.length() - ".class".length());
+
+        HxType type = hx.resolve(className, resource.toByteArray(), 0);
+
+        modifyType(hx, type);
+
+        byte[] bytes = type.toByteCode();
+        //Debugger.trace(bytes);
+        bh.consume(bytes);
+      }
+    } catch (Exception e) {
+      throw new IllegalStateException(current.getName(), e);
     }
   }
 

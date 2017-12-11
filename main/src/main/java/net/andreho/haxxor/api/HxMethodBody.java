@@ -13,13 +13,13 @@ import java.util.function.Function;
  * <br/>Created by a.hofmann on 18.03.2016.<br/>
  */
 public interface HxMethodBody
-  extends HxInstruction,
-          Iterable<HxInstruction>,
+  extends Iterable<HxInstruction>,
           Cloneable {
 
   /**
+   * Makes a deep-copy of this method's body and sets it into this method's body to the given one method
    * @param owner of the cloned method's body
-   * @return makes a deep-copy of this method's body
+   * @return cloned version of this method's body
    */
   HxMethodBody clone(HxMethod owner);
 
@@ -29,6 +29,13 @@ public interface HxMethodBody
    * @return current method's body of the given method
    */
   HxMethodBody moveTo(HxMethod newOwner);
+
+  /**
+   * Copies the content of this method's body into the given method
+   * @param newOwner of the cloned method's body
+   * @return current method's body of the given method
+   */
+  HxMethodBody copyTo(HxMethod newOwner);
 
   /**
    * @return owning method or constructor of this body

@@ -1,4 +1,4 @@
-package net.andreho.haxxor.api.stub.identifiable;
+package net.andreho.haxxor.stub.identifiable;
 
 public class IdentifiableTargetClass extends OtherClass {
 //  static {

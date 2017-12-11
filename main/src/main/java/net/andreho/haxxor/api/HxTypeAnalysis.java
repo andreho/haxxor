@@ -5,7 +5,11 @@ import net.andreho.haxxor.utils.NamingUtils;
 import java.io.IOException;
 import java.util.Optional;
 
+import static net.andreho.haxxor.api.HxConstants.ARRAY_DIMENSION;
+import static net.andreho.haxxor.api.HxConstants.DESC_ARRAY_PREFIX_STR;
+import static net.andreho.haxxor.api.HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR;
 import static net.andreho.haxxor.utils.NamingUtils.equalClassnames;
+import static net.andreho.haxxor.utils.NamingUtils.equalPackageNames;
 import static net.andreho.haxxor.utils.NamingUtils.hasSimpleBinaryName;
 import static net.andreho.haxxor.utils.NamingUtils.isDescriptor;
 
@@ -29,8 +33,50 @@ public interface HxTypeAnalysis<O extends HxInheritanceManager<O> & HxOwned<O> &
    * @return package-name of this type
    */
   default String getPackageName() {
-    int index = getName().lastIndexOf(HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR);
+    int index = getName().lastIndexOf(JAVA_PACKAGE_SEPARATOR_CHAR);
     return index < 0 ? "" : getName().substring(0, index);
+  }
+
+  /**
+   * @param packageName
+   * @return
+   */
+  default boolean hasPackageName(String packageName) {
+    final String name = getName();
+    return name.startsWith(packageName) &&
+           name.charAt(name.length()) == JAVA_PACKAGE_SEPARATOR_CHAR;
+  }
+
+  /**
+   * @param classname of other type
+   * @return
+   */
+  default boolean hasSamePackageName(String classname) {
+    return equalPackageNames(getName(), classname);
+  }
+
+  /**
+   * @param other type whose name is going to be checked
+   * @return
+   */
+  default boolean hasSamePackageName(HxType other) {
+    return equalPackageNames(getName(), other.getName());
+  }
+
+  /**
+   * @param other type whose name is going to be checked
+   * @return
+   */
+  default boolean hasSamePackageName(Class<?> other) {
+    return equalPackageNames(getName(), other.getName());
+  }
+
+  /**
+   * @param cls whose name to check
+   * @return
+   */
+  default boolean hasName(Class<?> cls) {
+    return hasName(cls.getName());
   }
 
   /**
@@ -156,13 +202,18 @@ public interface HxTypeAnalysis<O extends HxInheritanceManager<O> & HxOwned<O> &
    * @return whether this type represents an array type or not
    */
   default boolean isArray() {
-    return getComponentType().isPresent();
+    String name = getName();
+    return name.endsWith(ARRAY_DIMENSION) ||
+           name.startsWith(DESC_ARRAY_PREFIX_STR);
   }
 
   /**
    * @return a number of dimensions which this array type has or zero if this isn't an array type
    */
   default int getDimension() {
+    if(!isArray()) {
+      return 0;
+    }
     int dim = 0;
     Optional<HxType> component = getComponentType();
     while (component.isPresent()) {
@@ -180,7 +231,7 @@ public interface HxTypeAnalysis<O extends HxInheritanceManager<O> & HxOwned<O> &
       return toDescriptor();
     }
     return getName().replace(
-      HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR,
+      JAVA_PACKAGE_SEPARATOR_CHAR,
       HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR
     );
   }
@@ -220,7 +271,7 @@ public interface HxTypeAnalysis<O extends HxInheritanceManager<O> & HxOwned<O> &
       final String name = getName();
       for (int i = 0, len = name.length(); i < len; i++) {
         char c = name.charAt(i);
-        if (c == HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR) {
+        if (c == JAVA_PACKAGE_SEPARATOR_CHAR) {
           c = HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR;
         }
         builder.append(c);
@@ -299,6 +350,14 @@ public interface HxTypeAnalysis<O extends HxInheritanceManager<O> & HxOwned<O> &
    */
   default boolean isInternal() {
     return !isPublic() && !isProtected() && !isPrivate();
+  }
+
+  /**
+   * @return <b>true</b> if this is a class (not a primitive, not an array and not an interface),
+   * <b>false</b> otherwise.
+   */
+  default boolean isClass() {
+    return !isPrimitive() && !isArray() && !isInterface();
   }
 
   /**

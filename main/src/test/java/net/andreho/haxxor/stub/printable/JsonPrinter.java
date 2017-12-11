@@ -1,4 +1,4 @@
-package net.andreho.haxxor.api.stub.printable;
+package net.andreho.haxxor.stub.printable;
 
 import java.io.IOException;
 

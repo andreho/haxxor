@@ -1,4 +1,4 @@
-package net.andreho.haxxor.api.stub;
+package net.andreho.haxxor.stub;
 
 /**
  * <br/>Created by a.hofmann on 13.10.2017 at 22:25.

@@ -1,11 +1,13 @@
 package net.andreho.haxxor.spi;
 
+import net.andreho.haxxor.api.HxAnnotated;
 import net.andreho.haxxor.api.HxAnnotation;
 import net.andreho.haxxor.api.HxField;
 import net.andreho.haxxor.api.HxMethod;
 import net.andreho.haxxor.api.HxParameter;
 import net.andreho.haxxor.api.HxProvider;
 import net.andreho.haxxor.api.HxType;
+import net.andreho.haxxor.api.impl.HxAnnotatedImpl;
 
 import java.lang.annotation.Annotation;
 
@@ -218,7 +220,7 @@ public interface HxElementFactory
    *
    * @param className of new annotation
    * @param visible   is the visibility of new annotation
-   * @return a new unbound parameter instance
+   * @return a new unbound annotation instance
    */
   HxAnnotation createAnnotation(final String className,
                                 final boolean visible);
@@ -228,7 +230,7 @@ public interface HxElementFactory
    *
    * @param cls     of new annotation
    * @param visible is the visibility of new annotation
-   * @return a new unbound parameter instance
+   * @return a new unbound annotation instance
    */
   default HxAnnotation createAnnotation(final Class<? extends Annotation> cls,
                                         final boolean visible) {
@@ -240,10 +242,18 @@ public interface HxElementFactory
    *
    * @param annotationType of new annotation
    * @param visible        is the visibility of new annotation
-   * @return a new unbound parameter instance
+   * @return a new unbound annotation instance
    */
   default HxAnnotation createAnnotation(final HxType annotationType,
                                         final boolean visible) {
     return createAnnotation(annotationType.getName(), visible);
+  }
+
+  /**
+   * Creates a new unbound annotated element
+   * @return a new unbound parameter instance
+   */
+  default HxAnnotated<?> createAnnotated() {
+    return new HxAnnotatedImpl<>();
   }
 }

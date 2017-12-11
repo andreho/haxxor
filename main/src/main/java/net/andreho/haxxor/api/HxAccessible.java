@@ -17,6 +17,7 @@ public interface HxAccessible<A extends HxMember<A> & HxOwned<A>> extends HxMemb
    */
   default boolean isAccessibleFrom(HxType type) {
     final HxType declaringType = getDeclaringType();
+
     if(hasModifiers(HxModifiers.PUBLIC)) {
       return true;
     } else if(hasModifiers(HxModifiers.PRIVATE) &&
@@ -26,7 +27,7 @@ public interface HxAccessible<A extends HxMember<A> & HxOwned<A>> extends HxMemb
               declaringType.isAssignableFrom(type)) {
       return true;
     }
-    return type.getPackageName().equals(declaringType.getPackageName());
+    return type.hasSamePackageName(declaringType);
   }
 
   /**

@@ -15,6 +15,7 @@ import net.andreho.haxxor.api.impl.HxParameterImpl;
 import net.andreho.haxxor.api.impl.HxTypeImpl;
 import net.andreho.haxxor.api.impl.HxTypeReferenceImpl;
 import net.andreho.haxxor.spi.HxElementFactory;
+import net.andreho.haxxor.utils.NamingUtils;
 
 import java.util.Objects;
 
@@ -40,19 +41,17 @@ public class DefaultHxElementFactory
     if(haxxor.hasResolved(classname)) {
       return haxxor.resolve(classname);
     }
-    if(classname.endsWith(HxConstants.ARRAY_DIMENSION)) {
-      return this.haxxor.reference(
-        classname.substring(0, classname.length() - HxConstants.ARRAY_DIMENSION.length())
-      );
+    if(NamingUtils.isArray(classname)) {
+      throw new IllegalArgumentException("Given type is an array: "+classname);
+    }
+    if(NamingUtils.isPrimitive(classname)) {
+      throw new IllegalArgumentException("Given type is an primitive: "+classname);
     }
     return new HxTypeImpl(haxxor, classname);
   }
 
   @Override
   public HxType createReference(final String classname) {
-    if(haxxor.hasReference(classname)) {
-      return haxxor.reference(classname);
-    }
     return new HxTypeReferenceImpl(haxxor, classname);
   }
 
@@ -75,7 +74,7 @@ public class DefaultHxElementFactory
   @Override
   public HxMethod createConstructor(final HxType... parameterTypes) {
     return new HxMethodImpl(HxConstants.CONSTRUCTOR_METHOD_NAME,
-                            getHaxxor().resolve("void"),
+                            haxxor.reference(void.class),
                             parameterTypes);
   }
 
@@ -84,14 +83,16 @@ public class DefaultHxElementFactory
     return new HxMethodReferenceImpl(haxxor,
                                      declaringType,
                                      HxConstants.CONSTRUCTOR_METHOD_NAME,
-                                     "void", parameterTypes);
+                                     void.class.getName(), parameterTypes);
   }
 
   @Override
   public HxMethod createMethod(final String returnType,
                                final String methodName,
                                final String... parameterTypes) {
-    return createMethod(createReference(returnType), methodName, haxxor.references(parameterTypes));
+    return createMethod(haxxor.reference(returnType),
+                        methodName,
+                        haxxor.references(parameterTypes));
   }
 
   @Override
@@ -111,11 +112,11 @@ public class DefaultHxElementFactory
 
   @Override
   public HxParameter createParameter(final String internalTypeName) {
-    return new HxParameterImpl(haxxor.createReference(internalTypeName));
+    return new HxParameterImpl(haxxor.reference(internalTypeName));
   }
 
   @Override
   public HxAnnotation createAnnotation(final String internalTypeName, final boolean visible) {
-    return new HxAnnotationImpl(haxxor.createReference(internalTypeName), visible);
+    return new HxAnnotationImpl(haxxor.reference(internalTypeName), visible);
   }
 }

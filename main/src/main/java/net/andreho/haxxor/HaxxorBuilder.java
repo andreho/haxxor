@@ -10,23 +10,24 @@ import net.andreho.haxxor.spi.HxFieldInitializer;
 import net.andreho.haxxor.spi.HxFieldVerifier;
 import net.andreho.haxxor.spi.HxMethodInitializer;
 import net.andreho.haxxor.spi.HxMethodVerifier;
-import net.andreho.haxxor.spi.HxStubHandler;
+import net.andreho.haxxor.spi.HxStubInjector;
 import net.andreho.haxxor.spi.HxTypeDeserializer;
 import net.andreho.haxxor.spi.HxTypeInitializer;
 import net.andreho.haxxor.spi.HxTypeSerializer;
 import net.andreho.haxxor.spi.HxTypeVerifier;
 import net.andreho.haxxor.spi.HxVerificationResult;
 import net.andreho.haxxor.spi.impl.CachedHxByteCodeLoader;
-import net.andreho.haxxor.spi.impl.CompoundHxStubHandler;
+import net.andreho.haxxor.spi.impl.CompoundHxStubInjector;
 import net.andreho.haxxor.spi.impl.DefaultHxClassnameNormalizer;
 import net.andreho.haxxor.spi.impl.DefaultHxElementFactory;
 import net.andreho.haxxor.spi.impl.DefaultHxTypeDeserializer;
 import net.andreho.haxxor.spi.impl.DefaultHxTypeInitializer;
 import net.andreho.haxxor.spi.impl.DefaultHxTypeSerializer;
-import net.andreho.haxxor.spi.impl.DefaultTrieBasedDeduplicationCache;
 import net.andreho.haxxor.spi.impl.NoOpDeduplicationCache;
 import net.andreho.haxxor.spi.impl.ReflectingClassResolver;
-import net.andreho.haxxor.spi.impl.ServiceStubHandler;
+import net.andreho.haxxor.spi.impl.ServiceStubInjector;
+import net.andreho.haxxor.stub.impl.CheckingStubInjector;
+import net.andreho.haxxor.stub.impl.DefaultStubInjector;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -121,10 +122,10 @@ public class HaxxorBuilder {
    * @return new new deduplication cache associated with given haxxor instance
    */
   public HxDeduplicationCache createDeduplicationCache(final Hx haxxor) {
-    if(concurrent) {
-      return new NoOpDeduplicationCache();
-    }
-    return new DefaultTrieBasedDeduplicationCache();
+//    if(!concurrent) {
+//      return new DefaultTrieBasedDeduplicationCache();
+//    }
+    return new NoOpDeduplicationCache();
   }
 
   /**
@@ -264,8 +265,12 @@ public class HaxxorBuilder {
    * @param haxxor is the requesting instance
    * @return
    */
-  public HxStubHandler createStubHandler(final Hx haxxor) {
-    return new CompoundHxStubHandler(new ServiceStubHandler());
+  public HxStubInjector createStubInjector(final Hx haxxor) {
+    return new CompoundHxStubInjector(
+      new ServiceStubInjector(),
+      new CheckingStubInjector(),
+      new DefaultStubInjector()
+    );
   }
 
   /**

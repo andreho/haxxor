@@ -85,7 +85,7 @@ public abstract class NamingUtils {
    */
   public static String normalizeClassname(String classname) {
     Objects.requireNonNull(classname, "Classname can't be null.");
-    String internalForm = classname.replace(HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR, HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR);
+    String internalForm = classname.replace(JAVA_PACKAGE_SEPARATOR_CHAR, HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR);
     if(classname.endsWith(";")) {
       return normalizeType(Type.getType(internalForm));
     }
@@ -223,6 +223,19 @@ public abstract class NamingUtils {
       return ARRAY;
     }
     return OBJECT;
+  }
+
+  /**
+   * @param classnameA
+   * @param classnameB
+   * @return
+   */
+  public static boolean equalPackageNames(String classnameA, String classnameB) {
+    final int lastDotIdx = classnameA.lastIndexOf(JAVA_PACKAGE_SEPARATOR_CHAR);
+    if(lastDotIdx != classnameB.lastIndexOf(JAVA_PACKAGE_SEPARATOR_CHAR)) {
+      return false;
+    }
+    return classnameA.regionMatches(0, classnameB, 0, lastDotIdx);
   }
 
   /**

@@ -301,11 +301,6 @@ public interface HxField
   @Override
   HxType getDeclaringMember();
 
-  @Override
-  default HxType getDeclaringType() {
-    return getDeclaringMember();
-  }
-
   /**
    * @return
    */

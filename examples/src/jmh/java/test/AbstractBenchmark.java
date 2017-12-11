@@ -10,6 +10,7 @@ import org.openjdk.jmh.infra.Blackhole;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -19,6 +20,9 @@ public abstract class AbstractBenchmark {
   private static volatile Blackhole blackhole;
   private static final Map<String, Resource> RESOURCES;
   static {
+    RESOURCES = new LinkedHashMap<>();
+  }
+  protected static void loadResources() {
     final ResourceScanner scanner = ResourceScanner.newScanner(
       ResourceScanner.Parallelism.SINGLE,
       ResourceSourceLocator.usingClassPath(),
@@ -28,7 +32,7 @@ public abstract class AbstractBenchmark {
       ResourceType.CLASS_TYPE
     );
     try {
-      RESOURCES = scanner.scan(AbstractBenchmark.class.getClassLoader());
+      RESOURCES.putAll(scanner.scan(AbstractBenchmark.class.getClassLoader()));
     } catch (Exception e) {
       throw new IllegalStateException(e);
     }
