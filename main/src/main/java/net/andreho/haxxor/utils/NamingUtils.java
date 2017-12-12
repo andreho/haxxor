@@ -427,7 +427,8 @@ public abstract class NamingUtils {
       char b = classnameB.charAt(offB + i);
 
       if(a != b) {
-        if((a == '.' && b == '/') || (a == '/' && b == '.')) {
+        if((a == '.' && b == '/') ||
+           (a == '/' && b == '.')) {
           continue;
         }
         return false;
