@@ -323,6 +323,13 @@ public interface HxMethod
   }
 
   /**
+   * @return <b>true</b> if this method doesn't expect any parameters, <b>false</b> otherwise
+   */
+  default boolean hasNoParameters() {
+    return hasParametersCount(0);
+  }
+
+  /**
    * @param parameters to check against
    * @return
    */
@@ -468,10 +475,29 @@ public interface HxMethod
       throw new IndexOutOfBoundsException("Invalid index: " + index + ", method's arity is: " + getParametersCount());
     }
     int slot = isStatic() ? 0 : 1;
-    for (int i = 0; i <= index; i++) {
+    for (int i = 0; i < index; i++) {
       slot += getParameterAt(i).getType().getSlotSize();
     }
     return slot;
+  }
+
+  /**
+   * @param slot index of a parameter in the storage for locals
+   * @return
+   */
+  default Optional<HxParameter> getParameterWithSlot(int slot) {
+    if(!isStatic() &&
+       slot == 0) {
+      return Optional.empty();
+    }
+    int offset = isStatic() ? 0 : 1;
+    for(HxParameter parameter : getParameters()) {
+      if(offset == slot) {
+        return Optional.of(parameter);
+      }
+      offset += parameter.getType().getSlotSize();
+    }
+    return Optional.empty();
   }
 
   /**
@@ -851,6 +877,36 @@ public interface HxMethod
    */
   default boolean hasParameterWithAnnotation(Class<?> annotationType) {
     return hasParameterWithAnnotation(annotationType.getName());
+  }
+
+  /**
+   * @param annotationType
+   * @return
+   */
+  default boolean hasAllParametersWithAnnotation(String annotationType) {
+    int found = 0;
+    for (HxParameter parameter : getParameters()) {
+      if (parameter.isAnnotationPresent(annotationType)) {
+        found++;
+      }
+    }
+    return hasParametersCount(found);
+  }
+
+  /**
+   * @param annotationType
+   * @return
+   */
+  default boolean hasAllParametersWithAnnotation(HxType annotationType) {
+    return hasAllParametersWithAnnotation(annotationType.getName());
+  }
+
+  /**
+   * @param annotationType
+   * @return
+   */
+  default boolean hasAllParametersWithAnnotation(Class<?> annotationType) {
+    return hasAllParametersWithAnnotation(annotationType.getName());
   }
 
   /**

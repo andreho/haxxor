@@ -13,12 +13,20 @@ import net.andreho.haxxor.cgen.instr.abstr.StringOperandInstruction;
 public class MULTIANEWARRAY
   extends StringOperandInstruction {
 
-  private final int dimension;
+  private final int dimensions;
 
   public MULTIANEWARRAY(String className,
                         int dims) {
     super(className);
-    this.dimension = dims;
+    this.dimensions = dims;
+  }
+
+  public String getArrayType() {
+    return getOperand();
+  }
+
+  public int getDimensions() {
+    return dimensions;
   }
 
   @Override
@@ -28,7 +36,7 @@ public class MULTIANEWARRAY
 
   @Override
   public void visit(HxCodeStream codeStream) {
-    codeStream.MULTIANEWARRAY(getOperand(), this.dimension);
+    codeStream.MULTIANEWARRAY(getOperand(), this.dimensions);
   }
 
   @Override
@@ -38,20 +46,11 @@ public class MULTIANEWARRAY
 
   @Override
   public int getStackPopSize() {
-    return this.dimension;
+    return this.dimensions;
   }
 
   @Override
   public String toString() {
-    return "MULTIANEWARRAY ("+getOperand()+", "+dimension+")";
-  }
-
-  private static String multiply(String str,
-                                 int times) {
-    final StringBuilder builder = new StringBuilder();
-    while (times-- > 0) {
-      builder.append(str);
-    }
-    return builder.toString();
+    return "MULTIANEWARRAY (" + getOperand() + ", " + dimensions + ")";
   }
 }

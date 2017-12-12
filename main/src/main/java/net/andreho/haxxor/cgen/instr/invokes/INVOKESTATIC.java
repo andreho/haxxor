@@ -18,7 +18,7 @@ public class INVOKESTATIC
                       String desc,
                       boolean isInterface) {
     super(owner, name, desc, isInterface);
-    Utils.checkMethodName(getOpcode(), name);
+//    Utils.checkMethodName(getOpcode(), name);
   }
 
   @Override

@@ -52,6 +52,15 @@ public class DefaultHxElementFactory
 
   @Override
   public HxType createReference(final String classname) {
+    if(haxxor.hasResolved(classname)) {
+      return haxxor.resolve(classname);
+    }
+    if(NamingUtils.isArray(classname)) {
+      throw new IllegalArgumentException("Given type is an array: "+classname);
+    }
+    if(NamingUtils.isPrimitive(classname)) {
+      throw new IllegalArgumentException("Given type is an primitive: "+classname);
+    }
     return new HxTypeReferenceImpl(haxxor, classname);
   }
 

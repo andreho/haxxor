@@ -17,6 +17,10 @@ public class INSTANCEOF
     super(operand);
   }
 
+  public String getType() {
+    return getOperand();
+  }
+
   @Override
   public HxInstructionType getInstructionType() {
     return HxInstructionTypes.Conversion.INSTANCEOF;

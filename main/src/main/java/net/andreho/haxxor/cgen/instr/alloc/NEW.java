@@ -17,6 +17,10 @@ public class NEW
     super(className);
   }
 
+  public String getType() {
+    return getOperand();
+  }
+
   @Override
   public HxInstructionType getInstructionType() {
     return HxInstructionTypes.Allocation.NEW;

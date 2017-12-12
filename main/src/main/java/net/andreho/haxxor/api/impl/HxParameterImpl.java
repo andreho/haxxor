@@ -80,6 +80,15 @@ public class HxParameterImpl
   }
 
   @Override
+  public int getSlotIndex() {
+    HxMethod declaringMember = getDeclaringMember();
+    if (declaringMember == null) {
+      throw new IllegalStateException("Declaring member not defined.");
+    }
+    return getDeclaringMember().getParametersSlotAt(getIndex());
+  }
+
+  @Override
   public String getName() {
     final String name = this.name;
     if (name != null) {
@@ -128,7 +137,7 @@ public class HxParameterImpl
   @Override
   public HxParameter setType(final HxType type) {
     this.type = Objects.requireNonNull(type, "Parameter-type can't be null.");
-    if("void".equals(type.getName())) {
+    if(type.isVoid()) {
       throw new IllegalArgumentException("Parameter's type can't be void.");
     }
     return this;

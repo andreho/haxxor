@@ -93,6 +93,11 @@ public interface HxParameter
   HxParameter setType(HxType type);
 
   /**
+   * @return index of the corresponding slot in the locals
+   */
+  int getSlotIndex();
+
+  /**
    * @return <b>true</b> if the parameter has a name according to the class file, <b>false</b> otherwise.
    */
   boolean isNamePresent();

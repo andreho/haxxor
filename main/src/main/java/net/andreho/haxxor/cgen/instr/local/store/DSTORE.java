@@ -31,4 +31,9 @@ public class DSTORE
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public DSTORE clone(final int var) {
+    return new DSTORE(var);
+  }
 }

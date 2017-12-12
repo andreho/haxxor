@@ -142,20 +142,20 @@ public abstract class NamingUtils {
     switch (classname.charAt(0)) {
       case 'b':
         return "byte".equals(classname) || "boolean".equals(classname);
-      case 's':
-        return "short".equals(classname);
       case 'c':
         return "char".equals(classname);
+      case 'd':
+        return "double".equals(classname);
       case 'i':
         return "int".equals(classname);
       case 'f':
         return "float".equals(classname);
       case 'l':
         return "long".equals(classname);
-      case 'd':
-        return "double".equals(classname);
       case 'v':
         return "void".equals(classname);
+      case 's':
+        return "short".equals(classname);
       default:
         return false;
     }
@@ -407,7 +407,10 @@ public abstract class NamingUtils {
    * @return
    */
   public static boolean equalClassnames(String classnameA, String classnameB) {
-    return equalClassnames(classnameA, 0, classnameB, 0, Math.min(classnameA.length(), classnameB.length()));
+    if(classnameA.length() != classnameB.length()) {
+      return false;
+    }
+    return equalClassnames(classnameA, 0, classnameB, 0, classnameA.length());
   }
 
   /**

@@ -17,7 +17,7 @@ public class INVOKEVIRTUAL
                        String name,
                        String desc) {
     super(owner, name, desc);
-    Utils.checkMethodName(getOpcode(), name);
+//    Utils.checkMethodName(getOpcode(), name);
   }
 
   @Override

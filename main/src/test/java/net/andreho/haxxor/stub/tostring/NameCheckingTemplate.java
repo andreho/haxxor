@@ -1,27 +1,6 @@
 package net.andreho.haxxor.stub.tostring;
 import net.andreho.haxxor.stub.Stub;
 
-interface NameProvider {
-  String getName();
-  void setName(String name);
-}
-
-class NamedClass implements NameProvider {
-  private String name;
-
-  @Override
-  public String getName() {
-    return name;
-  }
-  public void setName(String name) {
-    this.name = name;
-  }
-  @Override
-  public String toString() {
-    return name;
-  }
-}
-
 @Stub(requires = {NameProvider.class})
 public abstract class NameCheckingTemplate implements NameProvider {
   @Stub.Method

@@ -1,25 +1,16 @@
 package net.andreho.haxxor.stub.identifiable;
 
+import net.andreho.haxxor.stub.Stub;
+
 public class IdentifiableTargetClass extends OtherClass {
-//  static {
-//    COUNTER = new AtomicLong();
-//  }
-//  private static final AtomicLong COUNTER;
-//  private final long id;
-//  public IdentifiableTargetClass() {
-//    super();
-//    this.id = COUNTER.getAndIncrement();
-//  }
-//  @Override
-//  public long getId() {
-//    ...
-//  }
-//  @Override
-//  public boolean equals(final Object o) {
-//    ...
-//  }
-//  @Override
-//  public int hashCode() {
-//    ...
-//  }
+  private final String name;
+  public IdentifiableTargetClass(String name) {
+    this.name = name;
+  }
+  public IdentifiableTargetClass(String name, @Stub.Named long id) {
+    this(name);
+  }
+  public String getName() {
+    return name;
+  }
 }

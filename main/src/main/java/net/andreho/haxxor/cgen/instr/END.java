@@ -17,6 +17,11 @@ public class END
   }
 
   @Override
+  public int getOpcode() {
+    return -1;
+  }
+
+  @Override
   public boolean isEnd() {
     return true;
   }

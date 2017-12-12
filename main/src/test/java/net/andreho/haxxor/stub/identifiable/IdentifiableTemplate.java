@@ -4,19 +4,17 @@ import net.andreho.haxxor.stub.Stub;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-interface Identifiable {
-  long getId();
-}
 public class IdentifiableTemplate implements Identifiable {
   private static final AtomicLong COUNTER = new AtomicLong();
   private final long id;
 
   public IdentifiableTemplate() {
-    this.id = COUNTER.getAndIncrement();
+    this.id = COUNTER.incrementAndGet();
   }
   public IdentifiableTemplate(@Stub.Named long id) {
     this.id = id;
   }
+
   @Override
   public long getId() {
     return id;

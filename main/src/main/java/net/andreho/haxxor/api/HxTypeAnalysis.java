@@ -399,7 +399,7 @@ public interface HxTypeAnalysis<O extends HxInheritanceManager<O> & HxOwned<O> &
    * @return <b>true</b> if this type is the <b>void</b> primitive type, <b>false</b> otherwise.
    */
   default boolean isVoid() {
-    return "void".equals(getName());
+    return hasName("void");
   }
 
   /**

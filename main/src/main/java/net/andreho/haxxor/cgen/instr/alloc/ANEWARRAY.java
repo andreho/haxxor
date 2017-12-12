@@ -17,6 +17,10 @@ public class ANEWARRAY
     super(className);
   }
 
+  public String getArrayType() {
+    return getOperand();
+  }
+
   @Override
   public HxInstructionType getInstructionType() {
     return HxInstructionTypes.Allocation.ANEWARRAY;

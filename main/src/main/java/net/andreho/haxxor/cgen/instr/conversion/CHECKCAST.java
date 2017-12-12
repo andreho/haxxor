@@ -17,6 +17,10 @@ public class CHECKCAST
     super(internalType);
   }
 
+  public String getType() {
+    return getOperand();
+  }
+
   @Override
   public HxInstructionType getInstructionType() {
     return HxInstructionTypes.Conversion.CHECKCAST;

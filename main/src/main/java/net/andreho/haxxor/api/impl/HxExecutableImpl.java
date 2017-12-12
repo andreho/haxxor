@@ -85,10 +85,13 @@ public abstract class HxExecutableImpl
     return this;
   }
 
-  private List<HxParameter> initializeParameters() {
+  protected List<HxParameter> initializeParameters() {
+    return initializeParameters(0);
+  }
+  protected List<HxParameter> initializeParameters(int size) {
     List<HxParameter> parameters = this.parameters;
     if (isUninitialized(parameters)) {
-      this.parameters = parameters = new ArrayList<>();
+      this.parameters = parameters = new ArrayList<>(size);
     }
     return parameters;
   }

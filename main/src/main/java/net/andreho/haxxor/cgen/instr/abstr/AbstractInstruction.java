@@ -87,11 +87,6 @@ public abstract class AbstractInstruction
   }
 
   @Override
-  public int getOpcode() {
-    return getInstructionType().getOpcode();
-  }
-
-  @Override
   public int getStackPopSize() {
     return getInstructionType().getPopSize();
   }

@@ -17,7 +17,6 @@ public class INVOKESPECIAL
                        String name,
                        String desc) {
     super(owner, name, desc);
-    Utils.checkMethodName(getOpcode(), name);
   }
 
   @Override

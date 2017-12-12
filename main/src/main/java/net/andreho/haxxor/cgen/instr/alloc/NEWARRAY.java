@@ -22,6 +22,10 @@ public class NEWARRAY
     super(operand);
   }
 
+  public HxArrayType getArrayType() {
+    return HxArrayType.fromCode(getOperand());
+  }
+
   @Override
   public HxInstructionType getInstructionType() {
     return HxInstructionTypes.Allocation.NEWARRAY;

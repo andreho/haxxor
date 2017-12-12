@@ -43,6 +43,11 @@ public class IINC
   }
 
   @Override
+  public IINC clone(final int var) {
+    return new IINC(var, increment);
+  }
+
+  @Override
   public String toString() {
     return super.toString() + " (" + this.operand + " += " + this.increment + ")";
   }

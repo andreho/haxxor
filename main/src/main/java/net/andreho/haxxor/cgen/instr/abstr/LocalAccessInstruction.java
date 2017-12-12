@@ -10,7 +10,7 @@ public abstract class LocalAccessInstruction
     super(operand);
   }
 
-  protected int getLocalIndex() {
+  public int getLocalIndex() {
     return this.operand;
   }
 
@@ -18,4 +18,10 @@ public abstract class LocalAccessInstruction
   public String toString() {
     return super.toString() + " (" + this.operand + ")";
   }
+
+  /**
+   * @param var
+   * @return
+   */
+  public abstract LocalAccessInstruction clone(int var);
 }

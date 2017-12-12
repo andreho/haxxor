@@ -31,4 +31,9 @@ public class FLOAD
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public FLOAD clone(final int var) {
+    return new FLOAD(var);
+  }
 }

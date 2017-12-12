@@ -64,7 +64,7 @@ public class CheckingStubInjector
     checkStubType(stub);
     checkStubIntegrability(target, stub);
 
-    return true;
+    return false;
   }
 
   private boolean fulfillsRequirements(final HxType target,

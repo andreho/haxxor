@@ -31,4 +31,9 @@ public class ILOAD
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public ILOAD clone(final int var) {
+    return new ILOAD(var);
+  }
 }

@@ -94,6 +94,11 @@ public class HxArrayTypeImpl
   }
 
   @Override
+  public boolean isVoid() {
+    return false;
+  }
+
+  @Override
   public boolean isReference() {
     return true;
   }

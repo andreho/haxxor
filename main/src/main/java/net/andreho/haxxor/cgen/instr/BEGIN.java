@@ -17,6 +17,11 @@ public class BEGIN
   }
 
   @Override
+  public int getOpcode() {
+    return -1;
+  }
+
+  @Override
   public boolean isBegin() {
     return true;
   }

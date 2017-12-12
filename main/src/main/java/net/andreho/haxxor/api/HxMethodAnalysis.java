@@ -195,8 +195,8 @@ public interface HxMethodAnalysis<O extends HxMethodManager<O>>
     for (HxMethod method : getMethods()) {
       if (method.hasName(name) &&
           method.hasParameters(parameters) &&
-         (!returnType.isPresent() ||
-          Objects.equals(returnType.get(), method.getReturnType()))) {
+          (!returnType.isPresent() ||
+           Objects.equals(returnType.get(), method.getReturnType()))) {
         return Optional.of(method);
       }
     }
@@ -310,9 +310,9 @@ public interface HxMethodAnalysis<O extends HxMethodManager<O>>
    */
   default Optional<HxMethod> findMethodRecursively(String returnType,
                                                    String name,
-                                                   String ... parameters) {
+                                                   String... parameters) {
     return findMethodRecursively(
-      returnType==null? null : getHaxxor().reference(returnType),
+      returnType == null ? null : getHaxxor().reference(returnType),
       name,
       getHaxxor().references(parameters)
     );
@@ -326,9 +326,9 @@ public interface HxMethodAnalysis<O extends HxMethodManager<O>>
    */
   default Optional<HxMethod> findMethodRecursively(Class<?> returnType,
                                                    String name,
-                                                   Class<?> ... parameters) {
+                                                   Class<?>... parameters) {
     return findMethodRecursively(
-      returnType == null? null : getHaxxor().reference(returnType),
+      returnType == null ? null : getHaxxor().reference(returnType),
       name,
       getHaxxor().references(parameters)
     );
@@ -342,7 +342,7 @@ public interface HxMethodAnalysis<O extends HxMethodManager<O>>
    */
   default Optional<HxMethod> findMethodRecursively(HxType returnType,
                                                    String name,
-                                                   HxType ... parameters) {
+                                                   HxType... parameters) {
     return findMethodRecursively(returnType, name, Arrays.asList(parameters));
   }
 
@@ -571,6 +571,109 @@ public interface HxMethodAnalysis<O extends HxMethodManager<O>>
    */
   default boolean hasMethod(String name,
                             List<HxType> parameters) {
+    return findMethod(name, parameters).isPresent();
+  }
+
+  /**
+   * Checks the existence of a method with the return-type, name and parameters
+   *
+   * @param returnType as a classname in binary format
+   * @param name       of a method
+   * @param parameters as classnames in binary format
+   * @return <b>true</b> if the method exists, <b>false</b> otherwise
+   */
+  default boolean hasMethodRecursively(String returnType,
+                                       String name,
+                                       String... parameters) {
+    return findMethodRecursively(returnType, name, parameters).isPresent();
+  }
+
+  /**
+   * Checks the existence of a method with the return-type, name and parameters
+   *
+   * @param returnType of a method
+   * @param name       of a method
+   * @param parameters of a method
+   * @return <b>true</b> if the method exists, <b>false</b> otherwise
+   */
+  default boolean hasMethodRecursively(HxType returnType,
+                                       String name,
+                                       HxType... parameters) {
+    return findMethodRecursively(returnType, name, parameters).isPresent();
+  }
+
+  /**
+   * Checks the existence of a method with the return-type, name and parameters
+   *
+   * @param returnType of a method
+   * @param name       of a method
+   * @param parameters of a method
+   * @return <b>true</b> if the method exists, <b>false</b> otherwise
+   */
+  default boolean hasMethodRecursively(HxType returnType,
+                                       String name,
+                                       List<HxType> parameters) {
+    return findMethodRecursively(returnType, name, parameters).isPresent();
+  }
+
+  /**
+   * Checks the existence of a method with the name and parameters
+   *
+   * @param name       of a method
+   * @param parameters of a method
+   * @return <b>true</b> if the method exists, <b>false</b> otherwise
+   */
+  default boolean hasMethodRecursively(Class<?> returnType,
+                                       String name,
+                                       Class<?>... parameters) {
+    return findMethodRecursively(returnType, name, parameters).isPresent();
+  }
+
+  /**
+   * Checks the existence of a method with the name and parameters
+   *
+   * @param name       of a method
+   * @param parameters of a method
+   * @return <b>true</b> if the method exists, <b>false</b> otherwise
+   */
+  default boolean hasMethodRecursively(String name,
+                                       Class<?>... parameters) {
+    return findMethodRecursively(null, name, parameters).isPresent();
+  }
+
+  /**
+   * Checks the existence of a method with the name and parameters
+   *
+   * @param name       of a method
+   * @param parameters as classnames in binary format
+   * @return <b>true</b> if the method exists, <b>false</b> otherwise
+   */
+  default boolean hasMethodRecursively(String name,
+                                       String... parameters) {
+    return findMethodRecursively(null, name, parameters).isPresent();
+  }
+
+  /**
+   * Checks the existence of a method with the name and parameters
+   *
+   * @param name       of a method
+   * @param parameters of a method
+   * @return <b>true</b> if the method exists, <b>false</b> otherwise
+   */
+  default boolean hasMethodRecursively(String name,
+                                       HxType... parameters) {
+    return findMethod(name, parameters).isPresent();
+  }
+
+  /**
+   * Checks the existence of a method with the name and parameters
+   *
+   * @param name       of a method
+   * @param parameters of a method
+   * @return <b>true</b> if the method exists, <b>false</b> otherwise
+   */
+  default boolean hasMethodRecursively(String name,
+                                       List<HxType> parameters) {
     return findMethod(name, parameters).isPresent();
   }
 

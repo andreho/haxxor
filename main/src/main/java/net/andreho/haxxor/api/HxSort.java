@@ -44,6 +44,10 @@ public enum HxSort {
   private final Class<?> primitiveClass;
   private final Class<?> wrapperClass;
 
+  /**
+   * @param name is the binary classname of a type (like: int, java.lang.String or byte[])
+   * @return
+   */
   public static HxSort fromName(String name) {
     if (name.startsWith(DESC_ARRAY_PREFIX_STR) ||
         name.endsWith(ARRAY_DIMENSION)) {
@@ -52,28 +56,75 @@ public enum HxSort {
     if (name.length() > "boolean".length()) {
       return OBJECT;
     }
-    switch (name) {
-      case "void":
-        return VOID;
-      case "boolean":
-        return BOOLEAN;
-      case "byte":
-        return BYTE;
-      case "short":
-        return SHORT;
-      case "char":
-        return CHAR;
-      case "int":
-        return INT;
-      case "float":
-        return FLOAT;
-      case "long":
-        return LONG;
-      case "double":
-        return DOUBLE;
+    switch (name.charAt(0)) {
+      case 'b':
+        if("boolean".equals(name)) {
+          return BOOLEAN;
+        }
+        if("byte".equals(name)) {
+          return BYTE;
+        }
+        break;
+      case 'c':
+        if("char".equals(name)) {
+          return CHAR;
+        }
+        break;
+      case 'd':
+        if("double".equals(name)) {
+          return DOUBLE;
+        }
+        break;
+      case 'i':
+        if("int".equals(name)) {
+          return INT;
+        }
+        break;
+      case 'f':
+        if("float".equals(name)) {
+          return FLOAT;
+        }
+        break;
+      case 'l':
+        if("long".equals(name)) {
+          return LONG;
+        }
+        break;
+      case 'v':
+        if("void".equals(name)) {
+          return VOID;
+        }
+        break;
+      case 's':
+        if("short".equals(name)) {
+          return SHORT;
+        }
+        break;
     }
-
     return OBJECT;
+  }
+
+  public static HxSort fromDescriptor(String desc) {
+    if (desc.startsWith(DESC_ARRAY_PREFIX_STR)) {
+      return ARRAY;
+    }
+    if (desc.length() != 1) {
+      return OBJECT;
+    }
+    switch (desc.charAt(0)) {
+      case 'V': return VOID;
+      case 'Z': return BOOLEAN;
+      case 'B': return BYTE;
+      case 'C': return CHAR;
+      case 'D': return DOUBLE;
+      case 'I': return INT;
+      case 'F': return FLOAT;
+      case 'J': return LONG;
+      case 'S': return SHORT;
+      case 'L': return OBJECT;
+      default:
+        throw new IllegalArgumentException("Not a descriptor: "+desc);
+    }
   }
 
   HxSort(final String name) {

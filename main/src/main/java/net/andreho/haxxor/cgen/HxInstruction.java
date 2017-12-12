@@ -25,6 +25,25 @@ public interface HxInstruction
           HxAnnotated<HxInstruction>,
           Iterable<HxInstruction> {
 
+  interface Property<V> {
+    /**
+     * @return
+     */
+    String name();
+
+    /**
+     * @param instruction
+     * @return
+     */
+    boolean isReadable(HxInstruction instruction);
+
+    /**
+     * @param instruction
+     * @return
+     */
+    V read(HxInstruction instruction);
+  }
+
   /**
    * @return
    */
@@ -61,7 +80,9 @@ public interface HxInstruction
   /**
    * @return opcode of this instruction
    */
-  int getOpcode();
+  default int getOpcode() {
+    return getInstructionType().getOpcode();
+  }
 
   /**
    * @param opcode
@@ -87,6 +108,14 @@ public interface HxInstruction
   }
 
   /**
+   * @param sort
+   * @return
+   */
+  default boolean hasNotSort(HxInstructionSort sort) {
+    return getInstructionType().getSort() != sort;
+  }
+
+  /**
    * @param type
    * @return
    */
@@ -98,9 +127,52 @@ public interface HxInstruction
    * @param type
    * @return
    */
-  default boolean hasNot(HxInstructionType type) {
+  default boolean hasNotType(HxInstructionType type) {
     return getInstructionType() != type;
   }
+
+  /**
+   * @param property
+   * @param withValue
+   * @param <V>
+   * @return
+   */
+  default <V> boolean hasPropertyEqual(HxInstruction.Property<V> property, V withValue) {
+    return Objects.equals(withValue, property(property, null));
+  }
+
+  /**
+   * @param property
+   * @param withValue
+   * @param <V>
+   * @return
+   */
+  default <V> boolean hasPropertyNotEqual(HxInstruction.Property<V> property, V withValue) {
+    return !Objects.equals(withValue, property(property, null));
+  }
+
+  /**
+   * @param property
+   * @param <V>
+   * @return
+   */
+  default <V> V property(HxInstruction.Property<V> property) {
+    return property(property, null);
+  }
+
+  /**
+   * @param property
+   * @param defaultValue
+   * @param <V>
+   * @return
+   */
+  default <V> V property(HxInstruction.Property<V> property, V defaultValue) {
+    if(!property.isReadable(this)) {
+      return defaultValue;
+    }
+    return property.read(this);
+  }
+
 
   /**
    * @return
@@ -243,6 +315,39 @@ public interface HxInstruction
     for (HxInstruction instruction : this) {
       consumer.accept(instruction);
     }
+  }
+
+  /**
+   * @param predicate
+   * @return
+   */
+  default boolean isFollowedBy(Predicate<HxInstruction> predicate) {
+    if(hasNext()) {
+      for(HxInstruction inst : getNext()) {
+        if(predicate.test(inst)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * @param predicate
+   * @return
+   */
+  default boolean isFollowedTillEndBy(Predicate<HxInstruction> predicate) {
+    if(!isEnd() || hasNext()) {
+      for(HxInstruction inst : getNext()) {
+        if(inst.isEnd()) {
+          break;
+        }
+        if(!predicate.test(inst)) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   Optional<HxInstruction> findFirstWithType(final HxInstructionType instructionType);

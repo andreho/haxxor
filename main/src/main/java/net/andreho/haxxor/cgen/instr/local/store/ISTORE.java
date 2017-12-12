@@ -31,4 +31,9 @@ public class ISTORE
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public ISTORE clone(final int var) {
+    return new ISTORE(var);
+  }
 }
