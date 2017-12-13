@@ -31,4 +31,9 @@ public class DCONST_1
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public DCONST_1 clone() {
+    return new DCONST_1();
+  }
 }

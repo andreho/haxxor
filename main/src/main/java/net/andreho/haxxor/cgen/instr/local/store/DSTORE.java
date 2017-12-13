@@ -33,6 +33,11 @@ public class DSTORE
   }
 
   @Override
+  public DSTORE clone() {
+    return clone(getLocalIndex());
+  }
+
+  @Override
   public DSTORE clone(final int var) {
     return new DSTORE(var);
   }

@@ -1,6 +1,5 @@
 package net.andreho.haxxor.cgen.instr.misc;
 
-import net.andreho.asm.org.objectweb.asm.Label;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxComputationContext;
 import net.andreho.haxxor.cgen.HxFrame;
@@ -12,7 +11,6 @@ import net.andreho.haxxor.cgen.instr.abstr.AbstractInstruction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import static net.andreho.haxxor.utils.CommonUtils.isUninitialized;
 
@@ -23,27 +21,19 @@ public class LABEL
     extends AbstractInstruction
     implements HxInstruction {
 
-  private Label asmLabel;
+  public Object info;
   private List<HxInstruction> references = Collections.emptyList();
 
   public LABEL() {
-    this(new Label());
-  }
-
-  public LABEL(Label asmLabel) {
-    this(asmLabel, false);
-  }
-
-  public LABEL(Label asmLabel, boolean link) {
-    super();
-    this.asmLabel = asmLabel;
-    if(link) {
-      this.asmLabel.info = this;
-    }
   }
 
   protected String prefix() {
     return "L";
+  }
+
+  @Override
+  public boolean isPseudoInstruction() {
+    return true;
   }
 
   @Override
@@ -61,10 +51,6 @@ public class LABEL
     codeStream.LABEL(this);
   }
 
-  public Label getAsmLabel() {
-    return this.asmLabel;
-  }
-
   public <I extends HxInstruction> I addReference(I instruction) {
     if(isUninitialized(references)) {
       references = new ArrayList<>(1);
@@ -77,11 +63,11 @@ public class LABEL
     return references;
   }
 
-  public String print() {
+  public String toFormattedString() {
     int count = 0;
     HxInstruction instruction = getPrevious();
     while (instruction != null && !instruction.isBegin()) {
-      if (instruction instanceof LABEL) {
+      if (instruction.isLabel()) {
         count++;
       }
       instruction = instruction.getPrevious();
@@ -91,24 +77,12 @@ public class LABEL
   }
 
   @Override
-  public String toString() {
-    return "  " + print();
+  public LABEL clone() {
+    return new LABEL();
   }
 
   @Override
-  public boolean equals(final Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    final LABEL that = (LABEL) o;
-    return Objects.equals(this.asmLabel, that.asmLabel);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(this.asmLabel);
+  protected String print() {
+    return "  " + toFormattedString();
   }
 }

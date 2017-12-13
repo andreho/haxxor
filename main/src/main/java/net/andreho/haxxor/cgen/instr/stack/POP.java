@@ -32,4 +32,9 @@ public class POP
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public POP clone() {
+    return new POP();
+  }
 }

@@ -31,4 +31,9 @@ public class L2I
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public L2I clone() {
+    return new L2I();
+  }
 }

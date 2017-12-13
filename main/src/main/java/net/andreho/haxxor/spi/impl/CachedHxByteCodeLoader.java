@@ -47,12 +47,12 @@ public class CachedHxByteCodeLoader
 
   @Override
   @SuppressWarnings("Duplicates")
-  public Optional<byte[]> load(final ClassLoader classLoader, final String className) {
-    byte[] bytes = getCached(className);
+  public Optional<byte[]> load(final ClassLoader classloader, final String classname) {
+    byte[] bytes = getCached(classname);
     if (bytes != null) {
       return Optional.of(bytes);
     }
-    return loadContent(classLoader, className);
+    return loadContent(classloader, classname);
   }
 
   private Optional<byte[]> loadContent(final ClassLoader classLoader, final String className) {

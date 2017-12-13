@@ -5,15 +5,15 @@ import net.andreho.haxxor.utils.CommonUtils;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * <br/>Created by a.hofmann on 13.06.2017 at 04:58.
  */
 public class HxArguments implements Iterable<Object> {
-
   private static final Object[] EMPTY_ARRAY = new Object[0];
-
-  private Object[] arguments;
+  private static final int FROZEN_BIT = 0x8000_0000;
+  private Object[] array;
   private int length;
 
   /**
@@ -31,25 +31,53 @@ public class HxArguments implements Iterable<Object> {
     return new HxArguments(capacity);
   }
 
+  /**
+   * @param arguments
+   * @return
+   */
+  public static HxArguments createArguments(HxArguments arguments) {
+    return new HxArguments(arguments.array, arguments.length);
+  }
+
   protected HxArguments() {
     this(0);
   }
 
   protected HxArguments(int capacity) {
-    this.arguments = capacity == 0 ? EMPTY_ARRAY : new Object[capacity];
+    this.array = capacity == 0 ? EMPTY_ARRAY : new Object[capacity];
   }
 
-  private void ensureCapacity(int capacity) {
-    final Object[] arguments = this.arguments;
+  protected HxArguments(Object[] arguments, int length) {
+    this.array = arguments.clone();
+    this.length = length;
+  }
+
+  private void ensureCapacity() {
+
+    final Object[] arguments = this.array;
     final int length = arguments.length;
-    if ((length - this.length) < capacity) {
-      this.arguments = Arrays.copyOf(arguments, Math.max(length + 4, length + (length >>> 1)));
+    final int currentLength = this.length;
+
+    if ((length - currentLength) < currentLength) {
+      this.array = Arrays.copyOf(arguments, Math.max(length + 4, length + (length >>> 1)));
     }
   }
 
   private HxArguments addElement(Object arg) {
-    ensureCapacity(1);
-    arguments[length++] = arg;
+    if(isFrozen()) {
+      throw new IllegalStateException("This arguments' list was frozen.");
+    }
+    ensureCapacity();
+    array[length++] = arg;
+    return this;
+  }
+
+  public boolean isFrozen() {
+    return (this.length & FROZEN_BIT) != 0;
+  }
+
+  public HxArguments freeze() {
+    this.length |= FROZEN_BIT;
     return this;
   }
 
@@ -102,23 +130,56 @@ public class HxArguments implements Iterable<Object> {
   }
 
   public Object get(int index) {
-    return arguments[index];
+    if(index < 0 || index >= length()) {
+      throw new IndexOutOfBoundsException("Length="+length()+", Index="+index);
+    }
+    return array[index];
+  }
+
+  public boolean isEmpty() {
+    return length() == 0;
   }
 
   public int length() {
-    return length;
+    return Integer.MAX_VALUE & length;
   }
 
   public Object[] toArray() {
-    final Object[] arguments = this.arguments;
+    final Object[] arguments = this.array;
+    final int length = length();
     if (arguments.length == length) {
-      return arguments;
+      return arguments.clone();
     }
-    final Object[] array = new Object[length];
-    for (int i = 0; i < array.length; i++) {
-      array[i] = arguments[i];
+    return Arrays.copyOf(this.array, length);
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
     }
-    return array;
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final HxArguments that = (HxArguments) o;
+    if(length() != that.length()) {
+      return false;
+    }
+    for(int i = 0, len = length(); i < len; i++) {
+      if(!Objects.equals(get(i), that.get(i))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = Objects.hash(length());
+    for(int i = 0, len = length(); i < len; i++) {
+      result = 31 * result + Objects.hashCode(this.array[i]);
+    }
+    return result;
   }
 
   @Override
@@ -137,6 +198,6 @@ public class HxArguments implements Iterable<Object> {
 
   @Override
   public Iterator<Object> iterator() {
-    return CommonUtils.iterator(this.arguments, 0, this.length);
+    return CommonUtils.iterator(this.array, 0, length());
   }
 }

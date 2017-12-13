@@ -43,13 +43,22 @@ public class LOOKUPSWITCH
   }
 
   @Override
-  public LOOKUPSWITCH clone(final LABEL defaultLabel, final LABEL[] labels) {
-    return new LOOKUPSWITCH(defaultLabel, getKeys(), labels);
+  public LOOKUPSWITCH clone() {
+    return clone(getDefaultLabel().clone(), getKeys().clone(), cloneLabels(labels));
   }
 
   @Override
-  public String toString() {
-    return super.toString() + " (" + Arrays.toString(this.keys) + ", " + Arrays.toString(this.labels) + ", " +
-           this.label + ")";
+  public LOOKUPSWITCH clone(LABEL defaultLabel, LABEL[] labels) {
+    return clone(defaultLabel, getKeys(), labels);
+  }
+
+  public LOOKUPSWITCH clone(LABEL defaultLabel, int[] keys, LABEL[] labels) {
+    return new LOOKUPSWITCH(defaultLabel, keys, labels);
+  }
+
+  @Override
+  protected String print() {
+    return getInstructionName() +
+           " (" + Arrays.toString(this.keys) + ", " + Arrays.toString(this.labels) + ", " + this.label + ")";
   }
 }

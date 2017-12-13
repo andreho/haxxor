@@ -33,4 +33,8 @@ public class POP2
     context.getExecutor().visit(context, this, frame);
   }
 
+  @Override
+  public POP2 clone() {
+    return new POP2();
+  }
 }

@@ -5,14 +5,14 @@ import net.andreho.haxxor.cgen.HxComputationContext;
 import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.abstr.SimpleJumpInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.BasicJumpInstruction;
 import net.andreho.haxxor.cgen.instr.misc.LABEL;
 
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
 public class JSR
-  extends SimpleJumpInstruction {
+  extends BasicJumpInstruction {
 
   public JSR(LABEL label) {
     super(label);
@@ -36,5 +36,10 @@ public class JSR
   @Override
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
+  }
+
+  @Override
+  public JSR clone() {
+    return new JSR((LABEL) getLabel().clone());
   }
 }

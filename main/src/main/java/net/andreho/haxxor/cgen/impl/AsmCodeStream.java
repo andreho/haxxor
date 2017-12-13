@@ -9,7 +9,6 @@ import net.andreho.haxxor.api.HxMethod;
 import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.cgen.HxArguments;
 import net.andreho.haxxor.cgen.HxArrayType;
-import net.andreho.haxxor.cgen.HxAsmUtils;
 import net.andreho.haxxor.cgen.HxCodeStream;
 import net.andreho.haxxor.cgen.HxFrames;
 import net.andreho.haxxor.cgen.HxMethodHandle;
@@ -42,11 +41,19 @@ public class AsmCodeStream
   }
 
   protected Label toAsmLabel(LABEL label) {
-    return HxAsmUtils.toAsmLabel(label);
+    Object asmLabel = label.info;
+    if(asmLabel == null) {
+      label.info = asmLabel = new Label();
+    }
+    return (Label) asmLabel;
   }
 
   protected Label[] toAsmLabels(LABEL... labels) {
-    return HxAsmUtils.toAsmLabels(labels);
+    final Label[] result = new Label[labels.length];
+    for (int i = 0; i < labels.length; i++) {
+      result[i] = toAsmLabel(labels[i]);
+    }
+    return result;
   }
 
   protected Type toAsmType(final HxType type) {
@@ -54,7 +61,9 @@ public class AsmCodeStream
   }
 
   protected Handle toAsmHandle(final HxMethodHandle handle) {
-    return HxAsmUtils.toAsmHandle(handle);
+      return new Handle(handle.getTag()
+                              .getCode(), handle.getOwner(), handle.getName(), handle.getDescriptor(),
+                        handle.isInterface());
   }
 
   protected Type toAsmMethodType(final HxMethodType methodType) {
@@ -171,7 +180,7 @@ public class AsmCodeStream
                                     final Object[] local,
                                     final int stackLength,
                                     final Object[] stack) {
-    this.mv.visitFrame(type.getCode(), localsCount, local, stackLength, stack);
+    this.mv.visitFrame(type.getType(), localsCount, local, stackLength, stack);
     return this;
   }
 

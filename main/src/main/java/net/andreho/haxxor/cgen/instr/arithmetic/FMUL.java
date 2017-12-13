@@ -31,4 +31,9 @@ public class FMUL
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public FMUL clone() {
+    return new FMUL();
+  }
 }

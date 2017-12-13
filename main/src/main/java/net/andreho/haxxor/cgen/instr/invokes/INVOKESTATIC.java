@@ -37,6 +37,11 @@ public class INVOKESTATIC
   }
 
   @Override
+  public INVOKESTATIC clone() {
+    return clone(getOwner(), getName(), getDescriptor(), isInterface());
+  }
+
+  @Override
   public INVOKESTATIC clone(final String owner,
                             final String name,
                             final String desc,

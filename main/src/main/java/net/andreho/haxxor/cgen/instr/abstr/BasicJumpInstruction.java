@@ -5,10 +5,10 @@ import net.andreho.haxxor.cgen.instr.misc.LABEL;
 /**
  * <br/>Created by a.hofmann on 03.03.2016.<br/>
  */
-public abstract class SimpleJumpInstruction
-  extends JumpInstruction {
+public abstract class BasicJumpInstruction
+  extends AnyJumpInstruction {
 
-  public SimpleJumpInstruction(LABEL label) {
+  public BasicJumpInstruction(LABEL label) {
     super(label);
   }
 
@@ -17,5 +17,5 @@ public abstract class SimpleJumpInstruction
     return super.getLabel();
   }
 
-  public abstract SimpleJumpInstruction clone(LABEL label);
+  public abstract BasicJumpInstruction clone(LABEL label);
 }

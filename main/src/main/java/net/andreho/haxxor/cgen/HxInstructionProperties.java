@@ -2,19 +2,60 @@ package net.andreho.haxxor.cgen;
 
 import net.andreho.haxxor.cgen.impl.AbstractClassMatchingInstructionProperty;
 import net.andreho.haxxor.cgen.impl.AbstractTypeMatchingInstructionProperty;
+import net.andreho.haxxor.cgen.instr.abstr.BasicJumpInstruction;
 import net.andreho.haxxor.cgen.instr.abstr.FieldInstruction;
 import net.andreho.haxxor.cgen.instr.abstr.InvokeInstruction;
 import net.andreho.haxxor.cgen.instr.abstr.SingleOperandInstruction;
 import net.andreho.haxxor.cgen.instr.abstr.StringOperandInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.SwitchJumpInstruction;
 import net.andreho.haxxor.cgen.instr.alloc.MULTIANEWARRAY;
 import net.andreho.haxxor.cgen.instr.constants.LDC;
 import net.andreho.haxxor.cgen.instr.invokes.INVOKEDYNAMIC;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 
 /**
  * <br/>Created by a.hofmann on 19.03.2016.<br/>
+ * @see Field
+ * @see Allocation
+ * @see Conversion
+ * @see Constant
+ * @see Invocation
  */
 public interface HxInstructionProperties {
-  class Fields {
+  /**
+   * A set of properties that could be extracted from a instruction related to a field
+   */
+  class JumpsAndSwitches {
+    public static final HxInstruction.Property<LABEL> JUMP_LABEL =
+      new AbstractClassMatchingInstructionProperty<BasicJumpInstruction, LABEL>("label", BasicJumpInstruction.class) {
+        @Override
+        protected LABEL readCasted(final BasicJumpInstruction instruction) {
+          return instruction.getLabel();
+        }
+      };
+
+    public static final HxInstruction.Property<LABEL> DEFAULT_JUMP_LABEL =
+      new AbstractClassMatchingInstructionProperty<SwitchJumpInstruction, LABEL>("defaultLabel", SwitchJumpInstruction.class) {
+        @Override
+        protected LABEL readCasted(final SwitchJumpInstruction instruction) {
+          return instruction.getDefaultLabel();
+        }
+      };
+
+    public static final HxInstruction.Property<LABEL[]> SWITCH_LABELS =
+      new AbstractClassMatchingInstructionProperty<SwitchJumpInstruction, LABEL[]>("labels", SwitchJumpInstruction.class) {
+        @Override
+        protected LABEL[] readCasted(final SwitchJumpInstruction instruction) {
+          return instruction.getLabels();
+        }
+      };
+  }
+
+
+  /**
+   * A set of properties that could be extracted from a instruction related to a field
+   */
+  class Field {
     public static final HxInstruction.Property<String> OWNER =
       new AbstractClassMatchingInstructionProperty<FieldInstruction, String>("owner", FieldInstruction.class) {
         @Override
@@ -38,8 +79,9 @@ public interface HxInstructionProperties {
       };
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
+  /**
+   * A set of properties that could be extracted from a instruction related to a allocation
+   */
   class Allocation {
     public static final HxInstruction.Property<String> TYPE_OF_NEW =
       new AbstractTypeMatchingInstructionProperty<StringOperandInstruction, String>
@@ -87,8 +129,9 @@ public interface HxInstructionProperties {
       };
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
+  /**
+   * A set of properties that could be extracted from a instruction related to a conversion
+   */
   class Conversion {
     public static final HxInstruction.Property<String> TYPE_OF_CHECKCAST =
       new AbstractTypeMatchingInstructionProperty<StringOperandInstruction, String>
@@ -109,9 +152,10 @@ public interface HxInstructionProperties {
       };
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
-  class Constants {
+  /**
+   * A set of properties that could be extracted from a instruction related to a constant loading
+   */
+  class Constant {
     private static final HxInstruction.Property<Object> VALUE_OF_LDC =
       new AbstractTypeMatchingInstructionProperty<LDC, Object>
         ("value", LDC.class, HxInstructionTypes.Constants.LDC) {
@@ -126,8 +170,9 @@ public interface HxInstructionProperties {
     }
   }
 
-  //----------------------------------------------------------------------------------------------------------------
-
+  /**
+   * A set of properties that could be extracted from a instruction related to a invocation
+   */
   class Invocation {
     public static final HxInstruction.Property<String> OWNER =
       new AbstractClassMatchingInstructionProperty<InvokeInstruction, String>("owner", InvokeInstruction.class) {

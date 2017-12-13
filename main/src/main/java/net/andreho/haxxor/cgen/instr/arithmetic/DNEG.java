@@ -31,4 +31,9 @@ public class DNEG
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public DNEG clone() {
+    return new DNEG();
+  }
 }

@@ -33,6 +33,11 @@ public class FSTORE
   }
 
   @Override
+  public FSTORE clone() {
+    return clone(getLocalIndex());
+  }
+
+  @Override
   public FSTORE clone(final int var) {
     return new FSTORE(var);
   }

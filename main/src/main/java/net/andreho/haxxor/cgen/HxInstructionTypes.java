@@ -33,7 +33,7 @@ public interface HxInstructionTypes {
 
     @Override
     public HxInstructionSort getSort() {
-      return HxInstructionSort.Fields;
+      return HxInstructionSort.Field;
     }
 
     @Override
@@ -436,7 +436,7 @@ public interface HxInstructionTypes {
 
     @Override
     public HxInstructionSort getSort() {
-      return HxInstructionSort.Constants;
+      return HxInstructionSort.Constant;
     }
 
     @Override
@@ -618,7 +618,7 @@ public interface HxInstructionTypes {
 
     @Override
     public HxInstructionSort getSort() {
-      return HxInstructionSort.Switches;
+      return HxInstructionSort.Switch;
     }
   }
 
@@ -882,7 +882,7 @@ public interface HxInstructionTypes {
   enum Special
     implements HxInstructionType {
     NOT_INSTRUCTION,
-    COMPOSITE,
+    COMPOUND,
     LABEL,
     FRAME,
     LINE_NUMBER;

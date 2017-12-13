@@ -36,6 +36,11 @@ public class INVOKEINTERFACE
   }
 
   @Override
+  public INVOKEINTERFACE clone() {
+    return clone(getOwner(), getName(), getDescriptor(), isInterface());
+  }
+
+  @Override
   public INVOKEINTERFACE clone(final String owner,
                                final String name,
                                final String desc,

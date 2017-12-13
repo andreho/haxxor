@@ -35,6 +35,11 @@ public class PUTFIELD
   }
 
   @Override
+  public PUTFIELD clone() {
+    return clone(getOwner(), getName(), getDescriptor());
+  }
+
+  @Override
   public PUTFIELD clone(final String owner,
                         final String name,
                         final String desc) {

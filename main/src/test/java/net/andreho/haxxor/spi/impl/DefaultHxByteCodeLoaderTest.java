@@ -37,8 +37,8 @@ class DefaultHxByteCodeLoaderTest
   }
 
   @Override
-  public Optional<byte[]> load(final ClassLoader classLoader, final String className) {
-    return byteCodeLoader.load(classLoader, className);
+  public Optional<byte[]> load(final ClassLoader classloader, final String classname) {
+    return byteCodeLoader.load(classloader, classname);
   }
 
   @Test

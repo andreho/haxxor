@@ -44,7 +44,7 @@ public abstract class FieldInstruction
   public abstract <INST extends FieldInstruction> INST clone(String owner, String name, String desc);
 
   @Override
-  public String toString() {
-    return super.toString() + " " + this.owner + "." + this.name + " " + this.desc;
+  protected String print() {
+    return getName() + " " + this.owner + "." + this.name + " " + this.desc;
   }
 }

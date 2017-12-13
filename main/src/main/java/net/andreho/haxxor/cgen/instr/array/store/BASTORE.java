@@ -32,12 +32,8 @@ public class BASTORE
     context.getExecutor().visit(context, this, frame);
   }
 
-//  @Override
-//  protected void checkArrayType(final Object arrayType, final int depth) {
-//    super.checkArrayType(arrayType, depth);
-//    if (!"[Z".equals(arrayType) && !"[B".equals(arrayType)) {
-//      throw new IllegalArgumentException("Expected an boolean[] or byte[] array type, but got: " + arrayType);
-//    }
-//  }
-
+  @Override
+  public BASTORE clone() {
+    return new BASTORE();
+  }
 }

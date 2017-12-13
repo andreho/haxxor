@@ -31,4 +31,9 @@ public class ATHROW
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public ATHROW clone() {
+    return new ATHROW();
+  }
 }

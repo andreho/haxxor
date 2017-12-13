@@ -33,6 +33,11 @@ public class LLOAD
   }
 
   @Override
+  public LLOAD clone() {
+    return clone(getLocalIndex());
+  }
+
+  @Override
   public LLOAD clone(final int var) {
     return new LLOAD(var);
   }

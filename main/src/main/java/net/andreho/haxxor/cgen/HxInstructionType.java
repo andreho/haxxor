@@ -6,6 +6,11 @@ package net.andreho.haxxor.cgen;
 public interface HxInstructionType {
 
   /**
+   * @return name of this instruction's type
+   */
+  String name();
+
+  /**
    * @return
    */
   HxInstructionSort getSort();
@@ -24,28 +29,6 @@ public interface HxInstructionType {
    * @return number of pushed operands onto stack
    */
   int getPushSize();
-
-//  /**
-//   * @return
-//   */
-//  List<Object> getPopOperands();
-//
-//  /**
-//   * @param desc
-//   * @return
-//   */
-//  List<Object> getPopOperands(String desc);
-//
-//  /**
-//   * @return
-//   */
-//  Object getPushOperand();
-//
-//  /**
-//   * @param desc
-//   * @return
-//   */
-//  Object getPushOperand(String desc);
 
   /**
     * @param desc

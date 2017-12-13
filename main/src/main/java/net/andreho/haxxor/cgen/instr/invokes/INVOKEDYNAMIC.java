@@ -22,7 +22,6 @@ public class INVOKEDYNAMIC
 
   public INVOKEDYNAMIC(String name, String desc, HxMethodHandle bsm, HxArguments bsmArgs) {
     super();
-    Utils.checkMethodName(getOpcode(), name);
     this.name = name;
     this.desc = desc;
     this.bootstrapMethod = bsm;
@@ -71,7 +70,17 @@ public class INVOKEDYNAMIC
   }
 
   @Override
-  public String toString() {
-    return super.toString() + " " + this.name + " " + this.desc + " - > " + this.bootstrapMethod + bootstrapMethodArguments;
+  public INVOKEDYNAMIC clone() {
+    return clone(getName(), getDescriptor(), getBootstrapMethod(), getBootstrapMethodArguments());
+  }
+
+  public INVOKEDYNAMIC clone(String name, String desc, HxMethodHandle bsm, HxArguments bsmArgs) {
+    return new INVOKEDYNAMIC(name, desc, bsm, HxArguments.createArguments(bsmArgs).freeze());
+  }
+
+  @Override
+  protected String print() {
+    return getInstructionName() + " " +
+           this.name + " " + this.desc + " : " + this.bootstrapMethod + bootstrapMethodArguments;
   }
 }

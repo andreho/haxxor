@@ -37,7 +37,7 @@ public class BIPUSH
   }
 
   @Override
-  public String toString() {
-    return super.toString() + " " + this.operand;
+  public BIPUSH clone() {
+    return new BIPUSH(getOperand());
   }
 }

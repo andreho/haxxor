@@ -18,13 +18,13 @@ import net.andreho.haxxor.api.HxSourceInfo;
 import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.api.Version;
 import net.andreho.haxxor.api.impl.HxAnnotatedImpl;
+import net.andreho.haxxor.utils.NamingUtils;
 
 import java.util.Collections;
 import java.util.function.Consumer;
 
 import static net.andreho.haxxor.utils.NamingUtils.normalizeReturnType;
 import static net.andreho.haxxor.utils.NamingUtils.normalizeSignature;
-import static net.andreho.haxxor.utils.NamingUtils.toPrimitiveClassname;
 
 /**
  * <br/>Created by a.hofmann on 10.11.2015.<br/>
@@ -216,7 +216,7 @@ public class HxTypeVisitor
 
     this.type.initialize(HxInitializablePart.FIELDS);
     HxField hxField = this.haxxor
-        .createField(toPrimitiveClassname(desc), name)
+        .createField(NamingUtils.primitiveDescriptorToPrimitiveClassname(desc), name)
         .setModifiers(access)
         .setGenericSignature(signature)
         .setDefaultValue(value);

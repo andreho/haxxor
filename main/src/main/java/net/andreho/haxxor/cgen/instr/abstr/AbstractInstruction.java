@@ -1,6 +1,5 @@
 package net.andreho.haxxor.cgen.instr.abstr;
 
-import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.api.impl.HxAnnotatedDelegate;
 import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionSort;
@@ -8,6 +7,7 @@ import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.misc.COMPOUND;
 
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -20,6 +20,7 @@ public abstract class AbstractInstruction
   extends HxAnnotatedDelegate<HxInstruction>
   implements HxInstruction {
 
+  private static final int DEFAULT_PRINT_DEPTH = 3;
   protected static final int SINGLE_SLOT_SIZE = 1;
   protected static final int DOUBLE_SLOT_SIZE = SINGLE_SLOT_SIZE + SINGLE_SLOT_SIZE;
   public static final Predicate<HxInstruction> ANY_INSTRUCTION_PREDICATE = ins -> true;
@@ -38,7 +39,7 @@ public abstract class AbstractInstruction
     boolean found = false;
 
     for (HxInstruction current = instruction; !current.isEnd(); current = current.getNext()) {
-      if(current.hasType(HxInstructionTypes.Special.COMPOSITE)) {
+      if(current.hasType(HxInstructionTypes.Special.COMPOUND)) {
         final COMPOUND compound = (COMPOUND) current;
         if(!compound.isEmpty() && forNext(compound.getFirst(), predicate, consumer, count)) {
           found = true;
@@ -66,7 +67,7 @@ public abstract class AbstractInstruction
     boolean found = false;
 
     for (HxInstruction current = instruction; !current.isBegin(); current = current.getPrevious()) {
-      if(current.hasType(HxInstructionTypes.Special.COMPOSITE)) {
+      if(current.hasType(HxInstructionTypes.Special.COMPOUND)) {
         final COMPOUND compound = (COMPOUND) current;
         if(!compound.isEmpty() && forPrevious(compound.getFirst(), predicate, consumer, count)) {
           found = true;
@@ -85,6 +86,9 @@ public abstract class AbstractInstruction
 
   public AbstractInstruction() {
   }
+
+  @Override
+  public abstract HxInstruction clone();
 
   @Override
   public int getStackPopSize() {
@@ -147,7 +151,7 @@ public abstract class AbstractInstruction
         return Optional.of(instruction);
       }
 
-      if(instruction.hasType(HxInstructionTypes.Special.COMPOSITE)) {
+      if(instruction.hasType(HxInstructionTypes.Special.COMPOUND)) {
         final COMPOUND compound = (COMPOUND) instruction;
         if(!compound.isEmpty()) {
           final HxInstruction compositeBegin = compound.getFirst();
@@ -172,7 +176,7 @@ public abstract class AbstractInstruction
         return Optional.of(instruction);
       }
 
-      if(instruction.hasType(HxInstructionTypes.Special.COMPOSITE)) {
+      if(instruction.hasType(HxInstructionTypes.Special.COMPOUND)) {
         final COMPOUND compound = (COMPOUND) instruction;
         if(!compound.isEmpty()) {
           final HxInstruction compositeEnd = compound.getLast();
@@ -231,79 +235,24 @@ public abstract class AbstractInstruction
   }
 
   @Override
-  public String toString() {
-    return getClass().getSimpleName();
+  public Iterator<HxInstruction> iterator() {
+    return new InstructionIterator(this);
   }
 
-  protected static class Utils {
+  /**
+   * @return
+   */
+  protected abstract String print();
 
-    /**
-     * Checks given method name depending on provided opcode
-     *
-     * @param opcode to test
-     * @param name   to test
-     */
-    public static void checkMethodName(int opcode,
-                                       String name) {
-      if ("<clinit>".equals(name) || ("<init>".equals(name) && opcode != Opcodes.INVOKESPECIAL)) {
-        throw new IllegalArgumentException("Invalid method name for an interface method call: " + name);
-      }
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    int depth = DEFAULT_PRINT_DEPTH;
+    AbstractInstruction instruction = this;
+    while(instruction != null && depth-- > 0) {
+      builder.append(instruction.print());
+      instruction = (AbstractInstruction) instruction.getNext();
     }
-
-    /**
-     * Transforms a type descriptor to an internal name
-     *
-     * @param desc to transform
-     * @return an internal type name
-     */
-    private static String transformDesc(String desc) {
-      //for example: [Ljava/lang/String;
-      if (desc.endsWith(";")) {
-        String value = desc;
-        int index = value.indexOf('L');
-        if (index > -1) {
-          //array case with, e.g.: [[[L...
-          value = desc.substring(0, index);
-          //add rest of class name without last character
-          value += desc.substring(index + 1, desc.length() - 1);
-        }
-        desc = value;
-      }
-      return desc;
-    }
-
-//    /**
-//     * Retrieves a type of given element descriptor (descriptor is either of a method or of a field)
-//     *
-//     * @param context to use
-//     * @param desc    to analyse (either of a method or a field)
-//     * @return a type name in an internal type form (or special constant)
-//     */
-//    public static void pushTypeFromDescriptor(HxComputationContext context, String desc) {
-//      int off;
-//      if (desc.charAt(0) != '(' || (off = desc.lastIndexOf(')')) < 0) {
-//        throw new IllegalArgumentException("Invalid descriptor: " + desc);
-//      }
-//
-//      switch (desc.charAt(off + 1)) {
-//        case 'Z':
-//        case 'B':
-//        case 'C':
-//        case 'S':
-//        case 'I':
-//          context.getStack().push(PUSH_INT); break;
-//        case 'F':
-//          context.getStack().push(PUSH_FLOAT); break;
-//        case 'J':
-//          context.getStack().push(PUSH_LONG); break;
-//        case 'D':
-//          context.getStack().push(PUSH_DOUBLE); break;
-//        case 'V':
-//          context.getStack().push(NO_STACK_PUSH); break;
-//        default: {
-//          context.getStack().push(CommonUtils.transformDesc(desc.substring(off + 1)));
-//        }
-//      }
-//    }
+    return builder.toString();
   }
 }

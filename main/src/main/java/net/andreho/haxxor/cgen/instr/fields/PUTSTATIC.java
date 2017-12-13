@@ -35,6 +35,11 @@ public class PUTSTATIC
   }
 
   @Override
+  public PUTSTATIC clone() {
+    return clone(getOwner(), getName(), getDescriptor());
+  }
+
+  @Override
   public PUTSTATIC clone(final String owner,
                          final String name,
                          final String desc) {

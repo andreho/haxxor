@@ -5,6 +5,7 @@ import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionFactory;
 import net.andreho.haxxor.cgen.HxLocalVariable;
 import net.andreho.haxxor.cgen.HxTryCatch;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 
 import java.util.List;
 import java.util.function.Function;
@@ -173,6 +174,18 @@ public interface HxMethodBody
    * @return this
    */
   HxMethodBody addTryCatch(HxTryCatch tryCatch);
+
+  /**
+   * @param begin
+   * @param end
+   * @param handler
+   * @param handledException
+   * @return
+   */
+  HxMethodBody addTryCatch(LABEL begin,
+                           LABEL end,
+                           LABEL handler,
+                           String handledException);
 
   /**
    * @param exceptionType

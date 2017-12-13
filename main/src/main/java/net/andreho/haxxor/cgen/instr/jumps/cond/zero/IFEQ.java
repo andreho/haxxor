@@ -5,7 +5,7 @@ import net.andreho.haxxor.cgen.HxComputationContext;
 import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.abstr.SimpleJumpInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.BasicJumpInstruction;
 import net.andreho.haxxor.cgen.instr.misc.LABEL;
 
 /**
@@ -13,7 +13,7 @@ import net.andreho.haxxor.cgen.instr.misc.LABEL;
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
 public class IFEQ
-  extends SimpleJumpInstruction {
+  extends BasicJumpInstruction {
 
   public IFEQ(LABEL label) {
     super(label);
@@ -22,6 +22,11 @@ public class IFEQ
   @Override
   public HxInstructionType getInstructionType() {
     return HxInstructionTypes.Jump.IFEQ;
+  }
+
+  @Override
+  public IFEQ clone() {
+    return clone((LABEL) getLabel().clone());
   }
 
   @Override

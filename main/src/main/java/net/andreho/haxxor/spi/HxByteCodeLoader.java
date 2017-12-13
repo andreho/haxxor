@@ -8,9 +8,9 @@ import java.util.Optional;
 public interface HxByteCodeLoader {
 
   /**
-   * @param classLoader of a class being attempted for loading
-   * @param className of a class being attempted for loading
+   * @param classloader of a class being attempted for loading
+   * @param classname of a class being attempted for loading
    * @return content of the requested class as a byte-array
    */
-  Optional<byte[]> load(final ClassLoader classLoader, final String className);
+  Optional<byte[]> load(final ClassLoader classloader, final String classname);
 }

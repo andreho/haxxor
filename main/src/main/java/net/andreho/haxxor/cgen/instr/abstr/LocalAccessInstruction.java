@@ -15,8 +15,8 @@ public abstract class LocalAccessInstruction
   }
 
   @Override
-  public String toString() {
-    return super.toString() + " (" + this.operand + ")";
+  protected String print() {
+    return getInstructionName() + " (" + this.operand + ")";
   }
 
   /**

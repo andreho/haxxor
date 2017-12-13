@@ -31,4 +31,9 @@ public class F2I
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public F2I clone() {
+    return new F2I();
+  }
 }

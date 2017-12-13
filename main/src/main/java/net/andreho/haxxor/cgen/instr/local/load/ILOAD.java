@@ -33,6 +33,11 @@ public class ILOAD
   }
 
   @Override
+  public ILOAD clone() {
+    return clone(getLocalIndex());
+  }
+
+  @Override
   public ILOAD clone(final int var) {
     return new ILOAD(var);
   }

@@ -37,7 +37,7 @@ public class SIPUSH
   }
 
   @Override
-  public String toString() {
-    return super.toString() + " " + this.operand;
+  public SIPUSH clone() {
+    return new SIPUSH(getOperand());
   }
 }

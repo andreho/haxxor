@@ -125,8 +125,8 @@ public class HxLocalVariableImpl
            ", name='" + name + '\'' +
            ", descriptor='" + descriptor + '\'' +
            ", signature='" + signature + '\'' +
-           ", begin=" + begin.print() +
-           ", end=" + end.print() +
+           ", begin=" + begin.toFormattedString() +
+           ", end=" + end.toFormattedString() +
            ')';
   }
 }

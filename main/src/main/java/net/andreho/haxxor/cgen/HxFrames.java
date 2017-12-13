@@ -44,18 +44,18 @@ public enum HxFrames {
    */
   SAME1(Opcodes.F_SAME1);
 
-  final int code;
+  final int type;
 
-  HxFrames(int code) {
-    this.code = code;
+  HxFrames(int type) {
+    this.type = type;
   }
 
-  public int getCode() {
-    return code;
+  public int getType() {
+    return type;
   }
 
-  public static HxFrames fromCode(int code) {
-    switch (code) {
+  public static HxFrames fromType(int type) {
+    switch (type) {
       case Opcodes.F_NEW:
         return NEW;
       case Opcodes.F_FULL:
@@ -69,6 +69,6 @@ public enum HxFrames {
       case Opcodes.F_SAME1:
         return SAME1;
     }
-    throw new IllegalArgumentException("Invalid frame code: " + code);
+    throw new IllegalArgumentException("Invalid frame's type: " + type);
   }
 }

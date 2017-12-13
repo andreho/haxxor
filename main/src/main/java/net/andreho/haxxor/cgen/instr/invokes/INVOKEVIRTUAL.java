@@ -36,6 +36,11 @@ public class INVOKEVIRTUAL
   }
 
   @Override
+  public INVOKEVIRTUAL clone() {
+    return clone(getOwner(), getName(), getDescriptor(), isInterface());
+  }
+
+  @Override
   public INVOKEVIRTUAL clone(final String owner,
                              final String name,
                              final String desc,

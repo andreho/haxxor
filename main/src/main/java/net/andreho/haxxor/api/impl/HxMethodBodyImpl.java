@@ -13,7 +13,7 @@ import net.andreho.haxxor.cgen.HxTryCatch;
 import net.andreho.haxxor.cgen.impl.ExtendedInstructionCodeStream;
 import net.andreho.haxxor.cgen.impl.HxLocalVariableImpl;
 import net.andreho.haxxor.cgen.impl.HxTryCatchImpl;
-import net.andreho.haxxor.cgen.instr.abstr.SimpleJumpInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.BasicJumpInstruction;
 import net.andreho.haxxor.cgen.instr.abstr.SwitchJumpInstruction;
 import net.andreho.haxxor.cgen.instr.misc.LABEL;
 
@@ -97,9 +97,9 @@ public class HxMethodBodyImpl
                                 final Map<Object, LABEL> mapping) {
     for (HxInstruction instruction : body) {
       if(instruction.hasSort(HxInstructionSort.Jump)) {
-        SimpleJumpInstruction jump = (SimpleJumpInstruction) instruction;
+        BasicJumpInstruction jump = (BasicJumpInstruction) instruction;
         instruction = jump.clone(remap(mapping, jump.getLabel()));
-      } else if(instruction.hasSort(HxInstructionSort.Switches)) {
+      } else if(instruction.hasSort(HxInstructionSort.Switch)) {
         SwitchJumpInstruction aSwitch = (SwitchJumpInstruction) instruction;
         instruction = aSwitch.clone(remap(mapping, aSwitch.getDefaultLabel()), remap(mapping, aSwitch.getLabels()));
       } else if(instruction.hasType(HxInstructionTypes.Special.LABEL)) {
@@ -174,6 +174,14 @@ public class HxMethodBodyImpl
     }
     tryCatches.add(tryCatch);
     return this;
+  }
+
+  @Override
+  public HxMethodBody addTryCatch(final LABEL begin,
+                                  final LABEL end,
+                                  final LABEL handler,
+                                  final String handledException) {
+    return addTryCatch(new HxTryCatchImpl(begin, end, handler, handledException));
   }
 
   @Override

@@ -10,14 +10,19 @@ import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.HxInstructionProperties;
 import net.andreho.haxxor.cgen.HxInstructionSort;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
+import net.andreho.haxxor.cgen.HxLabelRemapper;
+import net.andreho.haxxor.cgen.HxTryCatch;
+import net.andreho.haxxor.cgen.instr.abstr.BasicJumpInstruction;
 import net.andreho.haxxor.cgen.instr.abstr.FieldInstruction;
 import net.andreho.haxxor.cgen.instr.abstr.InvokeInstruction;
 import net.andreho.haxxor.cgen.instr.abstr.LocalAccessInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.SwitchJumpInstruction;
 import net.andreho.haxxor.cgen.instr.constants.LDC;
 import net.andreho.haxxor.cgen.instr.constants.ldc.TypeLDC;
 import net.andreho.haxxor.cgen.instr.conversion.CHECKCAST;
 import net.andreho.haxxor.cgen.instr.conversion.INSTANCEOF;
 import net.andreho.haxxor.cgen.instr.invokes.INVOKESPECIAL;
+import net.andreho.haxxor.cgen.instr.misc.LABEL;
 import net.andreho.haxxor.spi.HxStubInjector;
 import net.andreho.haxxor.stub.Stub;
 import net.andreho.haxxor.stub.errors.HxStubException;
@@ -27,6 +32,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static net.andreho.haxxor.cgen.HxInstructionProperties.JumpsAndSwitches.DEFAULT_JUMP_LABEL;
+import static net.andreho.haxxor.cgen.HxInstructionProperties.JumpsAndSwitches.JUMP_LABEL;
+import static net.andreho.haxxor.cgen.HxInstructionProperties.JumpsAndSwitches.SWITCH_LABELS;
 import static net.andreho.haxxor.stub.impl.CheckingStubInjector.getPrefixedName;
 
 /**
@@ -89,7 +97,11 @@ public class DefaultStubInjector
       }
     }
 
+    final HxLabelRemapper remapping = HxLabelRemapper.createLabelRemapper();
+
     for (HxMethod method : stub.getMethods()) {
+      remapping.reset();
+
       if (method.isAnnotationPresent(Stub.Ignore.class) ||
           method.isAnnotationPresent(Stub.Method.class) ||
           method.isAnnotationPresent(Stub.Class.class) ||
@@ -97,7 +109,7 @@ public class DefaultStubInjector
         continue;
       }
       if (method.isClassInitializer()) {
-        mergeClassInitializers(target, stub, method);
+        mergeClassInitializers(target, stub, method, remapping);
       } else if (!method.isConstructor()) {
         if (target.hasMethod(method)) {
           throw new HxStubException("Given method overrides a method in the target '" + target +
@@ -111,10 +123,12 @@ public class DefaultStubInjector
     }
 
     for (HxMethod overridden : overriddenList) {
+      remapping.reset();
       adaptMethodCodeToTarget(target, stub, overridden);
     }
 
     for (HxMethod constructor : target.getConstructors()) {
+      remapping.reset();
       mergeClassConstructors(target, stub, constructor);
     }
   }
@@ -152,13 +166,10 @@ public class DefaultStubInjector
         final HxExtendedCodeStream stream = point.asStream();
 
         for (HxInstruction inst : injectableStart) {
-          if (inst.isPseudoInstruction() ||
-              inst.hasType(HxInstructionTypes.Special.LINE_NUMBER)) {
+          if (inst.hasType(HxInstructionTypes.Special.LINE_NUMBER)) {
             continue;
           } else if (inst.hasType(HxInstructionTypes.Exit.RETURN) &&
-                     inst.isFollowedTillEndBy(
-                       i -> i.isPseudoInstruction() ||
-                            i.hasType(HxInstructionTypes.Special.LABEL))) {
+                     inst.isFollowedTillEndBy(HxInstruction::isPseudoInstruction)) {
             break;
           }
           HxInstruction replacement = inst;
@@ -265,23 +276,49 @@ public class DefaultStubInjector
 
   private void mergeClassInitializers(final HxType target,
                                       final HxType stub,
-                                      final HxMethod method)
+                                      final HxMethod method,
+                                      final HxLabelRemapper remapping)
   throws HxStubException {
     Optional<HxMethod> clinitOpt = target.findOrCreateClassInitializer();
     if (clinitOpt.isPresent()) {
       HxMethod clinit = clinitOpt.get();
-      HxExtendedCodeStream stream = clinit.getBody().getFirst().asStream();
-      for (HxInstruction inst : method.getBody().getFirst()) {
-        if (inst.isPseudoInstruction() ||
-            inst.hasType(HxInstructionTypes.Special.LINE_NUMBER)) {
+      HxInstruction anchor = clinit.getBody().getFirst();
+      HxMethodBody methodBody = method.getBody();
+
+      for (HxInstruction inst : methodBody.getFirst()) {
+        HxInstruction replacement = null;
+        if(inst.isLabel()) {
+          replacement = remapping.remap(inst.as(LABEL.class));
+        } else if (inst.isPseudoInstruction()) {
           continue;
-        }
-        if (inst.hasType(HxInstructionTypes.Exit.RETURN) &&
-            inst.isFollowedTillEndBy(i -> i.isPseudoInstruction() ||
-                                          i.hasType(HxInstructionTypes.Special.LABEL))) {
+        } else if (inst.hasLabelReference()) {
+          if(inst.hasSort(HxInstructionSort.Jump)) {
+            replacement = inst.as(BasicJumpInstruction.class)
+                              .clone(remapping.remap(inst.property(JUMP_LABEL)));
+          } else if (inst.hasSort(HxInstructionSort.Switch)) {
+            replacement = inst.as(SwitchJumpInstruction.class)
+                              .clone(remapping.remap(inst.property(DEFAULT_JUMP_LABEL)),
+                                     remapping.remap(inst.property(SWITCH_LABELS)));
+          }
+        } else if (inst.hasType(HxInstructionTypes.Exit.RETURN) &&
+            inst.isFollowedTillEndBy(HxInstruction::isPseudoInstruction)) {
           break;
+        } else {
+          replacement = calculateReplacement(target, stub, method, inst);
         }
-        calculateReplacement(target, stub, method, inst).visit(stream);
+        anchor = anchor.append(replacement);
+      }
+
+      if(methodBody.hasTryCatches()) {
+        for(HxTryCatch handler : methodBody.getTryCatches()) {
+          clinit.getBody()
+                .addTryCatch(
+                  remapping.remap(handler.getBegin()),
+                  remapping.remap(handler.getEnd()),
+                  remapping.remap(handler.getCatch()),
+                  handler.getExceptionType()
+                );
+        }
       }
     }
   }
@@ -317,7 +354,7 @@ public class DefaultStubInjector
         throw new HxStubException("Modifier mismatch between: " + ref + " and its counterpart: " + overridden);
       }
       throw new HxStubException(
-        "Modifier mismatch between: " + overriddenOpt + " and its counterpart: " + original);
+        "Modifier mismatch between: " + overridden + " and its counterpart: " + original);
     }
     if (!target.hasMethod(ref)) {
       HxMethod originalClone = original.clone(ref.getName());
@@ -359,7 +396,7 @@ public class DefaultStubInjector
                                              final HxMethod method,
                                              final HxInstruction instruction)
   throws HxStubException {
-    if (instruction.hasSort(HxInstructionSort.Fields)) {
+    if (instruction.hasSort(HxInstructionSort.Field)) {
       return adaptFieldInstruction(target, stub, method, instruction);
     } else if (instruction.hasSort(HxInstructionSort.Invocation)) {
       return adaptInvocationInstruction(target, stub, method, instruction);

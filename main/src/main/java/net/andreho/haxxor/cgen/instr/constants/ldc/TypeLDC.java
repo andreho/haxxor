@@ -18,7 +18,12 @@ public class TypeLDC
   }
 
   @Override
-  public String toString() {
+  public TypeLDC clone() {
+    return new TypeLDC(getValue());
+  }
+
+  @Override
+  protected String print() {
     return "LDC ("+getValue()+".class)";
   }
 }

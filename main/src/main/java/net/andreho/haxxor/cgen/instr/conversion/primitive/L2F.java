@@ -31,4 +31,9 @@ public class L2F
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public L2F clone() {
+    return new L2F();
+  }
 }

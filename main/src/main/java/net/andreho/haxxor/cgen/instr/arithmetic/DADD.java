@@ -31,4 +31,9 @@ public class DADD
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public DADD clone() {
+    return new DADD();
+  }
 }

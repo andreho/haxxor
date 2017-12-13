@@ -31,4 +31,9 @@ public class SALOAD
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public SALOAD clone() {
+    return new SALOAD();
+  }
 }

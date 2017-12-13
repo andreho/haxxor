@@ -35,6 +35,11 @@ public class INVOKESPECIAL
   }
 
   @Override
+  public INVOKESPECIAL clone() {
+    return clone(getOwner(), getName(), getDescriptor(), isInterface());
+  }
+
+  @Override
   public INVOKESPECIAL clone(final String owner,
                              final String name,
                              final String desc,

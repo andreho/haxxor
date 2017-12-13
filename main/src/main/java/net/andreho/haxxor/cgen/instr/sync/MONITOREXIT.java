@@ -31,4 +31,9 @@ public class MONITOREXIT
   public void visit(HxCodeStream codeStream) {
     codeStream.MONITOREXIT();
   }
+
+  @Override
+  public MONITOREXIT clone() {
+    return new MONITOREXIT();
+  }
 }

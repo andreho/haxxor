@@ -43,6 +43,11 @@ public class IINC
   }
 
   @Override
+  public IINC clone() {
+    return clone(getLocalIndex());
+  }
+
+  @Override
   public IINC clone(final int var) {
     return new IINC(var, increment);
   }

@@ -42,6 +42,11 @@ public class NEWARRAY
   }
 
   @Override
+  public NEWARRAY clone() {
+    return new NEWARRAY(getOperand());
+  }
+
+  @Override
   public String toString() {
     return "NEWARRAY (" + HxArrayType.fromCode(this.operand).getClassName() + ")";
   }

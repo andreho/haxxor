@@ -31,4 +31,9 @@ public class LREM
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public LREM clone() {
+    return new LREM();
+  }
 }

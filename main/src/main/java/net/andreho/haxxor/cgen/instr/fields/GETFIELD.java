@@ -35,6 +35,11 @@ public class GETFIELD
   }
 
   @Override
+  public GETFIELD clone() {
+    return clone(getOwner(), getName(), getDescriptor());
+  }
+
+  @Override
   public GETFIELD clone(final String owner,
                         final String name,
                         final String desc) {

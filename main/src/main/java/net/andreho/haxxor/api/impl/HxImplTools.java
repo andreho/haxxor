@@ -1,8 +1,7 @@
 package net.andreho.haxxor.api.impl;
 
 import net.andreho.haxxor.api.HxType;
-
-import static net.andreho.haxxor.utils.NamingUtils.toPrimitiveClassname;
+import net.andreho.haxxor.utils.NamingUtils;
 
 /**
  * <br/>Created by a.hofmann on 07.12.2017 at 16:22.
@@ -39,7 +38,7 @@ class HxImplTools {
         case 'F':
         case 'J':
         case 'D':
-          if (!isPrimitiveTypeWithDimension(type, toPrimitiveClassname(c), dim)) {
+          if (!isPrimitiveTypeWithDimension(type, NamingUtils.primitiveDescriptorToPrimitiveClassname(c), dim)) {
             return -1;
           }
           return index + 1;

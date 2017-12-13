@@ -9,4 +9,9 @@ public abstract class ZeroOperandInstruction
   public ZeroOperandInstruction() {
     super();
   }
+
+  @Override
+  protected String print() {
+    return getInstructionName();
+  }
 }

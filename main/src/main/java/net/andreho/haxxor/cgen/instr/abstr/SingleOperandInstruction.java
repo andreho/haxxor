@@ -6,7 +6,7 @@ package net.andreho.haxxor.cgen.instr.abstr;
 public abstract class SingleOperandInstruction
     extends AbstractInstruction {
 
-  protected int operand;
+  protected final int operand;
 
   public SingleOperandInstruction(int operand) {
     super();
@@ -17,7 +17,8 @@ public abstract class SingleOperandInstruction
     return operand;
   }
 
-  public void setOperand(final int operand) {
-    this.operand = operand;
+  @Override
+  protected String print() {
+    return getInstructionName() + " " + this.operand;
   }
 }

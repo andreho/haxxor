@@ -49,12 +49,21 @@ public class TABLESWITCH
   }
 
   @Override
-  public TABLESWITCH clone(LABEL defaultLabel, LABEL[] labels) {
-    return new TABLESWITCH(getMin(), getMax(), defaultLabel, labels);
+  public TABLESWITCH clone() {
+    return clone(getMin(), getMax(), getDefaultLabel().clone(), cloneLabels(labels));
   }
 
   @Override
-  public String toString() {
-    return super.toString() + " (" + this.min + ", " + this.max + ", " + Arrays.toString(this.labels) + ", " + this.label + ")";
+  public TABLESWITCH clone(LABEL defaultLabel, LABEL[] labels) {
+    return clone(getMin(), getMax(), defaultLabel, labels);
+  }
+
+  public TABLESWITCH clone(int min, int max, LABEL defaultLabel, LABEL[] labels) {
+    return new TABLESWITCH(min, max, defaultLabel, labels);
+  }
+
+  @Override
+  protected String print() {
+    return getInstructionName() + " (" + this.min + ", " + this.max + ", " + Arrays.toString(this.labels) + ", " + this.label + ")";
   }
 }

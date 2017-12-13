@@ -35,6 +35,11 @@ public class GETSTATIC
   }
 
   @Override
+  public GETSTATIC clone() {
+    return clone(getOwner(), getName(), getDescriptor());
+  }
+
+  @Override
   public GETSTATIC clone(final String owner,
                          final String name,
                          final String desc) {

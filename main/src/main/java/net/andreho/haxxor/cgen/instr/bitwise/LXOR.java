@@ -31,4 +31,9 @@ public class LXOR
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public LXOR clone() {
+    return new LXOR();
+  }
 }

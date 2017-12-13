@@ -16,4 +16,9 @@ public class DoubleLDC
   public void visit(final HxCodeStream codeStream) {
     codeStream.LDC(getValue());
   }
+
+  @Override
+  public DoubleLDC clone() {
+    return new DoubleLDC(getValue());
+  }
 }

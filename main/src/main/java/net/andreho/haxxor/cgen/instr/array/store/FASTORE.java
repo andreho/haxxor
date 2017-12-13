@@ -32,12 +32,8 @@ public class FASTORE
     context.getExecutor().visit(context, this, frame);
   }
 
-//  @Override
-//  protected void checkArrayType(final Object arrayType, final int depth) {
-//    super.checkArrayType(arrayType, depth);
-//    if (!"[F".equals(arrayType)) {
-//      throw new IllegalArgumentException("Expected an float[] array type, but got: " + arrayType);
-//    }
-//  }
-
+  @Override
+  public FASTORE clone() {
+    return new FASTORE();
+  }
 }

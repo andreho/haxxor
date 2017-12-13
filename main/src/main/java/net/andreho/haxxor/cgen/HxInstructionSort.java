@@ -4,17 +4,17 @@ package net.andreho.haxxor.cgen;
  * <br/>Created by a.hofmann on 12.06.2017 at 05:04.
  */
 public enum HxInstructionSort {
-  Fields,
+  Field,
   Allocation,
   Arithmetic,
   Array,
   BitWise,
   Comparison,
   Conversion,
-  Constants,
+  Constant,
   Invocation,
   Jump,
-  Switches,
+  Switch,
   Load,
   Store,
   Stack,

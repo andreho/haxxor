@@ -16,4 +16,8 @@ public class IntegerLDC extends LDC<Integer> {
     codeStream.LDC(getValue());
   }
 
+  @Override
+  public IntegerLDC clone() {
+    return new IntegerLDC(getValue());
+  }
 }

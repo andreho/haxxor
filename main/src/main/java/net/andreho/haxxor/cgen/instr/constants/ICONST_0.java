@@ -31,4 +31,9 @@ public class ICONST_0
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public ICONST_0 clone() {
+    return new ICONST_0();
+  }
 }

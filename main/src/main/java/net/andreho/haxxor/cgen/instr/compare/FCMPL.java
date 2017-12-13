@@ -31,4 +31,9 @@ public class FCMPL
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public FCMPL clone() {
+    return new FCMPL();
+  }
 }

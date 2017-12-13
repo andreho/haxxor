@@ -33,6 +33,11 @@ public class DLOAD
   }
 
   @Override
+  public DLOAD clone() {
+    return clone(getLocalIndex());
+  }
+
+  @Override
   public DLOAD clone(final int var) {
     return new DLOAD(var);
   }

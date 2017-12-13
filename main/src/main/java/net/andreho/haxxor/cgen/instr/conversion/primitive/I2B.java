@@ -31,4 +31,9 @@ public class I2B
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public I2B clone() {
+    return new I2B();
+  }
 }

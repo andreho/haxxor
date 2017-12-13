@@ -31,4 +31,9 @@ public class DMUL
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public DMUL clone() {
+    return new DMUL();
+  }
 }

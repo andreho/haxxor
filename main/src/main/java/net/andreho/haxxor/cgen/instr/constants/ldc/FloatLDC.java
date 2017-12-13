@@ -17,4 +17,8 @@ public class FloatLDC
     codeStream.LDC(getValue());
   }
 
+  @Override
+  public FloatLDC clone() {
+    return new FloatLDC(getValue());
+  }
 }

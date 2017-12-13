@@ -256,7 +256,7 @@ public class MixinAspectAdvice
                                     invokeInstruction.getDescriptor(),
                                     invokeInstruction.isInterface()));
         }
-      } else if (inst.hasSort(HxInstructionSort.Fields)) {
+      } else if (inst.hasSort(HxInstructionSort.Field)) {
         final FieldInstruction fieldInstruction = (FieldInstruction) inst;
 
         if (mixin.hasNameViaExtends(fieldInstruction.getOwner())) {

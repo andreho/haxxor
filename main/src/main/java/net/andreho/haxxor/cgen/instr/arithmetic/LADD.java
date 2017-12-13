@@ -31,4 +31,9 @@ public class LADD
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public LADD clone() {
+    return new LADD();
+  }
 }

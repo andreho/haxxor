@@ -15,9 +15,25 @@ import net.andreho.haxxor.spi.HxVerificationAware;
 public interface HxManager extends HxInitializationAware,
                                    HxVerificationAware,
                                    HxDeduplicationCacheAware {
+
+  /**
+   * @return the associated classname normalizer instance
+   */
   HxClassnameNormalizer getClassnameNormalizer();
+  /**
+   * @return the associated element factory
+   */
   HxElementFactory getElementFactory();
+  /**
+   * @return the associated element serializer
+   */
   HxTypeSerializer getTypeSerializer();
+  /**
+   * @return the associated type deserializer
+   */
   HxTypeDeserializer getTypeDeserializer();
+  /**
+   * @return the associated class resolved
+   */
   HxClassResolver getClassResolver();
 }

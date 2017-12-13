@@ -31,4 +31,9 @@ public class DSUB
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public DSUB clone() {
+    return new DSUB();
+  }
 }

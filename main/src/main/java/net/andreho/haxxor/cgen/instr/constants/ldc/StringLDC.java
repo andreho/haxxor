@@ -18,6 +18,11 @@ public class StringLDC
   }
 
   @Override
+  public StringLDC clone() {
+    return new StringLDC(getValue());
+  }
+
+  @Override
   public String toString() {
     return "LDC (\""+getValue()+"\")";
   }

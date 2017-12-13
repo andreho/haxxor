@@ -49,10 +49,10 @@ public abstract class InvokeInstruction
     return this.isInterface;
   }
 
-  public abstract <INST extends InvokeInstruction> INST clone(String owner, String name, String desc, boolean isInterface);
-
   @Override
-  public String toString() {
-    return super.toString() + " (" + this.owner + ", " + this.name + ", " + this.desc + ")";
+  protected String print() {
+    return getInstructionName() + " (" + this.owner + ", " + this.name + ", " + this.desc + ")";
   }
+
+  public abstract <INST extends InvokeInstruction> INST clone(String owner, String name, String desc, boolean isInterface);
 }

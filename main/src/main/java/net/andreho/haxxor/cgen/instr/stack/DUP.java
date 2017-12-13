@@ -31,4 +31,9 @@ public class DUP
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public DUP clone() {
+    return new DUP();
+  }
 }

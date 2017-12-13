@@ -31,4 +31,9 @@ public class I2S
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public I2S clone() {
+    return new I2S();
+  }
 }

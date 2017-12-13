@@ -18,7 +18,7 @@ public abstract class StringOperandInstruction
   }
 
   @Override
-  public String toString() {
-    return super.toString() + " (" + getOperand() + ")";
+  protected String print() {
+    return getInstructionName() + " (" + getOperand() + ")";
   }
 }

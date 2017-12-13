@@ -32,4 +32,9 @@ public class DUP2
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public DUP2 clone() {
+    return new DUP2();
+  }
 }

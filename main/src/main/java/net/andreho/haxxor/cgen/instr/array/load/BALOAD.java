@@ -32,11 +32,8 @@ public class BALOAD
     context.getExecutor().visit(context, this, frame);
   }
 
-//  @Override
-//  protected void checkArrayType(final Object arrayType) {
-//    super.checkArrayType(arrayType);
-//    if (!"[Z".equals(arrayType) && !"[B".equals(arrayType)) {
-//      throw new IllegalArgumentException("Expected an array of current type: boolean[] or byte[]");
-//    }
-//  }
+  @Override
+  public BALOAD clone() {
+    return new BALOAD();
+  }
 }

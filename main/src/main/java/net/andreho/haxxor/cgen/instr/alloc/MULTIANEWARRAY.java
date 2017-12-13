@@ -5,13 +5,13 @@ import net.andreho.haxxor.cgen.HxComputationContext;
 import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.abstr.StringOperandInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.TypedInstruction;
 
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
 public class MULTIANEWARRAY
-  extends StringOperandInstruction {
+  extends TypedInstruction {
 
   private final int dimensions;
 
@@ -47,6 +47,11 @@ public class MULTIANEWARRAY
   @Override
   public int getStackPopSize() {
     return this.dimensions;
+  }
+
+  @Override
+  public MULTIANEWARRAY clone() {
+    return new MULTIANEWARRAY(getArrayType(), getDimensions());
   }
 
   @Override

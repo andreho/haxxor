@@ -5,13 +5,13 @@ import net.andreho.haxxor.cgen.HxComputationContext;
 import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.abstr.StringOperandInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.TypedInstruction;
 
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
 public class CHECKCAST
-  extends StringOperandInstruction {
+  extends TypedInstruction {
 
   public CHECKCAST(String internalType) {
     super(internalType);
@@ -34,5 +34,10 @@ public class CHECKCAST
   @Override
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
+  }
+
+  @Override
+  public CHECKCAST clone() {
+    return new CHECKCAST(getOperand());
   }
 }

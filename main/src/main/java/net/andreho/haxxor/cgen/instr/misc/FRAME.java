@@ -8,6 +8,8 @@ import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
 import net.andreho.haxxor.cgen.instr.abstr.AbstractInstruction;
 
+import java.util.Arrays;
+
 /**
  * <br/>Created by a.hofmann on 18.03.2016.<br/>
  */
@@ -27,6 +29,11 @@ public class FRAME
     this.local = local;
     this.nStack = nStack;
     this.stack = stack;
+  }
+
+  @Override
+  public boolean isPseudoInstruction() {
+    return true;
   }
 
   @Override
@@ -71,5 +78,20 @@ public class FRAME
   @Override
   public int getStackPopSize() {
     return 0;
+  }
+
+  @Override
+  protected String print() {
+    return getInstructionName() +
+           "(" + type + ", " + nLocal + ", " + Arrays.toString(local)+", "+nStack+", "+Arrays.toString(stack)+")";
+  }
+
+  @Override
+  public FRAME clone() {
+    return clone(getType(), getLocalsCount(), getLocals().clone(), getStackLength(), getStack().clone());
+  }
+
+  public FRAME clone(final HxFrames type, final int nLocal, final Object[] local, final int nStack, final Object[] stack) {
+    return new FRAME(type, nLocal, local, nStack, stack);
   }
 }

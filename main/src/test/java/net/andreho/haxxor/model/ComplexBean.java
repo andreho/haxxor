@@ -16,6 +16,17 @@ public class ComplexBean
     extends AbstractBean
     implements InterfaceD {
 
+  protected static final boolean BOOLEAN_CONSTANT = true;
+  private static final int INT_CONSTANT = 11;
+  public static final byte BYTE_CONSTANT = 11;
+  static final char SHORT_CONSTANT = 11;
+  protected static char CHAR_CONSTANT = 11;
+  static volatile long LONG_CONSTANT = 11;
+  public static float FLOAT_CONSTANT = 11.11f;
+  private static double DOUBLE_CONSTANT = 11.11d;
+  static final String STRING_CONSTANT = "11";
+  static final Class<String> CLASS_CONSTANT = String.class;
+
   private boolean boolValue;
   public byte byteValue;
   protected char charValue;
@@ -32,8 +43,8 @@ public class ComplexBean
   public byte[] byteArray;
   protected char[] charArray;
   volatile short[] shortArray;
-  private int[] intArray;
-  private float[] floatArray;
+  private volatile int[] intArray;
+  float[] floatArray;
   private long[] longArray;
   private double[] doubleArray;
   private String[] stringArray;
@@ -42,7 +53,6 @@ public class ComplexBean
 
   @Override
   void someAbstractMethod() {
-
   }
 
   @Override

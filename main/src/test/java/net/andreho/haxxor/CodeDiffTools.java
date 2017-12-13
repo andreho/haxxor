@@ -4,7 +4,6 @@ import difflib.Delta;
 import difflib.DiffUtils;
 import difflib.PatchFailedException;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -19,15 +18,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CodeDiffTools {
   public static String noCodeDiff(String expected, String actual)
   throws PatchFailedException {
-    expected = expected.replaceFirst("cw\\.visitSource\\([^\\)]+\\);\\s+", "");
+//    expected = expected.replaceFirst("cw\\.visitSource\\([^\\)]+\\);\\s+", "");
     return checkDiff(expected, actual);
   }
 
-  private static String checkDiff(final String expected,
-                                  final String actual)
+  private static String checkDiff(final String original,
+                                  final String revised)
   throws PatchFailedException {
-    List<String> originalLines = new ArrayList<>(Arrays.asList(expected.split("\n")));
-    List<String> madeLines  = new ArrayList<>(Arrays.asList(actual.split("\n")));
+    List<String> originalLines = Arrays.asList(original.split("\n"));
+    List<String> madeLines  = Arrays.asList(revised.split("\n"));
 
     difflib.Patch<String> diff = DiffUtils.diff(originalLines, madeLines);
 
@@ -40,26 +39,42 @@ public class CodeDiffTools {
 
     for(Delta<String> delta : diff.getDeltas()) {
       if(delta.getType() == Delta.TYPE.DELETE ) {
-        String fragment = toString(delta.getOriginal().getLines());
-        if(!actual.contains(fragment)) {
-          deletedDiffSet.add(fragment);
+        String originalFragment = toString(delta.getOriginal().getLines());
+        String revisedFragment = toString(delta.getRevised().getLines());
+        if(originalFragment.trim().isEmpty() || revisedFragment.trim().isEmpty()) {
+          continue;
+        }
+        if(!original.contains(revisedFragment)) {
+          deletedDiffSet.add(revisedFragment);
           deletedNotFound++;
         }
       } else if(delta.getType() == Delta.TYPE.INSERT) {
-        String fragment = toString(delta.getOriginal().getLines());
-        if(!actual.contains(fragment)) {
-          insertedDiffSet.add(fragment);
+        String originalFragment = toString(delta.getOriginal().getLines());
+        String revisedFragment = toString(delta.getRevised().getLines());
+        if(originalFragment.trim().isEmpty() || revisedFragment.trim().isEmpty()) {
+          continue;
+        }
+        if(!original.contains(revisedFragment)) {
+          insertedDiffSet.add(revisedFragment);
           insertedNotFound++;
         }
-      } else if(delta.getType() == Delta.TYPE.INSERT) {
+      } else if(delta.getType() != Delta.TYPE.INSERT) {
+        String originalFragment = toString(delta.getOriginal().getLines());
+        String revisedFragment = toString(delta.getRevised().getLines());
+        if(originalFragment.trim().isEmpty() || revisedFragment.trim().isEmpty()) {
+          continue;
+        }
         changed++;
       }
     }
 
-    boolean failed = changed > 0 || !deletedDiffSet.isEmpty() || !insertedDiffSet.isEmpty() || !insertedDiffSet.containsAll(deletedDiffSet);
+    boolean failed = changed > 0 ||
+                     !deletedDiffSet.isEmpty() ||
+                     !insertedDiffSet.isEmpty() ||
+                     !insertedDiffSet.containsAll(deletedDiffSet);
 
     if(failed) {
-      assertEquals(expected, actual);
+      assertEquals(original, revised);
     }
 
     return toString(madeLines);

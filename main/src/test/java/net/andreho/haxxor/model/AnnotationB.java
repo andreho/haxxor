@@ -36,6 +36,7 @@ public @interface AnnotationB {
   EnumA enumValue() default EnumA.YES;
   AnnotationC annotationValue() default @AnnotationC("ok");
 
+  String[] emptyArray() default {};
   boolean[] booleanArray() default {false, true};
   byte[] byteArray() default {-1,0,1};
   char[] charArray() default {'-','0','1'};
@@ -48,5 +49,5 @@ public @interface AnnotationB {
   String[] stringArray() default {"-1", "0", "1"};
   Class<?>[] classArray() default {AbstractBean.class, SpecificBean.class};
   EnumA[] enumArray() default {EnumA.YES, EnumA.NO, EnumA.MAYBE};
-  AnnotationC[] annotationArray() default {@AnnotationC("ok")};
+  AnnotationC[] annotationArray() default {@AnnotationC("first-ok"), @AnnotationC("second-ok")};
 }

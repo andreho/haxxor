@@ -31,4 +31,9 @@ public class L2D
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public L2D clone() {
+    return new L2D();
+  }
 }

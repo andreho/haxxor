@@ -5,13 +5,13 @@ import net.andreho.haxxor.cgen.HxComputationContext;
 import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.abstr.AbstractInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.ExitInstruction;
 
 /**
  * <br/>Created by a.hofmann on 10.03.2016.<br/>
  */
 public class RETURN
-    extends AbstractInstruction {
+  extends ExitInstruction {
 
   public RETURN() {
     super();
@@ -30,5 +30,10 @@ public class RETURN
   @Override
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
+  }
+
+  @Override
+  public RETURN clone() {
+    return new RETURN();
   }
 }

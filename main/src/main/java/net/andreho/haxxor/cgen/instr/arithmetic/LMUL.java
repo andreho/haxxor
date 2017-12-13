@@ -31,4 +31,9 @@ public class LMUL
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public LMUL clone() {
+    return new LMUL();
+  }
 }

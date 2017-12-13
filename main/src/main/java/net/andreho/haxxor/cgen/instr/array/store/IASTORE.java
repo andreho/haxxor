@@ -32,11 +32,8 @@ public class IASTORE
     context.getExecutor().visit(context, this, frame);
   }
 
-//  @Override
-//  protected void checkArrayType(final Object arrayType, final int depth) {
-//    super.checkArrayType(arrayType, depth);
-//    if (!"[I".equals(arrayType)) {
-//      throw new IllegalArgumentException("Expected an int[] array type, but got: " + arrayType);
-//    }
-//  }
+  @Override
+  public IASTORE clone() {
+    return new IASTORE();
+  }
 }

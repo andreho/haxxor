@@ -30,7 +30,7 @@ public abstract class HxCgenUtils {
     final LocalAccessInstruction accessInstruction = (LocalAccessInstruction) instruction;
     int slotIndex = accessInstruction.getOperand();
     if (slotIndex >= parametersOffset) {
-      accessInstruction.setOperand(slotIndex + offsetAddition);
+      instruction.replaceWith(accessInstruction.clone(slotIndex + offsetAddition));
     }
   }
 }

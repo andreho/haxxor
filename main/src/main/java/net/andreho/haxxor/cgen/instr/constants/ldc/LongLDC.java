@@ -17,4 +17,8 @@ public class LongLDC
     codeStream.LDC(getValue());
   }
 
+  @Override
+  public LongLDC clone() {
+    return new LongLDC(getValue());
+  }
 }

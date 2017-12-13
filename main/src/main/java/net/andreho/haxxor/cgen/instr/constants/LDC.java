@@ -107,7 +107,7 @@ public abstract class LDC<T>
   }
 
   @Override
-  public String toString() {
+  protected String print() {
     return "LDC ("+this.value+")";
   }
 }

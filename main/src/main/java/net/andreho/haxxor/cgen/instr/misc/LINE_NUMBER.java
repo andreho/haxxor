@@ -22,6 +22,11 @@ public class LINE_NUMBER
     this.start = start;
   }
 
+  @Override
+  public boolean isPseudoInstruction() {
+    return true;
+  }
+
   public int getLine() {
     return line;
   }
@@ -55,7 +60,12 @@ public class LINE_NUMBER
   }
 
   @Override
-  public String toString() {
-    return super.toString() + " (" + this.line + ", " + this.start.print() + ")";
+  public LINE_NUMBER clone() {
+    return new LINE_NUMBER(getLine(), getStart().clone());
+  }
+
+  @Override
+  protected String print() {
+    return getInstructionName() + " (" + this.line + ", " + this.start.toFormattedString() + ")";
   }
 }

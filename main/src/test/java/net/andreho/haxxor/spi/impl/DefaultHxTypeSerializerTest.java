@@ -14,8 +14,6 @@ import net.andreho.haxxor.model.GenericInterfaceA;
 import net.andreho.haxxor.model.MinimalBean;
 import net.andreho.haxxor.model.SpecificBean;
 import net.andreho.haxxor.model.SupportedSpecBean;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -60,13 +58,6 @@ class DefaultHxTypeSerializerTest {
     String actual = made.toString();
 
     actual = CodeDiffTools.noCodeDiff(expected, actual);
-    System.out.println(actual);
-  }
-
-  @Test
-  @Disabled
-  void failedTestCase()
-  throws PatchFailedException {
-    test(SupportedSpecBean.class);
+    //System.out.println(actual);
   }
 }

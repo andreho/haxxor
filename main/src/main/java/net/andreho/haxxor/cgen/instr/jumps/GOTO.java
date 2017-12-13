@@ -5,14 +5,14 @@ import net.andreho.haxxor.cgen.HxComputationContext;
 import net.andreho.haxxor.cgen.HxFrame;
 import net.andreho.haxxor.cgen.HxInstructionType;
 import net.andreho.haxxor.cgen.HxInstructionTypes;
-import net.andreho.haxxor.cgen.instr.abstr.SimpleJumpInstruction;
+import net.andreho.haxxor.cgen.instr.abstr.BasicJumpInstruction;
 import net.andreho.haxxor.cgen.instr.misc.LABEL;
 
 /**
  * <br/>Created by a.hofmann on 09.03.2016.<br/>
  */
 public class GOTO
-  extends SimpleJumpInstruction {
+  extends BasicJumpInstruction {
 
   public GOTO(LABEL label) {
     super(label);
@@ -21,6 +21,11 @@ public class GOTO
   @Override
   public HxInstructionType getInstructionType() {
     return HxInstructionTypes.Jump.GOTO;
+  }
+
+  @Override
+  public GOTO clone() {
+    return clone((LABEL) getLabel().clone());
   }
 
   @Override

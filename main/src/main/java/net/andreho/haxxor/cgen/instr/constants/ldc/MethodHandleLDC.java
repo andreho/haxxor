@@ -18,4 +18,8 @@ public class MethodHandleLDC
     codeStream.HANDLE(getValue());
   }
 
+  @Override
+  public MethodHandleLDC clone() {
+    return new MethodHandleLDC(getValue());
+  }
 }

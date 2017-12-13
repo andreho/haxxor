@@ -33,6 +33,11 @@ public class ISTORE
   }
 
   @Override
+  public ISTORE clone() {
+    return clone(getLocalIndex());
+  }
+
+  @Override
   public ISTORE clone(final int var) {
     return new ISTORE(var);
   }

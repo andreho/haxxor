@@ -7,14 +7,6 @@ import net.andreho.haxxor.cgen.instr.misc.LABEL;
  * <br/>Created by a.hofmann on 12.03.2016.<br/>
  */
 public interface HxComputationContext {
-  Object TOP = new Integer(0);
-  Object INTEGER = new Integer(1);
-  Object FLOAT = new Integer(2);
-  Object DOUBLE = new Integer(3);
-  Object LONG = new Integer(4);
-  Object NULL = new Integer(5);
-  Object UNINITIALIZED_THIS = new Integer(6);
-
   /**
    * @return
    */

@@ -32,11 +32,8 @@ public class LASTORE
     context.getExecutor().visit(context, this, frame);
   }
 
-//  @Override
-//  protected void checkArrayType(final Object arrayType, final int depth) {
-//    super.checkArrayType(arrayType, depth);
-//    if (!"[J".equals(arrayType)) {
-//      throw new IllegalArgumentException("Expected an long[] array type, but got: " + arrayType);
-//    }
-//  }
+  @Override
+  public LASTORE clone() {
+    return new LASTORE();
+  }
 }

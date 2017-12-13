@@ -18,4 +18,8 @@ public class MethodTypeLDC
     codeStream.METHOD(getValue());
   }
 
+  @Override
+  public MethodTypeLDC clone() {
+    return new MethodTypeLDC(getValue());
+  }
 }

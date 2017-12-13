@@ -33,6 +33,11 @@ public class LSTORE
   }
 
   @Override
+  public LSTORE clone() {
+    return clone(getLocalIndex());
+  }
+
+  @Override
   public LSTORE clone(final int var) {
     return new LSTORE(var);
   }

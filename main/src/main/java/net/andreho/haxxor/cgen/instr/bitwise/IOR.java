@@ -32,4 +32,8 @@ public class IOR
     context.getExecutor().visit(context, this, frame);
   }
 
+  @Override
+  public IOR clone() {
+    return new IOR();
+  }
 }

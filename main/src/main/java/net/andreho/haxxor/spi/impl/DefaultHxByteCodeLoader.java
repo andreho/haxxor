@@ -28,15 +28,15 @@ public class DefaultHxByteCodeLoader
 
   @Override
   @SuppressWarnings("Duplicates")
-  public Optional<byte[]> load(final ClassLoader classLoader, final String className) {
-    try (InputStream inputStream = classLoader.getResourceAsStream(toFilename(className))) {
+  public Optional<byte[]> load(final ClassLoader classloader, final String classname) {
+    try (InputStream inputStream = classloader.getResourceAsStream(toFilename(classname))) {
       if(inputStream == null) {
         return Optional.empty();
       }
       return Optional.of(toByteArray(inputStream));
     } catch (IOException e) {
       throw new IllegalArgumentException(
-          "Class '" + className + "' was not found by the associated class loader: " + classLoader, e);
+        "Class '" + classname + "' was not found by the associated class loader: " + classloader, e);
     }
   }
 

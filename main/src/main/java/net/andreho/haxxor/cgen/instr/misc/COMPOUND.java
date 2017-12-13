@@ -21,6 +21,24 @@ public class COMPOUND
     super();
   }
 
+  @Override
+  public boolean isPseudoInstruction() {
+    return true;
+  }
+
+  @Override
+  public HxInstructionType getInstructionType() {
+    return HxInstructionTypes.Special.COMPOUND;
+  }
+
+  public boolean hasFirst() {
+    return this.first != null;
+  }
+
+  public boolean hasLast() {
+    return this.last != null;
+  }
+
   public HxInstruction getFirst() {
     return this.first;
   }
@@ -42,33 +60,30 @@ public class COMPOUND
   }
 
   @Override
-  public HxInstructionType getInstructionType() {
-    return HxInstructionTypes.Special.COMPOSITE;
-  }
-
-  @Override
-  public boolean isPseudoInstruction() {
-    return true;
-  }
-
-  @Override
   public boolean isBegin() {
-    return hasPrevious() && getPrevious().isBegin();
+    return hasPrevious() &&
+           getPrevious().isBegin();
   }
 
   @Override
   public boolean isEnd() {
-    return hasNext() && getNext().isEnd();
+    return hasNext() &&
+           getNext().isEnd();
   }
 
   @Override
   public void compute(final HxComputationContext context,
                       final HxFrame frame) {
+    if(hasFirst()) {
+      for(HxInstruction instruction : getFirst()) {
+        instruction.compute(context, frame);
+      }
+    }
   }
 
   @Override
   public void visit(final HxCodeStream codeStream) {
-    if(getFirst() != null && getLast() != null) {
+    if(hasFirst() && hasLast()) {
       final HxCodeStream subStream = codeStream.subStream();
       HxInstruction current = getFirst(), last = getLast();
 
@@ -78,5 +93,15 @@ public class COMPOUND
 
       last.visit(subStream);
     }
+  }
+
+  @Override
+  protected String print() {
+    return getInstructionName() + " ( ... )";
+  }
+
+  @Override
+  public COMPOUND clone() {
+    throw new IllegalStateException("Not supported.");
   }
 }

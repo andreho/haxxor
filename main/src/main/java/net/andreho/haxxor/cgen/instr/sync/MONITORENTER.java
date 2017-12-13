@@ -31,4 +31,9 @@ public class MONITORENTER
   public void visit(HxCodeStream codeStream) {
     codeStream.MONITORENTER();
   }
+
+  @Override
+  public MONITORENTER clone() {
+    return new MONITORENTER();
+  }
 }

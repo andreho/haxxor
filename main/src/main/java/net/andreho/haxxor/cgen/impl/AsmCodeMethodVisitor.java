@@ -54,6 +54,10 @@ public class AsmCodeMethodVisitor
     super.visitCode();
   }
 
+  /**
+   * @param labels to remap
+   * @return corresponding Haxxor's labels
+   */
   protected LABEL[] remap(Label... labels) {
     LABEL[] array = new LABEL[labels.length];
     for (int i = 0; i < labels.length; i++) {
@@ -63,15 +67,15 @@ public class AsmCodeMethodVisitor
   }
 
   /**
-   * @param label
-   * @return
+   * @param label to remap
+   * @return a corresponding Haxxor's label instance
    */
   protected LABEL remap(Label label) {
     Object info = label.info;
     if (info == null) {
-      LABEL remapped = new LABEL(label);
-      label.info = remapped;
-      return remapped;
+      LABEL mirror = new LABEL();
+      label.info = mirror;
+      return mirror;
     }
     return (LABEL) info;
   }
@@ -83,7 +87,7 @@ public class AsmCodeMethodVisitor
                          int nStack,
                          Object[] stack) {
     super.visitFrame(type, nLocal, local, nStack, stack);
-    this.codeStream.FRAME(HxFrames.fromCode(type), nLocal, local, nStack, stack);
+    this.codeStream.FRAME(HxFrames.fromType(type), nLocal, local, nStack, stack);
   }
 
   @Override
@@ -726,7 +730,7 @@ public class AsmCodeMethodVisitor
   }
 
   private HxArguments toHxArguments(Object[] bsmArgs) {
-    HxArguments arguments = HxArguments.createArguments();
+    HxArguments arguments = HxArguments.createArguments(bsmArgs.length);
     for (int i = 0; i < bsmArgs.length; i++) {
       Object arg = bsmArgs[i];
       if (arg instanceof Type) {
@@ -752,7 +756,7 @@ public class AsmCodeMethodVisitor
         }
       }
     }
-    return arguments;
+    return arguments.freeze();
   }
 
   @Override

@@ -31,8 +31,15 @@ public abstract class NamingUtils {
   private NamingUtils() {
   }
 
-  public static String toPrimitiveClassname(char c) {
-    switch (c) {
+  /**
+   * Transforms if needed the given single descriptor's character to
+   * a normalized classname of corresponding primitive type
+   * @param desc to check and transform
+   * @return binary classname of the given primitive descriptor's character
+   * @throws IllegalArgumentException
+   */
+  public static String primitiveDescriptorToPrimitiveClassname(char desc) {
+    switch (desc) {
       case 'V':
         return "void";
       case 'Z':
@@ -52,7 +59,7 @@ public abstract class NamingUtils {
       case 'D':
         return "double";
       default:
-        throw new IllegalArgumentException("Not a primitive literal {V,Z,B,S,C,I,F,J,D}: " + c);
+        throw new IllegalArgumentException("Not a primitive literal {V,Z,B,S,C,I,F,J,D}: " + desc);
     }
   }
 
@@ -61,12 +68,12 @@ public abstract class NamingUtils {
    * @param desc to check and transform
    * @return possibly transformed classname or the same descriptor if not a primitive
    */
-  public static String toPrimitiveClassname(String desc) {
+  public static String primitiveDescriptorToPrimitiveClassname(String desc) {
     //Both examples like: [I or LI; have length over one.
     if(desc.length() != 1) {
       return desc;
     }
-    return toPrimitiveClassname(desc, 0);
+    return primitiveDescriptorToPrimitiveClassname(desc, 0);
   }
 
   /**
@@ -75,8 +82,8 @@ public abstract class NamingUtils {
    * @param index to look at
    * @return transformed classname of the given primitive type at the given index
    */
-  public static String toPrimitiveClassname(String desc, int index) {
-    return toPrimitiveClassname(desc.charAt(index));
+  public static String primitiveDescriptorToPrimitiveClassname(String desc, int index) {
+    return primitiveDescriptorToPrimitiveClassname(desc.charAt(index));
   }
 
   /**

@@ -59,4 +59,14 @@ public class END
   public HxInstruction remove() {
     throw new IllegalStateException("END instruction can't be removed.");
   }
+
+  @Override
+  public END clone() {
+    throw new IllegalStateException("Not supported.");
+  }
+
+  @Override
+  protected String print() {
+    return getInstructionName();
+  }
 }

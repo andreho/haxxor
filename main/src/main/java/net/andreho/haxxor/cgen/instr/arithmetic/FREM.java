@@ -31,4 +31,9 @@ public class FREM
   public void compute(final HxComputationContext context, final HxFrame frame) {
     context.getExecutor().visit(context, this, frame);
   }
+
+  @Override
+  public FREM clone() {
+    return new FREM();
+  }
 }
