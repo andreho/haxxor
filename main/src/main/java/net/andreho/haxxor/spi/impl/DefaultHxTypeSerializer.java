@@ -411,7 +411,8 @@ public class DefaultHxTypeSerializer
             HxAnnotation[] array = (HxAnnotation[]) defaultValue;
             AnnotationVisitor arrayVisitor = av.visitArray(null);
             for (HxAnnotation annotation : array) {
-              visitAnnotation(annotation, arrayVisitor);
+              visitAnnotation(annotation, arrayVisitor.visitAnnotation(null, annotation.getType().toDescriptor()))
+                .visitEnd();
             }
             arrayVisitor.visitEnd();
           }
@@ -433,6 +434,9 @@ public class DefaultHxTypeSerializer
           av.visitEnum(null, hxEnum.getType().toDescriptor(), hxEnum.getName());
         }
       }
+    } else {
+      //Default to an empty array
+      av.visitArray(null).visitEnd();
     }
 
     av.visitEnd();
