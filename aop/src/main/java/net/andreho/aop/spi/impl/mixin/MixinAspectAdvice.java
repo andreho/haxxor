@@ -195,7 +195,7 @@ public class MixinAspectAdvice
       if (instr.hasType(HxInstructionTypes.Invocation.INVOKESPECIAL)) {
         InvokeInstruction invokeInstruction = (InvokeInstruction) instr;
         if ("<init>".equals(invokeInstruction.getName()) &&
-            constructor.getDeclaringType().hasSuperType(invokeInstruction.getOwner())) {
+            constructor.getDeclaringType().hasSupertype(invokeInstruction.getOwner())) {
           return true;
         }
       }

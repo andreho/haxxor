@@ -65,7 +65,7 @@ public class EqualsAndHashCodeAspect {
       equals.getBody().getFirst().asStream();
 
     if(fields.isEmpty()) {
-      Collection<HxMethod> equalsMethods = type.getSuperType().get().methods(
+      Collection<HxMethod> equalsMethods = type.getSupertype().get().methods(
         method ->
           !method.isStatic() &&
           method.hasName("equals") &&
@@ -157,7 +157,7 @@ public class EqualsAndHashCodeAspect {
       hashCode.getBody().getFirst().asStream();
 
     if(fields.isEmpty()) {
-      Collection<HxMethod> hashCodeMethods = type.getSuperType().get().methods(
+      Collection<HxMethod> hashCodeMethods = type.getSupertype().get().methods(
         method ->
           !method.isStatic() &&
           method.hasName("hashCode") &&

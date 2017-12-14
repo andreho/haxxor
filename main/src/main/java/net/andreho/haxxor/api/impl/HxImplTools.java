@@ -155,9 +155,9 @@ class HxImplTools {
         }
       }
     }
-    if (lhs.hasSuperType()) {
+    if (lhs.hasSupertype()) {
       return estimateDistance(
-        lhs.getSuperType().get(),
+        lhs.getSupertype().get(),
         rhs,
         distance + extendsCost,
         arrayCost,

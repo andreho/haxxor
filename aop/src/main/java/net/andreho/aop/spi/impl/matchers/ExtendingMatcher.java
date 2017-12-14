@@ -27,10 +27,10 @@ public class ExtendingMatcher
       if(super.matches(current)) {
         return true;
       }
-      if(!current.hasSuperType()) {
+      if(!current.hasSupertype()) {
         break;
       }
-      current = current.getSuperType().get();
+      current = current.getSupertype().get();
     }
 
     return false;

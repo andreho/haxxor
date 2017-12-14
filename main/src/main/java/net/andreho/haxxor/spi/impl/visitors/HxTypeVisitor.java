@@ -14,7 +14,6 @@ import net.andreho.haxxor.api.HxAnnotation;
 import net.andreho.haxxor.api.HxField;
 import net.andreho.haxxor.api.HxInitializablePart;
 import net.andreho.haxxor.api.HxMethod;
-import net.andreho.haxxor.api.HxSourceInfo;
 import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.api.Version;
 import net.andreho.haxxor.api.impl.HxAnnotatedImpl;
@@ -23,6 +22,7 @@ import net.andreho.haxxor.utils.NamingUtils;
 import java.util.Collections;
 import java.util.function.Consumer;
 
+import static net.andreho.haxxor.api.HxSourceInfo.createSourceInfo;
 import static net.andreho.haxxor.utils.NamingUtils.normalizeReturnType;
 import static net.andreho.haxxor.utils.NamingUtils.normalizeSignature;
 
@@ -84,7 +84,7 @@ public class HxTypeVisitor
     this.type
         .setVersion(Version.of(version))
         .setModifiers(access)
-        .setSuperType(superName)
+        .setSupertype(superName)
         .setGenericSignature(signature);
 
     if (interfaces != null && interfaces.length > 0) {
@@ -103,7 +103,7 @@ public class HxTypeVisitor
       return;
     }
 
-    this.type.setSourceInfo(new HxSourceInfo(source, debug));
+    this.type.setSourceInfo(createSourceInfo(source, debug));
   }
 
   @Override
@@ -164,7 +164,8 @@ public class HxTypeVisitor
       return av;
     }
 
-    if(typeRef != 0) {
+    if(typeRef != 0 &&
+       typePath == null /* ignore annotations on generics */) {
       final HxType type = this.type;
       final TypeReference ref = new TypeReference(typeRef);
       final int index = ref.getSuperTypeIndex();
@@ -173,11 +174,11 @@ public class HxTypeVisitor
         HxAnnotated<?> annotated;
 
         if(index < 0) {
-          if(type.getAnnotatedSuperType().isPresent()) {
-            annotated = type.getAnnotatedSuperType().get();
+          if(type.getAnnotatedSupertype().isPresent()) {
+            annotated = type.getAnnotatedSupertype().get();
           } else {
             annotated = new HxAnnotatedImpl<>().setDeclaringMember(type);
-            type.setAnnotatedSuperType(annotated);
+            type.setAnnotatedSupertype(annotated);
           }
         } else {
           if(type.getAnnotatedInterface(index).isPresent()) {

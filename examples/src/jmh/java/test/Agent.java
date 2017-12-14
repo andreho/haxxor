@@ -3,6 +3,7 @@ package test;
 import net.andreho.agent.ClassFileTransformerService;
 import net.andreho.haxxor.Hx;
 import net.andreho.haxxor.api.HxType;
+import net.andreho.haxxor.utils.ClassLoaderUtils;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
@@ -23,14 +24,7 @@ public class Agent implements ClassFileTransformerService {
   private static final Method LOADED_CLASS;
 
   static {
-    //-Dimpl=haxxor
-    String impl = System.getProperty("impl", "");
-    if("haxxor".equals(impl)) {
-      TRANSFORMER = Agent::modifyWithHaxxor;
-    } else {
-      TRANSFORMER = null;
-    }
-
+    TRANSFORMER = Agent::modifyWithHaxxor;
     try {
       LOADED_CLASS = ClassLoader.class.getDeclaredMethod("findLoadedClass", String.class);
       LOADED_CLASS.setAccessible(true);
@@ -40,20 +34,7 @@ public class Agent implements ClassFileTransformerService {
   }
 
   static boolean checkAlreadyLoaded(ClassLoader classLoader, String classname) {
-    try {
-      boolean loaded = false;
-      while(classLoader != null) {
-        loaded = Boolean.TRUE.equals(LOADED_CLASS.invoke(classLoader, classname));
-        if(loaded) {
-          System.out.println("Class was already loaded: "+classname);
-          break;
-        }
-        classLoader = classLoader.getParent();
-      }
-      return loaded;
-    } catch (Exception e) {
-      throw new IllegalStateException(e);
-    }
+    return ClassLoaderUtils.wasAlreadyLoadedWith(classLoader, classname);
   }
 
   @Override
@@ -69,6 +50,7 @@ public class Agent implements ClassFileTransformerService {
                           final byte[] classfileBuffer)
   throws IllegalClassFormatException {
     if(className != null && className.startsWith("org/hibernate/")) {
+      //Don't know why!?
       if("org/hibernate/loader/BatchFetchStyle".equals(className) ||
         "org/hibernate/persister/entity/SingleTableEntityPersister".equals(className)) {
         return null;

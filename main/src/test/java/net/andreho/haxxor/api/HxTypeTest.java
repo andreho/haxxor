@@ -1,7 +1,6 @@
 package net.andreho.haxxor.api;
 
 import net.andreho.asm.org.objectweb.asm.Type;
-import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.Hx;
 import net.andreho.haxxor.model.AnnotatedBeanWithJava8Features;
 import net.andreho.haxxor.model.ComplexBean;
@@ -177,7 +176,7 @@ class HxTypeTest {
 
   @BeforeEach
   void setupEnvironment() {
-    haxxor = Hx.builder().withFlags(Haxxor.Flags.SKIP_CODE).build(); //Haxxor.Flags.SKIP_CODE
+    haxxor = Hx.builder().withFlags(Hx.Flags.SKIP_CODE).build(); //Haxxor.Flags.SKIP_CODE
   }
 
   @Test
@@ -298,19 +297,19 @@ class HxTypeTest {
   void setSuperType() {
     final String newSuperType = MinimalBean.class.getName();
     HxType type1 = haxxor.createType(TEST_CLASS_NAME_1);
-    type1.setSuperType(newSuperType);
-    assertNotNull(type1.getSuperType());
-    assertEquals(newSuperType, type1.getSuperType().get()
+    type1.setSupertype(newSuperType);
+    assertNotNull(type1.getSupertype());
+    assertEquals(newSuperType, type1.getSupertype().get()
                                     .getName());
 
-    assertTrue(type1.hasSuperType(newSuperType));
+    assertTrue(type1.hasSupertype(newSuperType));
 
     HxType type2 = haxxor.createType(TEST_CLASS_NAME_2);
-    type2.setSuperType(haxxor.reference(newSuperType));
-    assertNotNull(type2.getSuperType());
-    assertEquals(newSuperType, type2.getSuperType().get()
+    type2.setSupertype(haxxor.reference(newSuperType));
+    assertNotNull(type2.getSupertype());
+    assertEquals(newSuperType, type2.getSupertype().get()
                                     .getName());
-    assertTrue(type2.hasSuperType(newSuperType));
+    assertTrue(type2.hasSupertype(newSuperType));
   }
 
   @ParameterizedTest

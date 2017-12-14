@@ -1,12 +1,14 @@
 package net.andreho.haxxor.spi.impl;
 
 import net.andreho.haxxor.Hx;
+import net.andreho.haxxor.api.HxAnnotated;
 import net.andreho.haxxor.api.HxAnnotation;
 import net.andreho.haxxor.api.HxConstants;
 import net.andreho.haxxor.api.HxField;
 import net.andreho.haxxor.api.HxMethod;
 import net.andreho.haxxor.api.HxParameter;
 import net.andreho.haxxor.api.HxType;
+import net.andreho.haxxor.api.impl.HxAnnotatedImpl;
 import net.andreho.haxxor.api.impl.HxAnnotationImpl;
 import net.andreho.haxxor.api.impl.HxFieldImpl;
 import net.andreho.haxxor.api.impl.HxMethodImpl;
@@ -127,5 +129,10 @@ public class DefaultHxElementFactory
   @Override
   public HxAnnotation createAnnotation(final String internalTypeName, final boolean visible) {
     return new HxAnnotationImpl(haxxor.reference(internalTypeName), visible);
+  }
+
+  @Override
+  public HxAnnotated<?> createAnnotated() {
+    return new HxAnnotatedImpl<>();
   }
 }

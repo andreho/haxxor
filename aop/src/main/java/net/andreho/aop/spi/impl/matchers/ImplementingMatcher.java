@@ -52,10 +52,10 @@ public class ImplementingMatcher
       if(hasImplementing(current.getInterfaces())) {
         return true;
       }
-      if(!current.hasSuperType()) {
+      if(!current.hasSupertype()) {
         break;
       }
-      current = current.getSuperType().get();
+      current = current.getSupertype().get();
     }
     return false;
   }

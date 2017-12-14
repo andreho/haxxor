@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 /**
  * <br/>Created by a.hofmann on 06.12.2017 at 09:11.
@@ -14,90 +13,94 @@ public interface HxInheritanceManager<T> extends HxInitializable<HxType>, HxProv
   /**
    * @return the parent-type of this type
    */
-  default Optional<HxType> getSuperType() {
+  default Optional<HxType> getSupertype() {
     return Optional.empty();
   }
 
   /**
-   * @param superType of this type
+   * @param supertype of this type
    * @return this instance
+   * @throws UnsupportedOperationException if this operation isn't allowed
    */
-  default T setSuperType(HxType superType) {
+  default T setSupertype(HxType supertype) {
     throw new UnsupportedOperationException("This class can't define a supertype: " + this);
   }
 
   /**
-   * Shortcut for: <code>this.setSuperType(getHaxxor().reference(superType))</code>
+   * Shortcut for: <code>this.setSupertype(getHaxxor().reference(supertype))</code>
    *
-   * @param superType to reference as super type
+   * @param supertype to reference as super type
    * @return this instance
+   * @throws UnsupportedOperationException if this operation isn't allowed
    */
-  default T setSuperType(String superType) {
-    return setSuperType(getHaxxor().reference(superType));
+  default T setSupertype(String supertype) {
+    return setSupertype(getHaxxor().reference(supertype));
   }
 
   /**
-   * Shortcut for: <code>this.setSuperType(getHaxxor().reference(superClass.getName()))</code>
+   * Shortcut for: <code>this.setSupertype(getHaxxor().reference(superclass.getName()))</code>
    *
-   * @param superClass to reference as super type
+   * @param superclass to reference as super type
    * @return this instance
+   * @throws UnsupportedOperationException if this operation isn't allowed
+   * @throws IllegalArgumentException if the given class can't be used as a superclass
    */
-  default T setSuperType(Class<?> superClass) {
-    if (superClass.isPrimitive() ||
-        superClass.isArray() ||
-        superClass.isInterface()) {
-      throw new IllegalArgumentException("Given class can't be used as superclass: " + superClass);
+  default T setSupertype(Class<?> superclass) {
+    if (superclass.isPrimitive() ||
+        superclass.isArray() ||
+        superclass.isInterface()) {
+      throw new IllegalArgumentException("Given class can't be used as superclass: " + superclass);
     }
-    return setSuperType(getHaxxor().reference(superClass.getName()));
+    return setSupertype(getHaxxor().reference(superclass.getName()));
+  }
+
+  /**
+   * @param supertype to look for
+   * @return <b>true</b> if this type has the given supertype
+   */
+  default boolean hasSupertype(String supertype) {
+    return getSupertype().isPresent() ?
+           getSupertype().get().hasName(supertype) :
+           supertype == null;
   }
 
   /**
    * @param superType to look for
    * @return <b>true</b> if this type has the given supertype
    */
-  default boolean hasSuperType(String superType) {
-    return getSuperType().isPresent() ?
-            getSuperType().get().hasName(superType) :
+  default boolean hasSupertype(HxType superType) {
+    return getSupertype().isPresent() ?
+           getSupertype().get().equals(superType) :
            superType == null;
   }
 
   /**
-   * @param superType to look for
-   * @return <b>true</b> if this type has the given supertype
+   * @param superclass to check against
+   * @return <b>true</b> if this type has the given superclass
    */
-  default boolean hasSuperType(HxType superType) {
-    return getSuperType().isPresent() ?
-            Objects.equals(getSuperType().get(), superType) :
-           superType == null;
-  }
-
-  /**
-   * @param superClass
-   * @return <b>true</b> if this type has the given supertype
-   */
-  default boolean hasSuperType(Class<?> superClass) {
-    return hasSuperType(superClass.getName());
+  default boolean hasSupertype(Class<?> superclass) {
+    return hasSupertype(superclass.getName());
   }
 
   /**
    * @return <b>true</b> if this type has a reference to a supertype, <b>false</b> otherwise.
    */
-  default boolean hasSuperType() {
-    return getSuperType().isPresent();
+  default boolean hasSupertype() {
+    return getSupertype().isPresent();
   }
 
   /**
    * @param annotated
    * @return this instance
    */
-  default T setAnnotatedSuperType(HxAnnotated<?> annotated) {
-    return (T) this;
+  default T setAnnotatedSupertype(HxAnnotated<?> annotated) {
+    throw new UnsupportedOperationException("This class can't define any superclass annotations: "+this);
   }
 
   /**
    * @return
    */
-  default Optional<HxAnnotated<?>> getAnnotatedSuperType() {
+  default Optional<HxAnnotated<?>> getAnnotatedSupertype() {
     return Optional.empty();
   }
 
@@ -138,6 +141,11 @@ public interface HxInheritanceManager<T> extends HxInitializable<HxType>, HxProv
    * @return this instance
    */
   default T setInterfaces(Class<?>... interfaces) {
+    for(Class<?> itf : interfaces) {
+      if (itf == null || !itf.isInterface()) {
+        throw new IllegalArgumentException("Given array with classes must contain interfaces only: " + itf);
+      }
+    }
     return setInterfaces(getHaxxor().references(interfaces));
   }
 
@@ -250,6 +258,7 @@ public interface HxInheritanceManager<T> extends HxInitializable<HxType>, HxProv
    * @return this instance
    */
   default T removeInterface(Class<?> itf) {
+
     return removeInterface(itf.getName());
   }
 
@@ -310,39 +319,5 @@ public interface HxInheritanceManager<T> extends HxInitializable<HxType>, HxProv
    */
   default T clearInterfaces() {
     return setInterfaces(Collections.emptyList());
-  }
-
-  /**
-   * @param predicate
-   * @return
-   */
-  default List<HxType> types(Predicate<HxType> predicate) {
-    return types(predicate, false);
-  }
-
-  /**
-   * @param predicate
-   * @param recursive
-   * @return
-   */
-  default List<HxType> types(Predicate<HxType> predicate, boolean recursive) {
-    return Collections.emptyList();
-  }
-
-  /**
-   * @param predicate
-   * @return
-   */
-  default List<HxType> interfaces(Predicate<HxType> predicate) {
-    return interfaces(predicate, false);
-  }
-
-  /**
-   * @param predicate
-   * @param recursive
-   * @return
-   */
-  default List<HxType> interfaces(Predicate<HxType> predicate, boolean recursive) {
-    return Collections.emptyList();
   }
 }

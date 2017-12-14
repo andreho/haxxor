@@ -7,7 +7,6 @@ import net.andreho.haxxor.api.HxMethod;
 import net.andreho.haxxor.api.HxParameter;
 import net.andreho.haxxor.api.HxProvider;
 import net.andreho.haxxor.api.HxType;
-import net.andreho.haxxor.api.impl.HxAnnotatedImpl;
 
 import java.lang.annotation.Annotation;
 
@@ -253,7 +252,5 @@ public interface HxElementFactory
    * Creates a new unbound annotated element
    * @return a new unbound parameter instance
    */
-  default HxAnnotated<?> createAnnotated() {
-    return new HxAnnotatedImpl<>();
-  }
+  HxAnnotated<?> createAnnotated();
 }

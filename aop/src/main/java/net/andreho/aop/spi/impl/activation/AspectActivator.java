@@ -12,7 +12,6 @@ import net.andreho.aop.spi.ElementMatcherFactory;
 import net.andreho.aop.spi.impl.AspectDefinitionFactoryImpl;
 import net.andreho.aop.spi.impl.AspectProfileFactoryImpl;
 import net.andreho.aop.spi.impl.ElementMatcherFactoryImpl;
-import net.andreho.haxxor.Haxxor;
 import net.andreho.haxxor.Hx;
 import net.andreho.haxxor.api.HxType;
 import org.slf4j.Logger;
@@ -107,7 +106,7 @@ public class AspectActivator
 
     final AspectProfileFactory aspectProfileFactory = getAspectProfileFactory();
 
-    final Hx haxxor = Hx.builder().withFlags(Haxxor.Flags.SKIP_CODE).build();
+    final Hx haxxor = Hx.builder().withFlags(Hx.Flags.SKIP_CODE).build();
     final Collection<HxType> aspectTypes = new ArrayList<>(aspects.size());
     final Collection<AspectProfile> aspectProfiles = new LinkedHashSet<>();
 

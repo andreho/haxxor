@@ -1,14 +1,12 @@
 package net.andreho.haxxor.api;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import static net.andreho.haxxor.utils.CommonUtils.isUninitialized;
 
@@ -90,15 +88,6 @@ public interface HxAnnotated<A extends HxAnnotated<A>> extends HxInitializable<A
    */
   default A addRepeatableAnnotationIfNeeded(HxAnnotation annotation, String repeatableAnnotationClassname) {
     throw new UnsupportedOperationException("This element can't define any annotations.");
-  }
-
-  /**
-   * Links the annotations of this element with the annotations of its parent element(s)
-   *
-   * @return a collection with parent elements if any or {@link Collections#EMPTY_SET}
-   */
-  default List<HxAnnotated> getSuperAnnotated() {
-    return Collections.emptyList();
   }
 
   /**
@@ -208,36 +197,5 @@ public interface HxAnnotated<A extends HxAnnotated<A>> extends HxInitializable<A
    */
   default boolean isAnnotationPresent(Class<? extends Annotation> annotationType) {
     return isAnnotationPresent(annotationType.getName());
-  }
-
-  /**
-   * @param predicate
-   * @return
-   */
-  default List<HxAnnotation> annotations(Predicate<HxAnnotation> predicate) {
-    return annotations(predicate, false);
-  }
-
-  /**
-   * @param predicate
-   * @param recursive
-   * @return
-   */
-  default List<HxAnnotation> annotations(Predicate<HxAnnotation> predicate, boolean recursive) {
-    final List<HxAnnotation> annotations = getAnnotations();
-    final List<HxAnnotation> foundAnnotations = new ArrayList<>(annotations.size());
-    for (HxAnnotation annotation : annotations) {
-      if (predicate.test(annotation)) {
-        foundAnnotations.add(annotation);
-      }
-    }
-    if (recursive) {
-      List<HxAnnotated> superAnnotated = getSuperAnnotated();
-      for (HxAnnotated annotated : superAnnotated) {
-        Collection<HxAnnotation> subAnnotations = annotated.annotations(predicate, recursive);
-        foundAnnotations.addAll(subAnnotations);
-      }
-    }
-    return foundAnnotations;
   }
 }

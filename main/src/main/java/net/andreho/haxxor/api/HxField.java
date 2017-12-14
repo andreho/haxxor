@@ -29,27 +29,30 @@ public interface HxField
 
   int ALLOWED_MODIFIERS =
     Opcodes.ACC_PUBLIC | Opcodes.ACC_PRIVATE | Opcodes.ACC_PROTECTED | Opcodes.ACC_STATIC | Opcodes.ACC_FINAL |
-    Opcodes.ACC_VOLATILE | Opcodes.ACC_TRANSIENT | Opcodes.ACC_SYNTHETIC | Opcodes.ACC_ENUM;
+    Opcodes.ACC_VOLATILE | Opcodes.ACC_TRANSIENT | Opcodes.ACC_SYNTHETIC | Opcodes.ACC_ENUM | Opcodes.ACC_DEPRECATED;
 
   enum Modifiers
     implements HxModifier {
+    // class, field, method
     PUBLIC(Opcodes.ACC_PUBLIC),
     // class, field, method
     PRIVATE(Opcodes.ACC_PRIVATE),
     // class, field, method
     PROTECTED(Opcodes.ACC_PROTECTED),
-    // class, field, method
-    STATIC(Opcodes.ACC_STATIC),
     // field, method
-    FINAL(Opcodes.ACC_FINAL),
+    STATIC(Opcodes.ACC_STATIC),
     // class, field, method, parameter
+    FINAL(Opcodes.ACC_FINAL),
+    // field
     VOLATILE(Opcodes.ACC_VOLATILE),
     // field
     TRANSIENT(Opcodes.ACC_TRANSIENT),
-    // field
-    SYNTHETIC(Opcodes.ACC_SYNTHETIC),
     // class, field, method, parameter
-    ENUM(Opcodes.ACC_ENUM); // class(?) field inner
+    SYNTHETIC(Opcodes.ACC_SYNTHETIC),
+    // class(?) field inner
+    ENUM(Opcodes.ACC_ENUM),
+    // class, field, method
+    DEPRECATED(Opcodes.ACC_DEPRECATED);
 
     final int bit;
 
@@ -190,6 +193,13 @@ public interface HxField
       return fieldType.isAssignableFrom(type);
     }
     return false;
+  }
+
+  /**
+   * @return <b>true</b> if this field has public visibility, <b>false</b> otherwise.
+   */
+  default boolean isDeprecated() {
+    return hasModifiers(Modifiers.DEPRECATED);
   }
 
   /**

@@ -6,7 +6,6 @@ import net.andreho.haxxor.api.HxAnnotation;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * <br/>Created by a.hofmann on 22.06.2017 at 11:52.
@@ -61,24 +60,10 @@ public class HxAnnotatedDelegate<A extends HxAnnotated<A>> implements HxAnnotate
   }
 
   @Override
-  public List<HxAnnotated> getSuperAnnotated() {
-    return HxAnnotated.DEFAULT_SUPER_ANNOTATED_COLLECTION;
-  }
-
-  @Override
   public List<HxAnnotation> getAnnotationsByType(final String type) {
     if(!hasAnnotations()) {
       return Collections.emptyList();
     }
     return initAnnotated().getAnnotationsByType(type);
-  }
-
-  @Override
-  public List<HxAnnotation> annotations(final Predicate<HxAnnotation> predicate,
-                                              final boolean recursive) {
-    if(!hasAnnotations()) {
-      return Collections.emptyList();
-    }
-    return initAnnotated().annotations(predicate, recursive);
   }
 }

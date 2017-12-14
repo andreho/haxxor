@@ -11,11 +11,11 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
@@ -35,20 +35,21 @@ public interface HxMethod
   int ALLOWED_MODIFIERS =
     Opcodes.ACC_PUBLIC | Opcodes.ACC_PRIVATE | Opcodes.ACC_PROTECTED | Opcodes.ACC_STATIC | Opcodes.ACC_FINAL |
     Opcodes.ACC_SYNCHRONIZED | Opcodes.ACC_BRIDGE | Opcodes.ACC_VARARGS | Opcodes.ACC_NATIVE | Opcodes.ACC_ABSTRACT |
-    Opcodes.ACC_STRICT | Opcodes.ACC_SYNTHETIC;
+    Opcodes.ACC_STRICT | Opcodes.ACC_SYNTHETIC | Opcodes.ACC_DEPRECATED;
 
   enum Modifiers
     implements HxModifier {
+    // class, field, method
     PUBLIC(Opcodes.ACC_PUBLIC),
     // class, field, method
     PRIVATE(Opcodes.ACC_PRIVATE),
     // class, field, method
     PROTECTED(Opcodes.ACC_PROTECTED),
-    // class, field, method
-    STATIC(Opcodes.ACC_STATIC),
     // field, method
-    FINAL(Opcodes.ACC_FINAL),
+    STATIC(Opcodes.ACC_STATIC),
     // class, field, method, parameter
+    FINAL(Opcodes.ACC_FINAL),
+    // method
     SYNCHRONIZED(Opcodes.ACC_SYNCHRONIZED),
     // method
     BRIDGE(Opcodes.ACC_BRIDGE),
@@ -56,12 +57,14 @@ public interface HxMethod
     VARARGS(Opcodes.ACC_VARARGS),
     // method
     NATIVE(Opcodes.ACC_NATIVE),
-    // method
-    ABSTRACT(Opcodes.ACC_ABSTRACT),
     // class, method
-    STRICT(Opcodes.ACC_STRICT),
+    ABSTRACT(Opcodes.ACC_ABSTRACT),
     // method
-    SYNTHETIC(Opcodes.ACC_SYNTHETIC); // class, field, method, parameter
+    STRICT(Opcodes.ACC_STRICT),
+    // class, field, method, parameter
+    SYNTHETIC(Opcodes.ACC_SYNTHETIC),
+    // class, field, method
+    DEPRECATED(Opcodes.ACC_DEPRECATED);
 
     final int bit;
 
@@ -196,7 +199,7 @@ public interface HxMethod
    * @return
    */
   default boolean isForwardingConstructor() {
-    final Optional<HxType> optional = getDeclaringType().getSuperType();
+    final Optional<HxType> optional = getDeclaringType().getSupertype();
 
     if (isConstructor() &&
         optional.isPresent() &&
@@ -565,14 +568,52 @@ public interface HxMethod
   }
 
   /**
-   * @return a collection with overridden methods or constructors
+   * @return
    */
-  default List<HxMethod> getOverriddenMembers() {
-    return Collections.emptyList();
+  default Optional<HxMethod> findOverriddenMethod() {
+    return visitOverriddenMethods((method) -> true);
   }
 
   /**
-   * @return
+   * @param consumer that receives each overridden method (from all supertypes and all implemented interfaces)
+   * @return this instance
+   */
+  default HxMethod visitOverriddenMethods(Consumer<HxMethod> consumer) {
+    visitOverriddenMethods((method) -> {
+      consumer.accept(method);
+      return false;
+    });
+    return this;
+  }
+
+  /**
+   * @param predicate
+   * to check on each overridden method (from a supertype or an implemented interface) until the test is successful
+   * @return this instance
+   */
+  default Optional<HxMethod> visitOverriddenMethods(Predicate<HxMethod> predicate) {
+    return Optional.empty();
+  }
+
+  /**
+   * @return <b>true</b> if this method can be overridden by a child class, <b>false</b> otherwise
+   */
+  default boolean isOverridable() {
+    return !isStatic() &&
+           !isPrivate() &&
+           !isFinal() &&
+           !isConstructor();
+  }
+
+  /**
+   * @return <b>true</b> if this method is deprecated, <b>false</b> otherwise.
+   */
+  default boolean isDeprecated() {
+    return hasModifiers(Modifiers.DEPRECATED);
+  }
+
+  /**
+   * @return <b>true</b> if the last parameter of this method is an array with variable length, <b>false</b> otherwise.
    */
   default boolean isVarArg() {
     return hasModifiers(HxMethod.Modifiers.VARARGS);

@@ -55,15 +55,15 @@ public abstract class HxAbstractType
   }
 
   @Override
-  public HxType setSuperType(String superType) {
-    if (superType == null) {
+  public HxType setSupertype(String supertype) {
+    if (supertype == null) {
       if (hasName("java.lang.Object")) {
-        setSuperType((HxType) null);
+        setSupertype((HxType) null);
         return this;
       }
       throw new IllegalArgumentException("Supertype can't be null.");
     }
-    return setSuperType(getHaxxor().reference(superType));
+    return setSupertype(getHaxxor().reference(supertype));
   }
 
   @Override
@@ -140,7 +140,7 @@ public abstract class HxAbstractType
           return fieldOptional;
         }
       }
-      current = current.getSuperType().orElse(null);
+      current = current.getSupertype().orElse(null);
     }
     return Optional.empty();
   }
@@ -161,10 +161,10 @@ public abstract class HxAbstractType
       if(current.isInterface()) {
         break;
       }
-      current = current.getSuperType().orElse(null);
+      current = current.getSupertype().orElse(null);
     }
     current = this;
-    while(current != null && !current.hasSuperType(Object.class)) {
+    while(current != null && !current.hasSupertype(Object.class)) {
       for(HxType itf : current.getInterfaces()) {
         Optional<HxMethod> methodOptional =
           itf.findMethodRecursively(returnType, name, parameters);
@@ -173,7 +173,7 @@ public abstract class HxAbstractType
           return methodOptional;
         }
       }
-      current = current.getSuperType().orElse(null);
+      current = current.getSupertype().orElse(null);
     }
     return Optional.empty();
   }
@@ -183,7 +183,7 @@ public abstract class HxAbstractType
     if (!isInterface() &&
         !isArray() &&
         !isPrimitive() &&
-        getSuperType().isPresent()) {
+        getSupertype().isPresent()) {
 
       final Collection<HxMethod> constructors = getConstructors();
       final Collection<HxMethod> forwardingConstructors = new ArrayList<>(2);
@@ -206,7 +206,7 @@ public abstract class HxAbstractType
       return defaultConstructorOptional;
     }
 
-    Optional<HxMethod> defaultSuperConstructor = getSuperType().get().findDefaultConstructor();
+    Optional<HxMethod> defaultSuperConstructor = getSupertype().get().findDefaultConstructor();
     if (!defaultSuperConstructor.isPresent() || !defaultSuperConstructor.get().isAccessibleFrom(this)) {
       return Optional.empty();
     }
@@ -265,20 +265,20 @@ public abstract class HxAbstractType
             return true;
           }
         }
-        if (!current.hasSuperType()) {
+        if (!current.hasSupertype()) {
           break;
         }
-        current = current.getSuperType().get();
+        current = current.getSupertype().get();
       } while (true);
     } else {
       do {
         if (equals(current)) {
           return true;
         }
-        if (!current.hasSuperType()) {
+        if (!current.hasSupertype()) {
           break;
         }
-        current = current.getSuperType().get();
+        current = current.getSupertype().get();
       } while (true);
     }
     return false;
@@ -364,11 +364,8 @@ public abstract class HxAbstractType
   @Override
   public Class<?> toClass(final ClassLoader classLoader)
   throws ClassNotFoundException {
-    if (isArray()) {
-      String name = toDescriptor()
-        .replace(HxConstants.INTERNAL_PACKAGE_SEPARATOR_CHAR,
-                 HxConstants.JAVA_PACKAGE_SEPARATOR_CHAR);
-      return Class.forName(name, true, classLoader);
+    if (isArray() || isPrimitive()) {
+      throw new IllegalStateException("Wrong type: "+getName());
     }
     return getHaxxor().resolveClass(classLoader, null, getName(), toByteCode());
   }

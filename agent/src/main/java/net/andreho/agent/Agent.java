@@ -73,7 +73,7 @@ public class Agent {
   public static long getSizeOf(Object o) {
     final Instrumentation instrumentation = INSTRUMENTATION;
     if (instrumentation == null) {
-      throw new IllegalStateException("Please attach javaagent first.");
+      throw new IllegalStateException("Please attach the javaagent first.");
     }
     return instrumentation.getObjectSize(o);
   }

@@ -791,4 +791,6 @@ public interface HxMethodAnalysis<O extends HxMethodManager<O>>
     addMethod(constructor);
     return Optional.of(constructor);
   }
+
+
 }

@@ -90,7 +90,7 @@ public class CheckingStubInjector
 
   protected void checkStubType(final HxType stub)
   throws HxStubException {
-    if (!stub.isSerializable() || stub.isInterface() || !stub.hasSuperType(Object.class)) {
+    if (!stub.isSerializable() || stub.isInterface() || !stub.hasSupertype(Object.class)) {
       throw new HxStubException("Given type can't be used as a stub: " + stub);
     }
   }

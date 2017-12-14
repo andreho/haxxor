@@ -12,7 +12,6 @@ import net.andreho.haxxor.api.HxModifier;
 import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.api.HxTypeReference;
 import net.andreho.haxxor.api.Version;
-import net.andreho.haxxor.utils.NamingUtils;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
@@ -70,7 +69,7 @@ public class HxTypeReferenceImpl
     HxType type;
     Reference<HxType> reference = this.reference;
     if(reference == null || (type = reference.get()) == null) {
-      this.reference = reference = new WeakReference<>(type = getHaxxor().resolve(getName()));
+      this.reference = new WeakReference<>(type = getHaxxor().resolve(getName()));
     }
     return type;
   }
@@ -124,20 +123,6 @@ public class HxTypeReferenceImpl
   @Override
   public boolean isGeneric() {
     return toType().isGeneric();
-  }
-
-  @Override
-  public boolean isLocalType() {
-    return toType().isLocalType();
-  }
-
-  @Override
-  public boolean isMemberType() {
-    if(!isAvailable() && hasModifiers()) {
-      return NamingUtils.toSimpleBinaryName(getName()) != null &&
-             !isLocalOrAnonymousClass();
-    }
-    return toType().isMemberType();
   }
 
   @Override
@@ -213,23 +198,18 @@ public class HxTypeReferenceImpl
   }
 
   @Override
-  public boolean isAnonymous() {
-    return toType().isAnonymous();
-  }
-
-  @Override
   public HxType initialize(final HxInitializablePart part) {
     return toType().initialize(part);
   }
 
   @Override
-  public Optional<HxType> getSuperType() {
-    return toType().getSuperType();
+  public Optional<HxType> getSupertype() {
+    return toType().getSupertype();
   }
 
   @Override
-  public HxType setSuperType(HxType superType) {
-    toType().setSuperType(superType);
+  public HxType setSupertype(HxType supertype) {
+    toType().setSupertype(supertype);
     return this;
   }
 
@@ -311,16 +291,6 @@ public class HxTypeReferenceImpl
   }
 
   @Override
-  public List<HxType> types(Predicate<HxType> predicate, boolean recursive) {
-    return toType().types(predicate, recursive);
-  }
-
-  @Override
-  public List<HxType> interfaces(Predicate<HxType> predicate, boolean recursive) {
-    return toType().interfaces(predicate, recursive);
-  }
-
-  @Override
   public HxType addAnnotation(HxAnnotation annotation) {
     toType().addAnnotation(annotation);
     return this;
@@ -333,8 +303,25 @@ public class HxTypeReferenceImpl
   }
 
   @Override
-  public List<HxAnnotated> getSuperAnnotated() {
-    return toType().getSuperAnnotated();
+  public Optional<HxAnnotated<?>> getAnnotatedSupertype() {
+    return toType().getAnnotatedSupertype();
+  }
+
+  @Override
+  public HxType setAnnotatedSupertype(final HxAnnotated<?> annotated) {
+    toType().setAnnotatedSupertype(annotated);
+    return this;
+  }
+
+  @Override
+  public HxType setAnnotatedInterface(int index, HxAnnotated<?> annotated) {
+    toType().setAnnotatedInterface(index, annotated);
+    return this;
+  }
+
+  @Override
+  public Optional<HxAnnotated<?>> getAnnotatedInterface(int index) {
+    return toType().getAnnotatedInterface(index);
   }
 
   @Override
@@ -367,11 +354,6 @@ public class HxTypeReferenceImpl
   @Override
   public List<HxAnnotation> getAnnotationsByType(String type) {
     return toType().getAnnotationsByType(type);
-  }
-
-  @Override
-  public List<HxAnnotation> annotations(Predicate<HxAnnotation> predicate, boolean recursive) {
-    return toType().annotations(predicate, recursive);
   }
 
   @Override

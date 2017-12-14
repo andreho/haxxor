@@ -1,7 +1,6 @@
 package net.andreho.haxxor.api.impl;
 
 import net.andreho.haxxor.Hx;
-import net.andreho.haxxor.api.HxAnnotated;
 import net.andreho.haxxor.api.HxAnnotation;
 import net.andreho.haxxor.api.HxMember;
 import net.andreho.haxxor.api.HxMethod;
@@ -12,7 +11,6 @@ import net.andreho.haxxor.api.HxType;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 /**
  * Created by a.hofmann on 30.05.2015.
@@ -197,11 +195,6 @@ public class HxMethodReferenceImpl
   }
 
   @Override
-  public List<HxMethod> getOverriddenMembers() {
-    return toMethod().getOverriddenMembers();
-  }
-
-  @Override
   public HxMethod addAnnotation(HxAnnotation annotation) {
     toMethod().addAnnotation(annotation);
     return this;
@@ -218,11 +211,6 @@ public class HxMethodReferenceImpl
   public HxMethod setAnnotations(Collection<HxAnnotation> annotations) {
     toMethod().setAnnotations(annotations);
     return this;
-  }
-
-  @Override
-  public List<HxAnnotated> getSuperAnnotated() {
-    return toMethod().getSuperAnnotated();
   }
 
   @Override
@@ -243,11 +231,6 @@ public class HxMethodReferenceImpl
   @Override
   public List<HxAnnotation> getAnnotationsByType(String type) {
     return toMethod().getAnnotationsByType(type);
-  }
-
-  @Override
-  public List<HxAnnotation> annotations(Predicate<HxAnnotation> predicate, boolean recursive) {
-    return toMethod().annotations(predicate, recursive);
   }
 
   @Override

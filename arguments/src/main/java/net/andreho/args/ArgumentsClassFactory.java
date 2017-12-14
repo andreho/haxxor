@@ -104,7 +104,7 @@ final class ArgumentsClassFactory {
     final HxType type = haxxor.createType(className);
     type.addModifiers(
       HxType.Modifiers.PUBLIC, HxType.Modifiers.SYNTHETIC, HxType.Modifiers.FINAL
-    ).setSuperType(AbstractArguments256.class);
+    ).setSupertype(AbstractArguments256.class);
 
     addConstructor(haxxor, type, layoutString);
     addFields(haxxor, layout, type);

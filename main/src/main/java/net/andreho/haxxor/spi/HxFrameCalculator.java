@@ -1,6 +1,7 @@
 package net.andreho.haxxor.spi;
 
 import net.andreho.haxxor.api.HxMethodBody;
+import net.andreho.haxxor.cgen.HxInstruction;
 import net.andreho.haxxor.cgen.instr.misc.FRAME;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 public interface HxFrameCalculator {
   /**
    * @param methodBody to enrich with frame entries
+   * @return a list with frames to inject (each frame contains the injection point in its {@link HxInstruction#getPrevious()} reference)
    */
   List<FRAME> calculate(HxMethodBody methodBody);
 }

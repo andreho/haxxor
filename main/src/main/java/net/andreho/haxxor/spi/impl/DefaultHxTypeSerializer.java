@@ -88,7 +88,7 @@ public class DefaultHxTypeSerializer
                  type.getModifiers() & HxType.ALLOWED_MODIFIERS,
                  type.toInternalName(),
                  type.getGenericSignature().orElse(null),
-                 type.getSuperType().get().toInternalName(),
+                 type.getSupertype().get().toInternalName(),
                  type.getInterfaces().stream().map(HxType::toInternalName).toArray(String[]::new)
     );
   }
@@ -203,8 +203,8 @@ public class DefaultHxTypeSerializer
 
   protected void visitTypeAnnotations(final HxType type,
                                       final ClassWriter cw) {
-    if (type.getAnnotatedSuperType().isPresent()) {
-      final HxAnnotated<?> annotated = type.getAnnotatedSuperType().get();
+    if (type.getAnnotatedSupertype().isPresent()) {
+      final HxAnnotated<?> annotated = type.getAnnotatedSupertype().get();
       for (HxAnnotation annotation : annotated.getAnnotations()) {
         visitTypeAnnotation(SUPER_TYPE_REFERENCE, null, annotation, cw);
       }
@@ -236,13 +236,10 @@ public class DefaultHxTypeSerializer
   protected void visitInnerClass(final HxType declared,
                                  final ClassWriter cw) {
     final String name = declared.toInternalName();
-
     String simpleName = declared.getSimpleName();
     if (simpleName != null && simpleName.isEmpty()) {
       simpleName = null;
     }
-
-//    System.out.println(HxType.Modifiers.toSet(declared.getModifiers()));
 
     if (declared.isMemberType()) {
       final String outerName = simpleName == null ?

@@ -11,6 +11,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
 
 import static net.andreho.haxxor.utils.CommonUtils.isUninitialized;
 
@@ -166,39 +168,34 @@ public abstract class HxExecutableImpl
     return this;
   }
 
-  @Override
-  public List<HxMethod> getOverriddenMembers() {
+  /**
+   * @param predicate
+   * to check on each overridden method (from a supertype or an implemented interface) until the test is successful
+   * @return this instance
+   */
+  public Optional<HxMethod> visitOverriddenMethods(Predicate<HxMethod> predicate) {
     if(getDeclaringMember() == null) {
-      return Collections.emptyList();
+      return Optional.empty();
     }
 
-    final String name = getName();
-    final List<HxType> parameterTypes = getParameterTypes();
-    final List<HxMethod> methods = new ArrayList<>();
+    final AtomicReference<HxMethod> found = new AtomicReference<>();
 
-    HxType current = getDeclaringType().getSuperType().orElse(null);
+    getDeclaringType().visitHierarchy((type) -> {
+      if(!isDeclaredBy(type)) {
+        Optional<HxMethod> methodOptional = type.findMethod(getName(), getParameterTypes());
+        if(methodOptional.isPresent()) {
+          HxMethod method = methodOptional.get();
+          if(method.isOverridable() &&
+             predicate.test(method)) {
 
-    while(current != null) {
-      current.findMethod(name, parameterTypes).ifPresent(methods::add);
-      if(!current.hasSuperType()) {
-        break;
+            found.set(method);
+            return true;
+          }
+        }
       }
-      current = current.getSuperType().get();
-    }
-
-    current = getDeclaringType();
-    for(HxType itf : current.interfaces((itf) -> true, true)) {
-      itf.findMethod(name, parameterTypes).ifPresent(methods::add);
-    }
-
-    while(current != null) {
-
-      if(!current.hasSuperType()) {
-        break;
-      }
-      current = current.getSuperType().get();
-    }
-    return methods;
+      return false;
+    });
+    return Optional.ofNullable(found.get());
   }
 
   @Override

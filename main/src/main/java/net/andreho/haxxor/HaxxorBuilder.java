@@ -40,7 +40,7 @@ public class HaxxorBuilder {
 
   private boolean concurrent;
   private ClassLoader classLoader;
-  private int flags = Haxxor.Flags.SKIP_FIELDS | Haxxor.Flags.SKIP_METHODS;
+  private int flags = Hx.Flags.SKIP_FIELDS | Hx.Flags.SKIP_METHODS;
 
   /**
    * @return
@@ -122,9 +122,6 @@ public class HaxxorBuilder {
    * @return new new deduplication cache associated with given haxxor instance
    */
   public HxDeduplicationCache createDeduplicationCache(final Hx haxxor) {
-//    if(!concurrent) {
-//      return new DefaultTrieBasedDeduplicationCache();
-//    }
     return new NoOpDeduplicationCache();
   }
 

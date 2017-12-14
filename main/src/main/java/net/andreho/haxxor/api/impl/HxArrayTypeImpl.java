@@ -69,7 +69,7 @@ public class HxArrayTypeImpl
   }
 
   @Override
-  public Optional<HxType> getSuperType() {
+  public Optional<HxType> getSupertype() {
     return Optional.of(getHaxxor().reference("java.lang.Object"));
   }
 

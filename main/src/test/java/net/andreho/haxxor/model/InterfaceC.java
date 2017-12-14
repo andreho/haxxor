@@ -5,5 +5,12 @@ package net.andreho.haxxor.model;
  */
 public interface InterfaceC
     extends InterfaceB {
-
+  default int intValue() {
+    return 0;
+  }
+  default String stringValue() {
+    return "";
+  }
+  default void someWork(Object o, int a, long ... b) {
+  }
 }

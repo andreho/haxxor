@@ -4,6 +4,8 @@ import net.andreho.haxxor.utils.NamingUtils;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import static net.andreho.haxxor.api.HxConstants.ARRAY_DIMENSION;
 import static net.andreho.haxxor.api.HxConstants.DESC_ARRAY_PREFIX_STR;
@@ -12,6 +14,7 @@ import static net.andreho.haxxor.utils.NamingUtils.equalClassnames;
 import static net.andreho.haxxor.utils.NamingUtils.equalPackageNames;
 import static net.andreho.haxxor.utils.NamingUtils.hasSimpleBinaryName;
 import static net.andreho.haxxor.utils.NamingUtils.isDescriptor;
+import static net.andreho.haxxor.utils.NamingUtils.toSimpleName;
 
 /**
  * <br/>Created by a.hofmann on 01.12.2017 at 18:10.
@@ -26,7 +29,7 @@ public interface HxTypeAnalysis<O extends HxInheritanceManager<O> & HxOwned<O> &
    * @see Class#getSimpleName()
    */
   default String getSimpleName() {
-    return NamingUtils.toSimpleName(getName());
+    return toSimpleName(getName());
   }
 
   /**
@@ -102,7 +105,7 @@ public interface HxTypeAnalysis<O extends HxInheritanceManager<O> & HxOwned<O> &
    */
   default boolean hasNameViaExtends(String className) {
     if (!hasName(className)) {
-      final Optional<HxType> superType = getSuperType();
+      final Optional<HxType> superType = getSupertype();
       return superType.isPresent() &&
              superType.get().hasNameViaExtends(className);
     }
@@ -284,6 +287,73 @@ public interface HxTypeAnalysis<O extends HxInheritanceManager<O> & HxOwned<O> &
   }
 
   /**
+   * @param predicate
+   * @return
+   */
+  default Optional<HxType> visitHierarchy(Predicate<HxType> predicate) {
+    return visitHierarchy(predicate, true, true);
+  }
+
+  /**
+   * @param predicate
+   * @param visitClasses
+   * @param visitInterfaces
+   * @return
+   */
+  default Optional<HxType> visitHierarchy(Predicate<HxType> predicate, boolean visitClasses, boolean visitInterfaces) {
+    final HxType start = (HxType) this;
+    HxType current = start;
+    if(visitClasses) {
+      while (true) {
+        if(predicate.test(current)) {
+          return Optional.of(current);
+        }
+        if (!current.hasSupertype()) {
+          break;
+        }
+        current = current.getSupertype().orElseThrow(IllegalStateException::new);
+      }
+    }
+    if (visitInterfaces) {
+      current = start;
+      while (current.hasSupertype()) {
+        for (HxType itf : current.getInterfaces()) {
+          if(predicate.test(itf)) {
+            return Optional.of(itf);
+          }
+        }
+        for (HxType itf : current.getInterfaces()) {
+          itf.visitHierarchy(predicate, false, visitInterfaces);
+        }
+        current = current.getSupertype().orElseThrow(IllegalStateException::new);
+      }
+    }
+    return Optional.empty();
+  }
+
+  /**
+   * @param consumer
+   * @return
+   */
+  default HxType visitHierarchy(Consumer<HxType> consumer) {
+    return visitHierarchy(consumer, true, true);
+  }
+
+  /**
+   * @param consumer
+   * @param visitClasses
+   * @param visitInterfaces
+   * @return
+   */
+  default HxType visitHierarchy(Consumer<HxType> consumer, boolean visitClasses, boolean visitInterfaces) {
+    visitHierarchy((type) -> {
+      consumer.accept(type);
+      return false;
+    }, visitClasses, visitInterfaces);
+    return (HxType) this;
+  }
+
+  /**
    * @return <b>true</b> if this is a primitive type, <b>false</b> otherwise.
    */
   default boolean isPrimitive() {
@@ -294,8 +364,8 @@ public interface HxTypeAnalysis<O extends HxInheritanceManager<O> & HxOwned<O> &
    * @return <b>true</b> if this is a local type, <b>false</b> otherwise.
    */
   default boolean isLocalType() {
-    return isLocalOrAnonymousClass() &&
-           !isAnonymous();
+    return !isAnonymous() &&
+           isLocalOrAnonymousClass();
   }
 
   /**
@@ -304,7 +374,8 @@ public interface HxTypeAnalysis<O extends HxInheritanceManager<O> & HxOwned<O> &
    */
   default boolean isLocalOrAnonymousClass() {
     if (!hasModifiers(HxType.Modifiers.STATIC)) {
-      return getDeclaringMember() instanceof HxMethod;
+      return NamingUtils.isLocalOrAnonymousClass(getName());
+//      return getDeclaringMember() instanceof HxMethod;
     }
     return false;
   }
@@ -318,10 +389,24 @@ public interface HxTypeAnalysis<O extends HxInheritanceManager<O> & HxOwned<O> &
   }
 
   /**
+   * @return <b>true</b> if this is a deprecated type, <b>false</b> otherwise.
+   */
+  default boolean isDeprecated() {
+    return hasModifiers(HxType.Modifiers.DEPRECATED);
+  }
+
+  /**
    * @return <b>true</b> if this is a final type, <b>false</b> otherwise.
    */
   default boolean isFinal() {
     return hasModifiers(HxType.Modifiers.FINAL);
+  }
+
+  /**
+   * @return <b>true</b> if this is a static type, <b>false</b> otherwise.
+   */
+  default boolean isStatic() {
+    return hasModifiers(HxType.Modifiers.STATIC);
   }
 
   /**
@@ -419,6 +504,15 @@ public interface HxTypeAnalysis<O extends HxInheritanceManager<O> & HxOwned<O> &
   }
 
   /**
+   * Defines this type as <b>static</b> and so declares it as a static inner class
+   * @return owner instance
+   */
+  default O makeStatic() {
+    //removeModifiers(HxType.Modifiers.ABSTRACT, HxType.Modifiers.INTERFACE, HxType.Modifiers.ANNOTATION)
+    return addModifiers(HxType.Modifiers.STATIC);
+  }
+
+  /**
    * Defines this type as <b>final</b>
    * @return owner instance
    */
@@ -477,20 +571,4 @@ public interface HxTypeAnalysis<O extends HxInheritanceManager<O> & HxOwned<O> &
     return makeInterface()
       .addModifier(HxType.Modifiers.ANNOTATION);
   }
-
-//  /**
-//   * @return owner instance
-//   */
-//  default O makePrivate() {
-//    return removeModifiers(HxType.Modifiers.PROTECTED, HxType.Modifiers.PUBLIC)
-//      .addModifier(HxType.Modifiers.PRIVATE);
-//  }
-//
-//  /**
-//   * @return owner instance
-//   */
-//  default O makeProtected() {
-//    return removeModifiers(HxType.Modifiers.PRIVATE, HxType.Modifiers.PUBLIC)
-//      .addModifier(HxType.Modifiers.PROTECTED);
-//  }
 }

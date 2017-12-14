@@ -38,8 +38,8 @@ public class HxTypeImpl
 
   protected Version version = Version.V1_7;
   protected HxSourceInfo sourceInfo;
-  protected HxType superType;
-  protected HxAnnotated<?> annotatedSuperType;
+  protected HxType supertype;
+  protected HxAnnotated<?> annotatedSupertype;
   protected List<HxType> interfaces = Collections.emptyList();
   protected HxAnnotated<?>[] annotatedInterfaces = EMPTY_ANNOTATED_ARRAY;
   protected List<HxType> declaredTypes = Collections.emptyList();
@@ -50,11 +50,12 @@ public class HxTypeImpl
 
   protected List<HxMethod> methods = Collections.emptyList();
   protected Map<String, Collection<HxMethod>> methodMap = Collections.emptyMap();
+  protected int state;
 
   public HxTypeImpl(Hx haxxor,
                     String name) {
     super(haxxor, name);
-    this.superType = haxxor.reference("java.lang.Object");
+    this.supertype = haxxor.reference("java.lang.Object");
   }
 
   @Override
@@ -124,32 +125,32 @@ public class HxTypeImpl
   }
 
   @Override
-  public Optional<HxType> getSuperType() {
-    return Optional.ofNullable(superType);
+  public Optional<HxType> getSupertype() {
+    return Optional.ofNullable(supertype);
   }
 
   @Override
-  public HxType setSuperType(HxType superType) {
-    if (superType == null) {
+  public HxType setSupertype(HxType supertype) {
+    if (supertype == null) {
       if(!hasName("java.lang.Object")) {
         throw new IllegalArgumentException("Super type can't be null.");
       }
-    } else if(superType.isPrimitive() ||
-              superType.isArray()) { //|| superType.isInterface() -> skipped, bcs this would load the class
-      throw new IllegalArgumentException("Given type can't be used a superclass: "+superType);
+    } else if(supertype.isPrimitive() ||
+              supertype.isArray()) { //|| supertype.isInterface() -> skipped, bcs this would load the class
+      throw new IllegalArgumentException("Given type can't be used a superclass: " + supertype);
     }
-    this.superType = superType;
+    this.supertype = supertype;
     return this;
   }
 
   @Override
-  public Optional<HxAnnotated<?>> getAnnotatedSuperType() {
-    return Optional.ofNullable(this.annotatedSuperType);
+  public Optional<HxAnnotated<?>> getAnnotatedSupertype() {
+    return Optional.ofNullable(this.annotatedSupertype);
   }
 
   @Override
-  public HxType setAnnotatedSuperType(final HxAnnotated<?> annotated) {
-    this.annotatedSuperType = annotated;
+  public HxType setAnnotatedSupertype(final HxAnnotated<?> annotated) {
+    this.annotatedSupertype = annotated;
     return this;
   }
 
@@ -253,22 +254,22 @@ public class HxTypeImpl
   }
 
   private boolean areFieldsLoaded() {
-    return (this.modifiers & Internals.FIELDS_LOADED) != 0;
+    return (this.state & Internals.FIELDS_LOADED) != 0;
   }
 
   private void markLoadedFields() {
-    this.modifiers |= Internals.FIELDS_LOADED;
+    this.state |= Internals.FIELDS_LOADED;
   }
 
   private void removeMarkForLoadedFields() {
-    this.modifiers &= ~Internals.FIELDS_LOADED;
+    this.state &= ~Internals.FIELDS_LOADED;
   }
 
   @Override
   public HxType loadFields() {
     if (!areFieldsLoaded()) {
+        markLoadedFields();
         getHaxxor().resolveFields(this);
-      markLoadedFields();
     }
     return this;
   }
@@ -291,9 +292,17 @@ public class HxTypeImpl
     return new HashMap<>(this.fields.size());
   }
 
+  public List<HxField> getEditableFields() {
+    return this.fields;
+  }
+
   @Override
   public List<HxField> getFields() {
-    if(isUninitialized(this.fields)) {
+    return getLoadedFields();
+  }
+
+  private List<HxField> getLoadedFields() {
+    if(!areFieldsLoaded()) {
       loadFields();
     }
     return this.fields;
@@ -301,9 +310,13 @@ public class HxTypeImpl
 
   @Override
   public HxType clearFields() {
+    for(HxField field : getLoadedFields()) {
+      field.setDeclaringMember(null);
+    }
+
     this.fields = Collections.emptyList();
     this.fieldMap = Collections.emptyMap();
-    removeMarkForLoadedFields();
+
     return this;
   }
 
@@ -313,7 +326,7 @@ public class HxTypeImpl
       return clearFields();
     }
 
-    for (int i = this.fields.size() - 1; i >= 0; i--) {
+    for (int i = getLoadedFields().size() - 1; i >= 0; i--) {
       removeField(this.fields.get(i));
     }
 
@@ -337,21 +350,21 @@ public class HxTypeImpl
 
     initialize(HxInitializablePart.FIELDS);
 
-    if (!addFieldInternally(index, field)) {
+    if (!addFieldInternally(getLoadedFields(), index, field)) {
       complainAboutDuplicateField(field);
     }
-
     field.setDeclaringMember(this);
     return this;
   }
 
-  protected boolean addFieldInternally(final int index,
+  protected boolean addFieldInternally(final List<HxField> fields,
+                                       final int index,
                                        final HxField given) {
     if (isFieldCacheActivated() &&
         !addFieldIntoCache(given)) {
       return false;
     }
-    this.fields.add(index, given);
+    fields.add(index, given);
     return true;
   }
 
@@ -399,7 +412,7 @@ public class HxTypeImpl
       if (index < 0) {
         throw new IllegalStateException("Removal of the given field led to an inconsistent state: " + field);
       }
-      this.fields.remove(index);
+      getLoadedFields().remove(index);
       return true;
     }
     return false;
@@ -467,15 +480,15 @@ public class HxTypeImpl
   }
 
   private boolean areMethodsLoaded() {
-    return (this.modifiers & Internals.METHODS_LOADED) != 0;
+    return (this.state & Internals.METHODS_LOADED) != 0;
   }
 
   private void markLoadedMethods() {
-    this.modifiers |= Internals.METHODS_LOADED;
+    this.state |= Internals.METHODS_LOADED;
   }
 
   private void removeMarkForLoadedMethods() {
-    this.modifiers &= ~Internals.METHODS_LOADED;
+    this.state &= ~Internals.METHODS_LOADED;
   }
 
   @Override
@@ -491,9 +504,9 @@ public class HxTypeImpl
       case 1: loadFields(); break;
       case 2: loadMethods(); break;
       case 3:
-          getHaxxor().resolveFieldsAndMethods(this);
         markLoadedFields();
         markLoadedMethods();
+        getHaxxor().resolveFieldsAndMethods(this);
       break;
     }
     return this;
@@ -502,8 +515,8 @@ public class HxTypeImpl
   @Override
   public HxType loadMethods() {
     if (!areMethodsLoaded()) {
+        markLoadedMethods();
         getHaxxor().resolveMethods(this);
-      markLoadedMethods();
     }
     return this;
   }
@@ -537,6 +550,10 @@ public class HxTypeImpl
 
   @Override
   public List<HxMethod> getMethods() {
+    return getLoadedMethods();
+  }
+
+  private List<HxMethod> getLoadedMethods() {
     if(isUninitialized(this.methods)) {
       loadMethods();
     }
@@ -545,24 +562,28 @@ public class HxTypeImpl
 
   @Override
   public HxType clearMethods() {
+    for(HxMethod method : getLoadedMethods()) {
+      method.setDeclaringMember(null);
+    }
+
     this.methods = Collections.emptyList();
     this.methodMap = Collections.emptyMap();
-    removeMarkForLoadedMethods();
+
     return this;
   }
 
   @Override
   public Collection<HxMethod> getMethods(String name) {
-    if (!isMethodCacheActivated()) {
-      List<HxMethod> foundMethods = new ArrayList<>();
-      for (HxMethod method : getMethods()) {
-        if (method.hasName(name)) {
-          foundMethods.add(method);
-        }
-      }
-      return foundMethods;
+    if (isMethodCacheActivated()) {
+      return Collections.unmodifiableCollection(getNamedMethodsPartition(name));
     }
-    return Collections.unmodifiableCollection(getNamedMethodsPartition(name));
+    final List<HxMethod> foundMethods = new ArrayList<>();
+    for (HxMethod method : getLoadedMethods()) {
+      if (method.hasName(name)) {
+        foundMethods.add(method);
+      }
+    }
+    return foundMethods;
   }
 
   private Collection<HxMethod> getNamedMethodsPartition(final String name) {
@@ -579,7 +600,10 @@ public class HxTypeImpl
       }
       method = method.clone();
     }
+    return addMethodInto(getLoadedMethods(), index, method);
+  }
 
+  private HxType addMethodInto(List<HxMethod> methods, int index, HxMethod method) {
     if (isMethodCacheActivated()) {
       //Duplicate detection is here
       Collection<HxMethod> partition = getNamedMethodsPartition(method.getName());
@@ -587,13 +611,7 @@ public class HxTypeImpl
         throw new IllegalStateException("Ambiguous method: " + method);
       }
     }
-
-    initialize(HxInitializablePart.METHODS);
-
-    if (!this.methods.add(method)) {
-      //never happens in current impl
-      throw new IllegalStateException("Ambiguous method: " + method);
-    }
+    methods.add(index, method);
     method.setDeclaringMember(this);
     return this;
   }
@@ -608,7 +626,7 @@ public class HxTypeImpl
       return clearMethods();
     }
 
-    for (int i = this.methods.size() - 1; i >= 0; i--) {
+    for (int i = getLoadedMethods().size() - 1; i >= 0; i--) {
       removeMethod(this.methods.get(i));
     }
 
@@ -632,26 +650,37 @@ public class HxTypeImpl
     if (!equals(method.getDeclaringMember())) {
       throw new IllegalArgumentException("Given method must exist within this type: " + method);
     }
+    if(!removeCachedMethod(method)) {
+      throw new IllegalArgumentException("Given method must exist within this type: " + method);
+    }
+    if(removeStoredMethod(method)) {
+      throw new IllegalStateException("Removal of given method led to an inconsistent state: " + method);
+    }
+    method.setDeclaringMember(null);
+    return this;
+  }
 
+  private boolean removeStoredMethod(final HxMethod method) {
+    int index = indexOfMethod(method);
+    if (index < 0) {
+      return false;
+    }
+    this.methods.remove(index);
+    return true;
+  }
+
+  private boolean removeCachedMethod(final HxMethod method) {
     if (isMethodCacheActivated()) {
       final Collection<HxMethod> namedPartition = this.methodMap.getOrDefault(method.getName(), Collections.emptyList());
       if (!hasMethod(method.getReturnType(), method.getName(), method.getParameterTypes()) ||
           !namedPartition.remove(method)) {
-        throw new IllegalArgumentException("Given method must exist within this type: " + method);
+        return false;
       }
       if (namedPartition.isEmpty()) {
         this.methodMap.remove(method.getName());
       }
     }
-
-    int index = indexOfMethod(method);
-    if (index > -1) {
-      this.methods.remove(index);
-    } else {
-      throw new IllegalStateException("Removal of given method led to an inconsistent state: " + method);
-    }
-    method.setDeclaringMember(null);
-    return this;
+    return true;
   }
 
   @Override
@@ -660,7 +689,7 @@ public class HxTypeImpl
       return -1;
     }
     int idx = 0;
-    for (HxMethod hxMethod : this.methods) {
+    for (HxMethod hxMethod : getLoadedMethods()) {
       if (method == hxMethod ||
           method.equals(hxMethod)) {
         return idx;
@@ -676,7 +705,7 @@ public class HxTypeImpl
       return -1;
     }
     int idx = 0;
-    for (HxField hxField : this.fields) {
+    for (HxField hxField : getLoadedFields()) {
       if (field == hxField ||
           field.equals(hxField)) {
         return idx;
@@ -701,10 +730,10 @@ public class HxTypeImpl
       if (!recursive) {
         break;
       }
-      if (!current.hasSuperType()) {
+      if (!current.hasSupertype()) {
         break;
       }
-      current = current.getSuperType().orElse(null);
+      current = current.getSupertype().orElse(null);
     }
 
     return result;
@@ -725,10 +754,10 @@ public class HxTypeImpl
       if (!recursive) {
         break;
       }
-      if (!current.hasSuperType()) {
+      if (!current.hasSupertype()) {
         break;
       }
-      current = current.getSuperType().orElse(null);
+      current = current.getSupertype().orElse(null);
     }
 
     current = this;
@@ -738,11 +767,11 @@ public class HxTypeImpl
     }
 
     //Any interface has java/lang/Object as supertype
-    while (current != null && current.hasSuperType()) {
+    while (current != null && current.hasSupertype()) {
       for (HxType itf : current.getInterfaces()) {
         result.addAll(itf.methods(predicate, recursive));
       }
-      current = current.getSuperType().orElse(null);
+      current = current.getSupertype().orElse(null);
     }
 
     return result;
@@ -763,57 +792,12 @@ public class HxTypeImpl
       if (!recursive) {
         break;
       }
-      if (!current.hasSuperType()) {
+      if (!current.hasSupertype()) {
         break;
       }
-      current = current.getSuperType().orElse(null);
+      current = current.getSupertype().orElse(null);
     }
 
-    return result;
-  }
-
-  @Override
-  public List<HxType> interfaces(final Predicate<HxType> predicate,
-                                 final boolean recursive) {
-    final List<HxType> result = new ArrayList<>();
-    HxType current = this;
-
-    while (current != null) {
-      for (HxType itf : current.getInterfaces()) {
-        if (predicate.test(itf)) {
-          result.add(current);
-        }
-        if (!recursive) {
-          result.addAll(itf.interfaces(predicate, recursive));
-        }
-      }
-
-      if (!recursive || !current.hasSuperType()) {
-        break;
-      }
-      current = current.getSuperType().orElse(null);
-    }
-    return result;
-  }
-
-  @Override
-  public List<HxType> types(final Predicate<HxType> predicate,
-                            final boolean recursive) {
-    final List<HxType> result = new ArrayList<>();
-    HxType current = this;
-
-    while (current != null) {
-      if (predicate.test(current)) {
-        result.add(current);
-      }
-      if (!recursive) {
-        break;
-      }
-      if (!current.hasSuperType()) {
-        break;
-      }
-      current = current.getSuperType().orElse(null);
-    }
     return result;
   }
 

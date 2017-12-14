@@ -23,7 +23,7 @@ class AddingElementsTest {
   void addIdentifiableTemplate() {
 //    HxType type = hx.createType("net.andreho.test.hx.template.FieldsAdd")
 //                    .makePublic()
-//                    .setSuperType(SuperClass.class);
+//                    .setSupertype(SuperClass.class);
 //
 //
 //    type.addTemplate(IdentifiableTemplate.class);

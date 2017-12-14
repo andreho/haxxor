@@ -125,13 +125,13 @@ public abstract class NamingUtils {
   }
 
   private static int simpleNameLength(final String classname) {
+    complainIfGivenParameterIsDescriptor(classname);
     int length = classname.length() - getDimension(classname) * ARRAY_DIMENSION.length();
     int offset = classname.lastIndexOf('$');
     if (offset < 0) {
       return length - classname.lastIndexOf('.');
     }
-    length -= offset;
-    if (length < 1 || classname.charAt(offset) != '$') {
+    if ((length - offset) < 1 || classname.charAt(offset) != '$') {
       throw new InternalError("Malformed class name");
     }
     offset += 1;
@@ -139,6 +139,12 @@ public abstract class NamingUtils {
       offset++;
     }
     return length - offset;
+  }
+
+  private static void complainIfGivenParameterIsDescriptor(final String classname) {
+    if(isDescriptor(classname)) {
+      throw new IllegalArgumentException("Expected a binary classname and not a descriptor: "+classname);
+    }
   }
 
   /**
@@ -458,6 +464,30 @@ public abstract class NamingUtils {
    */
   public static boolean hasSimpleName(String classname) {
     return simpleNameLength(classname) > 0;
+  }
+
+  /**
+   * @param classname
+   * @return
+   */
+  public static boolean isLocalOrAnonymousClass(String classname) {
+    complainIfGivenParameterIsDescriptor(classname);
+    int length = classname.length() - getDimension(classname) * ARRAY_DIMENSION.length();
+    int offset = classname.lastIndexOf('$');
+    int digits = 0;
+
+    if (offset < 0) {
+      return false;
+    }
+    if ((length - offset) < 1 || classname.charAt(offset) != '$') {
+      throw new InternalError("Malformed class name");
+    }
+    offset += 1;
+    while (offset < length && isDigit(classname.charAt(offset))) {
+      offset++;
+      digits++;
+    }
+    return digits > 0 && classname.length() >= offset;
   }
 
   /**

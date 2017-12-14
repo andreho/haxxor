@@ -2,6 +2,7 @@ package net.andreho.haxxor.api;
 
 import net.andreho.asm.org.objectweb.asm.Opcodes;
 import net.andreho.haxxor.stub.errors.HxStubException;
+import net.andreho.haxxor.utils.ClassLoaderUtils;
 
 import java.util.Optional;
 import java.util.Set;
@@ -56,7 +57,9 @@ public interface HxType
     // class
     ANNOTATION(Opcodes.ACC_ANNOTATION),
     // class(?) field inner
-    ENUM(Opcodes.ACC_ENUM);
+    ENUM(Opcodes.ACC_ENUM),
+    // class, field, method
+    DEPRECATED(Opcodes.ACC_DEPRECATED);
 
     final int bit;
 
@@ -81,8 +84,6 @@ public interface HxType
   }
 
   class Internals {
-//    public static final int INTERNALS_LOADED = 0x1_0000;
-//    public static final int ANNOTATIONS_LOADED = 0x2_0000;
     public static final int FIELDS_LOADED = 0x4_0000;
     public static final int METHODS_LOADED = 0x8_0000;
   }
@@ -97,9 +98,10 @@ public interface HxType
   /**
    * @param version of the type to use
    * @return
+   * @throws IllegalStateException if this method not allowed
    */
   default HxType setVersion(Version version) {
-    return this;
+    throw new IllegalStateException("Version of this type can't be changed: "+getName());
   }
 
   /**
@@ -112,9 +114,10 @@ public interface HxType
   /**
    * @param source
    * @return
+   * @throws IllegalStateException if this method not allowed
    */
   default HxType setSourceInfo(HxSourceInfo source) {
-    return this;
+    throw new IllegalStateException("This type can't contain any source-info: "+getName());
   }
 
   /**
@@ -146,6 +149,18 @@ public interface HxType
    */
   default HxType loadFieldsAndMethods() {
     return this;
+  }
+
+  /**
+   * Checks whether this class was already loaded by the given classloader (incl. its parents) or not
+   * @param classLoader to check
+   * @return <b>true</b> if this class was already loaded by the given classloader, <b>false</b> otherwise
+   */
+  default boolean wasAlreadyLoadedWith(ClassLoader classLoader) {
+    if(isPrimitive() || isArray()) {
+      return true;
+    }
+    return ClassLoaderUtils.wasAlreadyLoadedWith(classLoader, getName());
   }
 
   /**

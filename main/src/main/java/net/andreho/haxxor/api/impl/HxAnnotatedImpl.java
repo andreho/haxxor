@@ -142,12 +142,6 @@ public class HxAnnotatedImpl<A extends HxAnnotated<A> & HxMember<A> & HxOwned<A>
     return (A) this;
   }
 
-
-  @Override
-  public List<HxAnnotated> getSuperAnnotated() {
-    return DEFAULT_SUPER_ANNOTATED_COLLECTION;
-  }
-
   @Override
   public List<HxAnnotation> getAnnotationsByType(final String type) {
     HxType repeatableAnnotationType = null;
