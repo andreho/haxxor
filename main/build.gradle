@@ -1,7 +1,0 @@
-group 'net.andreho'
-version projectVersion
-
-dependencies {
-  compile project(':asm')
-  testCompile project(':resources')
-}
