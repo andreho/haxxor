@@ -59,18 +59,7 @@ class HaxxorTest {
 
   @Test
   void hasResolved() {
-    assertTrue(haxxor.hasResolved("void"));
-    assertTrue(haxxor.hasResolved("boolean"));
-    assertTrue(haxxor.hasResolved("byte"));
-    assertTrue(haxxor.hasResolved("char"));
-    assertTrue(haxxor.hasResolved("short"));
-    assertTrue(haxxor.hasResolved("int"));
-    assertTrue(haxxor.hasResolved("float"));
-    assertTrue(haxxor.hasResolved("long"));
-    assertTrue(haxxor.hasResolved("double"));
-
     assertFalse(haxxor.hasResolved("java.lang.Object"));
-
     HxType reference = haxxor.reference("java.lang.Object");
     HxType resolvedType = haxxor.resolve("java.lang.Object");
 

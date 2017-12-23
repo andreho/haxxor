@@ -203,6 +203,14 @@ public enum HxSort {
     return widening;
   }
 
+  public String getToPrimitiveMethod() {
+    return toPrimitiveMethod;
+  }
+
+  public String getToPrimitiveMethodSignature() {
+    return toPrimitiveMethodSignature;
+  }
+
   /**
    * @param name of primitive type
    * @return <b>-1</b> if not supported or some sort widening distance in range from 0 to 5
