@@ -29,14 +29,7 @@ public class DefaultHxTypeDeserializer implements HxTypeDeserializer {
   public HxType deserialize(final HxType type,
                             final byte[] byteCode,
                             final int flags) {
-    final Hx haxxor = type.getHaxxor();
-    final ClassReader classReader = new ClassReader(byteCode) {
-      @Override
-      protected String createString(final char[] buf,
-                                    final int strLen) {
-        return haxxor.getDeduplicationCache().deduplicate(buf, strLen);
-      }
-    };
+    final ClassReader classReader = new ClassReader(byteCode);
     final HxTypeVisitor visitor = createTypeVisitor(
       type,
       (flags & Hx.Flags.SKIP_CLASS_INTERNALS) == 0,

@@ -4,7 +4,6 @@ import net.andreho.asm.org.objectweb.asm.AnnotationVisitor;
 import net.andreho.asm.org.objectweb.asm.ClassWriter;
 import net.andreho.asm.org.objectweb.asm.FieldVisitor;
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
-import net.andreho.asm.org.objectweb.asm.MethodWriter;
 import net.andreho.asm.org.objectweb.asm.Type;
 import net.andreho.asm.org.objectweb.asm.TypePath;
 import net.andreho.asm.org.objectweb.asm.TypeReference;
@@ -314,23 +313,13 @@ public class DefaultHxTypeSerializer
 
   protected MethodVisitor visitMethod(final ClassWriter cw,
                                       final HxMethod method) {
-    final MethodVisitor mv =
-      //MethodWriter was made public
-      new MethodWriter(cw,
-                       method.getModifiers() & HxMethod.ALLOWED_MODIFIERS,
-                       method.getName(),
-                       method.toDescriptor(),
-                       method.getGenericSignature().orElse(null),
-                       method.getExceptionTypes().stream().map(HxType::toInternalName).toArray(String[]::new),
-                       false,
-                       true);
-//    cw.visitMethod(
-//      method.getModifiers(),
-//      method.getName(),
-//      method.toDescriptor(),
-//      method.getGenericSignature().orElse(null),
-//      method.getExceptionTypes().stream().map(HxType::toInternalName).toArray(String[]::new)
-//    );
+    final MethodVisitor mv = cw.visitMethod(
+      method.getModifiers() & HxMethod.ALLOWED_MODIFIERS,
+      method.getName(),
+      method.toDescriptor(),
+      method.getGenericSignature().orElse(null),
+      method.getExceptionTypes().stream().map(HxType::toInternalName).toArray(String[]::new)
+    );
 
     visitParameters(method, mv);
 
