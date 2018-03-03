@@ -13,7 +13,8 @@ public interface HxTypeDeserializer {
    * @param byteCode
    * @return
    */
-  default HxType deserialize(final HxType type, byte[] byteCode) {
+  default HxType deserialize(HxType type,
+                             byte[] byteCode) {
     return deserialize(type, byteCode, 0);
   }
 
@@ -23,5 +24,6 @@ public interface HxTypeDeserializer {
    * @param flags
    * @return
    */
-  HxType deserialize(final HxType type, byte[] byteCode, int flags);
+  HxType deserialize(HxType type,
+                     byte[] byteCode, int flags);
 }

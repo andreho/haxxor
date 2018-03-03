@@ -130,14 +130,14 @@ public interface Hx extends HxClassnameNormalizer,
                   HxType typeOrReference);
 
   /**
-   * @param hxType
+   * @param type
    */
-  void resolveFields(HxType hxType);
+  void resolveFields(HxType type);
 
   /**
-   * @param hxType
+   * @param type
    */
-  void resolveMethods(HxType hxType);
+  void resolveMethods(HxType type);
 
   /**
    * @param type

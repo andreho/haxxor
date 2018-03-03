@@ -12,7 +12,8 @@ public enum Version {
   V1_5(Opcodes.V1_5),
   V1_6(Opcodes.V1_6),
   V1_7(Opcodes.V1_7),
-  V1_8(Opcodes.V1_8);
+  V1_8(Opcodes.V1_8),
+  V1_9(Opcodes.V9);
 
   final int code;
 
@@ -38,6 +39,8 @@ public enum Version {
         return V1_7;
       case Opcodes.V1_8:
         return V1_8;
+      case Opcodes.V9:
+        return V1_9;
     }
     throw new IllegalArgumentException("Unsupported version: " + ver);
   }

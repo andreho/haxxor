@@ -2,7 +2,7 @@ package net.andreho.haxxor.spi.impl.visitors;
 
 import net.andreho.asm.org.objectweb.asm.MethodVisitor;
 import net.andreho.haxxor.Hx;
-import net.andreho.haxxor.api.HxInitializablePart;
+import net.andreho.haxxor.api.HxLazyType;
 import net.andreho.haxxor.api.HxMethod;
 import net.andreho.haxxor.api.HxType;
 import net.andreho.haxxor.cgen.impl.AsmExecutableMethodVisitor;
@@ -34,8 +34,6 @@ public class HxMethodVisitor
   @Override
   public void visitEnd() {
     super.visitEnd();
-    this.declaringType
-      .initialize(HxInitializablePart.METHODS)
-      .addMethod(this.method);
+    ((HxLazyType) this.declaringType).addMethodInternally(method);
   }
 }

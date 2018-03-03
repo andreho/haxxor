@@ -250,7 +250,9 @@ public abstract class AbstractInstruction
     int depth = DEFAULT_PRINT_DEPTH;
     AbstractInstruction instruction = this;
     while(instruction != null && depth-- > 0) {
-      builder.append(instruction.print());
+      if(!instruction.isPseudoInstruction()) {
+        builder.append(instruction.print()).append('\n');
+      }
       instruction = (AbstractInstruction) instruction.getNext();
     }
     return builder.toString();

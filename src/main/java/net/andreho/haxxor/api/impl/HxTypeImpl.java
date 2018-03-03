@@ -5,6 +5,7 @@ import net.andreho.haxxor.api.HxAnnotated;
 import net.andreho.haxxor.api.HxField;
 import net.andreho.haxxor.api.HxGenericType;
 import net.andreho.haxxor.api.HxInitializablePart;
+import net.andreho.haxxor.api.HxLazyType;
 import net.andreho.haxxor.api.HxMethod;
 import net.andreho.haxxor.api.HxSourceInfo;
 import net.andreho.haxxor.api.HxType;
@@ -34,9 +35,9 @@ import static net.andreho.haxxor.utils.CommonUtils.isUninitialized;
  */
 public class HxTypeImpl
   extends HxAbstractType
-  implements HxType {
+  implements HxType, HxLazyType {
 
-  protected Version version = Version.V1_7;
+  protected Version version = Version.V1_8;
   protected HxSourceInfo sourceInfo;
   protected HxType supertype;
   protected HxAnnotated<?> annotatedSupertype;
@@ -357,6 +358,13 @@ public class HxTypeImpl
     return this;
   }
 
+  @Override
+  public void addFieldInternally(final HxField field) {
+    initialize(HxInitializablePart.FIELDS);
+    markLoadedFields();
+    addFieldAt(this.fields.size(), field);
+  }
+
   protected boolean addFieldInternally(final List<HxField> fields,
                                        final int index,
                                        final HxField given) {
@@ -593,6 +601,7 @@ public class HxTypeImpl
   @Override
   public HxType addMethodAt(final int index,
                             HxMethod method) {
+    initialize(HxInitializablePart.METHODS);
 
     if (method.getDeclaringMember() != null) {
       if (equals(method.getDeclaringMember())) {
@@ -601,6 +610,13 @@ public class HxTypeImpl
       method = method.clone();
     }
     return addMethodInto(getLoadedMethods(), index, method);
+  }
+
+  @Override
+  public void addMethodInternally(final HxMethod method) {
+    initialize(HxInitializablePart.METHODS);
+    markLoadedMethods();
+    addMethodAt(this.methods.size(), method);
   }
 
   private HxType addMethodInto(List<HxMethod> methods, int index, HxMethod method) {
@@ -653,7 +669,7 @@ public class HxTypeImpl
     if(!removeCachedMethod(method)) {
       throw new IllegalArgumentException("Given method must exist within this type: " + method);
     }
-    if(removeStoredMethod(method)) {
+    if(!removeStoredMethod(method)) {
       throw new IllegalStateException("Removal of given method led to an inconsistent state: " + method);
     }
     method.setDeclaringMember(null);

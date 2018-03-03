@@ -613,6 +613,7 @@ public class Haxxor
   protected HxType readClass(final String classname,
                              final byte[] byteCode,
                              final int flags) {
+
     return deserializeBytecodeTo(createType(classname), byteCode, flags);
   }
 
@@ -643,7 +644,6 @@ public class Haxxor
   protected Optional<byte[]> loadByteCode(final String classname) {
     return getByteCodeLoader().load(getClassLoader(), classname);
   }
-
 
   protected HxType fetchResolvedCache(final String classname) {
     if (!concurrent) {
@@ -709,6 +709,7 @@ public class Haxxor
 
   @Override
   public void resolveFieldsAndMethods(final HxType hxType) {
+
     resolveElements(hxType, Flags.SKIP_CLASS_INTERNALS);
   }
 

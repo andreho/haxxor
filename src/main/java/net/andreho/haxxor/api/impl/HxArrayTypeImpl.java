@@ -109,6 +109,11 @@ public class HxArrayTypeImpl
   }
 
   @Override
+  public int distanceTo(final HxType otherType, final int arrayCost, final int extendsCost, final int interfaceCost) {
+    return HxImplTools.estimateDistance(otherType, this, 0, arrayCost, extendsCost, interfaceCost);
+  }
+
+  @Override
   public boolean hasDescriptor(final String descriptor) {
     if(!descriptor.startsWith(HxConstants.DESC_ARRAY_PREFIX_STR)) {
       return false;

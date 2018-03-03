@@ -21,7 +21,11 @@ public class DefaultHxTypeDeserializer implements HxTypeDeserializer {
   /**
    * @return
    */
-  protected HxTypeVisitor createTypeVisitor(final HxType type, boolean resolveClass, boolean resolveFields, boolean resolveMethods) {
+  protected HxTypeVisitor createTypeVisitor(final HxType type,
+                                            boolean resolveClass,
+                                            boolean resolveFields,
+                                            boolean resolveMethods) {
+
     return new HxTypeVisitor(haxxor, resolveClass, resolveFields, resolveMethods).setType(type);
   }
 
